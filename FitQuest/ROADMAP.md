@@ -1,22 +1,26 @@
 # FitQuest Roadmap
 
 ## Overview
-The FitQuest MVP delivers an adaptive fitness experience that lets users onboard, log workouts on mobile and iWatch, and visualize progress on a web dashboard. The roadmap is organized into two phases, each providing a complete, observable capability for end‑users.
+FitQuest delivers an adaptive fitness experience that turns the body into a Biological Experiment. The roadmap is organized into five phases, each delivering a complete, observable capability for end‑users while supporting an extended 12‑month timeline.
 
 ## Phases
 | Phase | Goal (outcome) | Requirements (v1) | Success Criteria |
 |-------|-----------------|-------------------|------------------|
-| **1 – Core Onboarding & Basic Logging** | Users can successfully complete onboarding and record basic workouts using the mobile app and iWatch. | REQ-ON-01, REQ-ON-02, REQ-ON-03, REQ-MOB-01, REQ-MOB-02, REQ-MOB-03, REQ-MOB-04, REQ-WATCH-01, REQ-WATCH-02, REQ-WATCH-03 | 1. User completes onboarding, entering gender, weight, body composition and granting device access, and receives a calculated success probability. 2. User selects a “Physique Path” and sees it reflected in the UI. 3. User starts a workout (Express, Standard, or Limit Break) and sees the high‑contrast HUD. 4. User logs reps via voice command during the workout. 5. Watch records pace and Time‑Under‑Tension and issues a haptic cue before each set. |
-| **2 – Advanced Visuals & Adaptive Nudges** | Users gain richer feedback: AR form guidance, personalized nudges, and a web‑based 3D Digital Twin with partner collaboration features. | REQ-MOB-05, REQ-WATCH-04, REQ-WEB-01, REQ-WEB-02, REQ-WEB-03 | 1. User accesses the web Command Center and sees a 3D Digital Twin that evolves with logged workout data. 2. User views the Consistency Constellation star map, where each workout creates a star and gaps become “Black Holes.” 3. User opens the Shared Grid, sees partner power‑level, and receives an “Energy Boost” notification. 4. Mobile app provides an AR Form Mirror that offers real‑time skeletal tracking feedback during exercises. 5. Watch delivers an adaptive nudge when sleep < 6 h **and** heart‑rate is elevated, suggesting active recovery. |
+| **1 – Core Onboarding & Basic Logging** | Users can successfully complete onboarding and record basic workouts using the mobile app and iWatch. | REQ-ON-01, REQ-ON-02, REQ-ON-03, REQ-MOB-01, REQ-MOB-02, REQ-MOB-03, REQ-MOB-04, REQ-WATCH-01, REQ-WATCH-02, REQ-WATCH-03 | 1. User completes onboarding (gender, weight, body composition, device access) and receives a calculated success probability. 2. User selects a “Physique Path” and sees it reflected in the UI. 3. User starts a workout (Express, Standard, or Limit Break) and sees the high‑contrast HUD. 4. Voice logging works during workouts. 5. iWatch records pace and TUT and emits a haptic cue before each set. |
+| **2 – Social & Collaboration** | Users can engage with partners, share progress, and receive mutual motivation. | REQ-SOC-01, REQ-SOC-02, REQ-WEB-03 (Shared Grid) | 1. Partner can view each other's power level on the Shared Grid. 2. Users can send “Energy Boost” notifications. 3. Social feed shows partner activities. |
+| **3 – Advanced AI & Adaptive Nudges** | The AI continuously personalizes workouts and provides context‑aware nudges. | REQ-AI-01, REQ-AI-02, REQ-WATCH-04, REQ-MOB-05 (AR Form Mirror) | 1. Daily routine recalculation adjusts plans based on sleep, HR, and performance trends. 2. Failure‑rep analysis suggests weight reduction when failures exceed 20 % of volume. 3. Adaptive nudges trigger active‑recovery suggestions when sleep < 6 h AND HR high. |
+| **4 – AR Form Mirror & Real‑time Guidance** | Users receive on‑device skeletal tracking feedback to improve form. | REQ-MOB-05 (AR Form Mirror) | 1. AR overlay shows real‑time skeletal feedback during exercises. 2. Users receive corrective prompts when form deviates. |
+| **5 – Full 3‑D Digital Twin Visualization** | Users visualize their progress via a high‑fidelity 3‑D avatar and constellation map. | REQ-WEB-01, REQ-WEB-02, REQ-WEB-03 | 1. 3‑D Digital Twin evolves with logged workout data. 2. Consistency Constellation star map displays workouts (stars) and gaps (black holes). 3. Users can explore their avatar across all phases. |
 
 ## Dependencies
-- Phase 2 depends on completion of Phase 1 because the web dashboard and partner features require workout logs generated in Phase 1.
+- Phase 2 depends on Phase 1 (needs basic workout logs).
+- Phase 3 depends on Phase 2 (social data enriches AI).
+- Phase 4 depends on Phase 3 (AI‑driven form suggestions).
+- Phase 5 depends on Phases 1‑4 (full data set for visualization).
 
-## Progress Summary
-| Phase | Status |
-|-------|--------|
-| 1 – Core Onboarding & Basic Logging | Planned |
-| 2 – Advanced Visuals & Adaptive Nudges | Planned |
+## Additional Considerations
+- **Enterprise analytics integration** will be added across all phases to collect usage metrics.
+- **Extended timeline:** MVP (Phase 1) targeted for 6 months, full release (Phase 5) by 12 months.
 
 ---
-*Roadmap generated by Claude Code (GSD).*
+*Roadmap generated by Claude Code (GSD) using user‑provided priorities.*
