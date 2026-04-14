@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Nutrition Screen v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; --amber: #F59E0B; --indigo: #6366F1; --red: #EF4444; }
+
+  .page-head { text-align: center; padding: 28px 24px 8px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #555; margin-top: 4px; }
+
+  .layouts { display: flex; gap: 28px; padding: 16px 24px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .col-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0; }
+  .col-desc { text-align: center; font-size: 11px; color: #555; padding: 0 16px 12px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.02; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* ============================================================
+     D: THE JOURNAL — Daily log/diary style, handwritten feel
+     ============================================================ */
+  .col-d .col-label { color: var(--amber); }
+
+  .d-date-strip { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .d-date { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .d-cuisine { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .d-title { padding: 12px 24px 0; font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .d-subtitle { padding: 4px 24px 0; font-size: 13px; color: var(--rock); }
+
+  /* Macro notebook strip — looks like a torn page edge */
+  .d-macro-strip { margin: 16px 24px 0; padding: 16px 20px; background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); position: relative; }
+  .d-macro-strip::before { content: ''; position: absolute; left: 52px; top: 0; bottom: 0; width: 1px; background: rgba(239,68,68,0.08); }
+  .d-macro-row { display: flex; justify-content: space-between; align-items: center; padding: 4px 0; }
+  .d-macro-name { font-size: 13px; color: var(--rock); }
+  .d-macro-bar-wrap { flex: 1; margin: 0 16px; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .d-macro-bar { height: 100%; border-radius: 2px; }
+  .d-macro-val { font-size: 14px; font-weight: 700; color: var(--earth); min-width: 50px; text-align: right; }
+  .d-cal-row { display: flex; align-items: baseline; gap: 6px; margin-bottom: 10px; }
+  .d-cal-big { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .d-cal-unit { font-size: 12px; color: var(--rock); }
+
+  /* Meal entries — journal log style */
+  .d-entries { padding: 16px 24px; }
+  .d-entry-time { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+  .d-entry-time::after { content: ''; flex: 1; height: 1px; background: var(--stone); }
+
+  .d-entry { background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 10px; overflow: hidden; }
+  .d-entry-main { padding: 16px; display: flex; gap: 14px; align-items: center; }
+  .d-entry-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .d-entry-body { flex: 1; }
+  .d-entry-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .d-entry-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .d-entry-cal { text-align: right; flex-shrink: 0; }
+  .d-entry-cal .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .d-entry-cal .u { font-size: 9px; color: var(--rock); }
+
+  /* Swipe actions hint */
+  .d-entry-actions { display: flex; border-top: 1px solid var(--stone); }
+  .d-entry-act { flex: 1; padding: 10px; text-align: center; font-size: 10px; font-weight: 600; }
+  .d-entry-act:not(:last-child) { border-right: 1px solid var(--stone); }
+  .d-act-recipe { color: var(--earth); }
+  .d-act-swap { color: var(--trail); }
+  .d-act-out { color: var(--amber); }
+  .d-act-nah { color: #AEAEB2; }
+
+  .d-grocery { margin: 8px 24px 40px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; align-items: center; justify-content: space-between; }
+  .d-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .d-grocery .s { font-size: 11px; color: rgba(246,245,240,0.4); }
+  .d-grocery .arr { color: rgba(246,245,240,0.3); font-size: 18px; }
+
+
+  /* ============================================================
+     E: THE STACK — Full-screen swipeable meal cards
+     ============================================================ */
+  .col-e .col-label { color: var(--indigo); }
+
+  .e-header { padding: 54px 24px 0; }
+  .e-ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .e-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* Macro pills inline */
+  .e-macros { display: flex; gap: 6px; padding: 14px 24px 0; flex-wrap: wrap; }
+  .e-pill { padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .e-pill .dot { width: 6px; height: 6px; border-radius: 50%; }
+  .e-pill.cal { background: var(--earth); color: var(--sand); }
+  .e-pill.p { background: rgba(52,211,153,0.08); color: #059669; }
+  .e-pill.c { background: rgba(245,158,11,0.08); color: #B45309; }
+  .e-pill.f { background: rgba(129,140,248,0.08); color: #4F46E5; }
+
+  /* Stacked meal cards — like a deck, top card is fully visible */
+  .e-stack { position: relative; height: 440px; margin: 20px 24px 0; }
+
+  .e-card { position: absolute; left: 0; right: 0; border-radius: 24px; overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e-card:nth-child(1) { top: 0; z-index: 4; box-shadow: 0 4px 24px rgba(0,0,0,0.06); }
+  .e-card:nth-child(2) { top: 10px; z-index: 3; transform: scale(0.97); opacity: 0.7; }
+  .e-card:nth-child(3) { top: 20px; z-index: 2; transform: scale(0.94); opacity: 0.4; }
+  .e-card:nth-child(4) { top: 28px; z-index: 1; transform: scale(0.91); opacity: 0.2; }
+
+  /* Top card content */
+  .e-card-hero { height: 160px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .e-card-hero .bg { position: absolute; inset: 0; opacity: 0.06; }
+  .e-card-hero .emoji { font-size: 64px; position: relative; z-index: 1; }
+  .e-card-hero .meal-label { position: absolute; top: 16px; left: 16px; font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; background: rgba(246,245,240,0.8); padding: 4px 10px; border-radius: 100px; z-index: 2; }
+  .e-card-hero .cal-badge { position: absolute; top: 16px; right: 16px; font-size: 16px; font-weight: 800; color: var(--earth); background: rgba(246,245,240,0.8); padding: 6px 12px; border-radius: 100px; z-index: 2; }
+  .e-card-hero .cal-badge span { font-size: 10px; font-weight: 500; color: var(--rock); }
+
+  .e-card-body { padding: 18px; }
+  .e-card-name { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .e-card-desc { font-size: 12px; color: var(--rock); margin-top: 4px; line-height: 1.4; }
+
+  .e-card-macro-row { display: flex; gap: 8px; margin-top: 14px; }
+  .e-card-macro { flex: 1; padding: 10px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .e-card-macro .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .e-card-macro .l { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .e-card-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .e-card-btn { flex: 1; padding: 12px; border-radius: 14px; text-align: center; font-size: 12px; font-weight: 600; }
+  .e-card-btn.recipe { background: var(--earth); color: var(--sand); }
+  .e-card-btn.swap { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .e-card-btn.eatout { background: rgba(245,158,11,0.08); color: var(--amber); }
+
+  /* Swipe hint */
+  .e-swipe { text-align: center; margin-top: 16px; }
+  .e-swipe span { font-size: 10px; color: var(--rock); background: var(--stone); padding: 6px 14px; border-radius: 100px; }
+
+  .e-grocery { margin: 16px 24px 40px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; align-items: center; justify-content: space-between; }
+  .e-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .e-grocery .s { font-size: 11px; color: rgba(246,245,240,0.4); }
+  .e-grocery .arr { color: rgba(246,245,240,0.3); font-size: 18px; }
+
+
+  /* ============================================================
+     F: THE TIMELINE — Horizontal day timeline with vertical meals
+     ============================================================ */
+  .col-f .col-label { color: var(--trail); }
+
+  .f-header { padding: 54px 24px 0; }
+  .f-ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .f-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* Horizontal time ruler */
+  .f-ruler { margin: 18px 0 0; padding: 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .f-ruler::-webkit-scrollbar { display: none; }
+  .f-ruler-inner { display: flex; align-items: flex-end; gap: 0; min-width: 600px; position: relative; height: 56px; }
+
+  .f-hour { width: 40px; text-align: center; position: relative; flex-shrink: 0; }
+  .f-hour-label { font-size: 8px; color: #AEAEB2; font-weight: 500; }
+  .f-hour-tick { width: 1px; height: 12px; background: #DDD9CE; margin: 4px auto 0; }
+
+  .f-meal-mark { position: absolute; bottom: 0; display: flex; flex-direction: column; align-items: center; }
+  .f-meal-dot { width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; }
+  .f-meal-dot.bk { background: rgba(245,158,11,0.15); }
+  .f-meal-dot.lu { background: rgba(52,211,153,0.15); }
+  .f-meal-dot.sn { background: rgba(129,140,248,0.15); }
+  .f-meal-dot.di { background: rgba(239,68,68,0.15); }
+  .f-meal-line { width: 2px; height: 24px; }
+  .f-meal-line.bk { background: var(--amber); }
+  .f-meal-line.lu { background: var(--trail); }
+  .f-meal-line.sn { background: var(--indigo); }
+  .f-meal-line.di { background: var(--red); }
+
+  /* Macro bento */
+  .f-bento { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; padding: 16px 24px; }
+  .f-bw { border-radius: 16px; padding: 12px; text-align: center; }
+  .f-bw.dark { background: var(--earth); }
+  .f-bw.stone { background: var(--stone); }
+  .f-bw .v { font-size: 20px; font-weight: 800; }
+  .f-bw.dark .v { color: var(--sand); }
+  .f-bw.stone .v { color: var(--earth); }
+  .f-bw .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .f-bw.dark .l { color: rgba(246,245,240,0.35); }
+  .f-bw.stone .l { color: var(--rock); }
+
+  /* Meal blocks — color-coded left border */
+  .f-meals { padding: 0 24px; }
+  .f-section-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 12px; margin-bottom: 8px; }
+
+  .f-meal { background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+  .f-meal::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+  .f-meal.bk::before { background: var(--amber); }
+  .f-meal.lu::before { background: var(--trail); }
+  .f-meal.sn::before { background: var(--indigo); }
+  .f-meal.di::before { background: var(--red); }
+
+  .f-meal-icon { font-size: 20px; flex-shrink: 0; }
+  .f-meal-info { flex: 1; }
+  .f-meal-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .f-meal-meta { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .f-meal-cal { font-size: 16px; font-weight: 800; color: var(--earth); flex-shrink: 0; }
+  .f-meal-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Action pills on tap */
+  .f-meal-pills { display: flex; gap: 4px; margin-top: 6px; }
+  .f-mp { padding: 4px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .f-mp.recipe { background: var(--stone); color: var(--earth); }
+  .f-mp.swap { background: rgba(52,211,153,0.06); color: var(--trail); }
+  .f-mp.out { background: rgba(245,158,11,0.06); color: var(--amber); }
+
+  .f-grocery { margin: 12px 24px 40px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; align-items: center; justify-content: space-between; }
+  .f-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .f-grocery .s { font-size: 11px; color: rgba(246,245,240,0.4); }
+  .f-grocery .arr { color: rgba(246,245,240,0.3); font-size: 18px; }
+
+  .vote { display: flex; gap: 10px; justify-content: center; padding: 24px; flex-wrap: wrap; }
+  .vote-btn { padding: 12px 22px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.06); background: transparent; color: rgba(255,255,255,0.5); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .vote-btn:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Nutrition Screen — 3 More Layouts</h1>
+  <p>D, E, F — completely different structures from A, B, C.</p>
+</div>
+
+<div class="layouts">
+
+  <!-- ===== D: THE JOURNAL ===== -->
+  <div class="col col-d">
+    <div class="col-label" style="color:#F59E0B;">D — The Journal</div>
+    <div class="col-desc">Daily food log style. Big calorie number up top, meals organized by time of day with a notebook feel. Action bar on each entry.</div>
+    <div class="phone">
+      <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+      <div class="ps"><div class="cnt">
+
+        <div class="d-date-strip">
+          <span class="d-date">Wednesday, Mar 19</span>
+          <span class="d-cuisine">🍽️ Cuisines</span>
+        </div>
+
+        <div class="d-title">Today's Fuel</div>
+        <div class="d-subtitle">4 meals · 2,180 kcal target</div>
+
+        <div class="d-macro-strip">
+          <div class="d-cal-row"><span class="d-cal-big">2,180</span><span class="d-cal-unit">kcal daily target</span></div>
+          <div class="d-macro-row">
+            <span class="d-macro-name">Protein</span>
+            <div class="d-macro-bar-wrap"><div class="d-macro-bar" style="width:75%;background:#34D399;"></div></div>
+            <span class="d-macro-val">165g</span>
+          </div>
+          <div class="d-macro-row">
+            <span class="d-macro-name">Carbs</span>
+            <div class="d-macro-bar-wrap"><div class="d-macro-bar" style="width:60%;background:#F59E0B;"></div></div>
+            <span class="d-macro-val">245g</span>
+          </div>
+          <div class="d-macro-row">
+            <span class="d-macro-name">Fat</span>
+            <div class="d-macro-bar-wrap"><div class="d-macro-bar" style="width:55%;background:#818CF8;"></div></div>
+            <span class="d-macro-val">72g</span>
+          </div>
+        </div>
+
+        <div class="d-entries">
+          <div class="d-entry-time">🌅 Breakfast · 8 AM</div>
+          <div class="d-entry">
+            <div class="d-entry-main">
+              <div class="d-entry-icon" style="background:rgba(245,158,11,0.08);">🥣</div>
+              <div class="d-entry-body">
+                <div class="d-entry-name">Greek Yogurt Power Bowl</div>
+                <div class="d-entry-macros">35g P · 42g C · 12g F</div>
+              </div>
+              <div class="d-entry-cal"><div class="v">520</div><div class="u">kcal</div></div>
+            </div>
+            <div class="d-entry-actions">
+              <div class="d-entry-act d-act-recipe">Recipe</div>
+              <div class="d-entry-act d-act-swap">Swap</div>
+              <div class="d-entry-act d-act-out">Eat Out</div>
+              <div class="d-entry-act d-act-nah">Nah</div>
+            </div>
+          </div>
+
+          <div class="d-entry-time">☀️ Lunch · 12 PM</div>
+          <div class="d-entry">
+            <div class="d-entry-main">
+              <div class="d-entry-icon" style="background:rgba(52,211,153,0.08);">🍗</div>
+              <div class="d-entry-body">
+                <div class="d-entry-name">Grilled Chicken & Rice</div>
+                <div class="d-entry-macros">45g P · 55g C · 14g F</div>
+              </div>
+              <div class="d-entry-cal"><div class="v">680</div><div class="u">kcal</div></div>
+            </div>
+            <div class="d-entry-actions">
+              <div class="d-entry-act d-act-recipe">Recipe</div>
+              <div class="d-entry-act d-act-swap">Swap</div>
+              <div class="d-entry-act d-act-out">Eat Out</div>
+              <div class="d-entry-act d-act-nah">Nah</div>
+            </div>
+          </div>
+
+          <div class="d-entry-time">🌙 Dinner · 7 PM</div>
+          <div class="d-entry">
+            <div class="d-entry-main">
+              <div class="d-entry-icon" style="background:rgba(129,140,248,0.08);">🐟</div>
+              <div class="d-entry-body">
+                <div class="d-entry-name">Salmon & Sweet Potato</div>
+                <div class="d-entry-macros">48g P · 62g C · 22g F</div>
+              </div>
+              <div class="d-entry-cal"><div class="v">720</div><div class="u">kcal</div></div>
+            </div>
+            <div class="d-entry-actions">
+              <div class="d-entry-act d-act-recipe">Recipe</div>
+              <div class="d-entry-act d-act-swap">Swap</div>
+              <div class="d-entry-act d-act-out">Eat Out</div>
+              <div class="d-entry-act d-act-nah">Nah</div>
+            </div>
+          </div>
+
+          <div class="d-entry-time">🍎 Snack · 4 PM</div>
+          <div class="d-entry">
+            <div class="d-entry-main">
+              <div class="d-entry-icon" style="background:rgba(239,68,68,0.08);">🥤</div>
+              <div class="d-entry-body">
+                <div class="d-entry-name">Protein Shake & Almonds</div>
+                <div class="d-entry-macros">37g P · 18g C · 14g F</div>
+              </div>
+              <div class="d-entry-cal"><div class="v">260</div><div class="u">kcal</div></div>
+            </div>
+            <div class="d-entry-actions">
+              <div class="d-entry-act d-act-recipe">Recipe</div>
+              <div class="d-entry-act d-act-swap">Swap</div>
+              <div class="d-entry-act d-act-out">Eat Out</div>
+              <div class="d-entry-act d-act-nah">Nah</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+      </div></div>
+    </div>
+    <div class="col-desc">Notebook macro strip with red margin line. Time-stamped meal entries. 4-button action bar (Recipe / Swap / Eat Out / Nah). Clean vertical flow.</div>
+  </div>
+
+  <!-- ===== E: THE STACK ===== -->
+  <div class="col col-e">
+    <div class="col-label" style="color:#818CF8;">E — The Stack</div>
+    <div class="col-desc">Full-screen swipeable meal cards stacked like a deck. One meal at a time, hero image, big macro grid, action buttons. Tinder for meals.</div>
+    <div class="phone">
+      <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+      <div class="ps"><div class="cnt">
+
+        <div class="e-header">
+          <div class="e-ctx">Wednesday · Nutrition</div>
+          <div class="e-title">Today's Fuel</div>
+        </div>
+
+        <div class="e-macros">
+          <span class="e-pill cal">2,180 kcal</span>
+          <span class="e-pill p"><span class="dot" style="background:#34D399;"></span>165g P</span>
+          <span class="e-pill c"><span class="dot" style="background:#F59E0B;"></span>245g C</span>
+          <span class="e-pill f"><span class="dot" style="background:#818CF8;"></span>72g F</span>
+        </div>
+
+        <div class="e-stack">
+          <!-- Card 1: Breakfast (top) -->
+          <div class="e-card">
+            <div class="e-card-hero">
+              <div class="bg" style="background:#F59E0B;"></div>
+              <span class="meal-label">Breakfast</span>
+              <span class="cal-badge">520 <span>kcal</span></span>
+              <div class="emoji">🥣</div>
+            </div>
+            <div class="e-card-body">
+              <div class="e-card-name">Greek Yogurt Power Bowl</div>
+              <div class="e-card-desc">Creamy Greek yogurt layered with berries, granola, honey, and chia seeds.</div>
+              <div class="e-card-macro-row">
+                <div class="e-card-macro"><div class="v">35g</div><div class="l">Protein</div></div>
+                <div class="e-card-macro"><div class="v">42g</div><div class="l">Carbs</div></div>
+                <div class="e-card-macro"><div class="v">12g</div><div class="l">Fat</div></div>
+              </div>
+              <div class="e-card-actions">
+                <span class="e-card-btn recipe">Recipe</span>
+                <span class="e-card-btn swap">Swap</span>
+                <span class="e-card-btn eatout">Eat Out</span>
+              </div>
+            </div>
+          </div>
+          <!-- Card 2: Lunch (behind) -->
+          <div class="e-card">
+            <div class="e-card-hero" style="height:80px;">
+              <div class="bg" style="background:#34D399;"></div>
+              <div class="emoji" style="font-size:36px;">🍗</div>
+            </div>
+          </div>
+          <!-- Card 3: Dinner -->
+          <div class="e-card"><div class="e-card-hero" style="height:60px;"><div class="bg" style="background:#818CF8;"></div></div></div>
+          <!-- Card 4: Snack -->
+          <div class="e-card"><div class="e-card-hero" style="height:40px;"><div class="bg" style="background:#EF4444;"></div></div></div>
+        </div>
+
+        <div class="e-swipe"><span>Swipe left/right to browse meals</span></div>
+
+        <div class="e-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+      </div></div>
+    </div>
+    <div class="col-desc">One meal fills the screen with a hero area, description, macro grid, and actions. Stacked deck behind shows meal count. Swipe to next. Most immersive experience.</div>
+  </div>
+
+  <!-- ===== F: THE TIMELINE ===== -->
+  <div class="col col-f">
+    <div class="col-label" style="color:#34D399;">F — The Timeline</div>
+    <div class="col-desc">Horizontal time ruler at top showing when meals happen. Color-coded meal blocks with left accent borders. Compact 4-widget macro bento.</div>
+    <div class="phone">
+      <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+      <div class="ps"><div class="cnt">
+
+        <div class="f-header">
+          <div class="f-ctx">Wednesday · Nutrition</div>
+          <div class="f-title">Today's Fuel</div>
+        </div>
+
+        <!-- Time ruler -->
+        <div class="f-ruler">
+          <div class="f-ruler-inner">
+            <div class="f-hour"><div class="f-hour-label">6</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">7</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour" style="position:relative;">
+              <div class="f-hour-label">8</div><div class="f-hour-tick"></div>
+              <div class="f-meal-mark" style="bottom:20px;"><div class="f-meal-line bk"></div><div class="f-meal-dot bk">🌅</div></div>
+            </div>
+            <div class="f-hour"><div class="f-hour-label">9</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">10</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">11</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour" style="position:relative;">
+              <div class="f-hour-label">12</div><div class="f-hour-tick"></div>
+              <div class="f-meal-mark" style="bottom:20px;"><div class="f-meal-line lu"></div><div class="f-meal-dot lu">☀️</div></div>
+            </div>
+            <div class="f-hour"><div class="f-hour-label">1</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">2</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">3</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour" style="position:relative;">
+              <div class="f-hour-label">4</div><div class="f-hour-tick"></div>
+              <div class="f-meal-mark" style="bottom:20px;"><div class="f-meal-line sn"></div><div class="f-meal-dot sn">🍎</div></div>
+            </div>
+            <div class="f-hour"><div class="f-hour-label">5</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour"><div class="f-hour-label">6</div><div class="f-hour-tick"></div></div>
+            <div class="f-hour" style="position:relative;">
+              <div class="f-hour-label">7</div><div class="f-hour-tick"></div>
+              <div class="f-meal-mark" style="bottom:20px;"><div class="f-meal-line di"></div><div class="f-meal-dot di">🌙</div></div>
+            </div>
+            <div class="f-hour"><div class="f-hour-label">8</div><div class="f-hour-tick"></div></div>
+          </div>
+        </div>
+
+        <!-- Macro bento -->
+        <div class="f-bento">
+          <div class="f-bw dark"><div class="v">2,180</div><div class="l">kcal</div></div>
+          <div class="f-bw stone"><div class="v">165g</div><div class="l">Protein</div></div>
+          <div class="f-bw stone"><div class="v">245g</div><div class="l">Carbs</div></div>
+          <div class="f-bw stone"><div class="v">72g</div><div class="l">Fat</div></div>
+        </div>
+
+        <!-- Meals -->
+        <div class="f-meals">
+          <div class="f-section-label">Breakfast · 8 AM</div>
+          <div class="f-meal bk">
+            <div class="f-meal-icon">🥣</div>
+            <div class="f-meal-info">
+              <div class="f-meal-name">Greek Yogurt Power Bowl</div>
+              <div class="f-meal-meta">35g P · 42g C · 12g F</div>
+              <div class="f-meal-pills">
+                <span class="f-mp recipe">Recipe</span>
+                <span class="f-mp swap">Swap</span>
+                <span class="f-mp out">Eat Out</span>
+              </div>
+            </div>
+            <div class="f-meal-cal">520<span> kcal</span></div>
+          </div>
+
+          <div class="f-section-label">Lunch · 12 PM</div>
+          <div class="f-meal lu">
+            <div class="f-meal-icon">🍗</div>
+            <div class="f-meal-info">
+              <div class="f-meal-name">Grilled Chicken & Rice</div>
+              <div class="f-meal-meta">45g P · 55g C · 14g F</div>
+              <div class="f-meal-pills">
+                <span class="f-mp recipe">Recipe</span>
+                <span class="f-mp swap">Swap</span>
+                <span class="f-mp out">Eat Out</span>
+              </div>
+            </div>
+            <div class="f-meal-cal">680<span> kcal</span></div>
+          </div>
+
+          <div class="f-section-label">Snack · 4 PM</div>
+          <div class="f-meal sn">
+            <div class="f-meal-icon">🥤</div>
+            <div class="f-meal-info">
+              <div class="f-meal-name">Protein Shake & Almonds</div>
+              <div class="f-meal-meta">37g P · 18g C · 14g F</div>
+              <div class="f-meal-pills">
+                <span class="f-mp recipe">Recipe</span>
+                <span class="f-mp swap">Swap</span>
+              </div>
+            </div>
+            <div class="f-meal-cal">260<span> kcal</span></div>
+          </div>
+
+          <div class="f-section-label">Dinner · 7 PM</div>
+          <div class="f-meal di">
+            <div class="f-meal-icon">🐟</div>
+            <div class="f-meal-info">
+              <div class="f-meal-name">Salmon & Sweet Potato</div>
+              <div class="f-meal-meta">48g P · 62g C · 22g F</div>
+              <div class="f-meal-pills">
+                <span class="f-mp recipe">Recipe</span>
+                <span class="f-mp swap">Swap</span>
+                <span class="f-mp out">Eat Out</span>
+              </div>
+            </div>
+            <div class="f-meal-cal">720<span> kcal</span></div>
+          </div>
+        </div>
+
+        <div class="f-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+      </div></div>
+    </div>
+    <div class="col-desc">Scrollable time ruler shows meal timing across the day. Color-coded left borders per meal type (amber=breakfast, green=lunch, indigo=snack, red=dinner). Inline action pills. 4-column macro bento.</div>
+  </div>
+
+</div>
+
+<div class="vote">
+  <button class="vote-btn" onclick="pick('D')">D — Journal</button>
+  <button class="vote-btn" onclick="pick('E')">E — Stack</button>
+  <button class="vote-btn" onclick="pick('F')">F — Timeline</button>
+  <button class="vote-btn" onclick="pick('Mix')">Mix Elements</button>
+</div>
+
+<script>
+function pick(c) {
+  document.querySelectorAll('.vote-btn').forEach(b => { b.style.opacity='0.3'; b.style.borderColor='rgba(255,255,255,0.06)'; b.style.color='rgba(255,255,255,0.3)'; });
+  event.target.style.opacity='1'; event.target.style.borderColor='#34D399'; event.target.style.color='#34D399';
+}
+</script>
+
+</body>
+</html>

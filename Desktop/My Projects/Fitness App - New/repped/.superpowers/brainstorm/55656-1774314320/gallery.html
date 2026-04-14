@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Full Design Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #0a0a0f; color: #fff; }
+
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10,10,15,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    padding: 14px 24px; display: flex; align-items: center; gap: 12px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-title { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; margin-right: 8px; flex-shrink: 0; }
+  .nav-btn {
+    padding: 8px 16px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08);
+    background: transparent; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600;
+    cursor: pointer; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0;
+  }
+  .nav-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+  .nav-btn.active { background: #fff; color: #0a0a0f; border-color: #fff; }
+
+  .section {
+    min-height: 100vh; padding: 80px 24px 60px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    display: none;
+  }
+  .section.visible { display: block; }
+
+  .section-head { margin-bottom: 24px; }
+  .section-num { font-size: 11px; font-weight: 700; color: #818CF8; text-transform: uppercase; letter-spacing: 1.5px; }
+  .section-title { font-size: 28px; font-weight: 700; color: #fff; margin-top: 4px; letter-spacing: -0.5px; }
+  .section-desc { font-size: 14px; color: #555; margin-top: 6px; max-width: 700px; line-height: 1.5; }
+
+  iframe {
+    width: 100%; border: none; border-radius: 16px;
+    background: #111; min-height: calc(100vh - 200px);
+  }
+
+  /* Show All mode */
+  .show-all .section { display: block !important; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-title">Repped Designs</div>
+  <button class="nav-btn active" onclick="show('all')">All</button>
+  <button class="nav-btn" onclick="show('s1')">1 — Three Directions</button>
+  <button class="nav-btn" onclick="show('s2')">2 — Living Organism v2</button>
+  <button class="nav-btn" onclick="show('s3')">3 — Radical Layouts</button>
+  <button class="nav-btn" onclick="show('s4')">4 — Magnetic Personal</button>
+</div>
+
+<div id="container" class="show-all">
+
+  <div class="section visible" id="s1">
+    <div class="section-head">
+      <div class="section-num">Mockup 1</div>
+      <div class="section-title">Three Directions — A / B / C</div>
+      <div class="section-desc">Same Home Screen in 3 styles. A = Refined & Minimal (ease-out, shimmer, counting). B = Bold & Expressive (spotlight cards, gradient header, glowing badges). C = Playful & Energetic (bouncy springs, confetti, streak flames, heatmap pop).</div>
+    </div>
+    <iframe src="all-three-directions.html" style="height: 900px;"></iframe>
+  </div>
+
+  <div class="section visible" id="s2">
+    <div class="section-head">
+      <div class="section-num">Mockup 2</div>
+      <div class="section-title">Living Organism v2</div>
+      <div class="section-desc">Deep dive into Direction D. Unified heartbeat rhythm, bioluminescent stat orbs, cellular progress with mitosis animation, muscle fiber icons, living card borders, membrane background blobs, organic readiness ring.</div>
+    </div>
+    <iframe src="living-organism-v2.html" style="height: 1050px;"></iframe>
+  </div>
+
+  <div class="section visible" id="s3">
+    <div class="section-head">
+      <div class="section-num">Mockup 3</div>
+      <div class="section-title">Radical Layouts</div>
+      <div class="section-desc">3 completely different spatial structures. Orbit = radial command center with orbiting stat satellites. Terrain = week as a mountain range with trail waypoints. Bento = asymmetric magazine grid with stacked exercise cards.</div>
+    </div>
+    <iframe src="radical-layouts.html" style="height: 1050px;"></iframe>
+  </div>
+
+  <div class="section visible" id="s4">
+    <div class="section-head">
+      <div class="section-num">Mockup 4</div>
+      <div class="section-title">Magnetic Personal</div>
+      <div class="section-desc">The merged concept: Living Organism aesthetic + Bento layout + deep personalization. Data-driven daily messages, streak as identity (72px dominant), nudge card referencing last session, everything breathes on a shared heartbeat.</div>
+    </div>
+    <iframe src="magnetic-personal.html" style="height: 1050px;"></iframe>
+  </div>
+
+</div>
+
+<script>
+function show(id) {
+  const container = document.getElementById('container');
+  const btns = document.querySelectorAll('.nav-btn');
+  btns.forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+
+  if (id === 'all') {
+    container.classList.add('show-all');
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    return;
+  }
+
+  container.classList.remove('show-all');
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.getElementById(id).classList.add('visible');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

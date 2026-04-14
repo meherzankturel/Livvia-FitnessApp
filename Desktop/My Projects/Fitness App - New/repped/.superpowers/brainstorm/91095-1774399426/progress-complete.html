@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Complete Progress Screen</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); overflow-x: hidden; }
+  .ps { overflow-x: hidden; }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .sec { padding: 18px 24px 0; }
+  .sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .divider { height: 1px; background: var(--stone); margin: 16px 24px 0; }
+
+
+  /* ===== 1. HEADER ===== */
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center; padding: 48px 24px 0; }
+  .title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; text-align: center; margin-top: 2px; }
+
+  /* Tighter ring spacing */
+
+
+  /* ===== 2. V4 HERO — TRIPLE RINGS + PULSE BREATHING + MESSAGE ===== */
+  .rings-area { display: flex; justify-content: center; padding: 10px 0 4px; }
+  .rc { width: 150px; height: 150px; position: relative; }
+  .rc svg { position: absolute; inset: 0; }
+
+  .ro { width: 150px; height: 150px; animation: rp1 2.4s ease-in-out infinite; }
+  .rot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .rof { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 415; stroke-dashoffset: 415; animation: rf1 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes rf1 { to { stroke-dashoffset: 104; } }
+  @keyframes rp1 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.03); } }
+
+  .rm { width: 114px; height: 114px; position: absolute; top: 18px; left: 18px; animation: rp2 2.4s ease-in-out infinite 0.4s; }
+  .rmt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .rmf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 302; stroke-dashoffset: 302; animation: rf2 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes rf2 { to { stroke-dashoffset: 60; } }
+  @keyframes rp2 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.025); } }
+
+  .ri { width: 78px; height: 78px; position: absolute; top: 36px; left: 36px; animation: rp3 2.4s ease-in-out infinite 0.8s; }
+  .rit { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .rif { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 192; stroke-dashoffset: 192; animation: rf3 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes rf3 { to { stroke-dashoffset: 67; } }
+  @keyframes rp3 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.02); } }
+
+  .bdot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { opacity: 0.15; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.45; transform: translate(-50%,-50%) scale(1.3); } }
+
+  .msg { text-align: center; padding: 0 28px; margin-top: 8px; }
+  .msg-text { font-size: 16px; font-weight: 600; color: var(--earth); letter-spacing: -0.3px; line-height: 1.4; }
+  .msg-hl { color: var(--trail); }
+
+  .legend { display: flex; justify-content: center; gap: 10px; margin-top: 12px; }
+  .leg { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 10px; }
+  .leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .ld { width: 6px; height: 6px; border-radius: 50%; }
+  .leg:nth-child(1) .ld { background: var(--trail); }
+  .leg:nth-child(2) .ld { background: var(--earth); opacity: 0.25; }
+  .leg:nth-child(3) .ld { background: #F59E0B; opacity: 0.4; }
+  .lv { font-size: 13px; font-weight: 800; color: var(--earth); }
+  .ll { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ===== 2.5 T1 COLLECTIBLE ACHIEVEMENT CARDS ===== */
+  .ach-head { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-bottom: 8px; }
+  .ach-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ach-more { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .ach-scroll { display: flex; gap: 10px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .ach-scroll::-webkit-scrollbar { display: none; }
+
+  .ach-card {
+    min-width: 100px; border-radius: 18px; flex-shrink: 0; overflow: hidden;
+    cursor: pointer; transition: transform 0.2s; position: relative;
+  }
+  .ach-card:active { transform: scale(0.95); }
+  .ach-card.c1 { background: linear-gradient(160deg, rgba(52,211,153,0.08), rgba(52,211,153,0.02)); border: 1px solid rgba(52,211,153,0.08); }
+  .ach-card.c2 { background: linear-gradient(160deg, rgba(245,158,11,0.08), rgba(245,158,11,0.02)); border: 1px solid rgba(245,158,11,0.06); }
+  .ach-card.c3 { background: linear-gradient(160deg, rgba(129,140,248,0.08), rgba(129,140,248,0.02)); border: 1px solid rgba(129,140,248,0.06); }
+  .ach-card.c4 { background: linear-gradient(160deg, rgba(239,68,68,0.06), rgba(239,68,68,0.01)); border: 1px solid rgba(239,68,68,0.04); }
+  .ach-card.locked { background: var(--stone); border: 1px solid rgba(0,0,0,0.02); opacity: 0.4; }
+
+  .ach-inner { padding: 14px 12px; text-align: center; }
+  .ach-new { position: absolute; top: 8px; right: 8px; padding: 2px 6px; border-radius: 100px; background: var(--trail); font-size: 7px; font-weight: 700; color: #fff; letter-spacing: 0.3px; }
+  .ach-icon { font-size: 28px; }
+  .ach-name { font-size: 10px; font-weight: 700; color: var(--earth); margin-top: 8px; line-height: 1.2; }
+  .ach-card.locked .ach-name { color: var(--rock); }
+
+  .ach-tier { display: flex; gap: 2px; margin-top: 8px; justify-content: center; }
+  .ach-td { width: 14px; height: 3px; border-radius: 2px; }
+  .ach-card.c1 .ach-td { background: rgba(52,211,153,0.15); }
+  .ach-card.c1 .ach-td.filled { background: var(--trail); }
+  .ach-card.c2 .ach-td { background: rgba(245,158,11,0.1); }
+  .ach-card.c2 .ach-td.filled { background: #F59E0B; opacity: 0.6; }
+  .ach-card.c3 .ach-td { background: rgba(129,140,248,0.1); }
+  .ach-card.c3 .ach-td.filled { background: #818CF8; opacity: 0.5; }
+  .ach-card.c4 .ach-td { background: rgba(239,68,68,0.08); }
+  .ach-card.c4 .ach-td.filled { background: #EF4444; opacity: 0.4; }
+  .ach-card.locked .ach-td { background: rgba(45,42,36,0.06); }
+
+  .ach-date { font-size: 7px; color: var(--rock); margin-top: 6px; }
+  .ach-card.locked .ach-date { opacity: 0.5; }
+
+
+  /* ===== 3. G4 CONTRIBUTION GRAPH ===== */
+  .heat-wrap { padding: 0 24px; }
+  .heat-top { display: flex; gap: 5px; }
+  .heat-days { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .hd { font-size: 7px; color: var(--rock); font-weight: 600; height: 20px; display: flex; align-items: center; }
+  .heat-grid { flex: 1; display: grid; grid-template-columns: repeat(15, 1fr); gap: 2px; }
+  .heat-col { display: flex; flex-direction: column; gap: 2px; }
+  .hc { width: 100%; aspect-ratio: 1; border-radius: 3px; }
+  .hc.l0 { background: var(--stone); }
+  .hc.l1 { background: rgba(45,42,36,0.08); }
+  .hc.l2 { background: rgba(45,42,36,0.2); }
+  .hc.l3 { background: var(--earth); }
+  .hc.today { background: var(--trail); }
+  .heat-legend { display: flex; gap: 6px; align-items: center; justify-content: flex-end; margin-top: 8px; padding: 0 24px; }
+  .hl-label { font-size: 8px; color: var(--rock); }
+  .hl-dots { display: flex; gap: 2px; }
+  .hl-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+
+  /* ===== 4. WEIGHT (Infographic) ===== */
+  .weight { display: flex; align-items: center; gap: 16px; }
+  .w-left {}
+  .w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .w-val { font-size: 40px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; margin-top: 2px; display: flex; align-items: baseline; gap: 4px; }
+  .w-unit { font-size: 16px; color: var(--rock); font-weight: 500; letter-spacing: 0; }
+  .w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .w-btn { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; margin-top: 4px; }
+  .w-chart { flex: 1; height: 50px; }
+  .w-chart svg { width: 100%; height: 100%; }
+  .wc-area { opacity: 0.04; }
+  .wc-line { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; opacity: 0.15; }
+
+
+  /* ===== 5. 1RM BAR CHART (scrollable) ===== */
+  .rm-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; }
+  .rm-scroll { overflow-x: auto; scrollbar-width: none; margin: 0 -24px; padding: 0 24px; }
+  .rm-scroll::-webkit-scrollbar { display: none; }
+  .rm-inner { min-width: 100%; }
+  .rm-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .rm-name { font-size: 11px; color: var(--rock); font-weight: 500; width: 50px; flex-shrink: 0; }
+  .rm-bar-track { flex: 1; height: 8px; border-radius: 4px; background: var(--stone); overflow: hidden; }
+  .rm-bar-fill { height: 100%; border-radius: 4px; }
+  .rm-row:nth-child(1) .rm-bar-fill { background: var(--trail); width: 53%; }
+  .rm-row:nth-child(2) .rm-bar-fill { background: var(--earth); opacity: 0.3; width: 67%; }
+  .rm-row:nth-child(3) .rm-bar-fill { background: var(--earth); opacity: 0.3; width: 80%; }
+  .rm-row:nth-child(4) .rm-bar-fill { background: var(--earth); opacity: 0.15; width: 33%; }
+  .rm-val { font-size: 14px; font-weight: 800; color: var(--earth); width: 44px; text-align: right; flex-shrink: 0; }
+  .rm-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+
+  /* ===== 6. VOLUME (Infographic) ===== */
+  .vol { display: flex; align-items: center; justify-content: space-between; }
+  .vol-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .vol-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .vol-bars { display: flex; gap: 3px; align-items: flex-end; height: 32px; }
+  .vb { width: 8px; border-radius: 3px; background: var(--stone); }
+  .vb.a { background: var(--trail); opacity: 0.3; }
+
+
+  /* ===== 7. P3 SWIPEABLE PR CARDS ===== */
+  .pr-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .pr-scroll::-webkit-scrollbar { display: none; }
+  .pr-card { min-width: 140px; padding: 16px; border-radius: 16px; flex-shrink: 0; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .pr-icon { font-size: 18px; }
+  .pr-name { font-size: 11px; color: #047857; font-weight: 600; margin-top: 8px; }
+  .pr-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .pr-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .pr-type { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+
+  /* ===== 8. P2 INLINE MEASUREMENTS ===== */
+  .meas-row { display: flex; gap: 0; padding: 0 24px; }
+  .m { flex: 1; text-align: center; padding: 10px 0; position: relative; }
+  .m::after { content: ''; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background: var(--stone); }
+  .m:last-child::after { display: none; }
+  .m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ===== 9. QUICK LINKS ===== */
+  .links { display: flex; gap: 8px; padding: 18px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <!-- 1. HEADER -->
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+
+    <!-- 2. V4 HERO — TRIPLE RINGS + PULSE BREATHING + MESSAGE -->
+    <div class="rings-area"><div class="rc">
+      <svg class="ro" viewBox="0 0 150 150"><circle class="rot" cx="75" cy="75" r="66"/><circle class="rof" cx="75" cy="75" r="66"/></svg>
+      <svg class="rm" viewBox="0 0 114 114"><circle class="rmt" cx="57" cy="57" r="48"/><circle class="rmf" cx="57" cy="57" r="48"/></svg>
+      <svg class="ri" viewBox="0 0 78 78"><circle class="rit" cx="39" cy="39" r="30.5"/><circle class="rif" cx="39" cy="39" r="30.5"/></svg>
+      <div class="bdot"></div>
+    </div></div>
+
+    <div class="msg"><div class="msg-text">You're <span class="msg-hl">1 session away</span> from your longest streak ever.</div></div>
+
+    <div class="legend">
+      <div class="leg"><div class="ld"></div><div><div class="lv">75%</div><div class="ll">Complete</div></div></div>
+      <div class="leg"><div class="ld"></div><div><div class="lv">12d</div><div class="ll">Streak</div></div></div>
+      <div class="leg"><div class="ld"></div><div><div class="lv">2.4t</div><div class="ll">Volume</div></div></div>
+    </div>
+
+    <!-- 2.5 T1 COLLECTIBLE ACHIEVEMENT CARDS -->
+    <div style="padding-top: 16px;">
+      <div class="ach-head"><span class="ach-title">Achievements</span><span class="ach-more">5 of 37 · View all ›</span></div>
+      <div class="ach-scroll">
+        <div class="ach-card c1"><div class="ach-new">NEW</div><div class="ach-inner"><div class="ach-icon">🏆</div><div class="ach-name">First Workout</div><div class="ach-tier"><div class="ach-td filled"></div><div class="ach-td filled"></div><div class="ach-td filled"></div><div class="ach-td"></div></div><div class="ach-date">Mar 22</div></div></div>
+        <div class="ach-card c2"><div class="ach-inner"><div class="ach-icon">🔥</div><div class="ach-name">7-Day Streak</div><div class="ach-tier"><div class="ach-td filled"></div><div class="ach-td filled"></div><div class="ach-td"></div><div class="ach-td"></div></div><div class="ach-date">Mar 18</div></div></div>
+        <div class="ach-card c3"><div class="ach-inner"><div class="ach-icon">⚡</div><div class="ach-name">Volume King</div><div class="ach-tier"><div class="ach-td filled"></div><div class="ach-td"></div><div class="ach-td"></div><div class="ach-td"></div></div><div class="ach-date">Mar 15</div></div></div>
+        <div class="ach-card c4"><div class="ach-inner"><div class="ach-icon">💪</div><div class="ach-name">PR Hunter</div><div class="ach-tier"><div class="ach-td filled"></div><div class="ach-td filled"></div><div class="ach-td"></div><div class="ach-td"></div></div><div class="ach-date">Mar 10</div></div></div>
+        <div class="ach-card locked"><div class="ach-inner"><div class="ach-icon">🎯</div><div class="ach-name">Perfect Week</div><div class="ach-tier"><div class="ach-td"></div><div class="ach-td"></div><div class="ach-td"></div><div class="ach-td"></div></div><div class="ach-date">Locked</div></div></div>
+        <div class="ach-card locked"><div class="ach-inner"><div class="ach-icon">🏔️</div><div class="ach-name">Summit Master</div><div class="ach-tier"><div class="ach-td"></div><div class="ach-td"></div><div class="ach-td"></div><div class="ach-td"></div></div><div class="ach-date">Locked</div></div></div>
+      </div>
+    </div>
+
+    <!-- 3. G4 CONTRIBUTION GRAPH -->
+    <div class="sec"><div class="sec-head"><span class="sec-title">Activity</span><span style="font-size:10px;color:var(--rock);">12 weeks</span></div></div>
+    <div class="heat-wrap">
+      <div class="heat-top">
+        <div class="heat-days"><div class="hd">M</div><div class="hd">T</div><div class="hd">W</div><div class="hd">T</div><div class="hd">F</div><div class="hd">S</div><div class="hd">S</div></div>
+        <div class="heat-grid" id="heatGrid"></div>
+      </div>
+    </div>
+    <div class="heat-legend"><span class="hl-label">Less</span><div class="hl-dots"><div class="hl-dot" style="background:var(--stone);"></div><div class="hl-dot" style="background:rgba(45,42,36,0.08);"></div><div class="hl-dot" style="background:rgba(45,42,36,0.2);"></div><div class="hl-dot" style="background:var(--earth);"></div></div><span class="hl-label">More</span></div>
+
+    <!-- 4. WEIGHT -->
+    <div class="sec">
+      <div class="weight">
+        <div class="w-left">
+          <div class="w-label">Weight</div>
+          <div class="w-val">74.2 <span class="w-unit">kg</span></div>
+          <div class="w-trend">▼ 0.8kg this month</div>
+          <div class="w-btn">+ Log weight</div>
+        </div>
+        <div class="w-chart"><svg viewBox="0 0 120 50"><path class="wc-area" fill="var(--earth)" d="M0,42 Q20,40 40,34 Q60,26 80,24 Q100,18 120,14 L120,50 L0,50 Z"/><path class="wc-line" d="M0,42 Q20,40 40,34 Q60,26 80,24 Q100,18 120,14"/></svg></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 5. 1RM BAR CHART -->
+    <div class="sec">
+      <div class="rm-label">Estimated 1RM</div>
+      <div class="rm-scroll"><div class="rm-inner">
+        <div class="rm-row"><span class="rm-name">Bench</span><div class="rm-bar-track"><div class="rm-bar-fill"></div></div><span class="rm-val">80 <span>kg</span></span></div>
+        <div class="rm-row"><span class="rm-name">Squat</span><div class="rm-bar-track"><div class="rm-bar-fill"></div></div><span class="rm-val">100 <span>kg</span></span></div>
+        <div class="rm-row"><span class="rm-name">Deadlift</span><div class="rm-bar-track"><div class="rm-bar-fill"></div></div><span class="rm-val">120 <span>kg</span></span></div>
+        <div class="rm-row"><span class="rm-name">OHP</span><div class="rm-bar-track"><div class="rm-bar-fill"></div></div><span class="rm-val">50 <span>kg</span></span></div>
+      </div></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 6. VOLUME -->
+    <div class="sec">
+      <div class="vol">
+        <div><div class="vol-val">2.4 <span>tons</span></div><div class="vol-trend">▲ 12% vs last week</div></div>
+        <div class="vol-bars"><div class="vb" style="height:40%;"></div><div class="vb" style="height:55%;"></div><div class="vb" style="height:45%;"></div><div class="vb" style="height:70%;"></div><div class="vb" style="height:60%;"></div><div class="vb" style="height:85%;"></div><div class="vb a" style="height:100%;"></div></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 7. P3 SWIPEABLE PR CARDS -->
+    <div class="sec"><div class="sec-head"><span class="sec-title">Recent PRs</span><span style="font-size:10px;color:var(--rock);">Last 30 days</span></div></div>
+    <div style="padding: 0 0 0 24px;">
+      <div class="pr-scroll">
+        <div class="pr-card"><div class="pr-icon">🏆</div><div class="pr-name">Bench Press</div><div class="pr-val">80 <span>kg</span></div><div class="pr-type">Weight PR</div></div>
+        <div class="pr-card"><div class="pr-icon">🏆</div><div class="pr-name">Squat</div><div class="pr-val">105 <span>kg</span></div><div class="pr-type">Est. 1RM</div></div>
+        <div class="pr-card"><div class="pr-icon">🏆</div><div class="pr-name">Deadlift</div><div class="pr-val">120 <span>kg</span></div><div class="pr-type">Weight PR</div></div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 8. P2 INLINE MEASUREMENTS -->
+    <div style="padding: 14px 0 0;">
+      <div style="padding: 0 24px; margin-bottom: 6px;"><span style="font-size:9px;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;">Measurements</span></div>
+      <div class="meas-row">
+        <div class="m"><div class="m-val">102</div><div class="m-label">Chest</div></div>
+        <div class="m"><div class="m-val">82</div><div class="m-label">Waist</div></div>
+        <div class="m"><div class="m-val">96</div><div class="m-label">Hips</div></div>
+        <div class="m"><div class="m-val">36</div><div class="m-label">Bicep</div></div>
+        <div class="m"><div class="m-val">58</div><div class="m-label">Thigh</div></div>
+        <div class="m"><div class="m-val">18%</div><div class="m-label">Fat</div></div>
+      </div>
+    </div>
+
+    <!-- 9. QUICK LINKS -->
+    <div class="links"><div class="link">Weekly Summary</div><div class="link">Wellness</div></div>
+
+    <div style="height:80px;"></div>
+
+  </div></div>
+</div>
+
+<script>
+// Generate G4 contribution graph — 15 weeks, CSS grid fills width
+const scroll = document.getElementById('heatGrid');
+const levels = ['l0','l1','l2','l3'];
+for (let w = 0; w < 15; w++) {
+  const col = document.createElement('div');
+  col.className = 'heat-col';
+  for (let d = 0; d < 7; d++) {
+    const c = document.createElement('div');
+    const isToday = w === 14 && d === 2;
+    if (isToday) { c.className = 'hc today'; }
+    else { const r = Math.random(); c.className = 'hc ' + (r < 0.35 ? 'l0' : r < 0.55 ? 'l1' : r < 0.75 ? 'l2' : 'l3'); }
+    col.appendChild(c);
+  }
+  scroll.appendChild(col);
+}
+// No scroll needed — grid fits within width
+</script>
+
+</body>
+</html>

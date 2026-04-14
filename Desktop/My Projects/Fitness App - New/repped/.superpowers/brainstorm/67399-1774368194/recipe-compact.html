@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Compact Recipe Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     R1: TABS — Ingredients and Steps are tabs, not stacked.
+     Only one visible at a time. Everything fits one screen.
+     ============================================================ */
+
+  .r1-hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .r1-video { padding: 7px 16px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 7px; cursor: pointer; }
+  .r1-video svg { width: 10px; height: 10px; fill: var(--sand); }
+  .r1-video span { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+  .r1-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.08; padding: 12px 24px 0; }
+
+  .r1-meta { display: flex; gap: 8px; padding: 12px 24px 0; }
+  .r1-pill { padding: 8px 16px; border-radius: 12px; display: flex; align-items: baseline; gap: 4px; }
+  .r1-pill.dark { background: var(--earth); }
+  .r1-pill.light { background: var(--stone); }
+  .r1-pill .v { font-size: 18px; font-weight: 800; }
+  .r1-pill.dark .v { color: var(--sand); }
+  .r1-pill.light .v { color: var(--earth); }
+  .r1-pill .u { font-size: 9px; }
+  .r1-pill.dark .u { color: rgba(246,245,240,0.35); }
+  .r1-pill.light .u { color: var(--rock); }
+
+  /* Tab bar */
+  .r1-tabs { display: flex; margin: 16px 24px 0; background: var(--stone); border-radius: 14px; padding: 3px; }
+  .r1-tab { flex: 1; padding: 11px; border-radius: 11px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .r1-tab.on { background: var(--earth); color: var(--sand); }
+  .r1-tab.off { background: transparent; color: var(--rock); }
+
+  /* Tab content */
+  .r1-panel { padding: 14px 24px 0; display: none; }
+  .r1-panel.visible { display: block; animation: r1FadeIn 0.3s ease; }
+  @keyframes r1FadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Ingredients */
+  .r1-gi { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); cursor: pointer; transition: opacity 0.25s; }
+  .r1-gi:last-child { border-bottom: none; }
+  .r1-gi.checked { opacity: 0.25; }
+  .r1-gi.checked .r1-gi-name { text-decoration: line-through; }
+  .r1-gi-check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .r1-gi.checked .r1-gi-check { background: var(--trail); border-color: var(--trail); transform: scale(1.08); }
+  .r1-gi-cm { font-size: 11px; color: #fff; opacity: 0; font-weight: 700; }
+  .r1-gi.checked .r1-gi-cm { opacity: 1; }
+  .r1-gi-name { font-size: 15px; color: var(--earth); font-weight: 500; flex: 1; }
+  .r1-gi-amount { font-size: 13px; color: var(--rock); }
+
+  /* Steps — compact trail */
+  .r1-step { display: flex; gap: 12px; margin-bottom: 12px; cursor: pointer; position: relative; }
+  .r1-step-marker { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 1px; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .r1-step .r1-step-marker { background: var(--stone); color: var(--rock); }
+  .r1-step.active .r1-step-marker { background: var(--trail); color: #fff; transform: scale(1.15); box-shadow: 0 0 10px rgba(52,211,153,0.25); }
+  .r1-step.done .r1-step-marker { background: var(--earth); color: var(--sand); }
+  .r1-step-text { font-size: 14px; color: var(--earth); line-height: 1.5; flex: 1; }
+  .r1-step.done .r1-step-text { opacity: 0.35; text-decoration: line-through; }
+  .r1-step-time { font-size: 9px; color: var(--rock); margin-top: 4px; }
+  .r1-step.done .r1-step-time { display: none; }
+
+  /* Progress bar at bottom */
+  .r1-progress { margin: 16px 24px 0; }
+  .r1-pbar { height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .r1-pfill { height: 100%; border-radius: 2px; background: var(--trail); transition: width 0.4s cubic-bezier(0.16,1,0.3,1); }
+  .r1-plabel { display: flex; justify-content: space-between; margin-top: 6px; font-size: 10px; color: var(--rock); }
+
+
+  /* ============================================================
+     R2: COLLAPSIBLE SECTIONS — Ingredients collapse after use.
+     Steps stay compact. Everything fits tighter.
+     ============================================================ */
+
+  .r2-hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+
+  /* Hero card — compact */
+  .r2-hero { margin: 12px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .r2-ring { position: absolute; top: -25px; right: -25px; width: 110px; height: 110px; border-radius: 50%; border: 8px solid rgba(246,245,240,0.03); animation: r2Ring 18s linear infinite; }
+  @keyframes r2Ring { to { transform: rotate(360deg); } }
+  .r2-ring-in { position: absolute; top: -15px; right: -15px; width: 92px; height: 92px; border-radius: 50%; border: 4px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); }
+  .r2-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .r2-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; margin-top: 4px; position: relative; }
+  .r2-hero-meta { display: flex; gap: 6px; margin-top: 10px; position: relative; }
+  .r2-hm { padding: 5px 12px; border-radius: 8px; background: rgba(246,245,240,0.06); font-size: 12px; font-weight: 600; color: var(--sand); display: flex; align-items: center; gap: 3px; }
+  .r2-hm span { font-size: 9px; color: rgba(246,245,240,0.3); }
+  .r2-video-link { font-size: 11px; color: rgba(246,245,240,0.4); cursor: pointer; margin-left: auto; display: flex; align-items: center; gap: 4px; position: relative; }
+
+  /* Collapsible ingredients */
+  .r2-ing { margin: 10px 24px 0; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+  .r2-ing-head { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .r2-ing-title { font-size: 13px; font-weight: 700; color: var(--earth); display: flex; align-items: center; gap: 8px; }
+  .r2-ing-badge { font-size: 9px; font-weight: 600; color: var(--sand); background: var(--earth); padding: 2px 8px; border-radius: 100px; }
+  .r2-ing-chev { font-size: 11px; color: var(--rock); transition: transform 0.3s; }
+  .r2-ing.collapsed .r2-ing-chev { transform: rotate(-90deg); }
+  .r2-ing-list { padding: 0 16px 12px; transition: all 0.3s; }
+  .r2-ing.collapsed .r2-ing-list { display: none; }
+
+  .r2-ii { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.02); cursor: pointer; transition: opacity 0.2s; }
+  .r2-ii:last-child { border-bottom: none; }
+  .r2-ii.checked { opacity: 0.2; }
+  .r2-ii.checked .r2-ii-name { text-decoration: line-through; }
+  .r2-ii-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .r2-ii.checked .r2-ii-check { background: var(--trail); border-color: var(--trail); }
+  .r2-ii-cm { font-size: 9px; color: #fff; opacity: 0; font-weight: 700; }
+  .r2-ii.checked .r2-ii-cm { opacity: 1; }
+  .r2-ii-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .r2-ii-amount { font-size: 11px; color: var(--rock); }
+
+  /* Compact steps — tighter waypoints */
+  .r2-trail { padding: 12px 24px 0; position: relative; }
+  .r2-trail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .r2-trail-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .r2-trail-pips { display: flex; gap: 3px; }
+  .r2-pip { width: 16px; height: 4px; border-radius: 2px; transition: background 0.3s; }
+  .r2-pip.done { background: var(--trail); }
+  .r2-pip.active { background: var(--earth); }
+  .r2-pip.pending { background: var(--stone); }
+
+  .r2-line { position: absolute; left: 33px; top: 46px; bottom: 50px; width: 2px; background: var(--stone); z-index: 0; }
+
+  .r2-wp { display: flex; gap: 12px; margin-bottom: 10px; cursor: pointer; position: relative; z-index: 1; }
+  .r2-wp-marker { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; margin-top: 10px; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .r2-wp .r2-wp-marker { background: var(--sand); border: 2px solid var(--stone); color: var(--rock); }
+  .r2-wp.active .r2-wp-marker { border-color: var(--trail); color: #fff; background: var(--trail); transform: scale(1.15); }
+  .r2-wp.done .r2-wp-marker { background: var(--earth); border-color: var(--earth); color: var(--sand); }
+  .r2-wp-card { flex: 1; padding: 10px 14px; border-radius: 14px; background: #fff; border: 1px solid rgba(0,0,0,0.04); transition: all 0.3s; }
+  .r2-wp.active .r2-wp-card { border-color: rgba(52,211,153,0.1); box-shadow: 0 4px 16px rgba(52,211,153,0.05); }
+  .r2-wp.done .r2-wp-card { background: var(--stone); border-color: transparent; padding: 8px 12px; }
+  .r2-wp-text { font-size: 13px; color: var(--earth); line-height: 1.5; }
+  .r2-wp.active .r2-wp-text { font-weight: 500; }
+  .r2-wp.done .r2-wp-text { font-size: 12px; opacity: 0.4; text-decoration: line-through; }
+
+  .r2-summit { display: flex; align-items: center; gap: 12px; margin-top: 2px; position: relative; z-index: 1; }
+  .r2-summit-m { font-size: 12px; width: 22px; text-align: center; }
+  .r2-summit-t { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+
+  /* ============================================================
+     R3: HORIZONTAL STEP CARDS — Ingredients compact list.
+     Steps as horizontal swipeable cards like nutrition meals.
+     ============================================================ */
+
+  .r3-hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .r3-video { padding: 7px 16px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 7px; cursor: pointer; }
+  .r3-video svg { width: 10px; height: 10px; fill: var(--sand); }
+  .r3-video span { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+  .r3-name { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; padding: 10px 24px 0; }
+  .r3-sub { font-size: 11px; color: var(--rock); padding: 4px 24px 0; }
+
+  /* Compact ingredient rows — no card wrapper */
+  .r3-ing-section { padding: 14px 24px 0; }
+  .r3-ing-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .r3-ing-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .r3-ing-toggle { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .r3-ing-compact { display: flex; flex-wrap: wrap; gap: 6px; }
+  .r3-chip { padding: 7px 14px; border-radius: 100px; background: #fff; border: 1px solid rgba(0,0,0,0.04); font-size: 12px; color: var(--earth); font-weight: 500; cursor: pointer; transition: all 0.25s; }
+  .r3-chip.checked { background: var(--earth); color: var(--sand); text-decoration: line-through; opacity: 0.5; }
+
+  /* Horizontal step cards */
+  .r3-steps-section { padding: 16px 0 0; }
+  .r3-steps-head { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-bottom: 10px; }
+  .r3-steps-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .r3-steps-count { font-size: 11px; color: var(--rock); }
+
+  .r3-scroll { display: flex; gap: 12px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .r3-scroll::-webkit-scrollbar { display: none; }
+
+  .r3-card {
+    min-width: 300px; max-width: 300px; border-radius: 22px; flex-shrink: 0;
+    scroll-snap-align: start; padding: 22px; min-height: 220px;
+    display: flex; flex-direction: column; cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .r3-card:last-child { margin-right: 24px; }
+
+  .r3-card:nth-child(1) { background: var(--earth); }
+  .r3-card:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .r3-card:nth-child(3) { background: var(--earth); }
+  .r3-card:nth-child(4) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .r3-card.selected { transform: scale(1.02); }
+  .r3-card.selected::before { content: ''; position: absolute; inset: -2px; border-radius: 24px; border: 2px solid var(--trail); pointer-events: none; }
+  .r3-card:not(.selected) { opacity: 0.6; transform: scale(0.96); }
+
+  .r3-card-top { display: flex; justify-content: space-between; align-items: center; }
+  .r3-card-step { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .r3-card:nth-child(odd) .r3-card-step { color: rgba(246,245,240,0.3); }
+  .r3-card:nth-child(even) .r3-card-step { color: var(--rock); }
+  .r3-card-time { font-size: 9px; font-weight: 500; }
+  .r3-card:nth-child(odd) .r3-card-time { color: rgba(246,245,240,0.25); }
+  .r3-card:nth-child(even) .r3-card-time { color: var(--rock); }
+
+  .r3-card-num { font-size: 56px; font-weight: 900; letter-spacing: -3px; line-height: 1; margin-top: 8px; }
+  .r3-card:nth-child(odd) .r3-card-num { color: rgba(246,245,240,0.06); }
+  .r3-card:nth-child(even) .r3-card-num { color: rgba(45,42,36,0.04); }
+
+  .r3-card-text { font-size: 16px; line-height: 1.55; margin-top: auto; font-weight: 500; }
+  .r3-card:nth-child(odd) .r3-card-text { color: var(--sand); }
+  .r3-card:nth-child(even) .r3-card-text { color: var(--earth); }
+
+  /* Dots */
+  .r3-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 0; }
+  .r3-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
+  .r3-dot.on { background: var(--earth); width: 20px; border-radius: 3px; }
+
+  /* Bottom progress */
+  .r3-progress { margin: 12px 24px 0; }
+  .r3-pbar { height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .r3-pfill { height: 100%; border-radius: 2px; background: var(--trail); width: 25%; transition: width 0.4s; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== R1: TABS ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">R1 — Tabbed View</div>
+  <div class="dsc">Ingredients and Steps in tabs — only one visible at a time. No scrolling between sections. Everything fits one screen. Tab switches with fade animation. Click tabs and items.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r1-hdr"><div class="back">←</div><div class="r1-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div></div>
+    <div class="r1-name">Veggie Stir Fry<br>with Tofu</div>
+    <div class="r1-meta"><div class="r1-pill dark"><span class="v">10</span><span class="u">min prep</span></div><div class="r1-pill light"><span class="v">12</span><span class="u">min cook</span></div><div class="r1-pill light"><span class="v">Easy</span></div></div>
+
+    <div class="r1-tabs"><div class="r1-tab on" id="r1TabIng" onclick="r1Tab('ing')">Ingredients</div><div class="r1-tab off" id="r1TabStep" onclick="r1Tab('step')">Steps</div></div>
+
+    <!-- Ingredients panel -->
+    <div class="r1-panel visible" id="r1PanelIng">
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Firm tofu</span><span class="r1-gi-amount">½ block cubed</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Broccoli</span><span class="r1-gi-amount">1 cup florets</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Bell pepper</span><span class="r1-gi-amount">1 sliced</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Snap peas</span><span class="r1-gi-amount">½ cup</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Teriyaki sauce</span><span class="r1-gi-amount">2 tbsp</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">White rice</span><span class="r1-gi-amount">1 cup cooked</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Sesame oil</span><span class="r1-gi-amount">1 tbsp</span></div>
+      <div class="r1-gi" onclick="this.classList.toggle('checked')"><div class="r1-gi-check"><span class="r1-gi-cm">✓</span></div><span class="r1-gi-name">Garlic</span><span class="r1-gi-amount">2 cloves</span></div>
+    </div>
+
+    <!-- Steps panel -->
+    <div class="r1-panel" id="r1PanelStep">
+      <div class="r1-step active" onclick="r1Done(this)"><div class="r1-step-marker">1</div><div><div class="r1-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="r1-step-time">~4 min · Base camp</div></div></div>
+      <div class="r1-step" onclick="r1Done(this)"><div class="r1-step-marker">2</div><div><div class="r1-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div><div class="r1-step-time">~3 min · Waypoint 2</div></div></div>
+      <div class="r1-step" onclick="r1Done(this)"><div class="r1-step-marker">3</div><div><div class="r1-step-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div><div class="r1-step-time">~2 min · Waypoint 3</div></div></div>
+      <div class="r1-step" onclick="r1Done(this)"><div class="r1-step-marker">4</div><div><div class="r1-step-text">Serve over rice. Garnish with sesame seeds.</div><div class="r1-step-time">~1 min · Summit</div></div></div>
+
+      <div class="r1-progress"><div class="r1-pbar"><div class="r1-pfill" id="r1Fill" style="width:0%;"></div></div><div class="r1-plabel"><span id="r1Count">0 of 4</span><span>🏁 Summit</span></div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ===== R2: COLLAPSIBLE ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">R2 — Collapsible Trail</div>
+  <div class="dsc">Compact dark hero. Collapsible ingredient section (click header to toggle). Smaller trail waypoints with progress pips. Everything tighter — less vertical space. Tap ingredients, steps, and ingredient header.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r2-hdr"><div class="back">←</div></div>
+
+    <div class="r2-hero"><div class="r2-ring"></div><div class="r2-ring-in"></div>
+      <div class="r2-label">Breakfast Recipe</div>
+      <div class="r2-name">Veggie Stir Fry with Tofu</div>
+      <div class="r2-hero-meta">
+        <div class="r2-hm">10 <span>min prep</span></div>
+        <div class="r2-hm">12 <span>min cook</span></div>
+        <div class="r2-hm">Easy</div>
+        <div class="r2-video-link">▶ Video</div>
+      </div>
+    </div>
+
+    <div class="r2-ing" id="r2Ing">
+      <div class="r2-ing-head" onclick="document.getElementById('r2Ing').classList.toggle('collapsed')">
+        <div class="r2-ing-title">Ingredients <span class="r2-ing-badge">8</span></div>
+        <span class="r2-ing-chev">▾</span>
+      </div>
+      <div class="r2-ing-list">
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Firm tofu</span><span class="r2-ii-amount">½ block</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Broccoli</span><span class="r2-ii-amount">1 cup</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Bell pepper</span><span class="r2-ii-amount">1 sliced</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Snap peas</span><span class="r2-ii-amount">½ cup</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Teriyaki sauce</span><span class="r2-ii-amount">2 tbsp</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">White rice</span><span class="r2-ii-amount">1 cup</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Sesame oil</span><span class="r2-ii-amount">1 tbsp</span></div>
+        <div class="r2-ii" onclick="event.stopPropagation();this.classList.toggle('checked')"><div class="r2-ii-check"><span class="r2-ii-cm">✓</span></div><span class="r2-ii-name">Garlic</span><span class="r2-ii-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <div class="r2-trail"><div class="r2-trail-head"><span class="r2-trail-title">Route</span><div class="r2-trail-pips"><div class="r2-pip active"></div><div class="r2-pip pending"></div><div class="r2-pip pending"></div><div class="r2-pip pending"></div></div></div>
+      <div class="r2-line"></div>
+      <div class="r2-wp active"><div class="r2-wp-marker">1</div><div class="r2-wp-card"><div class="r2-wp-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden.</div></div></div>
+      <div class="r2-wp"><div class="r2-wp-marker">2</div><div class="r2-wp-card"><div class="r2-wp-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div></div></div>
+      <div class="r2-wp"><div class="r2-wp-marker">3</div><div class="r2-wp-card"><div class="r2-wp-text">Return tofu. Pour teriyaki sauce and toss to coat.</div></div></div>
+      <div class="r2-wp"><div class="r2-wp-marker">4</div><div class="r2-wp-card"><div class="r2-wp-text">Serve over rice. Garnish with sesame seeds.</div></div></div>
+      <div class="r2-summit"><div class="r2-summit-m">🏁</div><div class="r2-summit-t">Dish complete!</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== R3: HORIZONTAL STEPS ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">R3 — Chip Ingredients + Swipe Steps</div>
+  <div class="dsc">Ingredients as wrapped pill chips (tap to check). Steps as horizontal swipeable cards (dark/light alternating) — same pattern as nutrition meals. Giant ghost number. Selected card gets trail border. Dots + progress bar.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r3-hdr"><div class="back">←</div><div class="r3-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div></div>
+    <div class="r3-name">Veggie Stir Fry with Tofu</div>
+    <div class="r3-sub">10 min prep · 12 min cook · Easy</div>
+
+    <div class="r3-ing-section"><div class="r3-ing-head"><span class="r3-ing-title">Ingredients</span></div>
+      <div class="r3-ing-compact">
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">½ block Tofu</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">1c Broccoli</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">1 Bell pepper</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">½c Snap peas</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">2T Teriyaki</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">1c Rice</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">1T Sesame oil</div>
+        <div class="r3-chip" onclick="this.classList.toggle('checked')">2 Garlic</div>
+      </div>
+    </div>
+
+    <div class="r3-steps-section"><div class="r3-steps-head"><span class="r3-steps-title">Steps</span><span class="r3-steps-count">4 steps</span></div>
+      <div class="r3-scroll" id="r3Scroll">
+        <div class="r3-card selected" onclick="r3Select(0)"><div class="r3-card-top"><span class="r3-card-step">Step 1 of 4</span><span class="r3-card-time">~4 min</span></div><div class="r3-card-num">01</div><div class="r3-card-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+        <div class="r3-card" onclick="r3Select(1)"><div class="r3-card-top"><span class="r3-card-step">Step 2 of 4</span><span class="r3-card-time">~3 min</span></div><div class="r3-card-num">02</div><div class="r3-card-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div>
+        <div class="r3-card" onclick="r3Select(2)"><div class="r3-card-top"><span class="r3-card-step">Step 3 of 4</span><span class="r3-card-time">~2 min</span></div><div class="r3-card-num">03</div><div class="r3-card-text">Return tofu to pan. Pour teriyaki sauce and toss to coat evenly.</div></div>
+        <div class="r3-card" onclick="r3Select(3)"><div class="r3-card-top"><span class="r3-card-step">Step 4 of 4</span><span class="r3-card-time">~1 min</span></div><div class="r3-card-num">04</div><div class="r3-card-text">Serve over rice. Garnish with sesame seeds.</div></div>
+      </div>
+      <div class="r3-dots"><div class="r3-dot on" onclick="r3Select(0)"></div><div class="r3-dot" onclick="r3Select(1)"></div><div class="r3-dot" onclick="r3Select(2)"></div><div class="r3-dot" onclick="r3Select(3)"></div></div>
+    </div>
+
+    <div class="r3-progress"><div class="r3-pbar"><div class="r3-pfill" id="r3Fill"></div></div></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+// R1 Tabs
+function r1Tab(mode) {
+  document.getElementById('r1TabIng').className = mode === 'ing' ? 'r1-tab on' : 'r1-tab off';
+  document.getElementById('r1TabStep').className = mode === 'step' ? 'r1-tab on' : 'r1-tab off';
+  document.getElementById('r1PanelIng').className = mode === 'ing' ? 'r1-panel visible' : 'r1-panel';
+  document.getElementById('r1PanelStep').className = mode === 'step' ? 'r1-panel visible' : 'r1-panel';
+}
+function r1Done(el) {
+  if (el.classList.contains('done')) { el.classList.remove('done'); el.classList.add('active'); }
+  else { el.classList.remove('active'); el.classList.add('done'); el.querySelector('.r1-step-marker').textContent = '✓'; }
+  const done = document.querySelectorAll('.r1-step.done').length;
+  document.getElementById('r1Fill').style.width = (done/4*100)+'%';
+  document.getElementById('r1Count').textContent = done + ' of 4';
+  // Set next active
+  const steps = document.querySelectorAll('.r1-step');
+  let setActive = false;
+  steps.forEach((s,i) => { if (!s.classList.contains('done') && !setActive) { s.classList.add('active'); setActive = true; } else if (!s.classList.contains('done')) { s.classList.remove('active'); } });
+}
+
+// R3 Horizontal
+function r3Select(idx) {
+  const cards = document.querySelectorAll('.r3-card');
+  const dots = document.querySelectorAll('.r3-dot');
+  cards.forEach((c,i) => { c.classList.toggle('selected', i===idx); });
+  dots.forEach((d,i) => { d.classList.toggle('on', i===idx); });
+  const target = cards[idx];
+  document.getElementById('r3Scroll').scrollTo({ left: target.offsetLeft - 24, behavior: 'smooth' });
+  document.getElementById('r3Fill').style.width = ((idx+1)/4*100)+'%';
+}
+</script>
+
+</body>
+</html>

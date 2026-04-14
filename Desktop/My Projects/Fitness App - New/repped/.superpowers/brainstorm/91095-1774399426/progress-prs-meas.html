@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — PRs + Measurements Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+  .divider { height: 1px; background: var(--stone); margin: 16px 0; }
+  .sec-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .links { display: flex; gap: 8px; margin-top: 16px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+
+
+  /* ============================================================
+     P1: GREEN BADGES + STONE MEASUREMENT GRID
+     PRs as green-tinted badge pills. Measurements as 3x2 stone tiles.
+     ============================================================ */
+
+  .p1-pr-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .p1-badge { padding: 10px 16px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .p1-badge-name { font-size: 9px; color: #047857; font-weight: 600; }
+  .p1-badge-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .p1-badge-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .p1-meas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .p1-m { padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .p1-m-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .p1-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     P2: DARK PR CARD + INLINE MEASUREMENTS
+     PRs inside one dark card. Measurements as a minimal inline row.
+     ============================================================ */
+
+  .p2-pr-card { padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .p2-pr-accent { position: absolute; bottom: -12px; right: -12px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+  .p2-pr-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; position: relative; }
+
+  .p2-pr { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .p2-pr:last-child { border-bottom: none; }
+  .p2-pr-badge { width: 28px; height: 28px; border-radius: 9px; background: rgba(52,211,153,0.1); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .p2-pr-info { flex: 1; }
+  .p2-pr-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .p2-pr-type { font-size: 9px; color: rgba(246,245,240,0.25); }
+  .p2-pr-val { font-size: 18px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .p2-pr-val span { font-size: 9px; color: rgba(246,245,240,0.3); font-weight: 500; }
+
+  .p2-meas-row { display: flex; gap: 0; }
+  .p2-m { flex: 1; text-align: center; padding: 10px 0; position: relative; }
+  .p2-m::after { content: ''; position: absolute; right: 0; top: 15%; height: 70%; width: 1px; background: var(--stone); }
+  .p2-m:last-child::after { display: none; }
+  .p2-m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .p2-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     P3: HORIZONTAL PR CARDS + COLLAPSIBLE MEASUREMENTS
+     PRs as horizontal swipeable green cards. Measurements
+     hidden behind a "Show measurements" toggle.
+     ============================================================ */
+
+  .p3-pr-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 0 20px; }
+  .p3-pr-scroll::-webkit-scrollbar { display: none; }
+  .p3-pr-card { min-width: 140px; padding: 16px; border-radius: 16px; flex-shrink: 0; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .p3-pr-icon { font-size: 18px; }
+  .p3-pr-name { font-size: 11px; color: #047857; font-weight: 600; margin-top: 8px; }
+  .p3-pr-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .p3-pr-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .p3-pr-type { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .p3-meas-toggle { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; cursor: pointer; }
+  .p3-mt-text { font-size: 12px; color: var(--earth); font-weight: 600; }
+  .p3-mt-chev { font-size: 12px; color: var(--rock); transition: transform 0.3s; }
+  .p3-meas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; display: none; }
+  .p3-meas-grid.open { display: grid; animation: p3Fade 0.3s ease; }
+  @keyframes p3Fade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: translateY(0); } }
+  .p3-m { padding: 10px; border-radius: 12px; background: var(--stone); text-align: center; }
+  .p3-m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .p3-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     P4: PR HIGHLIGHT + NO MEASUREMENTS (hide them)
+     Just show the latest/best PR prominently. Skip measurements
+     unless user specifically navigates. Truly minimal.
+     ============================================================ */
+
+  .p4-pr-hero { padding: 20px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; display: flex; align-items: center; gap: 16px; }
+  .p4-prh-accent { position: absolute; top: 0; right: 0; width: 60px; height: 60px; }
+  .p4-prh-line { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .p4-prh-line:nth-child(1) { width: 80px; top: 10px; right: -6px; transform: rotate(-35deg); }
+  .p4-prh-line:nth-child(2) { width: 60px; top: 20px; right: -6px; transform: rotate(-35deg); }
+
+  .p4-prh-icon { font-size: 32px; position: relative; }
+  .p4-prh-info { flex: 1; position: relative; }
+  .p4-prh-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p4-prh-name { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 3px; }
+  .p4-prh-val { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; margin-top: 2px; }
+  .p4-prh-val span { font-size: 12px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .p4-prh-type { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.6; }
+
+  .p4-more { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .p4-more-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .p4-more-dot.active { background: var(--earth); }
+  .p4-more-text { font-size: 10px; color: var(--rock); margin-left: 4px; }
+
+
+  /* ============================================================
+     P5: NUMBERED PR ROWS + HORIZONTAL MEASUREMENT SCROLL
+     PRs as numbered rows (matching 1RM style). Measurements
+     as small horizontal scrollable tiles.
+     ============================================================ */
+
+  .p5-pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p5-pr:last-child { border-bottom: none; }
+  .p5-pr-num { width: 22px; height: 22px; border-radius: 7px; background: rgba(52,211,153,0.08); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #047857; flex-shrink: 0; }
+  .p5-pr-name { font-size: 14px; color: var(--earth); font-weight: 500; flex: 1; }
+  .p5-pr-type { font-size: 9px; color: var(--trail); font-weight: 600; }
+  .p5-pr-val { font-size: 16px; font-weight: 800; color: var(--earth); flex-shrink: 0; }
+  .p5-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .p5-meas-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 0 -20px; padding: 0 20px; }
+  .p5-meas-scroll::-webkit-scrollbar { display: none; }
+  .p5-m { min-width: 64px; padding: 10px 8px; border-radius: 12px; flex-shrink: 0; text-align: center; }
+  .p5-m:nth-child(odd) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p5-m:nth-child(even) { background: var(--stone); }
+  .p5-m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .p5-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     P6: COMBINED PR + MEASUREMENTS CARD — One white card
+     holds both. PRs on top, thin divider, measurements below.
+     Everything contained, clean.
+     ============================================================ */
+
+  .p6-card { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .p6-pr-sec {}
+  .p6-pr-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .p6-pr { display: flex; align-items: center; gap: 8px; padding: 7px 0; }
+  .p6-pr-icon { font-size: 12px; }
+  .p6-pr-name { font-size: 13px; color: var(--earth); font-weight: 500; flex: 1; }
+  .p6-pr-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .p6-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .p6-div { height: 1px; background: var(--stone); margin: 12px 0; }
+
+  .p6-meas-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .p6-meas { display: flex; gap: 0; }
+  .p6-m { flex: 1; text-align: center; position: relative; }
+  .p6-m::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: var(--stone); }
+  .p6-m:last-child::after { display: none; }
+  .p6-m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .p6-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- P1 -->
+<div>
+  <div class="col-label">P1 — Green Badges + Stone Grid</div>
+  <div class="col-desc">PRs as green-tinted badge pills (flex wrap). Measurements as a 3x2 stone tile grid. Clear visual separation.</div>
+  <div class="block">
+    <div class="sec-label">Recent PRs · Last 30 Days</div>
+    <div class="p1-pr-row">
+      <div class="p1-badge"><div class="p1-badge-name">Bench Press</div><div class="p1-badge-val">80 <span>kg</span></div></div>
+      <div class="p1-badge"><div class="p1-badge-name">Squat</div><div class="p1-badge-val">105 <span>kg</span></div></div>
+      <div class="p1-badge"><div class="p1-badge-name">Deadlift</div><div class="p1-badge-val">120 <span>kg</span></div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="sec-label">Measurements</div>
+    <div class="p1-meas"><div class="p1-m"><div class="p1-m-val">102</div><div class="p1-m-label">Chest</div></div><div class="p1-m"><div class="p1-m-val">82</div><div class="p1-m-label">Waist</div></div><div class="p1-m"><div class="p1-m-val">96</div><div class="p1-m-label">Hips</div></div><div class="p1-m"><div class="p1-m-val">36</div><div class="p1-m-label">Bicep</div></div><div class="p1-m"><div class="p1-m-val">58</div><div class="p1-m-label">Thigh</div></div><div class="p1-m"><div class="p1-m-val">18%</div><div class="p1-m-label">Fat</div></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+<!-- P2 -->
+<div>
+  <div class="col-label">P2 — Dark PR Card + Inline Row</div>
+  <div class="col-desc">PRs inside a dark earth card with trophy badges and type labels. Measurements as a simple inline number row with dividers. Dark/light contrast.</div>
+  <div class="block">
+    <div class="p2-pr-card"><div class="p2-pr-accent"></div><div class="p2-pr-label">Recent PRs · Last 30 Days</div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><div class="p2-pr-info"><div class="p2-pr-name">Bench Press</div><div class="p2-pr-type">Weight PR</div></div><div class="p2-pr-val">80 <span>kg</span></div></div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><div class="p2-pr-info"><div class="p2-pr-name">Squat</div><div class="p2-pr-type">Est. 1RM</div></div><div class="p2-pr-val">105 <span>kg</span></div></div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><div class="p2-pr-info"><div class="p2-pr-name">Deadlift</div><div class="p2-pr-type">Weight PR</div></div><div class="p2-pr-val">120 <span>kg</span></div></div>
+    </div>
+    <div style="height:12px;"></div>
+    <div class="sec-label">Measurements</div>
+    <div class="p2-meas-row"><div class="p2-m"><div class="p2-m-val">102</div><div class="p2-m-label">Chest</div></div><div class="p2-m"><div class="p2-m-val">82</div><div class="p2-m-label">Waist</div></div><div class="p2-m"><div class="p2-m-val">96</div><div class="p2-m-label">Hips</div></div><div class="p2-m"><div class="p2-m-val">36</div><div class="p2-m-label">Bicep</div></div><div class="p2-m"><div class="p2-m-val">58</div><div class="p2-m-label">Thigh</div></div><div class="p2-m"><div class="p2-m-val">18%</div><div class="p2-m-label">Fat</div></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+<!-- P3 -->
+<div>
+  <div class="col-label">P3 — Swipe PR Cards + Collapsible</div>
+  <div class="col-desc">PRs as horizontal swipeable green-tinted cards with trophy, name, big value, type. Measurements hidden behind a toggle — tap to reveal. Cleanest default view.</div>
+  <div class="block">
+    <div class="sec-label">Recent PRs</div>
+    <div class="p3-pr-scroll">
+      <div class="p3-pr-card"><div class="p3-pr-icon">🏆</div><div class="p3-pr-name">Bench Press</div><div class="p3-pr-val">80 <span>kg</span></div><div class="p3-pr-type">Weight PR</div></div>
+      <div class="p3-pr-card"><div class="p3-pr-icon">🏆</div><div class="p3-pr-name">Squat</div><div class="p3-pr-val">105 <span>kg</span></div><div class="p3-pr-type">Est. 1RM</div></div>
+      <div class="p3-pr-card"><div class="p3-pr-icon">🏆</div><div class="p3-pr-name">Deadlift</div><div class="p3-pr-val">120 <span>kg</span></div><div class="p3-pr-type">Weight PR</div></div>
+    </div>
+    <div class="divider"></div>
+    <div class="p3-meas-toggle" onclick="document.getElementById('p3m').classList.toggle('open');this.querySelector('.p3-mt-chev').style.transform=document.getElementById('p3m').classList.contains('open')?'rotate(180deg)':'';">
+      <span class="p3-mt-text">Body Measurements</span><span class="p3-mt-chev">▾</span>
+    </div>
+    <div class="p3-meas-grid" id="p3m"><div class="p3-m"><div class="p3-m-val">102</div><div class="p3-m-label">Chest</div></div><div class="p3-m"><div class="p3-m-val">82</div><div class="p3-m-label">Waist</div></div><div class="p3-m"><div class="p3-m-val">96</div><div class="p3-m-label">Hips</div></div><div class="p3-m"><div class="p3-m-val">36</div><div class="p3-m-label">Bicep</div></div><div class="p3-m"><div class="p3-m-val">58</div><div class="p3-m-label">Thigh</div></div><div class="p3-m"><div class="p3-m-val">18%</div><div class="p3-m-label">Fat</div></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+<!-- P4 -->
+<div>
+  <div class="col-label">P4 — Single PR Highlight</div>
+  <div class="col-desc">Just the BEST/LATEST PR shown big in a dark card with trophy + dots for more. No measurements visible. Truly minimal — one moment, one card.</div>
+  <div class="block">
+    <div class="p4-pr-hero"><div class="p4-prh-accent"><div class="p4-prh-line"></div><div class="p4-prh-line"></div></div>
+      <div class="p4-prh-icon">🏆</div>
+      <div class="p4-prh-info"><div class="p4-prh-label">Latest PR</div><div class="p4-prh-name">Bench Press</div><div class="p4-prh-val">80 <span>kg</span></div><div class="p4-prh-type">Weight PR · Mar 22</div></div>
+    </div>
+    <div class="p4-more"><div class="p4-more-dot active"></div><div class="p4-more-dot"></div><div class="p4-more-dot"></div><span class="p4-more-text">2 more PRs this month</span></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+<!-- P5 -->
+<div>
+  <div class="col-label">P5 — Numbered PRs + Scroll Measurements</div>
+  <div class="col-desc">PRs as numbered rows (green badges matching recipe ingredient style). Measurements as horizontal scrollable white/stone tiles.</div>
+  <div class="block">
+    <div class="sec-label">Recent PRs</div>
+    <div class="p5-pr"><div class="p5-pr-num">1</div><span class="p5-pr-name">Bench Press</span><span class="p5-pr-type">Weight</span><span class="p5-pr-val">80 <span>kg</span></span></div>
+    <div class="p5-pr"><div class="p5-pr-num">2</div><span class="p5-pr-name">Squat</span><span class="p5-pr-type">1RM</span><span class="p5-pr-val">105 <span>kg</span></span></div>
+    <div class="p5-pr"><div class="p5-pr-num">3</div><span class="p5-pr-name">Deadlift</span><span class="p5-pr-type">Weight</span><span class="p5-pr-val">120 <span>kg</span></span></div>
+    <div class="divider"></div>
+    <div class="sec-label">Measurements</div>
+    <div class="p5-meas-scroll"><div class="p5-m"><div class="p5-m-val">102</div><div class="p5-m-label">Chest</div></div><div class="p5-m"><div class="p5-m-val">82</div><div class="p5-m-label">Waist</div></div><div class="p5-m"><div class="p5-m-val">96</div><div class="p5-m-label">Hips</div></div><div class="p5-m"><div class="p5-m-val">36</div><div class="p5-m-label">Bicep</div></div><div class="p5-m"><div class="p5-m-val">58</div><div class="p5-m-label">Thigh</div></div><div class="p5-m"><div class="p5-m-val">18%</div><div class="p5-m-label">Fat</div></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+<!-- P6 -->
+<div>
+  <div class="col-label">P6 — Combined White Card</div>
+  <div class="col-desc">One white card holds both PRs (with trophy icons) and measurements (inline row with dividers). Everything contained in one clean container.</div>
+  <div class="block">
+    <div class="p6-card">
+      <div class="p6-pr-label">Recent PRs</div>
+      <div class="p6-pr"><span class="p6-pr-icon">🏆</span><span class="p6-pr-name">Bench Press</span><span class="p6-pr-val">80 <span>kg</span></span></div>
+      <div class="p6-pr"><span class="p6-pr-icon">🏆</span><span class="p6-pr-name">Squat</span><span class="p6-pr-val">105 <span>kg</span></span></div>
+      <div class="p6-pr"><span class="p6-pr-icon">🏆</span><span class="p6-pr-name">Deadlift</span><span class="p6-pr-val">120 <span>kg</span></span></div>
+      <div class="p6-div"></div>
+      <div class="p6-meas-label">Measurements</div>
+      <div class="p6-meas"><div class="p6-m"><div class="p6-m-val">102</div><div class="p6-m-label">Chest</div></div><div class="p6-m"><div class="p6-m-val">82</div><div class="p6-m-label">Waist</div></div><div class="p6-m"><div class="p6-m-val">96</div><div class="p6-m-label">Hips</div></div><div class="p6-m"><div class="p6-m-val">36</div><div class="p6-m-label">Bicep</div></div><div class="p6-m"><div class="p6-m-val">58</div><div class="p6-m-label">Thigh</div></div><div class="p6-m"><div class="p6-m-val">18%</div><div class="p6-m-label">Fat</div></div></div>
+    </div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

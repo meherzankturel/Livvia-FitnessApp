@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Final</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ===== HEADER ===== */
+  .hdr { padding: 54px 22px 0; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; transition: transform 0.15s; }
+  .back:active { transform: scale(0.9); }
+
+
+  /* ===== ELEMENT 1: DARK HERO CARD (video inside) ===== */
+  .hero {
+    margin: 12px 22px 0; padding: 22px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(12px);
+    animation: heroIn 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+  }
+  @keyframes heroIn { to { opacity: 1; transform: translateY(0); } }
+
+  .hero-ring { position: absolute; top: -28px; right: -28px; width: 126px; height: 126px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); animation: ringSpin 18s linear infinite; }
+  @keyframes ringSpin { to { transform: rotate(360deg); } }
+  .hero-ring-in { position: absolute; top: -16px; right: -16px; width: 104px; height: 104px; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); animation: ringSpinR 12s linear infinite reverse; }
+  @keyframes ringSpinR { to { transform: rotate(330deg); } }
+
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-name {
+    font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; line-height: 1.08;
+    margin-top: 6px; position: relative;
+    opacity: 0; animation: nameIn 0.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
+  }
+  @keyframes nameIn { to { opacity: 1; } }
+
+  .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 14px; position: relative; }
+  .hero-pills { display: flex; gap: 6px; }
+  .hp { padding: 6px 12px; border-radius: 9px; background: rgba(246,245,240,0.06); display: flex; align-items: baseline; gap: 3px; }
+  .hp-v { font-size: 15px; font-weight: 800; color: var(--sand); }
+  .hp-u { font-size: 8px; color: rgba(246,245,240,0.3); }
+
+  .hero-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.7; transition: opacity 0.2s; }
+  .hero-video:active { opacity: 1; }
+  .hero-video-dot { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,211,153,0.1); display: flex; align-items: center; justify-content: center; }
+  .hero-video-dot svg { width: 8px; height: 8px; fill: var(--trail); }
+
+  .hero::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(246,245,240,0.03) 50%, transparent 100%);
+    transform: translateX(-100%);
+    animation: heroShimmer 2.5s ease 0.6s forwards;
+  }
+  @keyframes heroShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+
+  /* ===== ELEMENT 2: HORIZONTAL SCROLL INGREDIENT TILES ===== */
+  .ing-section { padding: 14px 0 0; }
+  .ing-head { display: flex; justify-content: space-between; align-items: center; padding: 0 22px; margin-bottom: 10px; }
+  .ing-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ing-count { font-size: 10px; color: var(--rock); }
+
+  .ing-scroll {
+    display: flex; gap: 8px; padding: 0 0 0 22px;
+    overflow-x: auto; scrollbar-width: none;
+  }
+  .ing-scroll::-webkit-scrollbar { display: none; }
+
+  .ing-tile {
+    min-width: 110px; padding: 16px; border-radius: 18px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    flex-shrink: 0; display: flex; flex-direction: column;
+    justify-content: space-between; min-height: 80px;
+    opacity: 0; transform: translateX(12px);
+    animation: tileIn 0.4s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .ing-tile:nth-child(1) { animation-delay: 0.35s; }
+  .ing-tile:nth-child(2) { animation-delay: 0.39s; }
+  .ing-tile:nth-child(3) { animation-delay: 0.43s; }
+  .ing-tile:nth-child(4) { animation-delay: 0.47s; }
+  .ing-tile:nth-child(5) { animation-delay: 0.51s; }
+  .ing-tile:nth-child(6) { animation-delay: 0.55s; }
+  .ing-tile:nth-child(7) { animation-delay: 0.59s; }
+  .ing-tile:nth-child(8) { animation-delay: 0.63s; }
+  @keyframes tileIn { to { opacity: 1; transform: translateX(0); } }
+
+  .ing-tile:last-child { margin-right: 22px; }
+  .ing-tile-name { font-size: 14px; font-weight: 600; color: var(--earth); line-height: 1.2; }
+  .ing-tile-amount { font-size: 11px; color: var(--rock); margin-top: 8px; }
+
+
+  /* ===== ELEMENT 3: HORIZONTAL SWIPEABLE STEP CARDS ===== */
+  .steps-section { padding: 14px 0 0; }
+  .steps-head { display: flex; justify-content: space-between; align-items: center; padding: 0 22px; margin-bottom: 10px; }
+  .steps-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .steps-count { font-size: 10px; color: var(--rock); }
+
+  .steps-scroll {
+    display: flex; gap: 12px; padding: 0 0 0 22px;
+    overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory;
+  }
+  .steps-scroll::-webkit-scrollbar { display: none; }
+
+  .step-card {
+    min-width: 300px; max-width: 300px; border-radius: 24px; padding: 24px;
+    min-height: 280px; display: flex; flex-direction: column;
+    flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    opacity: 0; transform: translateX(20px);
+    animation: cardSlide 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .step-card:nth-child(1) { animation-delay: 0.65s; }
+  .step-card:nth-child(2) { animation-delay: 0.73s; }
+  .step-card:nth-child(3) { animation-delay: 0.81s; }
+  .step-card:nth-child(4) { animation-delay: 0.89s; }
+  @keyframes cardSlide { to { opacity: 1; transform: translateX(0); } }
+
+  .step-card:last-child { margin-right: 22px; }
+  .step-card:nth-child(odd) { background: var(--earth); }
+  .step-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  /* Selected state */
+  .step-card.selected { transform: scale(1.02); }
+  .step-card.selected::before { content: ''; position: absolute; inset: -2px; border-radius: 26px; border: 2px solid var(--trail); pointer-events: none; z-index: 5; }
+  .step-card:not(.selected) { opacity: 0.55; transform: scale(0.96); }
+
+  /* Shimmer on selected */
+  .step-card.selected::after {
+    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.04) 50%, transparent 60%);
+    animation: cardShine 2.5s ease infinite;
+  }
+  @keyframes cardShine { 0% { transform: translateX(-100%); } 40%,100% { transform: translateX(100%); } }
+
+  /* Giant watermark number */
+  .step-watermark {
+    font-size: 120px; font-weight: 900; letter-spacing: -6px; line-height: 1;
+    position: absolute; top: -10px; right: 0; pointer-events: none;
+  }
+  .step-card:nth-child(odd) .step-watermark { color: rgba(246,245,240,0.03); }
+  .step-card:nth-child(even) .step-watermark { color: rgba(45,42,36,0.025); }
+
+  .step-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .step-card:nth-child(odd) .step-label { color: rgba(246,245,240,0.25); }
+  .step-card:nth-child(even) .step-label { color: var(--rock); }
+
+  .step-text {
+    font-size: 20px; font-weight: 600; line-height: 1.5; letter-spacing: -0.2px;
+    margin-top: auto; position: relative;
+  }
+  .step-card:nth-child(odd) .step-text { color: var(--sand); }
+  .step-card:nth-child(even) .step-text { color: var(--earth); }
+
+  .step-time { font-size: 9px; margin-top: 12px; position: relative; }
+  .step-card:nth-child(odd) .step-time { color: rgba(246,245,240,0.2); }
+  .step-card:nth-child(even) .step-time { color: var(--rock); }
+
+  /* Dots */
+  .dots { display: flex; justify-content: center; gap: 6px; padding: 12px 0 4px; }
+  .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--stone);
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer;
+  }
+  .dot.on { background: var(--earth); width: 20px; border-radius: 3px; }
+
+  .hint { text-align: center; font-size: 9px; color: var(--rock); opacity: 0.5; padding: 2px 0 0; transition: opacity 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <!-- HEADER -->
+    <div class="hdr"><div class="back">←</div></div>
+
+    <!-- ELEMENT 1: DARK HERO CARD with video inside -->
+    <div class="hero">
+      <div class="hero-ring"></div><div class="hero-ring-in"></div>
+      <div class="hero-label">Breakfast Recipe</div>
+      <div class="hero-name">Veggie Stir Fry<br>with Tofu</div>
+      <div class="hero-bottom">
+        <div class="hero-pills">
+          <div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div>
+          <div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div>
+          <div class="hp"><span class="hp-v">Easy</span></div>
+        </div>
+        <div class="hero-video">
+          <div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div>
+          <span>Video</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ELEMENT 2: HORIZONTAL SCROLL INGREDIENT TILES -->
+    <div class="ing-section">
+      <div class="ing-head"><span class="ing-title">Ingredients</span><span class="ing-count">8 items</span></div>
+      <div class="ing-scroll">
+        <div class="ing-tile"><div class="ing-tile-name">Firm tofu</div><div class="ing-tile-amount">½ block cubed</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Broccoli</div><div class="ing-tile-amount">1 cup florets</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Bell pepper</div><div class="ing-tile-amount">1 sliced</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Snap peas</div><div class="ing-tile-amount">½ cup</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Teriyaki</div><div class="ing-tile-amount">2 tbsp</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">White rice</div><div class="ing-tile-amount">1 cup cooked</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Sesame oil</div><div class="ing-tile-amount">1 tbsp</div></div>
+        <div class="ing-tile"><div class="ing-tile-name">Garlic</div><div class="ing-tile-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <!-- ELEMENT 3: HORIZONTAL SWIPEABLE STEP CARDS -->
+    <div class="steps-section">
+      <div class="steps-head"><span class="steps-title">Steps</span><span class="steps-count">4 steps</span></div>
+      <div class="steps-scroll" id="stepsScroll">
+        <div class="step-card selected" onclick="selectStep(0)">
+          <div class="step-watermark">01</div>
+          <div class="step-label">Step 1 of 4</div>
+          <div class="step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+          <div class="step-time">~4 min · Base camp</div>
+        </div>
+        <div class="step-card" onclick="selectStep(1)">
+          <div class="step-watermark">02</div>
+          <div class="step-label">Step 2 of 4</div>
+          <div class="step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div>
+          <div class="step-time">~3 min</div>
+        </div>
+        <div class="step-card" onclick="selectStep(2)">
+          <div class="step-watermark">03</div>
+          <div class="step-label">Step 3 of 4</div>
+          <div class="step-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat.</div>
+          <div class="step-time">~2 min</div>
+        </div>
+        <div class="step-card" onclick="selectStep(3)">
+          <div class="step-watermark">04</div>
+          <div class="step-label">Step 4 of 4</div>
+          <div class="step-text">Serve over fluffy white rice. Garnish with sesame seeds.</div>
+          <div class="step-time">~1 min · Summit</div>
+        </div>
+      </div>
+
+      <div class="dots">
+        <div class="dot on" onclick="selectStep(0)"></div>
+        <div class="dot" onclick="selectStep(1)"></div>
+        <div class="dot" onclick="selectStep(2)"></div>
+        <div class="dot" onclick="selectStep(3)"></div>
+      </div>
+      <div class="hint" id="hint">Swipe or tap to navigate steps</div>
+    </div>
+
+    <div style="height:80px;"></div>
+
+  </div></div>
+</div>
+
+<script>
+const scroll = document.getElementById('stepsScroll');
+const cards = document.querySelectorAll('.step-card');
+const dots = document.querySelectorAll('.dot');
+let current = 0;
+
+function selectStep(idx) {
+  current = idx;
+  cards.forEach((c, i) => c.classList.toggle('selected', i === idx));
+  dots.forEach((d, i) => d.classList.toggle('on', i === idx));
+  scroll.scrollTo({ left: cards[idx].offsetLeft - 22, behavior: 'smooth' });
+  document.getElementById('hint').style.opacity = '0';
+}
+
+scroll.addEventListener('scroll', () => {
+  let closest = 0, closestDist = Infinity;
+  cards.forEach((c, i) => {
+    const dist = Math.abs(c.offsetLeft - 22 - scroll.scrollLeft);
+    if (dist < closestDist) { closestDist = dist; closest = i; }
+  });
+  if (closest !== current) {
+    current = closest;
+    cards.forEach((c, i) => c.classList.toggle('selected', i === current));
+    dots.forEach((d, i) => d.classList.toggle('on', i === current));
+  }
+});
+</script>
+
+</body>
+</html>

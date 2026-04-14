@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Aisle Route Polished</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+/* Hero card placeholder */
+.hero{margin:16px 18px 0;border-radius:22px;padding:14px 18px 18px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between}
+.hero::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.hero-left{position:relative}
+.hero-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+.hero-total{display:flex;align-items:center}
+.hero-dollar{font-family:'DM Serif Display',serif;font-size:48px;color:#2E7D32;opacity:0.7;margin-right:8px}
+.hero-amount{font-family:'DM Serif Display',serif;font-size:48px;color:var(--earth);line-height:1}
+.hero-est{font-size:9px;color:var(--rock);margin-top:3px}
+.hero-cart{width:120px;height:120px;flex-shrink:0;margin:-10px -10px -10px 0}
+
+
+/* ============================================================
+   AISLE ROUTE — Polished
+   ============================================================ */
+.route-section{padding:20px 24px 50px}
+
+.route-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.route-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.route-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.route-meta{display:flex;align-items:center;gap:8px}
+.route-meta-text{font-size:10px;color:var(--rock)}
+.route-progress-mini{width:40px;height:4px;border-radius:2px;background:var(--stone)}
+.route-progress-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+/* Trail */
+.trail{position:relative;padding-left:40px}
+.trail-line{position:absolute;left:13px;top:14px;bottom:14px;width:2px;background:var(--stone);border-radius:1px}
+.trail-line-fill{width:100%;background:var(--trail);border-radius:1px;transition:height 0.4s}
+
+/* Aisle node */
+.aisle{position:relative;margin-bottom:6px}
+
+/* Aisle header dot */
+.aisle-dot{
+  position:absolute;left:-40px;top:2px;width:28px;height:28px;border-radius:14px;
+  z-index:2;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(0,0,0,0.06);
+}
+.aisle-dot.completed{background:var(--trail)}
+.aisle-dot.current{background:var(--earth)}
+.aisle-dot.upcoming{background:var(--stone)}
+.aisle-dot-icon{font-size:13px}
+
+/* Aisle header row */
+.aisle-header{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.aisle-name{font-size:11px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:1px}
+.aisle-count{display:flex;align-items:center;gap:4px}
+.aisle-count-checked{font-size:9px;font-weight:700;color:var(--trail)}
+.aisle-count-total{font-size:9px;color:var(--rock)}
+
+/* Item cards */
+.aisle-items{padding:4px 0 8px}
+
+.item{
+  display:flex;align-items:center;gap:8px;
+  padding:9px 0;cursor:pointer;
+  border-bottom:0.5px solid rgba(0,0,0,0.04);
+}
+.item:last-child{border-bottom:none}
+
+.item-cb{
+  width:18px;height:18px;border-radius:6px;
+  border:1.5px solid var(--stone);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.item-cb.on{background:var(--trail);border-color:var(--trail)}
+.item-ck{font-size:9px;color:#fff;font-weight:700}
+
+.item-name{font-size:13px;font-weight:500;color:var(--earth);flex:1;letter-spacing:-0.1px}
+
+.item-qty{font-size:10px;color:var(--rock);margin-right:6px}
+
+.item-price{font-size:12px;font-weight:600;color:var(--earth);min-width:40px;text-align:right}
+
+/* Checked item */
+.item.done{opacity:0.3}
+.item.done .item-name{text-decoration:line-through}
+
+/* Finish node */
+.finish{display:flex;align-items:center;gap:10px;padding:6px 0;margin-left:-40px}
+.finish-dot{width:28px;height:28px;border-radius:14px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.finish-text{font-size:11px;font-weight:600;color:var(--rock)}
+.finish-total{margin-left:auto;font-size:13px;font-weight:700;color:var(--earth)}
+
+</style>
+</head>
+<body>
+
+<div class="phone"><div class="ps">
+
+  <div class="top">
+    <div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div>
+    <span class="title">Grocery List</span>
+    <span class="week">Mar 30</span>
+  </div>
+
+  <!-- Hero Card -->
+  <div class="hero">
+    <div class="hero-left">
+      <div class="hero-label">Weekly Shop · 18 items</div>
+      <div class="hero-total"><span class="hero-dollar">$</span><span class="hero-amount">47.82</span></div>
+      <div class="hero-est">estimated total</div>
+    </div>
+    <div id="cart-anim" class="hero-cart"></div>
+  </div>
+
+  <!-- Aisle Route -->
+  <div class="route-section">
+    <div class="route-head">
+      <div><span class="route-title">Store Route</span><div class="route-accent"></div></div>
+      <div class="route-meta">
+        <span class="route-meta-text">5/18</span>
+        <div class="route-progress-mini"><div class="route-progress-fill" style="width:28%"></div></div>
+      </div>
+    </div>
+
+    <div class="trail">
+      <div class="trail-line"><div class="trail-line-fill" style="height:22%"></div></div>
+
+      <!-- PRODUCE — partially done -->
+      <div class="aisle">
+        <div class="aisle-dot completed"><span class="aisle-dot-icon">🥦</span></div>
+        <div class="aisle-header">
+          <span class="aisle-name">Produce</span>
+          <div class="aisle-count"><span class="aisle-count-checked">2 ✓</span><span class="aisle-count-total">/ 5</span></div>
+        </div>
+        <div class="aisle-items">
+          <div class="item done"><div class="item-cb on"><span class="item-ck">✓</span></div><span class="item-name">Avocado</span><span class="item-qty">3 pieces</span><span class="item-price">$5.97</span></div>
+          <div class="item done"><div class="item-cb on"><span class="item-ck">✓</span></div><span class="item-name">Spinach</span><span class="item-qty">200g bag</span><span class="item-price">$3.49</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Banana</span><span class="item-qty">6 pieces</span><span class="item-price">$4.14</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Tomato</span><span class="item-qty">4 pieces</span><span class="item-price">$5.96</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Onion</span><span class="item-qty">2 pieces</span><span class="item-price">$1.98</span></div>
+        </div>
+      </div>
+
+      <!-- DAIRY — current aisle -->
+      <div class="aisle">
+        <div class="aisle-dot current"><span class="aisle-dot-icon">🥛</span></div>
+        <div class="aisle-header">
+          <span class="aisle-name">Dairy</span>
+          <div class="aisle-count"><span class="aisle-count-checked">1 ✓</span><span class="aisle-count-total">/ 3</span></div>
+        </div>
+        <div class="aisle-items">
+          <div class="item done"><div class="item-cb on"><span class="item-ck">✓</span></div><span class="item-name">Greek yogurt</span><span class="item-qty">500g</span><span class="item-price">$5.99</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Butter</span><span class="item-qty">250g</span><span class="item-price">$4.49</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Cheese</span><span class="item-qty">200g block</span><span class="item-price">$4.99</span></div>
+        </div>
+      </div>
+
+      <!-- PROTEIN — upcoming -->
+      <div class="aisle">
+        <div class="aisle-dot upcoming"><span class="aisle-dot-icon">🥩</span></div>
+        <div class="aisle-header">
+          <span class="aisle-name">Protein</span>
+          <div class="aisle-count"><span class="aisle-count-checked">2 ✓</span><span class="aisle-count-total">/ 4</span></div>
+        </div>
+        <div class="aisle-items">
+          <div class="item done"><div class="item-cb on"><span class="item-ck">✓</span></div><span class="item-name">Chicken breast</span><span class="item-qty">500g</span><span class="item-price">$8.99</span></div>
+          <div class="item done"><div class="item-cb on"><span class="item-ck">✓</span></div><span class="item-name">Eggs</span><span class="item-qty">12 pack</span><span class="item-price">$4.99</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Salmon</span><span class="item-qty">300g fillet</span><span class="item-price">$12.99</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Tofu</span><span class="item-qty">400g block</span><span class="item-price">$3.49</span></div>
+        </div>
+      </div>
+
+      <!-- GRAINS — upcoming -->
+      <div class="aisle">
+        <div class="aisle-dot upcoming"><span class="aisle-dot-icon">🌾</span></div>
+        <div class="aisle-header">
+          <span class="aisle-name">Grains & Pantry</span>
+          <div class="aisle-count"><span class="aisle-count-total">0 / 3</span></div>
+        </div>
+        <div class="aisle-items">
+          <div class="item"><div class="item-cb"></div><span class="item-name">Brown rice</span><span class="item-qty">1 kg</span><span class="item-price">$4.99</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Oats</span><span class="item-qty">500g</span><span class="item-price">$3.99</span></div>
+          <div class="item"><div class="item-cb"></div><span class="item-name">Olive oil</span><span class="item-qty">500ml</span><span class="item-price">$6.99</span></div>
+        </div>
+      </div>
+
+      <!-- CHECKOUT -->
+      <div class="finish">
+        <div class="finish-dot">🏁</div>
+        <span class="finish-text">Checkout</span>
+        <span class="finish-total">$47.82</span>
+      </div>
+
+    </div>
+  </div>
+
+</div></div>
+
+<script>
+lottie.loadAnimation({
+  container: document.getElementById('cart-anim'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: '/shopping-cart.json'
+});
+</script>
+</body>
+</html>

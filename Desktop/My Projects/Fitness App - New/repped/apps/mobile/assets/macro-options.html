@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Macro Display Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--heading:'Playfair Display',Georgia,serif;--body:'Inter',sans-serif}
+
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Shared hero */
+.hero{position:relative}
+.back{position:absolute;top:52px;left:24px;width:36px;height:36px;border-radius:18px;background:rgba(0,0,0,0.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:center;z-index:3;cursor:pointer;border:1px solid rgba(255,255,255,0.08)}
+.hero-img{width:100%;height:300px;object-fit:cover;object-position:center;display:block}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.08) 0%,rgba(0,0,0,0) 30%,rgba(0,0,0,0.15) 70%,rgba(0,0,0,0.35) 100%)}
+.hero-fade{position:absolute;bottom:0;left:0;right:0;height:90px;background:linear-gradient(to top,var(--sand),transparent)}
+
+.card{margin:-44px 18px 0;background:linear-gradient(155deg,#D8D3C9 0%,#E9E5DC 30%,#F4F1EA 65%,#DFD9CF 100%);border-radius:22px;padding:22px;position:relative;z-index:2;box-shadow:0 2px 4px rgba(0,0,0,0.04),0 8px 24px rgba(0,0,0,0.06);overflow:hidden}
+.card::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.meal-badge{display:flex;justify-content:center;margin-bottom:10px;position:relative}
+.meal-badge span{font-family:var(--body);font-size:9px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:2.5px;padding:4px 14px;border-radius:100px;background:rgba(0,0,0,0.03)}
+.recipe-name{font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px;line-height:1.2;text-align:center;position:relative}
+
+/* Placeholder below */
+.ph{padding:20px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:10px}
+.ph-title{font-family:var(--body);font-size:11px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:2.5px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:baseline;padding:10px 0}
+.ph-name{font-size:14px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ph-dots{flex:1;margin:0 8px;overflow:hidden;font-size:11px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-qty{font-size:13px;font-weight:700;color:var(--earth);min-width:50px;text-align:right}
+
+
+/* ============================================================
+   M1: INLINE TEXT ROW
+   No cards at all. Just a single row of text:
+   420 cal · 28g protein · 52g carbs · 14g fat
+   Cleanest possible. Let typography do the work.
+   ============================================================ */
+.m1-row{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px;flex-wrap:wrap;position:relative}
+.m1-item{font-family:var(--body);font-size:13px;color:var(--earth)}
+.m1-item strong{font-weight:800}
+.m1-item span{font-weight:400;color:var(--rock);font-size:11px}
+.m1-sep{width:3px;height:3px;border-radius:50%;background:var(--rock);opacity:0.3}
+
+
+/* ============================================================
+   M2: HORIZONTAL BAR SEGMENTS
+   One horizontal bar divided into 4 colored segments.
+   Labels + values below each segment. Visual proportion.
+   ============================================================ */
+.m2-bar-wrap{margin-top:16px;position:relative}
+.m2-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;gap:2px}
+.m2-seg{border-radius:4px}
+.m2-seg.cal{background:var(--trail);flex:4.2}
+.m2-seg.pro{background:var(--earth);opacity:0.6;flex:2.8}
+.m2-seg.carb{background:var(--earth);opacity:0.3;flex:5.2}
+.m2-seg.fat{background:var(--earth);opacity:0.15;flex:1.4}
+.m2-labels{display:flex;margin-top:8px}
+.m2-label{text-align:center}
+.m2-label.cal{flex:4.2}.m2-label.pro{flex:2.8}.m2-label.carb{flex:5.2}.m2-label.fat{flex:1.4}
+.m2-label-val{font-family:var(--body);font-size:13px;font-weight:800;color:var(--earth)}
+.m2-label-text{font-family:var(--body);font-size:7px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:1px}
+
+
+/* ============================================================
+   M3: CIRCLE RINGS
+   4 small circle rings, each partially filled.
+   Value inside. Label below. Visual, fitness-app native.
+   ============================================================ */
+.m3-rings{display:flex;gap:10px;justify-content:center;margin-top:16px;position:relative}
+.m3-ring-item{display:flex;flex-direction:column;align-items:center;gap:4px}
+.m3-ring{width:52px;height:52px;border-radius:50%;position:relative;display:flex;align-items:center;justify-content:center}
+.m3-ring-track{position:absolute;inset:0;border-radius:50%;border:4px solid rgba(0,0,0,0.04)}
+.m3-ring-fill{position:absolute;inset:0;border-radius:50%;border:4px solid var(--trail);transform:rotate(-45deg)}
+.m3-ring-fill.q3{border-bottom-color:transparent}
+.m3-ring-fill.q2{border-bottom-color:transparent;border-left-color:transparent}
+.m3-ring-val{font-family:var(--body);font-size:12px;font-weight:800;color:var(--earth);z-index:1}
+.m3-ring-label{font-family:var(--body);font-size:7px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px}
+
+
+/* ============================================================
+   M4: DARK SUB-CARD
+   Dark earth card nested inside the recipe card.
+   Values in a row with thin dividers. Trail green accents.
+   ============================================================ */
+.m4-dark{background:var(--earth);border-radius:14px;padding:14px 8px;margin-top:16px;display:flex;align-items:center;position:relative;overflow:hidden}
+.m4-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.m4-item{flex:1;text-align:center;position:relative}
+.m4-item+.m4-item::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:1px;background:rgba(246,245,240,0.06)}
+.m4-val{font-family:var(--body);font-size:16px;font-weight:800;color:var(--sand);letter-spacing:-0.5px}
+.m4-label{font-family:var(--body);font-size:7px;font-weight:600;color:rgba(246,245,240,0.3);text-transform:uppercase;letter-spacing:0.8px;margin-top:2px}
+
+
+/* ============================================================
+   M5: PILL BADGES
+   4 rounded pill badges in a row. Compact, tag-like.
+   Value bold + label light inside each pill. No cards.
+   ============================================================ */
+.m5-pills{display:flex;gap:6px;justify-content:center;margin-top:14px;flex-wrap:wrap;position:relative}
+.m5-pill{padding:8px 14px;border-radius:100px;background:rgba(0,0,0,0.04);display:flex;align-items:baseline;gap:3px}
+.m5-pill-val{font-family:var(--body);font-size:14px;font-weight:800;color:var(--earth)}
+.m5-pill-label{font-family:var(--body);font-size:9px;font-weight:500;color:var(--rock)}
+
+
+/* ============================================================
+   M6: BENTO GRID — 2x2
+   4 tiles in a 2x2 grid. Bigger, more visual.
+   Alternating white/stone backgrounds. Spacious.
+   ============================================================ */
+.m6-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:16px;position:relative}
+.m6-tile{padding:12px;border-radius:14px;text-align:center}
+.m6-tile.a{background:linear-gradient(150deg,#fff 0%,#F3F0E9 100%);border:1px solid rgba(0,0,0,0.03)}
+.m6-tile.b{background:linear-gradient(150deg,#F0EDE6 0%,#E6E2D8 100%)}
+.m6-val{font-family:var(--body);font-size:20px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.m6-label{font-family:var(--body);font-size:8px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- M1: INLINE TEXT -->
+  <div>
+    <div class="col-label">M1 — INLINE TEXT</div>
+    <div class="col-desc">No cards. Just text: 420 cal · 28g protein · 52g carbs · 14g fat. Cleanest possible.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m1-row">
+          <span class="m1-item"><strong>420</strong> <span>cal</span></span><span class="m1-sep"></span>
+          <span class="m1-item"><strong>28g</strong> <span>protein</span></span><span class="m1-sep"></span>
+          <span class="m1-item"><strong>52g</strong> <span>carbs</span></span><span class="m1-sep"></span>
+          <span class="m1-item"><strong>14g</strong> <span>fat</span></span>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- M2: BAR SEGMENTS -->
+  <div>
+    <div class="col-label">M2 — PROPORTION BAR</div>
+    <div class="col-desc">Horizontal bar showing macro proportions. Green for calories. Labels below. Visual breakdown.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m2-bar-wrap">
+          <div class="m2-bar"><div class="m2-seg cal"></div><div class="m2-seg pro"></div><div class="m2-seg carb"></div><div class="m2-seg fat"></div></div>
+          <div class="m2-labels">
+            <div class="m2-label cal"><div class="m2-label-val">420</div><div class="m2-label-text">cal</div></div>
+            <div class="m2-label pro"><div class="m2-label-val">28g</div><div class="m2-label-text">protein</div></div>
+            <div class="m2-label carb"><div class="m2-label-val">52g</div><div class="m2-label-text">carbs</div></div>
+            <div class="m2-label fat"><div class="m2-label-val">14g</div><div class="m2-label-text">fat</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- M3: CIRCLE RINGS -->
+  <div>
+    <div class="col-label">M3 — CIRCLE RINGS</div>
+    <div class="col-desc">4 small progress rings. Value inside. Fitness-native feel. Visual, gamified.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m3-rings">
+          <div class="m3-ring-item"><div class="m3-ring"><div class="m3-ring-track"></div><div class="m3-ring-fill q3"></div><span class="m3-ring-val">420</span></div><span class="m3-ring-label">cal</span></div>
+          <div class="m3-ring-item"><div class="m3-ring"><div class="m3-ring-track"></div><div class="m3-ring-fill q2"></div><span class="m3-ring-val">28g</span></div><span class="m3-ring-label">protein</span></div>
+          <div class="m3-ring-item"><div class="m3-ring"><div class="m3-ring-track"></div><div class="m3-ring-fill q3"></div><span class="m3-ring-val">52g</span></div><span class="m3-ring-label">carbs</span></div>
+          <div class="m3-ring-item"><div class="m3-ring"><div class="m3-ring-track"></div><div class="m3-ring-fill q2"></div><span class="m3-ring-val">14g</span></div><span class="m3-ring-label">fat</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- M4: DARK SUB-CARD -->
+  <div>
+    <div class="col-label">M4 — DARK SUB-CARD</div>
+    <div class="col-desc">Dark earth card nested inside. Thin dividers between values. Diagonal accents. Premium contrast.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m4-dark">
+          <div class="m4-diag" style="width:60px;top:8px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="m4-item"><div class="m4-val">420</div><div class="m4-label">Calories</div></div>
+          <div class="m4-item"><div class="m4-val">28g</div><div class="m4-label">Protein</div></div>
+          <div class="m4-item"><div class="m4-val">52g</div><div class="m4-label">Carbs</div></div>
+          <div class="m4-item"><div class="m4-val">14g</div><div class="m4-label">Fat</div></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- M5: PILL BADGES -->
+  <div>
+    <div class="col-label">M5 — PILL BADGES</div>
+    <div class="col-desc">Rounded pill tags. Value bold + label. No borders, just tinted bg. Tag/chip feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m5-pills">
+          <span class="m5-pill"><span class="m5-pill-val">420</span><span class="m5-pill-label">cal</span></span>
+          <span class="m5-pill"><span class="m5-pill-val">28g</span><span class="m5-pill-label">protein</span></span>
+          <span class="m5-pill"><span class="m5-pill-val">52g</span><span class="m5-pill-label">carbs</span></span>
+          <span class="m5-pill"><span class="m5-pill-val">14g</span><span class="m5-pill-label">fat</span></span>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- M6: 2x2 BENTO -->
+  <div>
+    <div class="col-label">M6 — 2×2 BENTO GRID</div>
+    <div class="col-desc">4 tiles in a 2×2 grid. Bigger values. Alternating white/stone. Spacious, visual.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero"><div class="back"><span style="font-size:18px;color:#fff;margin-top:-1px">‹</span></div><img class="hero-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt=""><div class="hero-overlay"></div><div class="hero-fade"></div></div>
+      <div class="card"><div class="meal-badge"><span>Breakfast</span></div><div class="recipe-name">Black Bean Burrito Bowl</div>
+        <div class="m6-grid">
+          <div class="m6-tile a"><div class="m6-val">420</div><div class="m6-label">Calories</div></div>
+          <div class="m6-tile b"><div class="m6-val">28g</div><div class="m6-label">Protein</div></div>
+          <div class="m6-tile b"><div class="m6-val">52g</div><div class="m6-label">Carbs</div></div>
+          <div class="m6-tile a"><div class="m6-val">14g</div><div class="m6-label">Fat</div></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><span class="ph-name">Black beans</span><span class="ph-dots">·······································</span><span class="ph-qty">1/2 can</span></div><div class="ph-row"><span class="ph-name">White rice</span><span class="ph-dots">·······································</span><span class="ph-qty">1 cup</span></div><div class="ph-row"><span class="ph-name">Corn</span><span class="ph-dots">·······································</span><span class="ph-qty">1/4 cup</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

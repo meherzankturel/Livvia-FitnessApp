@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Mockup V2</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+
+/* ============================================================
+   TOP: IMAGE + OVERLAY CARD
+   ============================================================ */
+.hero{position:relative;width:100%;padding-top:56px}
+
+/* Back button */
+.back{position:absolute;top:52px;left:24px;width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:3;cursor:pointer}
+.back-icon{font-size:18px;color:#fff;margin-top:-1px}
+
+/* Meal type */
+.meal-label{text-align:center;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1.5px;position:absolute;top:58px;left:0;right:0;z-index:3;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
+
+/* Image container — centered crop */
+.img-wrap{width:100%;height:280px;position:relative;overflow:hidden}
+.img-wrap img{width:100%;height:100%;object-fit:cover;object-position:center center;display:block}
+
+/* Dark overlay on image for text readability */
+.img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.15) 0%,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.25) 100%)}
+
+/* Gradient fade to sand at bottom */
+.img-fade{position:absolute;bottom:0;left:0;right:0;height:100px;background:linear-gradient(to top,var(--sand),transparent)}
+
+/* Recipe card — floating with all 4 corners rounded */
+.recipe-card{margin:-40px 20px 0;background:#fff;border-radius:20px;padding:20px;position:relative;z-index:2;box-shadow:0 4px 24px rgba(0,0,0,0.06)}
+
+.recipe-name{font-size:22px;font-weight:800;color:var(--earth);letter-spacing:-0.8px;line-height:1.15;text-align:center}
+
+.macro-row{display:flex;gap:8px;margin-top:14px}
+.macro-item{flex:1;text-align:center;padding:10px 4px;border-radius:14px;background:var(--sand)}
+.macro-val{font-size:17px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.macro-label{font-size:8px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+.macro-item.cal{background:var(--earth)}
+.macro-item.cal .macro-val{color:var(--trail)}
+.macro-item.cal .macro-label{color:rgba(246,245,240,0.3)}
+
+
+/* ============================================================
+   SECTION HEADINGS — distinct from body text
+   ============================================================ */
+.section{padding:24px 24px 0}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.section-title{font-size:12px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:1.5px}
+.section-meta{font-size:10px;color:var(--rock);font-weight:500}
+
+
+/* ============================================================
+   INGREDIENTS — dotted line properly aligned
+   Using a table-like layout with flex so dots always fill
+   the exact gap between name and quantity.
+   ============================================================ */
+.ing-row{display:flex;align-items:center;padding:12px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ing-row:last-child{border-bottom:none}
+.ing-name{font-size:15px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ing-fill{flex:1;margin:0 10px;height:1px;position:relative;overflow:hidden}
+.ing-fill::after{content:'';position:absolute;top:0;left:0;right:0;border-bottom:1.5px dotted rgba(0,0,0,0.12)}
+.ing-qty{font-size:14px;font-weight:600;color:var(--earth);flex-shrink:0;text-align:right}
+
+
+/* ============================================================
+   STEPS — big numbers left, text right
+   ============================================================ */
+.steps-section{padding:24px 24px 50px}
+
+.step-row{display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.step-row:last-child{border-bottom:none}
+
+.step-num{font-size:30px;font-weight:800;color:var(--stone);letter-spacing:-1.5px;line-height:1;width:38px;flex-shrink:0;padding-top:2px}
+
+.step-content{flex:1}
+.step-text{font-size:14px;font-weight:400;color:var(--earth);line-height:1.6}
+.step-time{font-size:10px;color:var(--rock);margin-top:4px;font-weight:500}
+
+</style>
+</head>
+<body>
+
+<div class="phone"><div class="ps">
+
+  <!-- ============ TOP ============ -->
+  <div class="hero">
+    <div class="back"><span class="back-icon">‹</span></div>
+    <div class="meal-label">Breakfast</div>
+
+    <div class="img-wrap">
+      <img src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt="Burrito Bowl">
+      <div class="img-overlay"></div>
+      <div class="img-fade"></div>
+    </div>
+  </div>
+
+  <!-- Recipe card — all 4 corners rounded, floating -->
+  <div class="recipe-card">
+    <div class="recipe-name">Black Bean Burrito Bowl</div>
+    <div class="macro-row">
+      <div class="macro-item cal">
+        <div class="macro-val">420</div>
+        <div class="macro-label">Calories</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-val">28g</div>
+        <div class="macro-label">Protein</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-val">52g</div>
+        <div class="macro-label">Carbs</div>
+      </div>
+      <div class="macro-item">
+        <div class="macro-val">14g</div>
+        <div class="macro-label">Fat</div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============ INGREDIENTS ============ -->
+  <div class="section">
+    <div class="section-head">
+      <span class="section-title">Ingredients</span>
+      <span class="section-meta">6 items</span>
+    </div>
+
+    <div class="ing-row">
+      <span class="ing-name">Black beans</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">1/2 can</span>
+    </div>
+    <div class="ing-row">
+      <span class="ing-name">White rice</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">1 cup</span>
+    </div>
+    <div class="ing-row">
+      <span class="ing-name">Corn</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">1/4 cup</span>
+    </div>
+    <div class="ing-row">
+      <span class="ing-name">Avocado</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">1/2</span>
+    </div>
+    <div class="ing-row">
+      <span class="ing-name">Salsa</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">3 tbsp</span>
+    </div>
+    <div class="ing-row">
+      <span class="ing-name">Sour cream</span>
+      <span class="ing-fill"></span>
+      <span class="ing-qty">1 tbsp</span>
+    </div>
+  </div>
+
+
+  <!-- ============ STEPS ============ -->
+  <div class="steps-section">
+    <div class="section-head">
+      <span class="section-title">Steps</span>
+      <span class="section-meta">4 steps</span>
+    </div>
+
+    <div class="step-row">
+      <span class="step-num">01</span>
+      <div class="step-content">
+        <div class="step-text">Cook rice according to package directions. Fluff with a fork when done.</div>
+        <div class="step-time">~2 min</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step-num">02</span>
+      <div class="step-content">
+        <div class="step-text">Heat black beans in a small pot over medium heat. Season with cumin and salt to taste.</div>
+        <div class="step-time">~3 min</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step-num">03</span>
+      <div class="step-content">
+        <div class="step-text">Slice avocado and prep remaining toppings — corn, salsa, sour cream.</div>
+        <div class="step-time">~2 min</div>
+      </div>
+    </div>
+
+    <div class="step-row">
+      <span class="step-num">04</span>
+      <div class="step-content">
+        <div class="step-text">Assemble the bowl: rice base, black beans, corn, avocado slices, salsa, and a dollop of sour cream.</div>
+        <div class="step-time">~1 min</div>
+      </div>
+    </div>
+  </div>
+
+</div></div>
+
+</body>
+</html>

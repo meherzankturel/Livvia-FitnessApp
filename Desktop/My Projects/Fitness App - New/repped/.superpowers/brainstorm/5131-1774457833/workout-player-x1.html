@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player X-Series</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+
+  /* ============================================================
+     X1: "THE PLATE RACK"
+     Physical barbell metaphor. Weight plates visualized as
+     concentric rings — bigger weight = more/bigger plates.
+     Tap plates to change weight. Reps shown below as a
+     large counter. Gym-native visual language.
+     ============================================================ */
+  .x1 { background: var(--earth); }
+
+  .x1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .x1-timer { padding: 5px 12px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .x1-of { font-size: 12px; color: rgba(246,245,240,0.25); margin-left: 8px; }
+  .x1-exit { font-size: 12px; color: rgba(246,245,240,0.2); margin-left: auto; cursor: pointer; }
+
+  .x1-ex { text-align: center; padding: 14px 24px 0; }
+  .x1-ex-name { font-size: 20px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .x1-ex-meta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+  .x1-tag { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x1-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .x1-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .x1-link.swap { color: var(--trail); opacity: 0.7; }
+  .x1-link.video { color: rgba(246,245,240,0.25); }
+
+  /* The barbell visualization */
+  .x1-barbell {
+    display: flex; flex-direction: column; align-items: center;
+    padding: 28px 24px 0; position: relative;
+  }
+
+  .x1-plates {
+    position: relative; width: 240px; height: 240px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Plate rings — concentric circles representing weight plates */
+  .x1-plate {
+    position: absolute; border-radius: 50%;
+    border: 3px solid rgba(246,245,240,0.08);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .x1-plate.p1 { width: 240px; height: 240px; border-color: rgba(52,211,153,0.15); background: rgba(52,211,153,0.02); }
+  .x1-plate.p2 { width: 200px; height: 200px; border-color: rgba(52,211,153,0.12); background: rgba(52,211,153,0.02); }
+  .x1-plate.p3 { width: 160px; height: 160px; border-color: rgba(52,211,153,0.09); background: rgba(52,211,153,0.02); }
+  .x1-plate.p4 { width: 120px; height: 120px; border-color: rgba(246,245,240,0.06); background: rgba(246,245,240,0.02); }
+
+  /* Center weight display */
+  .x1-center {
+    position: relative; z-index: 2; text-align: center;
+    width: 100px; height: 100px; border-radius: 50%;
+    background: var(--sand); display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  }
+  .x1-weight-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .x1-weight-unit { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  /* Plate labels around the rings */
+  .x1-plate-label {
+    position: absolute; font-size: 8px; font-weight: 700;
+    color: rgba(52,211,153,0.4); letter-spacing: 0.5px;
+  }
+  .x1-plate-label.top { top: -4px; }
+  .x1-plate-label.right { right: -8px; top: 50%; transform: translateY(-50%); }
+
+  /* Weight adjust buttons */
+  .x1-adjust {
+    display: flex; gap: 12px; margin-top: 16px; justify-content: center;
+  }
+  .x1-adj-btn {
+    padding: 8px 20px; border-radius: 100px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .x1-adj-btn.minus { background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .x1-adj-btn.plus { background: rgba(52,211,153,0.1); color: var(--trail); }
+
+  /* Reps section */
+  .x1-reps-zone {
+    margin: 24px 24px 0; padding: 20px; border-radius: 20px;
+    background: rgba(246,245,240,0.03); border: 1px solid rgba(246,245,240,0.04);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .x1-reps-label { font-size: 10px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x1-reps-row { display: flex; align-items: center; gap: 16px; }
+  .x1-reps-btn { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; cursor: pointer; }
+  .x1-reps-btn.minus { background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .x1-reps-btn.plus { background: rgba(52,211,153,0.1); color: var(--trail); }
+  .x1-reps-val { font-size: 32px; font-weight: 800; color: var(--sand); min-width: 40px; text-align: center; }
+
+  /* Previous & set info */
+  .x1-info { display: flex; justify-content: space-between; padding: 14px 24px 0; }
+  .x1-info-item {}
+  .x1-info-label { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x1-info-val { font-size: 13px; font-weight: 600; color: rgba(246,245,240,0.5); margin-top: 2px; }
+
+  /* Set dots */
+  .x1-setdots { display: flex; gap: 6px; justify-content: center; padding: 16px 0 0; }
+  .x1-sd { width: 8px; height: 8px; border-radius: 50%; border: 2px solid rgba(246,245,240,0.1); }
+  .x1-sd.done { background: var(--trail); border-color: var(--trail); }
+  .x1-sd.active { border-color: var(--trail); }
+
+  /* Log button */
+  .x1-log { margin: 20px 24px 40px; padding: 18px; border-radius: 18px; background: var(--trail); text-align: center; cursor: pointer; }
+  .x1-log-text { font-size: 16px; font-weight: 700; color: var(--earth); }
+
+
+  /* ============================================================
+     X2: "THE TAPE"
+     Horizontal film-reel scroll. Sets are on a tape you swipe
+     through. Current set is center-stage, expanded. Past sets
+     left (filled), future sets right (faded). Cinematic.
+     ============================================================ */
+  .x2 { background: var(--sand); }
+
+  .x2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .x2-timer { font-size: 13px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .x2-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .x2-exit { font-size: 12px; color: var(--rock); margin-left: auto; }
+
+  .x2-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); }
+  .x2-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Exercise header */
+  .x2-ex { padding: 16px 24px 0; }
+  .x2-ex-name { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.1; }
+  .x2-ex-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .x2-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .x2-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .x2-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .x2-link.swap { color: var(--trail); }
+  .x2-link.video { color: var(--rock); }
+
+  /* THE TAPE — horizontal scroll */
+  .x2-tape-wrap {
+    margin-top: 24px; position: relative;
+    overflow: hidden;
+  }
+
+  /* Fade edges */
+  .x2-tape-wrap::before, .x2-tape-wrap::after {
+    content: ''; position: absolute; top: 0; bottom: 0; width: 40px; z-index: 2;
+    pointer-events: none;
+  }
+  .x2-tape-wrap::before { left: 0; background: linear-gradient(to right, var(--sand), transparent); }
+  .x2-tape-wrap::after { right: 0; background: linear-gradient(to left, var(--sand), transparent); }
+
+  .x2-tape {
+    display: flex; gap: 12px; padding: 0 80px;
+    overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory;
+  }
+  .x2-tape::-webkit-scrollbar { display: none; }
+
+  .x2-frame {
+    flex-shrink: 0; width: 260px; scroll-snap-align: center;
+    border-radius: 24px; transition: all 0.3s; position: relative;
+  }
+
+  /* Done frame */
+  .x2-frame.done {
+    background: var(--earth); padding: 20px;
+    opacity: 0.6;
+  }
+  .x2-frame.done .x2-f-set { font-size: 10px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 1px; }
+  .x2-frame.done .x2-f-vals { margin-top: 12px; display: flex; gap: 10px; }
+  .x2-frame.done .x2-f-num { font-size: 28px; font-weight: 800; color: var(--sand); }
+  .x2-frame.done .x2-f-unit { font-size: 10px; color: rgba(246,245,240,0.3); }
+  .x2-frame.done .x2-f-check { position: absolute; top: 16px; right: 16px; width: 24px; height: 24px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 700; }
+
+  /* Current frame — expanded */
+  .x2-frame.current {
+    background: #fff; padding: 24px; width: 280px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+    border: 2px solid rgba(52,211,153,0.12);
+  }
+  .x2-frame.current .x2-f-set { font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 1px; }
+  .x2-frame.current .x2-f-prev { font-size: 11px; color: var(--rock); margin-top: 4px; }
+  .x2-frame.current .x2-f-prev strong { color: var(--earth); }
+
+  .x2-f-inputs { display: flex; gap: 12px; margin-top: 16px; }
+  .x2-f-group { flex: 1; text-align: center; }
+  .x2-f-input {
+    width: 100%; padding: 18px 8px; border-radius: 16px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 32px; font-weight: 800;
+    color: var(--earth); outline: none; letter-spacing: -0.5px;
+  }
+  .x2-f-input:focus { border-color: var(--trail); background: #fff; }
+  .x2-f-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+
+  /* Future frame */
+  .x2-frame.future {
+    background: var(--stone); padding: 20px; opacity: 0.35;
+  }
+  .x2-frame.future .x2-f-set { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; }
+  .x2-frame.future .x2-f-placeholder { margin-top: 20px; display: flex; gap: 10px; }
+  .x2-frame.future .x2-f-ph { flex: 1; height: 50px; border-radius: 12px; background: rgba(0,0,0,0.03); }
+
+  /* Focus cue below tape */
+  .x2-cue {
+    margin: 20px 24px 0; padding: 10px 14px; border-radius: 12px;
+    background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.06);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .x2-cue-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: x2pulse 2.4s infinite; }
+  @keyframes x2pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .x2-cue-text { font-size: 11px; color: var(--rock); }
+  .x2-cue-text strong { color: var(--earth); }
+
+  /* Log button */
+  .x2-log { margin: 20px 24px 40px; padding: 18px; border-radius: 18px; background: var(--earth); text-align: center; cursor: pointer; }
+  .x2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     X3: "THE BENTO BOARD"
+     Asymmetric bento grid. Exercise tile, weight tile, reps tile,
+     set progress tile, previous tile — all as independent widgets.
+     Like a personal dashboard for THIS exercise right now.
+     ============================================================ */
+  .x3 { background: var(--sand); }
+
+  .x3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .x3-timer { padding: 5px 12px; border-radius: 100px; background: var(--earth); font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .x3-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .x3-exit { font-size: 12px; color: var(--rock); margin-left: auto; }
+
+  .x3-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); }
+  .x3-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* THE BENTO GRID */
+  .x3-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+    padding: 16px 20px 0;
+  }
+
+  .x3-tile {
+    border-radius: 20px; padding: 16px; position: relative;
+    overflow: hidden;
+  }
+
+  /* Exercise tile — spans full width, dark */
+  .x3-tile.exercise {
+    grid-column: 1 / -1; background: var(--earth);
+    padding: 18px 20px; display: flex; justify-content: space-between;
+    align-items: center;
+  }
+  .x3-tile.exercise .x3-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .x3-tile.exercise .x3-ha:nth-child(1) { width: 80px; top: 10px; right: -4px; transform: rotate(-35deg); }
+  .x3-tile.exercise .x3-ha:nth-child(2) { width: 60px; top: 20px; right: -4px; transform: rotate(-35deg); }
+
+  .x3-ex-left { position: relative; }
+  .x3-ex-name { font-size: 20px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .x3-ex-sub { display: flex; align-items: center; gap: 6px; margin-top: 3px; }
+  .x3-ex-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x3-ex-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .x3-ex-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .x3-ex-link.swap { color: var(--trail); opacity: 0.7; }
+  .x3-ex-link.video { color: rgba(246,245,240,0.25); }
+
+  .x3-ex-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; position: relative; }
+  .x3-set-badge { font-size: 11px; font-weight: 700; color: var(--trail); }
+  .x3-ex-dots { display: flex; gap: 4px; }
+  .x3-ex-d { width: 8px; height: 8px; border-radius: 50%; border: 2px solid rgba(246,245,240,0.1); }
+  .x3-ex-d.done { background: var(--trail); border-color: var(--trail); }
+  .x3-ex-d.active { border-color: var(--trail); }
+
+  /* Weight tile */
+  .x3-tile.weight {
+    background: #fff; border: 1.5px solid var(--stone);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 140px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .x3-tile.weight:focus-within { border-color: var(--trail); box-shadow: 0 0 0 3px rgba(52,211,153,0.06); }
+  .x3-tile-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x3-tile-val { font-size: 42px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; margin-top: 4px; line-height: 1; }
+  .x3-tile-unit { font-size: 11px; font-weight: 600; color: var(--rock); margin-top: 2px; }
+  .x3-tile-ghost { font-size: 10px; color: var(--rock); opacity: 0.5; margin-top: 6px; }
+
+  /* Reps tile */
+  .x3-tile.reps {
+    background: #fff; border: 1.5px solid var(--stone);
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 140px;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .x3-tile.reps:focus-within { border-color: var(--trail); box-shadow: 0 0 0 3px rgba(52,211,153,0.06); }
+
+  /* Previous tile — small */
+  .x3-tile.previous {
+    background: var(--stone); display: flex; flex-direction: column;
+    justify-content: center;
+  }
+  .x3-prev-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .x3-prev-sets { margin-top: 8px; }
+  .x3-prev-row { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .x3-prev-num { font-size: 9px; font-weight: 700; color: var(--rock); width: 12px; }
+  .x3-prev-bar { height: 4px; border-radius: 2px; background: rgba(0,0,0,0.06); flex: 1; position: relative; }
+  .x3-prev-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 2px; background: var(--trail); opacity: 0.3; }
+  .x3-prev-val { font-size: 9px; color: var(--rock); }
+
+  /* Cue tile */
+  .x3-tile.cue {
+    background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.06);
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .x3-cue-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); margin-top: 2px; flex-shrink: 0; animation: x3pulse 2.4s infinite; }
+  @keyframes x3pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .x3-cue-text { font-size: 11px; color: var(--rock); line-height: 1.4; }
+  .x3-cue-text strong { color: var(--earth); }
+
+  /* Log button */
+  .x3-log { margin: 14px 20px 40px; padding: 18px; border-radius: 18px; background: var(--earth); text-align: center; cursor: pointer; }
+  .x3-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
+
+  /* X1 plate pulse */
+  @keyframes plateBreath {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.02); opacity: 0.9; }
+  }
+  .x1-plate.p1 { animation: plateBreath 3s ease-in-out infinite; }
+  .x1-plate.p2 { animation: plateBreath 3s ease-in-out infinite 0.3s; }
+  .x1-plate.p3 { animation: plateBreath 3s ease-in-out infinite 0.6s; }
+
+  /* X1 center glow */
+  @keyframes centerGlow {
+    0%, 100% { box-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+    50% { box-shadow: 0 4px 30px rgba(52,211,153,0.15), 0 4px 20px rgba(0,0,0,0.3); }
+  }
+  .x1-center { animation: centerGlow 2.4s ease-in-out infinite; }
+
+  /* X2 tape card entrance */
+  @keyframes slideIn {
+    from { transform: translateX(30px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+  .x2-frame { animation: slideIn 0.5s ease-out backwards; }
+  .x2-frame:nth-child(1) { animation-delay: 0s; }
+  .x2-frame:nth-child(2) { animation-delay: 0.1s; }
+  .x2-frame:nth-child(3) { animation-delay: 0.2s; }
+  .x2-frame:nth-child(4) { animation-delay: 0.3s; }
+
+  /* X3 tile entrance */
+  @keyframes tileUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .x3-tile { animation: tileUp 0.4s ease-out backwards; }
+  .x3-tile:nth-child(1) { animation-delay: 0s; }
+  .x3-tile:nth-child(2) { animation-delay: 0.08s; }
+  .x3-tile:nth-child(3) { animation-delay: 0.16s; }
+  .x3-tile:nth-child(4) { animation-delay: 0.24s; }
+  .x3-tile:nth-child(5) { animation-delay: 0.32s; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== X1: THE PLATE RACK =============== -->
+  <div>
+    <div class="col-label">X1 — THE PLATE RACK</div>
+    <div class="col-desc">Physical barbell metaphor. Concentric plate rings pulse around your weight. +/- to adjust. Gym-native visual language nobody else uses.</div>
+    <div class="phone x1">
+      <div class="ps">
+
+        <div class="x1-top">
+          <span class="x1-timer">12:34</span>
+          <span class="x1-of">3 / 6</span>
+          <span class="x1-exit">End</span>
+        </div>
+
+        <div class="x1-ex">
+          <div class="x1-ex-name">Barbell Bench Press</div>
+          <div class="x1-ex-meta">
+            <span class="x1-tag">Chest</span>
+            <span class="x1-dot"></span>
+            <span class="x1-link swap">Swap</span>
+            <span class="x1-dot"></span>
+            <span class="x1-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <!-- Barbell visualization -->
+        <div class="x1-barbell">
+          <div class="x1-plates">
+            <div class="x1-plate p1">
+              <span class="x1-plate-label top">20kg</span>
+            </div>
+            <div class="x1-plate p2">
+              <span class="x1-plate-label right">15kg</span>
+            </div>
+            <div class="x1-plate p3">
+              <span class="x1-plate-label top">10kg</span>
+            </div>
+            <div class="x1-plate p4"></div>
+            <div class="x1-center">
+              <div class="x1-weight-val">72.5</div>
+              <div class="x1-weight-unit">kg</div>
+            </div>
+          </div>
+
+          <div class="x1-adjust">
+            <span class="x1-adj-btn minus">− 2.5</span>
+            <span class="x1-adj-btn plus">+ 2.5</span>
+          </div>
+        </div>
+
+        <!-- Reps -->
+        <div class="x1-reps-zone">
+          <span class="x1-reps-label">Reps</span>
+          <div class="x1-reps-row">
+            <span class="x1-reps-btn minus">−</span>
+            <span class="x1-reps-val">10</span>
+            <span class="x1-reps-btn plus">+</span>
+          </div>
+        </div>
+
+        <!-- Info row -->
+        <div class="x1-info">
+          <div class="x1-info-item">
+            <div class="x1-info-label">Set</div>
+            <div class="x1-info-val">2 of 4</div>
+          </div>
+          <div class="x1-info-item" style="text-align: right;">
+            <div class="x1-info-label">Last time</div>
+            <div class="x1-info-val">70 × 10</div>
+          </div>
+        </div>
+
+        <!-- Set dots -->
+        <div class="x1-setdots">
+          <div class="x1-sd done"></div>
+          <div class="x1-sd active"></div>
+          <div class="x1-sd"></div>
+          <div class="x1-sd"></div>
+        </div>
+
+        <div class="x1-log">
+          <div class="x1-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== X2: THE TAPE =============== -->
+  <div>
+    <div class="col-label">X2 — THE TAPE</div>
+    <div class="col-desc">Horizontal film-reel. Swipe through sets like frames. Current set center-stage with big inputs. Done sets to the left, upcoming to the right.</div>
+    <div class="phone x2">
+      <div class="ps">
+
+        <div class="x2-top">
+          <span class="x2-timer">12:34</span>
+          <span class="x2-of">3 / 6</span>
+          <span class="x2-exit">End</span>
+        </div>
+
+        <div class="x2-progress"><div class="x2-pfill" style="width: 40%;"></div></div>
+
+        <div class="x2-ex">
+          <div class="x2-ex-name">Barbell<br>Bench Press</div>
+          <div class="x2-ex-row">
+            <span class="x2-muscle">Chest</span>
+            <span class="x2-dot"></span>
+            <span class="x2-link swap">Swap</span>
+            <span class="x2-dot"></span>
+            <span class="x2-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <!-- The tape -->
+        <div class="x2-tape-wrap">
+          <div class="x2-tape">
+            <!-- Done set -->
+            <div class="x2-frame done">
+              <div class="x2-f-check">✓</div>
+              <div class="x2-f-set">Set 1</div>
+              <div class="x2-f-vals">
+                <div>
+                  <div class="x2-f-num">70</div>
+                  <div class="x2-f-unit">kg</div>
+                </div>
+                <div style="margin-left: 12px;">
+                  <div class="x2-f-num">10</div>
+                  <div class="x2-f-unit">reps</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Current set -->
+            <div class="x2-frame current">
+              <div class="x2-f-set">Set 2</div>
+              <div class="x2-f-prev">Last: <strong>70 × 10</strong></div>
+              <div class="x2-f-inputs">
+                <div class="x2-f-group">
+                  <input class="x2-f-input" value="72.5" type="text" inputmode="decimal">
+                  <div class="x2-f-label">kg</div>
+                </div>
+                <div class="x2-f-group">
+                  <input class="x2-f-input" value="10" type="text" inputmode="numeric">
+                  <div class="x2-f-label">reps</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Future sets -->
+            <div class="x2-frame future">
+              <div class="x2-f-set">Set 3</div>
+              <div class="x2-f-placeholder">
+                <div class="x2-f-ph"></div>
+                <div class="x2-f-ph"></div>
+              </div>
+            </div>
+
+            <div class="x2-frame future">
+              <div class="x2-f-set">Set 4</div>
+              <div class="x2-f-placeholder">
+                <div class="x2-f-ph"></div>
+                <div class="x2-f-ph"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Focus cue -->
+        <div class="x2-cue">
+          <div class="x2-cue-dot"></div>
+          <div class="x2-cue-text"><strong>Drive feet into floor</strong> — create full-body tension</div>
+        </div>
+
+        <div class="x2-log">
+          <div class="x2-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== X3: THE BENTO BOARD =============== -->
+  <div>
+    <div class="col-label">X3 — THE BENTO BOARD</div>
+    <div class="col-desc">Asymmetric widget grid. Exercise, weight, reps, previous data, focus cue — all as independent tiles. A personal dashboard for this moment.</div>
+    <div class="phone x3">
+      <div class="ps">
+
+        <div class="x3-top">
+          <span class="x3-timer">12:34</span>
+          <span class="x3-of">3 / 6</span>
+          <span class="x3-exit">End</span>
+        </div>
+
+        <div class="x3-progress"><div class="x3-pfill" style="width: 40%;"></div></div>
+
+        <!-- Bento grid -->
+        <div class="x3-bento">
+
+          <!-- Exercise tile (full width) -->
+          <div class="x3-tile exercise">
+            <div class="x3-ha"></div>
+            <div class="x3-ha"></div>
+            <div class="x3-ex-left">
+              <div class="x3-ex-name">Barbell Bench Press</div>
+              <div class="x3-ex-sub">
+                <span class="x3-ex-muscle">Chest</span>
+                <span class="x3-ex-dot"></span>
+                <span class="x3-ex-link swap">Swap</span>
+                <span class="x3-ex-dot"></span>
+                <span class="x3-ex-link video">▶ Video</span>
+              </div>
+            </div>
+            <div class="x3-ex-right">
+              <div class="x3-set-badge">Set 2</div>
+              <div class="x3-ex-dots">
+                <div class="x3-ex-d done"></div>
+                <div class="x3-ex-d active"></div>
+                <div class="x3-ex-d"></div>
+                <div class="x3-ex-d"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Weight tile -->
+          <div class="x3-tile weight">
+            <div class="x3-tile-label">Weight</div>
+            <div class="x3-tile-val">72.5</div>
+            <div class="x3-tile-unit">kg</div>
+            <div class="x3-tile-ghost">prev 70</div>
+          </div>
+
+          <!-- Reps tile -->
+          <div class="x3-tile reps">
+            <div class="x3-tile-label">Reps</div>
+            <div class="x3-tile-val">10</div>
+            <div class="x3-tile-unit">reps</div>
+            <div class="x3-tile-ghost">prev 10</div>
+          </div>
+
+          <!-- Previous tile -->
+          <div class="x3-tile previous">
+            <div class="x3-prev-label">Last Session</div>
+            <div class="x3-prev-sets">
+              <div class="x3-prev-row">
+                <span class="x3-prev-num">1</span>
+                <div class="x3-prev-bar"><div class="x3-prev-fill" style="width: 85%;"></div></div>
+                <span class="x3-prev-val">70×10</span>
+              </div>
+              <div class="x3-prev-row">
+                <span class="x3-prev-num">2</span>
+                <div class="x3-prev-bar"><div class="x3-prev-fill" style="width: 85%;"></div></div>
+                <span class="x3-prev-val">70×10</span>
+              </div>
+              <div class="x3-prev-row">
+                <span class="x3-prev-num">3</span>
+                <div class="x3-prev-bar"><div class="x3-prev-fill" style="width: 70%;"></div></div>
+                <span class="x3-prev-val">65×8</span>
+              </div>
+              <div class="x3-prev-row">
+                <span class="x3-prev-num">4</span>
+                <div class="x3-prev-bar"><div class="x3-prev-fill" style="width: 60%;"></div></div>
+                <span class="x3-prev-val">65×7</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Focus cue tile -->
+          <div class="x3-tile cue">
+            <div class="x3-cue-dot"></div>
+            <div class="x3-cue-text"><strong>Drive feet into floor</strong> — create full-body tension</div>
+          </div>
+
+        </div>
+
+        <div class="x3-log">
+          <div class="x3-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

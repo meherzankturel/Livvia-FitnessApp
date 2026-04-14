@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Screen Fresh Ideas</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+  @keyframes stagger1 { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Shared back button */
+  .back { width: 32px; height: 32px; border-radius: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
+  .back-light { background: var(--stone); }
+  .back-dark { background: rgba(246,245,240,0.06); }
+  .back-icon { font-size: 18px; margin-top: -1px; }
+
+
+  /* ============================================================
+     R1: "THE EDITORIAL FLOW"
+     Big name on sand. Inline meta. Checklist ingredients.
+     Steps as trail timeline. Clean, readable, functional.
+     ============================================================ */
+
+  .r1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .r1-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .r1-name { padding: 14px 24px 0; font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.3px; line-height: 1.05; animation: fadeUp 0.4s ease-out; }
+
+  .r1-meta { display: flex; align-items: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.4s ease-out 0.08s backwards; }
+  .r1-meta-item { font-size: 12px; color: var(--rock); }
+  .r1-meta-item strong { color: var(--earth); font-weight: 700; }
+  .r1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .r1-video { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  /* Ingredients checklist */
+  .r1-section { padding: 22px 24px 0; }
+  .r1-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .r1-section-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .r1-section-count { font-size: 11px; color: var(--rock); }
+
+  .r1-ing { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer; }
+  .r1-ing:last-child { border-bottom: none; }
+  .r1-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .r1-cb.on { background: var(--trail); border-color: var(--trail); }
+  .r1-ck { font-size: 10px; color: #fff; font-weight: 700; }
+  .r1-ing-name { font-size: 14px; color: var(--earth); flex: 1; }
+  .r1-ing.done .r1-ing-name { text-decoration: line-through; opacity: 0.35; }
+  .r1-ing-amt { font-size: 12px; color: var(--rock); }
+  .r1-ing.done .r1-ing-amt { opacity: 0.3; }
+
+  /* Steps timeline */
+  .r1-tl { position: relative; padding-left: 30px; }
+  .r1-tl-line { position: absolute; left: 6px; top: 0; bottom: 0; width: 2px; background: var(--stone); }
+  .r1-step { position: relative; margin-bottom: 12px; }
+  .r1-dot { position: absolute; left: -30px; top: 4px; width: 14px; height: 14px; border-radius: 7px; z-index: 1; display: flex; align-items: center; justify-content: center; }
+  .r1-dot.first { background: var(--earth); }
+  .r1-dot.rest { background: var(--stone); }
+  .r1-dot-num { font-size: 8px; font-weight: 700; }
+  .r1-dot.first .r1-dot-num { color: var(--sand); }
+  .r1-dot.rest .r1-dot-num { color: var(--rock); }
+  .r1-step-card { background: #fff; border-radius: 14px; padding: 12px 14px; border: 1px solid rgba(0,0,0,0.04); }
+  .r1-step-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+  .r1-step-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; }
+  .r1-step-time { font-size: 9px; color: var(--rock); opacity: 0.5; }
+  .r1-step-text { font-size: 13px; color: var(--earth); line-height: 1.5; }
+
+
+  /* ============================================================
+     R2: "THE CARD RECIPE"
+     White card containing everything: name, meta, ingredients
+     as chips, steps as numbered rows. Single card, contained.
+     ============================================================ */
+
+  .r2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .r2-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .r2-card {
+    margin: 14px 20px 0; padding: 22px; border-radius: 24px; background: #fff;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out;
+  }
+  .r2-name { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.1; }
+  .r2-meta { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .r2-pill { padding: 4px 10px; border-radius: 8px; background: var(--sand); }
+  .r2-pill-text { font-size: 11px; font-weight: 600; color: var(--earth); }
+  .r2-video-pill { padding: 4px 12px; border-radius: 8px; background: var(--earth); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .r2-video-tri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+  .r2-video-text { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+  .r2-divider { height: 1px; background: rgba(0,0,0,0.04); margin: 16px 0; }
+
+  .r2-section-label { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+
+  .r2-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+  .r2-chip { padding: 6px 12px; border-radius: 10px; background: var(--sand); }
+  .r2-chip-text { font-size: 11px; color: var(--earth); }
+  .r2-chip-text strong { font-weight: 700; }
+  .r2-chip-text span { color: var(--rock); font-size: 10px; margin-left: 3px; }
+
+  .r2-step-row { display: flex; gap: 10px; align-items: flex-start; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .r2-step-row:last-child { border-bottom: none; }
+  .r2-step-num { width: 24px; height: 24px; border-radius: 12px; background: var(--earth); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--sand); margin-top: 1px; }
+  .r2-step-text { font-size: 13px; color: var(--earth); line-height: 1.5; flex: 1; }
+  .r2-step-time { font-size: 10px; color: var(--rock); flex-shrink: 0; margin-top: 3px; }
+
+
+  /* ============================================================
+     R3: "THE DARK SPLIT"
+     Full-bleed dark hero (name + meta + video). Below sand:
+     2-column ingredient grid + horizontal step swipe cards.
+     Dramatic contrast. Consistent with terrain dark heroes.
+     ============================================================ */
+
+  .r3-dark {
+    background: var(--earth); padding: 56px 24px 24px;
+    border-radius: 0 0 28px 28px; position: relative; overflow: hidden;
+  }
+  .r3-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .r3-breath { position: absolute; top: 60px; right: 24px; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s infinite; }
+
+  .r3-dark-top { display: flex; align-items: center; position: relative; }
+  .r3-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 16px; position: relative; }
+  .r3-name-dark { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; line-height: 1.1; margin-top: 6px; position: relative; }
+  .r3-pills { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .r3-pill { padding: 4px 10px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 11px; font-weight: 600; color: rgba(246,245,240,0.5); }
+  .r3-video { padding: 4px 12px; border-radius: 100px; background: rgba(52,211,153,0.1); font-size: 11px; font-weight: 600; color: var(--trail); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .r3-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+
+  /* 2-col ingredients */
+  .r3-ing { padding: 18px 24px 0; }
+  .r3-ing-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .r3-ing-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .r3-ing-count { font-size: 11px; color: var(--rock); }
+  .r3-ing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .r3-ing-item { display: flex; align-items: center; gap: 6px; padding: 8px 10px; border-radius: 12px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .r3-ing-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); opacity: 0.4; flex-shrink: 0; }
+  .r3-ing-name { font-size: 11px; font-weight: 600; color: var(--earth); }
+  .r3-ing-amt { font-size: 9px; color: var(--rock); margin-left: auto; }
+
+  /* Horizontal step cards */
+  .r3-steps { padding: 18px 0 0; }
+  .r3-steps-head { display: flex; justify-content: space-between; padding: 0 24px; margin-bottom: 10px; }
+  .r3-steps-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .r3-steps-count { font-size: 11px; color: var(--rock); }
+
+  .r3-scroll { display: flex; gap: 10px; overflow-x: auto; padding: 0 24px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .r3-scroll::-webkit-scrollbar { display: none; }
+  .r3-scard { flex-shrink: 0; width: 270px; border-radius: 18px; padding: 16px; position: relative; overflow: hidden; min-height: 140px; scroll-snap-align: start; display: flex; flex-direction: column; }
+  .r3-scard.dark { background: var(--earth); }
+  .r3-scard.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .r3-scard-wm { position: absolute; right: 14px; top: 6px; font-size: 70px; font-weight: 800; line-height: 1; }
+  .r3-scard.dark .r3-scard-wm { color: rgba(246,245,240,0.03); }
+  .r3-scard.light .r3-scard-wm { color: rgba(0,0,0,0.02); }
+  .r3-scard-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; position: relative; }
+  .r3-scard.dark .r3-scard-label { color: var(--trail); }
+  .r3-scard.light .r3-scard-label { color: var(--rock); }
+  .r3-scard-text { font-size: 13px; line-height: 1.5; position: relative; margin-top: auto; }
+  .r3-scard.dark .r3-scard-text { color: rgba(246,245,240,0.65); }
+  .r3-scard.light .r3-scard-text { color: var(--earth); }
+  .r3-scard-time { font-size: 9px; position: relative; margin-top: 6px; }
+  .r3-scard.dark .r3-scard-time { color: rgba(246,245,240,0.2); }
+  .r3-scard.light .r3-scard-time { color: var(--rock); opacity: 0.4; }
+
+  .r3-dots { display: flex; gap: 4px; justify-content: center; padding: 10px 0 0; }
+  .r3-dot { height: 4px; border-radius: 2px; }
+  .r3-dot.active { width: 18px; background: var(--earth); }
+  .r3-dot.inactive { width: 6px; background: var(--stone); }
+
+
+  /* ============================================================
+     R4: "THE CLEAN SCROLL"
+     No hero card. Name as text. Everything flows naturally
+     on sand. Ingredients as compact rows. Steps as numbered
+     cards with alternating bg. Video as floating pill.
+     Maximum simplicity.
+     ============================================================ */
+
+  .r4-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 12px; }
+  .r4-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; }
+
+  .r4-name { padding: 16px 24px 0; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; }
+
+  .r4-meta { display: flex; gap: 8px; padding: 10px 24px 0; align-items: center; }
+  .r4-tag { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .r4-video { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  .r4-section { padding: 22px 24px 0; }
+  .r4-section-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .r4-section-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .r4-section-sub { font-size: 11px; color: var(--rock); }
+
+  .r4-ing-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .r4-ing-row:last-child { border-bottom: none; }
+  .r4-ing-num { width: 20px; font-size: 11px; font-weight: 700; color: var(--trail); }
+  .r4-ing-name { flex: 1; font-size: 13px; color: var(--earth); }
+  .r4-ing-amt { font-size: 11px; color: var(--rock); }
+
+  .r4-step { border-radius: 16px; padding: 14px 16px; margin-bottom: 8px; display: flex; gap: 12px; align-items: flex-start; }
+  .r4-step.dark { background: var(--earth); }
+  .r4-step.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .r4-step-num { width: 26px; height: 26px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; font-weight: 700; }
+  .r4-step.dark .r4-step-num { background: rgba(246,245,240,0.08); color: var(--sand); }
+  .r4-step.light .r4-step-num { background: var(--stone); color: var(--earth); }
+  .r4-step-content { flex: 1; }
+  .r4-step-text { font-size: 13px; line-height: 1.5; }
+  .r4-step.dark .r4-step-text { color: rgba(246,245,240,0.65); }
+  .r4-step.light .r4-step-text { color: var(--earth); }
+  .r4-step-time { font-size: 9px; margin-top: 4px; }
+  .r4-step.dark .r4-step-time { color: rgba(246,245,240,0.2); }
+  .r4-step.light .r4-step-time { color: var(--rock); opacity: 0.4; }
+
+
+  /* ============================================================
+     R5: "THE BENTO RECIPE"
+     Bento grid layout. Name tile (large), time tiles (small),
+     ingredient tile, steps tile. Everything as widgets.
+     ============================================================ */
+
+  .r5-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .r5-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .r5-bento { display: flex; flex-direction: column; gap: 8px; padding: 14px 20px 0; }
+  .r5-bento-row { display: flex; gap: 8px; }
+
+  .r5-tile { border-radius: 20px; padding: 16px; overflow: hidden; position: relative; }
+  .r5-tile.dark { background: var(--earth); }
+  .r5-tile.stone { background: var(--stone); }
+  .r5-tile.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .r5-tile-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+
+  /* Name tile */
+  .r5-name-tile { flex: 2; }
+  .r5-name-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; position: relative; }
+  .r5-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; position: relative; }
+
+  /* Time tile */
+  .r5-time-tile { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .r5-time-val { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .r5-time-label { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  /* Video tile */
+  .r5-video-tile { flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+  .r5-vtri { width: 0; height: 0; border-left: 8px solid var(--trail); border-top: 5px solid transparent; border-bottom: 5px solid transparent; }
+  .r5-vtext { font-size: 12px; font-weight: 600; color: var(--trail); }
+
+  /* Ingredient tile (scrollable inside) */
+  .r5-ing-tile { }
+  .r5-ing-label { font-size: 10px; font-weight: 700; color: var(--earth); margin-bottom: 8px; }
+  .r5-ing-row { display: flex; align-items: center; gap: 6px; padding: 5px 0; }
+  .r5-ing-dot { width: 4px; height: 4px; border-radius: 2px; background: var(--trail); opacity: 0.5; flex-shrink: 0; }
+  .r5-ing-name { font-size: 12px; color: var(--earth); flex: 1; }
+  .r5-ing-amt { font-size: 10px; color: var(--rock); }
+
+  /* Steps section below bento */
+  .r5-steps { padding: 16px 24px 40px; }
+  .r5-steps-head { font-size: 14px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+
+  /* ============================================================
+     R6: "THE TIMELINE RECIPE"
+     Everything as one continuous vertical timeline. Name at
+     top as hero node. Ingredients as a node. Each step as a
+     node. All connected by a trail line. Most unique.
+     ============================================================ */
+
+  .r6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .r6-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .r6-timeline { padding: 16px 24px 40px; position: relative; padding-left: 56px; }
+  .r6-tl-line { position: absolute; left: 38px; top: 0; bottom: 0; width: 2px; background: var(--stone); }
+
+  .r6-node { position: relative; margin-bottom: 16px; }
+  .r6-node-dot { position: absolute; left: -30px; width: 20px; height: 20px; border-radius: 10px; z-index: 1; display: flex; align-items: center; justify-content: center; }
+  .r6-node-dot.hero { background: var(--earth); top: 6px; }
+  .r6-node-dot.ing { background: var(--trail); top: 4px; }
+  .r6-node-dot.step { background: var(--stone); top: 4px; }
+  .r6-node-dot.step.first { background: var(--earth); }
+  .r6-node-icon { font-size: 9px; font-weight: 700; }
+  .r6-node-dot.hero .r6-node-icon { color: var(--sand); }
+  .r6-node-dot.ing .r6-node-icon { color: #fff; }
+  .r6-node-dot.step .r6-node-icon { color: var(--rock); }
+  .r6-node-dot.step.first .r6-node-icon { color: var(--sand); }
+
+  /* Hero node */
+  .r6-hero-card { background: var(--earth); border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+  .r6-hero-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .r6-hero-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; position: relative; }
+  .r6-hero-meta { display: flex; gap: 6px; margin-top: 8px; position: relative; }
+  .r6-hero-pill { padding: 3px 8px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 10px; color: rgba(246,245,240,0.45); }
+  .r6-hero-video { padding: 3px 10px; border-radius: 100px; background: rgba(52,211,153,0.1); font-size: 10px; color: var(--trail); margin-left: auto; cursor: pointer; }
+
+  /* Ingredient node */
+  .r6-ing-card { background: #fff; border-radius: 16px; padding: 14px; border: 1px solid rgba(0,0,0,0.04); }
+  .r6-ing-label { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .r6-ing-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+  .r6-ing-chip { padding: 4px 10px; border-radius: 8px; background: var(--sand); font-size: 11px; color: var(--earth); }
+
+  /* Step node */
+  .r6-step-card { background: #fff; border-radius: 14px; padding: 12px 14px; border: 1px solid rgba(0,0,0,0.04); }
+  .r6-step-head { display: flex; justify-content: space-between; margin-bottom: 3px; }
+  .r6-step-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; }
+  .r6-step-time { font-size: 9px; color: var(--rock); opacity: 0.5; }
+  .r6-step-text { font-size: 13px; color: var(--earth); line-height: 1.5; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== R1: EDITORIAL FLOW =============== -->
+  <div>
+    <div class="col-label">R1 — EDITORIAL FLOW</div>
+    <div class="col-desc">Big name on sand. Inline meta. Checklist ingredients. Steps as trail timeline with numbered dots. Clean, readable.</div>
+    <div class="phone"><div class="ps">
+      <div class="r1-top"><div class="back back-light"><span class="back-icon" style="color:var(--earth);">‹</span></div><span class="r1-type">Breakfast · Recipe</span></div>
+      <div class="r1-name">Black Bean<br>Burrito Bowl</div>
+      <div class="r1-meta"><span class="r1-meta-item"><strong>5</strong> min prep</span><span class="r1-sep"></span><span class="r1-meta-item"><strong>10</strong> min cook</span><span class="r1-sep"></span><span class="r1-meta-item"><strong>Easy</strong></span><span class="r1-video">▶ Video</span></div>
+      <div class="r1-section"><div class="r1-section-head"><span class="r1-section-title">Ingredients</span><span class="r1-section-count">2/6 ready</span></div>
+        <div class="r1-ing done"><div class="r1-cb on"><span class="r1-ck">✓</span></div><span class="r1-ing-name">Black beans</span><span class="r1-ing-amt">1/2 can</span></div>
+        <div class="r1-ing done"><div class="r1-cb on"><span class="r1-ck">✓</span></div><span class="r1-ing-name">White rice</span><span class="r1-ing-amt">1 cup</span></div>
+        <div class="r1-ing"><div class="r1-cb"></div><span class="r1-ing-name">Corn</span><span class="r1-ing-amt">1/4 cup</span></div>
+        <div class="r1-ing"><div class="r1-cb"></div><span class="r1-ing-name">Avocado</span><span class="r1-ing-amt">1/2</span></div>
+        <div class="r1-ing"><div class="r1-cb"></div><span class="r1-ing-name">Salsa</span><span class="r1-ing-amt">3 tbsp</span></div>
+        <div class="r1-ing"><div class="r1-cb"></div><span class="r1-ing-name">Sour cream</span><span class="r1-ing-amt">1 tbsp</span></div>
+      </div>
+      <div class="r1-section"><div class="r1-section-head"><span class="r1-section-title">Steps</span><span class="r1-section-count">4 steps</span></div>
+        <div class="r1-tl"><div class="r1-tl-line"></div>
+          <div class="r1-step"><div class="r1-dot first"><span class="r1-dot-num">1</span></div><div class="r1-step-card"><div class="r1-step-top"><span class="r1-step-label">Step 1</span><span class="r1-step-time">~2 min</span></div><div class="r1-step-text">Cook rice according to package directions.</div></div></div>
+          <div class="r1-step"><div class="r1-dot rest"><span class="r1-dot-num">2</span></div><div class="r1-step-card"><div class="r1-step-top"><span class="r1-step-label">Step 2</span><span class="r1-step-time">~3 min</span></div><div class="r1-step-text">Heat black beans. Season with cumin and salt.</div></div></div>
+          <div class="r1-step"><div class="r1-dot rest"><span class="r1-dot-num">3</span></div><div class="r1-step-card"><div class="r1-step-top"><span class="r1-step-label">Step 3</span><span class="r1-step-time">~2 min</span></div><div class="r1-step-text">Slice avocado and prep toppings.</div></div></div>
+          <div class="r1-step"><div class="r1-dot rest"><span class="r1-dot-num">4</span></div><div class="r1-step-card"><div class="r1-step-top"><span class="r1-step-label">Step 4</span><span class="r1-step-time">~1 min</span></div><div class="r1-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- =============== R2: CARD RECIPE =============== -->
+  <div>
+    <div class="col-label">R2 — THE CARD RECIPE</div>
+    <div class="col-desc">Everything in one white card: name, meta pills, ingredient chips, numbered step rows. Self-contained, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="r2-top"><div class="back back-light"><span class="back-icon" style="color:var(--earth);">‹</span></div><span class="r2-type">Breakfast · Recipe</span></div>
+      <div class="r2-card">
+        <div class="r2-name">Black Bean<br>Burrito Bowl</div>
+        <div class="r2-meta"><div class="r2-pill"><span class="r2-pill-text">5 min prep</span></div><div class="r2-pill"><span class="r2-pill-text">10 min cook</span></div><div class="r2-pill"><span class="r2-pill-text">Easy</span></div><div class="r2-video-pill"><div class="r2-video-tri"></div><span class="r2-video-text">Video</span></div></div>
+        <div class="r2-divider"></div>
+        <div class="r2-section-label">Ingredients · 6</div>
+        <div class="r2-chips">
+          <div class="r2-chip"><span class="r2-chip-text"><strong>Black beans</strong> <span>1/2 can</span></span></div>
+          <div class="r2-chip"><span class="r2-chip-text"><strong>White rice</strong> <span>1 cup</span></span></div>
+          <div class="r2-chip"><span class="r2-chip-text"><strong>Corn</strong> <span>1/4 cup</span></span></div>
+          <div class="r2-chip"><span class="r2-chip-text"><strong>Avocado</strong> <span>1/2</span></span></div>
+          <div class="r2-chip"><span class="r2-chip-text"><strong>Salsa</strong> <span>3 tbsp</span></span></div>
+          <div class="r2-chip"><span class="r2-chip-text"><strong>Sour cream</strong> <span>1 tbsp</span></span></div>
+        </div>
+        <div class="r2-divider"></div>
+        <div class="r2-section-label">Steps · 4</div>
+        <div class="r2-step-row"><div class="r2-step-num">1</div><div class="r2-step-text">Cook rice according to package directions.</div><span class="r2-step-time">~2m</span></div>
+        <div class="r2-step-row"><div class="r2-step-num">2</div><div class="r2-step-text">Heat black beans. Season with cumin and salt.</div><span class="r2-step-time">~3m</span></div>
+        <div class="r2-step-row"><div class="r2-step-num">3</div><div class="r2-step-text">Slice avocado and prep toppings.</div><span class="r2-step-time">~2m</span></div>
+        <div class="r2-step-row"><div class="r2-step-num">4</div><div class="r2-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><span class="r2-step-time">~1m</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- =============== R3: DARK SPLIT =============== -->
+  <div>
+    <div class="col-label">R3 — THE DARK SPLIT</div>
+    <div class="col-desc">Full-bleed dark hero. 2-column ingredient grid below. Horizontal swipe step cards (dark/light). Consistent with terrain screens.</div>
+    <div class="phone"><div class="ps">
+      <div class="r3-dark">
+        <div class="r3-diag" style="width:100px;top:50px;right:-6px;transform:rotate(-35deg);"></div>
+        <div class="r3-diag" style="width:70px;top:64px;right:-6px;transform:rotate(-35deg);"></div>
+        <div class="r3-breath"></div>
+        <div class="r3-dark-top"><div class="back back-dark"><span class="back-icon" style="color:var(--sand);">‹</span></div></div>
+        <div class="r3-label">Breakfast Recipe</div>
+        <div class="r3-name-dark">Black Bean<br>Burrito Bowl</div>
+        <div class="r3-pills"><span class="r3-pill">5 min prep</span><span class="r3-pill">10 min cook</span><span class="r3-pill">Easy</span><div class="r3-video"><div class="r3-vtri"></div>Video</div></div>
+      </div>
+      <div class="r3-ing"><div class="r3-ing-head"><span class="r3-ing-title">Ingredients</span><span class="r3-ing-count">6 items</span></div>
+        <div class="r3-ing-grid">
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">Black beans</span><span class="r3-ing-amt">1/2 can</span></div>
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">White rice</span><span class="r3-ing-amt">1 cup</span></div>
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">Corn</span><span class="r3-ing-amt">1/4 cup</span></div>
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">Avocado</span><span class="r3-ing-amt">1/2</span></div>
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">Salsa</span><span class="r3-ing-amt">3 tbsp</span></div>
+          <div class="r3-ing-item"><span class="r3-ing-dot"></span><span class="r3-ing-name">Sour cream</span><span class="r3-ing-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="r3-steps"><div class="r3-steps-head"><span class="r3-steps-title">Steps</span><span class="r3-steps-count">4 steps</span></div>
+        <div class="r3-scroll">
+          <div class="r3-scard dark"><span class="r3-scard-wm">1</span><span class="r3-scard-label">Step 1 of 4</span><span class="r3-scard-text">Cook rice according to package directions.</span><span class="r3-scard-time">~2 min</span></div>
+          <div class="r3-scard light"><span class="r3-scard-wm">2</span><span class="r3-scard-label">Step 2 of 4</span><span class="r3-scard-text">Heat black beans. Season with cumin and salt.</span><span class="r3-scard-time">~3 min</span></div>
+          <div class="r3-scard dark"><span class="r3-scard-wm">3</span><span class="r3-scard-label">Step 3 of 4</span><span class="r3-scard-text">Slice avocado and prep toppings.</span><span class="r3-scard-time">~2 min</span></div>
+          <div class="r3-scard light"><span class="r3-scard-wm">4</span><span class="r3-scard-label">Step 4 of 4</span><span class="r3-scard-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</span><span class="r3-scard-time">~1 min</span></div>
+        </div>
+        <div class="r3-dots"><div class="r3-dot active"></div><div class="r3-dot inactive"></div><div class="r3-dot inactive"></div><div class="r3-dot inactive"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== R4: CLEAN SCROLL =============== -->
+  <div>
+    <div class="col-label">R4 — THE CLEAN SCROLL</div>
+    <div class="col-desc">No hero card. Name as plain text. Numbered ingredient rows. Alternating dark/light step cards. Maximum simplicity.</div>
+    <div class="phone"><div class="ps">
+      <div class="r4-top"><div class="back back-light"><span class="back-icon" style="color:var(--earth);">‹</span></div><span class="r4-type">Breakfast · Recipe</span></div>
+      <div class="r4-name">Black Bean<br>Burrito Bowl</div>
+      <div class="r4-meta"><span class="r4-tag">5 min prep</span><span class="r4-tag">10 min cook</span><span class="r4-tag">Easy</span><span class="r4-video">▶ Video</span></div>
+      <div class="r4-section"><div class="r4-section-head"><span class="r4-section-title">Ingredients</span><span class="r4-section-sub">6 items</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">1</span><span class="r4-ing-name">Black beans</span><span class="r4-ing-amt">1/2 can drained</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">2</span><span class="r4-ing-name">White rice</span><span class="r4-ing-amt">1 cup cooked</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">3</span><span class="r4-ing-name">Corn</span><span class="r4-ing-amt">1/4 cup</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">4</span><span class="r4-ing-name">Avocado</span><span class="r4-ing-amt">1/2 sliced</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">5</span><span class="r4-ing-name">Salsa</span><span class="r4-ing-amt">3 tbsp</span></div>
+        <div class="r4-ing-row"><span class="r4-ing-num">6</span><span class="r4-ing-name">Sour cream</span><span class="r4-ing-amt">1 tbsp</span></div>
+      </div>
+      <div class="r4-section"><div class="r4-section-head"><span class="r4-section-title">Steps</span><span class="r4-section-sub">4 steps</span></div>
+        <div class="r4-step dark"><div class="r4-step-num">1</div><div class="r4-step-content"><div class="r4-step-text">Cook rice according to package directions.</div><div class="r4-step-time">~2 min</div></div></div>
+        <div class="r4-step light"><div class="r4-step-num">2</div><div class="r4-step-content"><div class="r4-step-text">Heat black beans. Season with cumin and salt.</div><div class="r4-step-time">~3 min</div></div></div>
+        <div class="r4-step dark"><div class="r4-step-num">3</div><div class="r4-step-content"><div class="r4-step-text">Slice avocado and prep toppings.</div><div class="r4-step-time">~2 min</div></div></div>
+        <div class="r4-step light"><div class="r4-step-num">4</div><div class="r4-step-content"><div class="r4-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><div class="r4-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- =============== R5: BENTO RECIPE =============== -->
+  <div>
+    <div class="col-label">R5 — THE BENTO RECIPE</div>
+    <div class="col-desc">Bento widget grid: dark name tile, time tiles, video tile, ingredient tile. Steps below. Dashboard-like recipe view.</div>
+    <div class="phone"><div class="ps">
+      <div class="r5-top"><div class="back back-light"><span class="back-icon" style="color:var(--earth);">‹</span></div><span class="r5-type">Breakfast · Recipe</span></div>
+      <div class="r5-bento">
+        <div class="r5-bento-row">
+          <div class="r5-tile dark r5-name-tile" style="flex:2;">
+            <div class="r5-tile-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="r5-tile-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="r5-name-label">Breakfast Recipe</div>
+            <div class="r5-name">Black Bean Burrito Bowl</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+            <div class="r5-tile stone r5-time-tile"><div class="r5-time-val">5</div><div class="r5-time-label">min prep</div></div>
+            <div class="r5-tile stone r5-time-tile"><div class="r5-time-val">10</div><div class="r5-time-label">min cook</div></div>
+          </div>
+        </div>
+        <div class="r5-bento-row">
+          <div class="r5-tile stone r5-video-tile" style="flex:1;"><div class="r5-vtri"></div><span class="r5-vtext">Video</span></div>
+          <div class="r5-tile stone" style="flex:1;display:flex;align-items:center;justify-content:center;"><span style="font-size:14px;font-weight:700;color:var(--earth);">Easy</span></div>
+        </div>
+        <div class="r5-tile white r5-ing-tile">
+          <div class="r5-ing-label">Ingredients · 6</div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">Black beans</span><span class="r5-ing-amt">1/2 can</span></div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">White rice</span><span class="r5-ing-amt">1 cup</span></div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">Corn</span><span class="r5-ing-amt">1/4 cup</span></div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">Avocado</span><span class="r5-ing-amt">1/2</span></div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">Salsa</span><span class="r5-ing-amt">3 tbsp</span></div>
+          <div class="r5-ing-row"><span class="r5-ing-dot"></span><span class="r5-ing-name">Sour cream</span><span class="r5-ing-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="r5-steps"><div class="r5-steps-head">Steps · 4</div>
+        <div class="r4-step dark"><div class="r4-step-num">1</div><div class="r4-step-content"><div class="r4-step-text">Cook rice according to package directions.</div><div class="r4-step-time">~2 min</div></div></div>
+        <div class="r4-step light"><div class="r4-step-num">2</div><div class="r4-step-content"><div class="r4-step-text">Heat black beans. Season with cumin and salt.</div><div class="r4-step-time">~3 min</div></div></div>
+        <div class="r4-step dark"><div class="r4-step-num">3</div><div class="r4-step-content"><div class="r4-step-text">Slice avocado and prep toppings.</div><div class="r4-step-time">~2 min</div></div></div>
+        <div class="r4-step light"><div class="r4-step-num">4</div><div class="r4-step-content"><div class="r4-step-text">Assemble bowl with all ingredients.</div><div class="r4-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- =============== R6: TIMELINE RECIPE =============== -->
+  <div>
+    <div class="col-label">R6 — THE TIMELINE RECIPE</div>
+    <div class="col-desc">Everything on ONE continuous timeline. Name as dark hero node. Ingredients as a chip node. Each step as its own node. Trail line connects all.</div>
+    <div class="phone"><div class="ps">
+      <div class="r6-top"><div class="back back-light"><span class="back-icon" style="color:var(--earth);">‹</span></div><span class="r6-type">Breakfast · Recipe</span></div>
+      <div class="r6-timeline">
+        <div class="r6-tl-line"></div>
+
+        <!-- Hero node -->
+        <div class="r6-node"><div class="r6-node-dot hero"><span class="r6-node-icon">★</span></div>
+          <div class="r6-hero-card">
+            <div class="r6-hero-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="r6-hero-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="r6-hero-name">Black Bean<br>Burrito Bowl</div>
+            <div class="r6-hero-meta"><span class="r6-hero-pill">5 min prep</span><span class="r6-hero-pill">10 min cook</span><span class="r6-hero-pill">Easy</span><span class="r6-hero-video">▶ Video</span></div>
+          </div>
+        </div>
+
+        <!-- Ingredients node -->
+        <div class="r6-node"><div class="r6-node-dot ing"><span class="r6-node-icon">✦</span></div>
+          <div class="r6-ing-card">
+            <div class="r6-ing-label">Ingredients · 6</div>
+            <div class="r6-ing-chips">
+              <span class="r6-ing-chip">Black beans · 1/2 can</span>
+              <span class="r6-ing-chip">White rice · 1 cup</span>
+              <span class="r6-ing-chip">Corn · 1/4 cup</span>
+              <span class="r6-ing-chip">Avocado · 1/2</span>
+              <span class="r6-ing-chip">Salsa · 3 tbsp</span>
+              <span class="r6-ing-chip">Sour cream · 1 tbsp</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Step nodes -->
+        <div class="r6-node"><div class="r6-node-dot step first"><span class="r6-node-icon">1</span></div>
+          <div class="r6-step-card"><div class="r6-step-head"><span class="r6-step-label">Step 1</span><span class="r6-step-time">~2 min</span></div><div class="r6-step-text">Cook rice according to package directions.</div></div>
+        </div>
+        <div class="r6-node"><div class="r6-node-dot step"><span class="r6-node-icon">2</span></div>
+          <div class="r6-step-card"><div class="r6-step-head"><span class="r6-step-label">Step 2</span><span class="r6-step-time">~3 min</span></div><div class="r6-step-text">Heat black beans. Season with cumin and salt.</div></div>
+        </div>
+        <div class="r6-node"><div class="r6-node-dot step"><span class="r6-node-icon">3</span></div>
+          <div class="r6-step-card"><div class="r6-step-head"><span class="r6-step-label">Step 3</span><span class="r6-step-time">~2 min</span></div><div class="r6-step-text">Slice avocado and prep toppings.</div></div>
+        </div>
+        <div class="r6-node"><div class="r6-node-dot step"><span class="r6-node-icon">4</span></div>
+          <div class="r6-step-card"><div class="r6-step-head"><span class="r6-step-label">Step 4</span><span class="r6-step-time">~1 min</span></div><div class="r6-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

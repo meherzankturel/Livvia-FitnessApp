@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Hybrid Meal Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Shared top */
+  .top { padding: 54px 24px 0; }
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 14px 24px 0; }
+
+  /* Hero card */
+  .hero-card { margin: 14px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .hero-ring { position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%; border: 12px solid rgba(246,245,240,0.04); }
+  .hero-ring-inner { position: absolute; top: -18px; right: -18px; width: 116px; height: 116px; border-radius: 50%; border: 6px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); transform: rotate(-30deg); opacity: 0.35; }
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-cal-row { display: flex; align-items: baseline; gap: 5px; margin-top: 6px; position: relative; }
+  .cal-num { font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1; }
+  .cal-unit { font-size: 14px; color: rgba(246,245,240,0.35); }
+  .hero-macros { display: flex; gap: 12px; margin-top: 16px; position: relative; }
+  .hm { flex: 1; }
+  .hm-bar { height: 4px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; }
+  .hm-fill { height: 100%; border-radius: 2px; }
+  .hm-fill.p { background: var(--trail); width: 75%; }
+  .hm-fill.c { background: rgba(246,245,240,0.2); width: 60%; }
+  .hm-fill.f { background: rgba(246,245,240,0.12); width: 55%; }
+  .hm-row { display: flex; justify-content: space-between; margin-top: 5px; }
+  .hm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .hm-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Cuisine tiles */
+  .cuisine-section { padding: 16px 24px 14px; }
+  .cuisine-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cuisine-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .cuisine-allergy { font-size: 10px; color: #B91C1C; font-weight: 600; padding: 4px 10px; border-radius: 100px; background: rgba(239,68,68,0.05); }
+  .cuisine-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .cuisine-scroll::-webkit-scrollbar { display: none; }
+  .ct { min-width: 100px; height: 72px; border-radius: 18px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; }
+  .ct.on { background: var(--earth); transform: scale(1.02); }
+  .ct.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .ct .flag { font-size: 32px; }
+  .ct .cname { font-size: 10px; font-weight: 600; margin-top: 4px; }
+  .ct.on .cname { color: var(--sand); }
+  .ct.off .cname { color: var(--earth); }
+  .ct.on::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--trail); }
+
+  .grocery { margin: 12px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+
+  /* ============================================================
+     H1: HORIZONTAL HERO + BOTTOM SHEET
+     Large horizontal cards. Tap one → bottom sheet slides up
+     with all actions as icon circles. No pill buttons anywhere.
+     ============================================================ */
+
+  .h1-scroll { display: flex; gap: 12px; padding: 8px 0 8px 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .h1-scroll::-webkit-scrollbar { display: none; }
+
+  .h1-card {
+    min-width: 280px; max-width: 280px; border-radius: 24px; overflow: hidden;
+    flex-shrink: 0; scroll-snap-align: start; cursor: pointer;
+    transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  .h1-card:last-child { margin-right: 24px; }
+  .h1-card.active { transform: scale(1.02); }
+
+  .h1-card:nth-child(1) { background: var(--earth); }
+  .h1-card:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h1-card:nth-child(3) { background: var(--stone); }
+  .h1-card:nth-child(4) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .h1-inner { padding: 20px; min-height: 180px; display: flex; flex-direction: column; }
+
+  .h1-top { display: flex; justify-content: space-between; align-items: center; }
+  .h1-time { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .h1-card:nth-child(1) .h1-time { color: rgba(246,245,240,0.3); }
+  .h1-card:nth-child(2) .h1-time, .h1-card:nth-child(4) .h1-time { color: var(--rock); }
+  .h1-card:nth-child(3) .h1-time { color: var(--rock); }
+
+  .h1-emoji { font-size: 20px; }
+
+  .h1-name { font-size: 20px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; margin-top: auto; padding-top: 16px; }
+  .h1-card:nth-child(1) .h1-name { color: var(--sand); }
+  .h1-card:nth-child(2) .h1-name, .h1-card:nth-child(4) .h1-name { color: var(--earth); }
+  .h1-card:nth-child(3) .h1-name { color: var(--earth); }
+
+  .h1-footer { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
+  .h1-cal { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .h1-card:nth-child(1) .h1-cal { color: var(--sand); }
+  .h1-card:nth-child(2) .h1-cal, .h1-card:nth-child(4) .h1-cal { color: var(--earth); }
+  .h1-card:nth-child(3) .h1-cal { color: var(--earth); }
+  .h1-cal span { font-size: 10px; font-weight: 500; }
+  .h1-card:nth-child(1) .h1-cal span { color: rgba(246,245,240,0.3); }
+  .h1-card:nth-child(2) .h1-cal span, .h1-card:nth-child(3) .h1-cal span, .h1-card:nth-child(4) .h1-cal span { color: var(--rock); }
+  .h1-macros { font-size: 11px; }
+  .h1-card:nth-child(1) .h1-macros { color: rgba(246,245,240,0.3); }
+  .h1-card:nth-child(2) .h1-macros, .h1-card:nth-child(3) .h1-macros, .h1-card:nth-child(4) .h1-macros { color: var(--rock); }
+
+  /* Dots */
+  .h1-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 4px; }
+  .h1-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); transition: all 0.3s; }
+  .h1-dot.on { background: var(--earth); width: 20px; border-radius: 3px; }
+
+  /* Bottom action sheet */
+  .h1-sheet {
+    margin: 4px 24px 0; padding: 18px 20px; border-radius: 22px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    animation: sheetUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes sheetUp { 0% { opacity:0; transform:translateY(12px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .h1-sheet-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .h1-sheet-desc { font-size: 11px; color: var(--rock); margin-top: 4px; line-height: 1.4; }
+
+  /* Icon circle actions — no text labels, just icons */
+  .h1-actions { display: flex; gap: 12px; margin-top: 14px; justify-content: center; }
+  .h1-action {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .h1-action:active { transform: scale(0.9); }
+  .h1-action .icon { font-size: 20px; }
+  .h1-action .alabel { font-size: 7px; font-weight: 600; margin-top: 3px; }
+
+  .h1-action.cook { background: var(--earth); }
+  .h1-action.cook .alabel { color: var(--sand); }
+  .h1-action.recipe { background: var(--stone); }
+  .h1-action.recipe .alabel { color: var(--earth); }
+  .h1-action.swap { background: rgba(52,211,153,0.08); }
+  .h1-action.swap .alabel { color: #047857; }
+  .h1-action.eatout { background: rgba(245,158,11,0.06); }
+  .h1-action.eatout .alabel { color: #92400E; }
+  .h1-action.nah { background: rgba(45,42,36,0.03); }
+  .h1-action.nah .alabel { color: #AEAEB2; }
+
+
+  /* ============================================================
+     H2: EDITORIAL CARDS WITH SLIDE-IN ACTION BAR
+     Numbered cards. Tap to select → thin action bar appears
+     inside the card. Icons only with tiny labels.
+     ============================================================ */
+
+  .h2-meals { padding: 0 24px; }
+  .h2-meals-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; padding: 0; }
+  .h2-meals-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .h2-card {
+    display: flex; gap: 12px; margin-bottom: 12px; cursor: pointer;
+  }
+
+  .h2-num { font-size: 36px; font-weight: 900; color: var(--stone); letter-spacing: -2px; line-height: 1; width: 38px; flex-shrink: 0; text-align: center; padding-top: 14px; transition: color 0.3s; }
+  .h2-card.active .h2-num { color: var(--earth); }
+
+  .h2-body {
+    flex: 1; border-radius: 20px; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    transition: box-shadow 0.3s;
+  }
+  .h2-card.active .h2-body { box-shadow: 0 4px 20px rgba(45,42,36,0.06); }
+
+  .h2-main { padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+  .h2-emoji { font-size: 28px; flex-shrink: 0; }
+  .h2-info { flex: 1; }
+  .h2-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h2-name { font-size: 16px; font-weight: 700; color: var(--earth); margin-top: 3px; letter-spacing: -0.3px; }
+  .h2-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .h2-cal { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; flex-shrink: 0; }
+  .h2-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Slide-in action bar inside card */
+  .h2-action-bar {
+    display: none; padding: 0 18px 14px;
+  }
+  .h2-card.active .h2-action-bar {
+    display: flex; gap: 0; animation: h2SlideIn 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    background: var(--stone); margin: 0 12px 12px; border-radius: 14px; padding: 10px 6px;
+    justify-content: space-around;
+  }
+  @keyframes h2SlideIn { 0% { opacity:0; transform:translateY(-4px) scaleY(0.8); } 100% { opacity:1; transform:translateY(0) scaleY(1); } }
+
+  .h2-act {
+    display: flex; flex-direction: column; align-items: center; gap: 3px;
+    padding: 4px 10px; border-radius: 10px; cursor: pointer; transition: background 0.15s;
+  }
+  .h2-act:active { background: rgba(45,42,36,0.04); }
+  .h2-act .icon { font-size: 18px; }
+  .h2-act .alabel { font-size: 8px; font-weight: 600; color: var(--rock); }
+
+
+  /* ============================================================
+     H3: FULL-WIDTH IMMERSIVE — One meal at a time, swipe vertical
+     Big beautiful card per meal. Calorie as oversized watermark.
+     Icon actions as a floating row at bottom of each card.
+     ============================================================ */
+
+  .h3-meals { padding: 0 24px; }
+
+  .h3-card {
+    border-radius: 24px; margin-bottom: 14px; overflow: hidden;
+    position: relative; cursor: pointer; transition: transform 0.2s;
+    min-height: 160px;
+  }
+  .h3-card:active { transform: scale(0.98); }
+
+  .h3-card:nth-child(1) { background: var(--earth); }
+  .h3-card:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h3-card:nth-child(3) { background: var(--earth); }
+  .h3-card:nth-child(4) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  /* Giant watermark calorie */
+  .h3-watermark {
+    position: absolute; top: -10px; right: -5px;
+    font-size: 100px; font-weight: 900; letter-spacing: -6px; line-height: 1;
+    pointer-events: none;
+  }
+  .h3-card:nth-child(1) .h3-watermark, .h3-card:nth-child(3) .h3-watermark { color: rgba(246,245,240,0.04); }
+  .h3-card:nth-child(2) .h3-watermark, .h3-card:nth-child(4) .h3-watermark { color: rgba(45,42,36,0.03); }
+
+  .h3-inner { padding: 22px; position: relative; z-index: 1; display: flex; flex-direction: column; min-height: 160px; }
+
+  .h3-top { display: flex; justify-content: space-between; align-items: center; }
+  .h3-time { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .h3-card:nth-child(1) .h3-time, .h3-card:nth-child(3) .h3-time { color: rgba(246,245,240,0.3); }
+  .h3-card:nth-child(2) .h3-time, .h3-card:nth-child(4) .h3-time { color: var(--rock); }
+  .h3-emoji { font-size: 20px; }
+
+  .h3-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; margin-top: auto; }
+  .h3-card:nth-child(1) .h3-name, .h3-card:nth-child(3) .h3-name { color: var(--sand); }
+  .h3-card:nth-child(2) .h3-name, .h3-card:nth-child(4) .h3-name { color: var(--earth); }
+
+  .h3-meta { display: flex; justify-content: space-between; align-items: baseline; margin-top: 6px; }
+  .h3-cal { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+  .h3-card:nth-child(1) .h3-cal, .h3-card:nth-child(3) .h3-cal { color: var(--sand); }
+  .h3-card:nth-child(2) .h3-cal, .h3-card:nth-child(4) .h3-cal { color: var(--earth); }
+  .h3-cal span { font-size: 10px; font-weight: 500; }
+  .h3-card:nth-child(1) .h3-cal span, .h3-card:nth-child(3) .h3-cal span { color: rgba(246,245,240,0.3); }
+  .h3-card:nth-child(2) .h3-cal span, .h3-card:nth-child(4) .h3-cal span { color: var(--rock); }
+  .h3-macros { font-size: 11px; }
+  .h3-card:nth-child(1) .h3-macros, .h3-card:nth-child(3) .h3-macros { color: rgba(246,245,240,0.3); }
+  .h3-card:nth-child(2) .h3-macros, .h3-card:nth-child(4) .h3-macros { color: var(--rock); }
+
+  /* Floating icon action row — bottom of card */
+  .h3-actions { display: flex; gap: 8px; margin-top: 14px; }
+  .h3-act {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; cursor: pointer; transition: transform 0.15s;
+  }
+  .h3-act:active { transform: scale(0.88); }
+
+  .h3-card:nth-child(1) .h3-act, .h3-card:nth-child(3) .h3-act { background: rgba(246,245,240,0.06); }
+  .h3-card:nth-child(2) .h3-act, .h3-card:nth-child(4) .h3-act { background: var(--stone); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== H1: HORIZONTAL + BOTTOM SHEET ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">H1 — Swipe Cards + Action Sheet</div>
+  <div class="dsc">Large horizontal swipe cards (dark/white alternating). Below: a floating action sheet with circular icon buttons. No text pills. Tap any card — sheet updates.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <!-- Horizontal cards -->
+    <div class="h1-scroll">
+      <div class="h1-card active"><div class="h1-inner"><div class="h1-top"><div class="h1-time">🌅 Breakfast · 8 AM</div><div class="h1-emoji"></div></div><div class="h1-name">Greek Yogurt<br>Power Bowl</div><div class="h1-footer"><div class="h1-cal">520 <span>kcal</span></div><div class="h1-macros">35P · 42C · 12F</div></div></div></div>
+      <div class="h1-card"><div class="h1-inner"><div class="h1-top"><div class="h1-time">☀️ Lunch · 12 PM</div></div><div class="h1-name">Grilled Chicken<br>& Brown Rice</div><div class="h1-footer"><div class="h1-cal">680 <span>kcal</span></div><div class="h1-macros">45P · 55C · 14F</div></div></div></div>
+      <div class="h1-card"><div class="h1-inner"><div class="h1-top"><div class="h1-time">🌇 Snack · 4 PM</div></div><div class="h1-name">Protein Shake<br>& Almonds</div><div class="h1-footer"><div class="h1-cal">260 <span>kcal</span></div><div class="h1-macros">37P · 18C · 14F</div></div></div></div>
+      <div class="h1-card"><div class="h1-inner"><div class="h1-top"><div class="h1-time">🌙 Dinner · 7 PM</div></div><div class="h1-name">Salmon &<br>Sweet Potato</div><div class="h1-footer"><div class="h1-cal">720 <span>kcal</span></div><div class="h1-macros">48P · 62C · 22F</div></div></div></div>
+    </div>
+
+    <div class="h1-dots"><div class="h1-dot on"></div><div class="h1-dot"></div><div class="h1-dot"></div><div class="h1-dot"></div></div>
+
+    <!-- Action sheet -->
+    <div class="h1-sheet">
+      <div class="h1-sheet-name">Greek Yogurt Power Bowl</div>
+      <div class="h1-sheet-desc">Creamy yogurt with berries, granola, chia seeds, and honey.</div>
+      <div class="h1-actions">
+        <div class="h1-action cook"><div class="icon">🍳</div><div class="alabel" style="color:var(--sand);">Cook</div></div>
+        <div class="h1-action recipe"><div class="icon">📖</div><div class="alabel">Recipe</div></div>
+        <div class="h1-action swap"><div class="icon">🔄</div><div class="alabel">Swap</div></div>
+        <div class="h1-action eatout"><div class="icon">🍽️</div><div class="alabel">Eat Out</div></div>
+        <div class="h1-action nah"><div class="icon">👎</div><div class="alabel">Nah</div></div>
+      </div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== H2: EDITORIAL + INLINE ACTION BAR ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">H2 — Editorial + Inline Bar</div>
+  <div class="dsc">Numbered gutter (01-04). Tap a card → stone action bar slides in INSIDE the card with icon actions. Numbers darken when active. Click cards to try.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <div class="h2-meals">
+      <div class="h2-meals-head"><span class="h2-meals-title">Today's Meals</span></div>
+
+      <div class="h2-card active" onclick="h2Toggle(this)"><div class="h2-num">01</div><div class="h2-body"><div class="h2-main"><div class="h2-emoji">🥣</div><div class="h2-info"><div class="h2-time">Breakfast · 8 AM</div><div class="h2-name">Greek Yogurt Power Bowl</div><div class="h2-macros">35g P · 42g C · 12g F</div></div><div class="h2-cal">520 <span>kcal</span></div></div><div class="h2-action-bar"><div class="h2-act"><div class="icon">🍳</div><div class="alabel">Cook</div></div><div class="h2-act"><div class="icon">📖</div><div class="alabel">Recipe</div></div><div class="h2-act"><div class="icon">🔄</div><div class="alabel">Swap</div></div><div class="h2-act"><div class="icon">🍽️</div><div class="alabel">Eat Out</div></div><div class="h2-act"><div class="icon">👎</div><div class="alabel">Nah</div></div></div></div></div>
+
+      <div class="h2-card" onclick="h2Toggle(this)"><div class="h2-num">02</div><div class="h2-body"><div class="h2-main"><div class="h2-emoji">🍗</div><div class="h2-info"><div class="h2-time">Lunch · 12 PM</div><div class="h2-name">Grilled Chicken & Rice</div><div class="h2-macros">45g P · 55g C · 14g F</div></div><div class="h2-cal">680 <span>kcal</span></div></div><div class="h2-action-bar"><div class="h2-act"><div class="icon">🍳</div><div class="alabel">Cook</div></div><div class="h2-act"><div class="icon">📖</div><div class="alabel">Recipe</div></div><div class="h2-act"><div class="icon">🔄</div><div class="alabel">Swap</div></div><div class="h2-act"><div class="icon">🍽️</div><div class="alabel">Eat Out</div></div><div class="h2-act"><div class="icon">👎</div><div class="alabel">Nah</div></div></div></div></div>
+
+      <div class="h2-card" onclick="h2Toggle(this)"><div class="h2-num">03</div><div class="h2-body"><div class="h2-main"><div class="h2-emoji">🥤</div><div class="h2-info"><div class="h2-time">Snack · 4 PM</div><div class="h2-name">Protein Shake & Almonds</div><div class="h2-macros">37g P · 18g C · 14g F</div></div><div class="h2-cal">260 <span>kcal</span></div></div><div class="h2-action-bar"><div class="h2-act"><div class="icon">🍳</div><div class="alabel">Cook</div></div><div class="h2-act"><div class="icon">📖</div><div class="alabel">Recipe</div></div><div class="h2-act"><div class="icon">🔄</div><div class="alabel">Swap</div></div><div class="h2-act"><div class="icon">👎</div><div class="alabel">Nah</div></div></div></div></div>
+
+      <div class="h2-card" onclick="h2Toggle(this)"><div class="h2-num">04</div><div class="h2-body"><div class="h2-main"><div class="h2-emoji">🐟</div><div class="h2-info"><div class="h2-time">Dinner · 7 PM</div><div class="h2-name">Salmon & Sweet Potato</div><div class="h2-macros">48g P · 62g C · 22g F</div></div><div class="h2-cal">720 <span>kcal</span></div></div><div class="h2-action-bar"><div class="h2-act"><div class="icon">🍳</div><div class="alabel">Cook</div></div><div class="h2-act"><div class="icon">📖</div><div class="alabel">Recipe</div></div><div class="h2-act"><div class="icon">🔄</div><div class="alabel">Swap</div></div><div class="h2-act"><div class="icon">🍽️</div><div class="alabel">Eat Out</div></div><div class="h2-act"><div class="icon">👎</div><div class="alabel">Nah</div></div></div></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== H3: FULL-WIDTH IMMERSIVE ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">H3 — Immersive Watermark Cards</div>
+  <div class="dsc">Full-width alternating dark/light cards. Giant watermark calorie number behind. Bold 22px name. Icon-only action squares at the bottom. No text buttons.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <div class="h3-meals">
+      <div class="h3-card"><div class="h3-watermark">520</div><div class="h3-inner"><div class="h3-top"><div class="h3-time">🌅 Breakfast · 8 AM</div></div><div class="h3-name">Greek Yogurt<br>Power Bowl</div><div class="h3-meta"><div class="h3-cal">520 <span>kcal</span></div><div class="h3-macros">35P · 42C · 12F</div></div><div class="h3-actions"><div class="h3-act">🍳</div><div class="h3-act">📖</div><div class="h3-act">🔄</div><div class="h3-act">🍽️</div><div class="h3-act">👎</div></div></div></div>
+
+      <div class="h3-card"><div class="h3-watermark">680</div><div class="h3-inner"><div class="h3-top"><div class="h3-time">☀️ Lunch · 12 PM</div></div><div class="h3-name">Grilled Chicken<br>& Brown Rice</div><div class="h3-meta"><div class="h3-cal">680 <span>kcal</span></div><div class="h3-macros">45P · 55C · 14F</div></div><div class="h3-actions"><div class="h3-act">🍳</div><div class="h3-act">📖</div><div class="h3-act">🔄</div><div class="h3-act">🍽️</div><div class="h3-act">👎</div></div></div></div>
+
+      <div class="h3-card"><div class="h3-watermark">260</div><div class="h3-inner"><div class="h3-top"><div class="h3-time">🌇 Snack · 4 PM</div></div><div class="h3-name">Protein Shake<br>& Almonds</div><div class="h3-meta"><div class="h3-cal">260 <span>kcal</span></div><div class="h3-macros">37P · 18C · 14F</div></div><div class="h3-actions"><div class="h3-act">🍳</div><div class="h3-act">📖</div><div class="h3-act">🔄</div><div class="h3-act">👎</div></div></div></div>
+
+      <div class="h3-card"><div class="h3-watermark">720</div><div class="h3-inner"><div class="h3-top"><div class="h3-time">🌙 Dinner · 7 PM</div></div><div class="h3-name">Salmon &<br>Sweet Potato</div><div class="h3-meta"><div class="h3-cal">720 <span>kcal</span></div><div class="h3-macros">48P · 62C · 22F</div></div><div class="h3-actions"><div class="h3-act">🍳</div><div class="h3-act">📖</div><div class="h3-act">🔄</div><div class="h3-act">🍽️</div><div class="h3-act">👎</div></div></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function h2Toggle(card) {
+  const was = card.classList.contains('active');
+  document.querySelectorAll('.h2-card').forEach(c => c.classList.remove('active'));
+  if (!was) card.classList.add('active');
+}
+</script>
+
+</body>
+</html>

@@ -1,12 +1,100 @@
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from "react-native";
 import { router } from "expo-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
 
 const STAR_OPTIONS = [1, 2, 3, 4, 5];
 
+const SCALE_LABELS: Record<string, [string, string]> = {
+  sleep: ["Poor", "Great"],
+  energy: ["Drained", "Energized"],
+  soreness: ["Sore", "Fresh"],
+};
+
+// ——— Thumb Notch ———
+function Notch({ value, isSelected, isPassed, onPress }: {
+  value: number; isSelected: boolean; isPassed: boolean; onPress: () => void;
+}) {
+  const scale = useRef(new Animated.Value(isSelected ? 1 : 0)).current;
+
+  useEffect(() => {
+    Animated.spring(scale, {
+      toValue: isSelected ? 1 : 0,
+      damping: 16, stiffness: 180, mass: 0.6,
+      useNativeDriver: true,
+    }).start();
+  }, [isSelected]);
+
+  const thumbSize = scale.interpolate({ inputRange: [0, 1], outputRange: [8, 28] });
+  const numOpacity = scale.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
+
+  return (
+    <Pressable onPress={onPress} style={s.notch}>
+      <Animated.View style={[
+        s.nMark,
+        isPassed && !isSelected && s.nPassed,
+        isSelected && {
+          width: 28, height: 28, borderRadius: 14,
+          backgroundColor: "#2D2A24",
+          shadowColor: "#2D2A24", shadowOffset: { width: 0, height: 3 },
+          shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
+        },
+        { transform: [{ scale: scale.interpolate({ inputRange: [0, 1], outputRange: [1, 1] }) }] },
+      ]}>
+        {isSelected && (
+          <Animated.View style={{ opacity: numOpacity }}>
+            <Text style={s.nNum}>{value}</Text>
+          </Animated.View>
+        )}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+// ——— Slider Track Metric ———
+function SliderMetric({ label, scaleKey, value, onSelect }: {
+  label: string; scaleKey: string; value: number; onSelect: (v: number) => void;
+}) {
+  const labels = SCALE_LABELS[scaleKey] || ["Low", "High"];
+  const fillWidth = value > 0 ? `${((value - 1) / 4) * 100}%` : "0%";
+
+  return (
+    <View style={s.metric}>
+      <View style={s.mTop}>
+        <Text style={s.mLabel}>{label}</Text>
+        <Text style={[s.mVal, value === 0 && { color: "#DEDBD4" }]}>
+          {value > 0 ? value : "—"}
+        </Text>
+      </View>
+      <View style={s.track}>
+        {/* Background track */}
+        <View style={s.trackBg} />
+        {/* Green fill */}
+        <View style={[s.trackFill, { width: fillWidth as any }]} />
+        {/* Notches */}
+        <View style={s.notches}>
+          {STAR_OPTIONS.map((v) => (
+            <Notch
+              key={v}
+              value={v}
+              isSelected={value === v}
+              isPassed={value > 0 && v < value}
+              onPress={() => onSelect(v)}
+            />
+          ))}
+        </View>
+      </View>
+      <View style={s.labels}>
+        <Text style={s.lbl}>{labels[0]}</Text>
+        <Text style={s.lbl}>{labels[1]}</Text>
+      </View>
+    </View>
+  );
+}
+
+// ——— Main Screen ———
 export default function Wellness() {
   const session = useAuthStore((s) => s.session);
   const [sleep, setSleep] = useState(0);
@@ -22,13 +110,13 @@ export default function Wellness() {
     if (!session?.user?.id || !canSave) return;
     setLoading(true);
 
-    await supabase.from("wellness_logs").insert({
+    await (supabase.from("wellness_logs").insert as any)({
       user_id: session.user.id,
       sleep_quality: sleep,
       energy_level: energy,
       soreness_level: soreness,
       nutrition_adherence: nutrition,
-    } as any);
+    });
 
     setLoading(false);
     setSaved(true);
@@ -38,69 +126,150 @@ export default function Wellness() {
     return (
       <View style={{ flex: 1, backgroundColor: "#F6F5F0", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
-        <Text style={{ fontSize: 48, marginBottom: 16 }}>🧘</Text>
+        <Text style={{ fontSize: 48, marginBottom: 16 }}>✓</Text>
         <Text style={{ color: "#2D2A24", fontSize: 24, fontWeight: "700", marginBottom: 8 }}>Logged!</Text>
-        <Text style={{ color: "#8E8E7A", textAlign: "center", marginBottom: 24 }}>Tracking wellness helps us optimize your training.</Text>
-        <Pressable onPress={() => router.navigate("/(app)")} style={{ backgroundColor: "#2D2A24", borderRadius: 16, paddingHorizontal: 32, paddingVertical: 16 }}>
-          <Text style={{ color: "#F6F5F0", fontSize: 18, fontWeight: "600" }}>Back</Text>
+        <Text style={{ color: "#8E8E7A", textAlign: "center", marginBottom: 24, fontSize: 14 }}>
+          Tracking wellness helps us optimize your training.
+        </Text>
+        <Pressable onPress={() => router.navigate("/(app)")} style={s.saveBtn}>
+          <Text style={{ color: "#F6F5F0", fontSize: 16, fontWeight: "700" }}>Back</Text>
         </Pressable>
       </View>
     );
   }
 
-  const StarRow = ({ label, emoji, value, onSelect }: { label: string; emoji: string; value: number; onSelect: (v: number) => void }) => (
-    <View style={{ marginBottom: 24 }}>
-      <Text style={{ color: "#2D2A24", fontSize: 18, marginBottom: 12 }}>{emoji} {label}</Text>
-      <View style={{ flexDirection: "row", gap: 12 }}>
-        {STAR_OPTIONS.map((v) => (
-          <Pressable
-            key={v}
-            onPress={() => onSelect(v)}
-            style={{ flex: 1, borderRadius: 16, paddingVertical: 16, alignItems: "center", backgroundColor: v <= value ? "#2D2A24" : "#EDEBE5" }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: "700", color: v <= value ? "#F6F5F0" : "#8E8E7A" }}>{v}</Text>
-          </Pressable>
-        ))}
-      </View>
-    </View>
-  );
-
   return (
-    <View style={{ flex: 1, backgroundColor: "#F6F5F0", paddingHorizontal: 24, paddingTop: 64 }}>
+    <View style={{ flex: 1, backgroundColor: "#F6F5F0" }}>
       <TopoBackground />
-      <Pressable onPress={() => router.navigate("/(app)")} style={{ marginBottom: 16 }}>
-        <Text style={{ color: "#2D2A24", fontSize: 16 }}>← Back</Text>
-      </Pressable>
+      <View style={s.zone}>
+        <Pressable onPress={() => router.navigate("/(app)")} style={s.back}>
+          <Text style={{ color: "#2D2A24", fontSize: 16, fontWeight: "600" }}>‹</Text>
+        </Pressable>
 
-      <Text style={{ color: "#2D2A24", fontSize: 30, fontWeight: "700", marginBottom: 8 }}>Wellness Check</Text>
-      <Text style={{ color: "#8E8E7A", fontSize: 16, marginBottom: 32 }}>Quick check — takes 10 seconds.</Text>
+        <Text style={s.title}>Wellness Check</Text>
+        <Text style={s.subtitle}>Quick check — takes 10 seconds.</Text>
 
-      <StarRow label="Sleep Quality" emoji="😴" value={sleep} onSelect={setSleep} />
-      <StarRow label="Energy Level" emoji="⚡" value={energy} onSelect={setEnergy} />
-      <StarRow label="Muscle Soreness" emoji="💪" value={soreness} onSelect={setSoreness} />
+        <SliderMetric label="Sleep Quality" scaleKey="sleep" value={sleep} onSelect={setSleep} />
+        <SliderMetric label="Energy Level" scaleKey="energy" value={energy} onSelect={setEnergy} />
+        <SliderMetric label="Muscle Soreness" scaleKey="soreness" value={soreness} onSelect={setSoreness} />
 
-      <Text style={{ color: "#2D2A24", fontSize: 18, marginBottom: 12 }}>🍽 Did you follow the meal plan?</Text>
-      <View style={{ flexDirection: "row", gap: 12, marginBottom: 32 }}>
-        {([["yes", "Yes"], ["mostly", "Mostly"], ["no", "No"]] as const).map(([val, label]) => (
-          <Pressable
-            key={val}
-            onPress={() => setNutrition(val)}
-            style={{ flex: 1, borderRadius: 16, paddingVertical: 16, alignItems: "center", backgroundColor: nutrition === val ? "#2D2A24" : "#EDEBE5" }}
-          >
-            <Text style={{ fontSize: 16, fontWeight: "600", color: nutrition === val ? "#F6F5F0" : "#8E8E7A" }}>{label}</Text>
-          </Pressable>
-        ))}
+        {/* Nutrition */}
+        <View style={s.metric}>
+          <View style={s.mTop}>
+            <Text style={s.mLabel}>Followed meal plan?</Text>
+          </View>
+          <View style={s.nut}>
+            {([["yes", "Yes"], ["mostly", "Mostly"], ["no", "No"]] as const).map(([val, label]) => (
+              <Pressable
+                key={val}
+                onPress={() => setNutrition(val)}
+                style={[s.nutBtn, nutrition === val ? s.nutOn : s.nutOff]}
+              >
+                <Text style={[s.nutText, nutrition === val ? s.nutTextOn : s.nutTextOff]}>{label}</Text>
+              </Pressable>
+            ))}
+          </View>
+        </View>
+
+        <Pressable
+          onPress={handleSave}
+          disabled={!canSave || loading}
+          style={[s.saveBtn, !canSave && !loading && s.saveBtnOff]}
+        >
+          {loading ? <ActivityIndicator color="#F6F5F0" /> : (
+            <Text style={[s.saveBtnText, !canSave && { color: "#AEAB9F" }]}>Save</Text>
+          )}
+        </Pressable>
       </View>
-
-      <Pressable
-        onPress={handleSave}
-        disabled={!canSave || loading}
-        style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center", backgroundColor: canSave && !loading ? "#2D2A24" : "#EDEBE5" }}
-      >
-        {loading ? <ActivityIndicator color="#F6F5F0" /> : (
-          <Text style={{ fontSize: 18, fontWeight: "600", color: canSave ? "#F6F5F0" : "#8E8E7A" }}>Save</Text>
-        )}
-      </Pressable>
     </View>
   );
 }
+
+const s = StyleSheet.create({
+  zone: { paddingHorizontal: 24, paddingTop: 54 },
+  back: {
+    width: 36, height: 36, borderRadius: 18,
+    backgroundColor: "#EDEBE5",
+    alignItems: "center", justifyContent: "center",
+    marginBottom: 20,
+  },
+  title: { fontSize: 26, fontWeight: "800", color: "#2D2A24", marginBottom: 4 },
+  subtitle: { fontSize: 14, color: "#8E8E7A", marginBottom: 32 },
+
+  // Metric
+  metric: { marginBottom: 32 },
+  mTop: {
+    flexDirection: "row", alignItems: "flex-end",
+    justifyContent: "space-between", marginBottom: 18,
+  },
+  mLabel: { fontSize: 15, fontWeight: "700", color: "#2D2A24" },
+  mVal: { fontSize: 20, fontWeight: "900", color: "#2D2A24" },
+
+  // Track
+  track: {
+    position: "relative", height: 44,
+    justifyContent: "center",
+  },
+  trackBg: {
+    position: "absolute", left: 0, right: 0, height: 4,
+    backgroundColor: "#EDEBE5", borderRadius: 2,
+  },
+  trackFill: {
+    position: "absolute", left: 0, height: 4,
+    backgroundColor: "#34D399", borderRadius: 2,
+  },
+  notches: {
+    flexDirection: "row", justifyContent: "space-between",
+    position: "relative", zIndex: 2,
+  },
+  notch: {
+    width: 44, height: 44,
+    alignItems: "center", justifyContent: "center",
+  },
+  nMark: {
+    width: 8, height: 8, borderRadius: 4,
+    backgroundColor: "#EDEBE5",
+    alignItems: "center", justifyContent: "center",
+  },
+  nPassed: {
+    backgroundColor: "rgba(52,211,153,0.25)",
+    width: 6, height: 6, borderRadius: 3,
+  },
+  nNum: { fontSize: 12, fontWeight: "800", color: "#F6F5F0" },
+
+  labels: {
+    flexDirection: "row", justifyContent: "space-between",
+    paddingHorizontal: 8, paddingTop: 2,
+  },
+  lbl: { fontSize: 9, fontWeight: "500", color: "#AEAB9F" },
+
+  // Nutrition
+  nut: { flexDirection: "row", gap: 6 },
+  nutBtn: {
+    flex: 1, paddingVertical: 14, borderRadius: 14,
+    alignItems: "center", justifyContent: "center",
+    borderWidth: 1.5,
+  },
+  nutOff: {
+    backgroundColor: "#FFFFFF",
+    borderColor: "rgba(0,0,0,0.04)",
+  },
+  nutOn: {
+    backgroundColor: "#2D2A24",
+    borderColor: "#2D2A24",
+    shadowColor: "#2D2A24", shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15, shadowRadius: 10, elevation: 3,
+  },
+  nutText: { fontSize: 13, fontWeight: "700" },
+  nutTextOff: { color: "#8E8E7A" },
+  nutTextOn: { color: "#F6F5F0" },
+
+  // Save
+  saveBtn: {
+    paddingVertical: 18, borderRadius: 18,
+    alignItems: "center", marginTop: 4,
+    backgroundColor: "#2D2A24",
+  },
+  saveBtnOff: { backgroundColor: "#EDEBE5" },
+  saveBtnText: { fontSize: 16, fontWeight: "700", color: "#F6F5F0" },
+});

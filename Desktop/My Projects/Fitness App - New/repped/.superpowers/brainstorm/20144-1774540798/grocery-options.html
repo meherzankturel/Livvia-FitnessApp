@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery List 6 Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.35; } }
+  @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+
+  /* ============================================================
+     G1: "THE CLEAN LIST"
+     Minimal. Big title. Category pills as horizontal scroll
+     filter. Items as a clean checklist. Total as a sticky
+     footer bar. No notepad gimmick.
+     ============================================================ */
+
+  .g1-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .g1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g1-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .g1-total-badge { padding: 6px 14px; border-radius: 100px; background: var(--earth); }
+  .g1-total-text { font-size: 13px; font-weight: 700; color: var(--trail); }
+
+  .g1-sub { padding: 6px 24px 0; font-size: 11px; color: var(--rock); }
+
+  /* Category filter pills */
+  .g1-cats { display: flex; gap: 6px; padding: 16px 24px 0; overflow-x: auto; }
+  .g1-cat { padding: 6px 14px; border-radius: 100px; font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .g1-cat.active { background: var(--earth); color: var(--sand); }
+  .g1-cat.inactive { background: var(--stone); color: var(--rock); }
+
+  /* Item list */
+  .g1-list { padding: 16px 24px 0; }
+  .g1-item { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .g1-item:last-child { border-bottom: none; }
+  .g1-cb { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g1-cb.on { background: var(--trail); border-color: var(--trail); }
+  .g1-ck { font-size: 11px; color: #fff; font-weight: 700; }
+  .g1-info { flex: 1; }
+  .g1-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .g1-item.done .g1-name { text-decoration: line-through; opacity: 0.4; }
+  .g1-qty { font-size: 11px; color: var(--rock); margin-top: 1px; }
+  .g1-price { font-size: 12px; font-weight: 600; color: var(--rock); }
+
+  /* Category dot on items */
+  .g1-cat-dot { width: 4px; height: 4px; border-radius: 2px; flex-shrink: 0; }
+
+
+  /* ============================================================
+     G2: "THE BENTO CATEGORIES"
+     Each category is a bento card with its items inside.
+     Tap to expand/collapse. Total as a dark hero card at top.
+     Visual, organized.
+     ============================================================ */
+
+  .g2-top { padding: 56px 20px 0; display: flex; align-items: center; gap: 10px; }
+  .g2-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g2-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  /* Dark summary card */
+  .g2-hero { margin: 14px 20px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .g2-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g2-hero-row { display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+  .g2-hero-title { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .g2-hero-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 4px; }
+  .g2-hero-total { font-size: 32px; font-weight: 800; color: var(--trail); letter-spacing: -1px; }
+  .g2-hero-est { font-size: 9px; color: rgba(246,245,240,0.25); text-align: right; margin-top: 2px; }
+
+  /* Category bento cards */
+  .g2-cats { padding: 16px 20px 0; display: flex; flex-direction: column; gap: 10px; }
+  .g2-cat-card { border-radius: 18px; overflow: hidden; }
+  .g2-cat-header { display: flex; align-items: center; gap: 10px; padding: 14px 16px; cursor: pointer; }
+  .g2-cat-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+  .g2-cat-name { font-size: 14px; font-weight: 700; color: var(--earth); flex: 1; }
+  .g2-cat-count { font-size: 11px; color: var(--rock); }
+  .g2-cat-chev { font-size: 12px; color: var(--rock); }
+
+  .g2-cat-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g2-cat-card.stone { background: var(--stone); }
+
+  .g2-cat-items { padding: 0 16px 14px; }
+  .g2-cat-item { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .g2-cat-item-cb { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .g2-cat-item-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .g2-cat-item-amt { font-size: 11px; color: var(--rock); }
+
+
+  /* ============================================================
+     G3: "THE RECEIPT"
+     Styled like a store receipt. Monospace numbers.
+     Category sections. Dotted lines between items.
+     Total at bottom. Nostalgic but premium.
+     ============================================================ */
+
+  .g3-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .g3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g3-header-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .g3-receipt {
+    margin: 14px 20px 0; background: #fff; border-radius: 20px;
+    padding: 20px; position: relative;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  }
+  /* Torn edge at bottom */
+  .g3-receipt::after {
+    content: ''; position: absolute; bottom: -6px; left: 10px; right: 10px; height: 6px;
+    background: repeating-linear-gradient(90deg, #fff 0px, #fff 6px, transparent 6px, transparent 12px);
+  }
+
+  .g3-receipt-title { text-align: center; font-size: 18px; font-weight: 700; color: var(--earth); margin-bottom: 4px; }
+  .g3-receipt-sub { text-align: center; font-size: 10px; color: var(--rock); margin-bottom: 14px; }
+
+  .g3-receipt-divider { border-bottom: 1px dashed rgba(0,0,0,0.08); margin: 10px 0; }
+
+  .g3-receipt-cat { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; margin-top: 10px; }
+  .g3-receipt-item { display: flex; align-items: center; padding: 6px 0; }
+  .g3-receipt-cb { width: 16px; height: 16px; border-radius: 4px; border: 1.5px solid var(--stone); margin-right: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g3-receipt-cb.on { background: var(--trail); border-color: var(--trail); }
+  .g3-receipt-ck { font-size: 9px; color: #fff; font-weight: 700; }
+  .g3-receipt-name { flex: 1; font-size: 13px; color: var(--earth); }
+  .g3-receipt-dots { flex: 1; border-bottom: 1px dotted rgba(0,0,0,0.1); margin: 0 6px; min-width: 20px; }
+  .g3-receipt-price { font-size: 13px; font-weight: 600; color: var(--earth); font-variant-numeric: tabular-nums; }
+
+  .g3-receipt-total { display: flex; justify-content: space-between; padding: 12px 0 0; margin-top: 10px; border-top: 2px solid var(--earth); }
+  .g3-receipt-total-label { font-size: 16px; font-weight: 700; color: var(--earth); }
+  .g3-receipt-total-val { font-size: 20px; font-weight: 800; color: var(--trail); }
+
+  .g3-receipt-items { font-size: 10px; color: var(--rock); text-align: center; margin-top: 8px; }
+
+
+  /* ============================================================
+     G4: "THE KANBAN"
+     Categories as horizontal scrollable columns (like Trello).
+     Each column is a category. Items inside each column.
+     Total bar at top. Swipe between categories.
+     ============================================================ */
+
+  .g4-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .g4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g4-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+
+  .g4-summary { display: flex; gap: 8px; padding: 12px 24px 0; }
+  .g4-stat { padding: 8px 14px; border-radius: 12px; background: var(--stone); }
+  .g4-stat-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .g4-stat-label { font-size: 8px; color: var(--rock); text-transform: uppercase; margin-top: 1px; }
+  .g4-stat.highlight { background: var(--earth); }
+  .g4-stat.highlight .g4-stat-val { color: var(--trail); }
+  .g4-stat.highlight .g4-stat-label { color: rgba(246,245,240,0.3); }
+
+  /* Horizontal columns */
+  .g4-cols { display: flex; gap: 12px; overflow-x: auto; padding: 16px 24px; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .g4-cols::-webkit-scrollbar { display: none; }
+
+  .g4-col {
+    flex-shrink: 0; width: 260px; border-radius: 20px; padding: 16px;
+    scroll-snap-align: start;
+  }
+  .g4-col.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g4-col.stone { background: var(--stone); }
+
+  .g4-col-header { display: flex; align-items: center; gap: 6px; margin-bottom: 12px; }
+  .g4-col-dot { width: 8px; height: 8px; border-radius: 4px; }
+  .g4-col-name { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g4-col-count { font-size: 10px; color: var(--rock); margin-left: auto; }
+
+  .g4-col-item { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .g4-col-item:last-child { border-bottom: none; }
+  .g4-col-cb { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .g4-col-item-name { font-size: 12px; color: var(--earth); flex: 1; }
+  .g4-col-item-amt { font-size: 10px; color: var(--rock); }
+
+
+  /* ============================================================
+     G5: "THE PROGRESS TRACKER"
+     Category progress rings at top (% checked per category).
+     Items below as a flat list grouped by category.
+     Gamified — completing all items in a category fills ring.
+     ============================================================ */
+
+  .g5-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .g5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .g5-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .g5-total { font-size: 14px; font-weight: 700; color: var(--trail); }
+
+  .g5-sub { padding: 4px 24px 0; font-size: 11px; color: var(--rock); }
+
+  /* Category rings — horizontal scroll */
+  .g5-rings { display: flex; gap: 14px; padding: 18px 24px; overflow-x: auto; scrollbar-width: none; }
+  .g5-rings::-webkit-scrollbar { display: none; }
+  .g5-ring-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .g5-ring { width: 52px; height: 52px; border-radius: 26px; border: 4px solid var(--stone); position: relative; display: flex; align-items: center; justify-content: center; }
+  .g5-ring.partial { border-top-color: var(--trail); border-right-color: var(--trail); }
+  .g5-ring.full { border-color: var(--trail); }
+  .g5-ring-inner { font-size: 11px; font-weight: 700; color: var(--earth); }
+  .g5-ring-label { font-size: 9px; color: var(--rock); font-weight: 600; }
+
+  /* Items */
+  .g5-section { padding: 0 24px; }
+  .g5-cat-label { display: flex; align-items: center; gap: 6px; padding: 12px 0 6px; }
+  .g5-cat-dot { width: 6px; height: 6px; border-radius: 3px; }
+  .g5-cat-name { font-size: 12px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .g5-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .g5-item:last-child { border-bottom: none; }
+  .g5-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .g5-cb.on { background: var(--trail); border-color: var(--trail); }
+  .g5-item-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .g5-item-amt { font-size: 11px; color: var(--rock); }
+  .g5-item-price { font-size: 11px; font-weight: 600; color: var(--rock); margin-left: 4px; }
+
+
+  /* ============================================================
+     G6: "THE AISLE MAP"
+     Items organized by store aisle/section. Visual path through
+     the store. Dark header with trip summary. Items grouped
+     by where you'd find them (Produce → Dairy → Meat → Pantry).
+     ============================================================ */
+
+  .g6-dark {
+    background: var(--earth); padding: 56px 24px 20px;
+    border-radius: 0 0 28px 28px; position: relative; overflow: hidden;
+  }
+  .g6-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g6-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .g6-header-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; margin-top: 28px; position: relative; }
+  .g6-header-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.7px; position: relative; }
+  .g6-header-stats { display: flex; gap: 16px; margin-top: 12px; position: relative; }
+  .g6-stat { }
+  .g6-stat-val { font-size: 18px; font-weight: 800; color: var(--sand); }
+  .g6-stat-label { font-size: 9px; color: rgba(246,245,240,0.25); }
+  .g6-stat-val.green { color: var(--trail); }
+
+  /* Aisle path */
+  .g6-path { padding: 20px 24px 0; position: relative; }
+  .g6-path-line { position: absolute; left: 36px; top: 20px; bottom: 0; width: 2px; background: var(--stone); }
+
+  .g6-aisle { position: relative; margin-bottom: 16px; }
+  .g6-aisle-dot { position: absolute; left: -2px; top: 4px; width: 14px; height: 14px; border-radius: 7px; z-index: 1; display: flex; align-items: center; justify-content: center; }
+  .g6-aisle-dot.color { background: var(--trail); }
+  .g6-aisle-dot.gray { background: var(--stone); }
+  .g6-aisle-content { margin-left: 28px; }
+
+  .g6-aisle-name { font-size: 12px; font-weight: 700; color: var(--earth); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .g6-aisle-dot-color { width: 6px; height: 6px; border-radius: 3px; }
+
+  .g6-aisle-items { background: #fff; border-radius: 14px; padding: 10px 14px; border: 1px solid rgba(0,0,0,0.04); }
+  .g6-a-item { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .g6-a-item:last-child { border-bottom: none; }
+  .g6-a-cb { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .g6-a-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .g6-a-amt { font-size: 10px; color: var(--rock); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== G1: THE CLEAN LIST =============== -->
+  <div>
+    <div class="col-label">G1 — THE CLEAN LIST</div>
+    <div class="col-desc">Minimal. Category filter pills at top. Clean checklist below. Total in a dark badge. No gimmicks, just clarity.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g1-top">
+          <div class="g1-back"><span style="font-size:16px;color:var(--earth);">‹</span></div>
+          <span class="g1-title">Grocery List</span>
+          <div class="g1-total-badge"><span class="g1-total-text">$47.82</span></div>
+        </div>
+        <div class="g1-sub">5 of 18 items · Week of Mar 26</div>
+
+        <div class="g1-cats">
+          <span class="g1-cat active">All</span>
+          <span class="g1-cat inactive">Produce</span>
+          <span class="g1-cat inactive">Protein</span>
+          <span class="g1-cat inactive">Dairy</span>
+          <span class="g1-cat inactive">Grains</span>
+          <span class="g1-cat inactive">Pantry</span>
+        </div>
+
+        <div class="g1-list">
+          <div class="g1-item done"><div class="g1-cb on"><span class="g1-ck">✓</span></div><div class="g1-info"><div class="g1-name">Chicken breast</div><div class="g1-qty">500g</div></div><span class="g1-price">$8.99</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Black beans</div><div class="g1-qty">2 cans</div></div><span class="g1-price">$2.49</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Greek yogurt</div><div class="g1-qty">500g</div></div><span class="g1-price">$5.99</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Avocado</div><div class="g1-qty">3 pieces</div></div><span class="g1-price">$5.97</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Brown rice</div><div class="g1-qty">1 kg</div></div><span class="g1-price">$4.99</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Eggs</div><div class="g1-qty">12 pack</div></div><span class="g1-price">$4.99</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Spinach</div><div class="g1-qty">200g bag</div></div><span class="g1-price">$3.49</span></div>
+          <div class="g1-item"><div class="g1-cb"></div><div class="g1-info"><div class="g1-name">Olive oil</div><div class="g1-qty">500ml</div></div><span class="g1-price">$6.99</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== G2: THE BENTO CATEGORIES =============== -->
+  <div>
+    <div class="col-label">G2 — THE BENTO CATEGORIES</div>
+    <div class="col-desc">Dark hero summary card. Categories as expandable bento cards (white + stone alternating). Items nested inside each card.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g2-top">
+          <div class="g2-back"><span style="font-size:16px;color:var(--earth);">‹</span></div>
+          <span class="g2-label">Grocery List</span>
+        </div>
+
+        <div class="g2-hero">
+          <div class="g2-diag" style="width:90px;top:12px;right:-4px;transform:rotate(-35deg);"></div>
+          <div class="g2-diag" style="width:65px;top:22px;right:-4px;transform:rotate(-35deg);"></div>
+          <div class="g2-hero-row">
+            <div><div class="g2-hero-title">Weekly Shop</div><div class="g2-hero-sub">18 items · 6 categories</div></div>
+            <div><div class="g2-hero-total">$47</div><div class="g2-hero-est">est. total</div></div>
+          </div>
+        </div>
+
+        <div class="g2-cats">
+          <div class="g2-cat-card white">
+            <div class="g2-cat-header"><div class="g2-cat-dot" style="background:#34D399;"></div><span class="g2-cat-name">Produce</span><span class="g2-cat-count">5 items</span><span class="g2-cat-chev">›</span></div>
+            <div class="g2-cat-items">
+              <div class="g2-cat-item"><div class="g2-cat-item-cb"></div><span class="g2-cat-item-name">Avocado</span><span class="g2-cat-item-amt">3 pcs</span></div>
+              <div class="g2-cat-item"><div class="g2-cat-item-cb"></div><span class="g2-cat-item-name">Spinach</span><span class="g2-cat-item-amt">200g</span></div>
+              <div class="g2-cat-item"><div class="g2-cat-item-cb"></div><span class="g2-cat-item-name">Banana</span><span class="g2-cat-item-amt">6 pcs</span></div>
+            </div>
+          </div>
+          <div class="g2-cat-card stone">
+            <div class="g2-cat-header"><div class="g2-cat-dot" style="background:#EF4444;"></div><span class="g2-cat-name">Protein</span><span class="g2-cat-count">4 items</span><span class="g2-cat-chev">›</span></div>
+          </div>
+          <div class="g2-cat-card white">
+            <div class="g2-cat-header"><div class="g2-cat-dot" style="background:#F59E0B;"></div><span class="g2-cat-name">Dairy</span><span class="g2-cat-count">3 items</span><span class="g2-cat-chev">›</span></div>
+          </div>
+          <div class="g2-cat-card stone">
+            <div class="g2-cat-header"><div class="g2-cat-dot" style="background:#6366F1;"></div><span class="g2-cat-name">Grains</span><span class="g2-cat-count">3 items</span><span class="g2-cat-chev">›</span></div>
+          </div>
+          <div class="g2-cat-card white">
+            <div class="g2-cat-header"><div class="g2-cat-dot" style="background:#8E8E7A;"></div><span class="g2-cat-name">Pantry</span><span class="g2-cat-count">3 items</span><span class="g2-cat-chev">›</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== G3: THE RECEIPT =============== -->
+  <div>
+    <div class="col-label">G3 — THE RECEIPT</div>
+    <div class="col-desc">Styled like a store receipt. Dotted price lines. Category headers. Torn edge at bottom. Total with double border. Nostalgic premium.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g3-top">
+          <div class="g3-back"><span style="font-size:16px;color:var(--earth);">‹</span></div>
+          <span class="g3-header-text">Grocery List</span>
+        </div>
+
+        <div class="g3-receipt">
+          <div class="g3-receipt-title">Weekly Groceries</div>
+          <div class="g3-receipt-sub">Week of Mar 26 · 18 items</div>
+          <div class="g3-receipt-divider"></div>
+
+          <div class="g3-receipt-cat">Produce</div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Avocado x3</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$5.97</span></div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Spinach 200g</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$3.49</span></div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Banana x6</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$4.14</span></div>
+
+          <div class="g3-receipt-cat">Protein</div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb on"><span class="g3-receipt-ck">✓</span></div><span class="g3-receipt-name" style="text-decoration:line-through;opacity:0.4;">Chicken breast</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price" style="opacity:0.4;">$8.99</span></div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Eggs 12pk</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$4.99</span></div>
+
+          <div class="g3-receipt-cat">Dairy</div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Greek yogurt</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$5.99</span></div>
+          <div class="g3-receipt-item"><div class="g3-receipt-cb"></div><span class="g3-receipt-name">Butter</span><span class="g3-receipt-dots"></span><span class="g3-receipt-price">$4.49</span></div>
+
+          <div class="g3-receipt-total">
+            <span class="g3-receipt-total-label">TOTAL</span>
+            <span class="g3-receipt-total-val">$47.82</span>
+          </div>
+          <div class="g3-receipt-items">5 of 18 items checked</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ROW 2 -->
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== G4: THE KANBAN =============== -->
+  <div>
+    <div class="col-label">G4 — THE KANBAN</div>
+    <div class="col-desc">Horizontal scrollable category columns (like Trello). Each column is a category card. Swipe between sections. Stat pills at top.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g4-top">
+          <div class="g4-back"><span style="font-size:16px;color:var(--earth);">‹</span></div>
+          <span class="g4-title">Grocery List</span>
+        </div>
+
+        <div class="g4-summary">
+          <div class="g4-stat"><div class="g4-stat-val">18</div><div class="g4-stat-label">Items</div></div>
+          <div class="g4-stat"><div class="g4-stat-val">6</div><div class="g4-stat-label">Categories</div></div>
+          <div class="g4-stat highlight"><div class="g4-stat-val">$47</div><div class="g4-stat-label">Est. total</div></div>
+        </div>
+
+        <div class="g4-cols">
+          <div class="g4-col white">
+            <div class="g4-col-header"><div class="g4-col-dot" style="background:#34D399;"></div><span class="g4-col-name">Produce</span><span class="g4-col-count">5</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Avocado</span><span class="g4-col-item-amt">3 pcs</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Spinach</span><span class="g4-col-item-amt">200g</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Banana</span><span class="g4-col-item-amt">6 pcs</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Tomato</span><span class="g4-col-item-amt">4 pcs</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Onion</span><span class="g4-col-item-amt">2 pcs</span></div>
+          </div>
+          <div class="g4-col stone">
+            <div class="g4-col-header"><div class="g4-col-dot" style="background:#EF4444;"></div><span class="g4-col-name">Protein</span><span class="g4-col-count">4</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Chicken breast</span><span class="g4-col-item-amt">500g</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Eggs</span><span class="g4-col-item-amt">12 pk</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Salmon</span><span class="g4-col-item-amt">300g</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Tofu</span><span class="g4-col-item-amt">400g</span></div>
+          </div>
+          <div class="g4-col white">
+            <div class="g4-col-header"><div class="g4-col-dot" style="background:#F59E0B;"></div><span class="g4-col-name">Dairy</span><span class="g4-col-count">3</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Greek yogurt</span><span class="g4-col-item-amt">500g</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Butter</span><span class="g4-col-item-amt">250g</span></div>
+            <div class="g4-col-item"><div class="g4-col-cb"></div><span class="g4-col-item-name">Cheese</span><span class="g4-col-item-amt">200g</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== G5: THE PROGRESS TRACKER =============== -->
+  <div>
+    <div class="col-label">G5 — THE PROGRESS TRACKER</div>
+    <div class="col-desc">Category progress rings at top (gamified). Completing a category fills its ring. Items grouped below with prices.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g5-top">
+          <div class="g5-back"><span style="font-size:16px;color:var(--earth);">‹</span></div>
+          <span class="g5-title">Grocery List</span>
+          <span class="g5-total">$47.82</span>
+        </div>
+        <div class="g5-sub">5 of 18 items checked</div>
+
+        <div class="g5-rings">
+          <div class="g5-ring-item"><div class="g5-ring partial"><span class="g5-ring-inner">2/5</span></div><span class="g5-ring-label">Produce</span></div>
+          <div class="g5-ring-item"><div class="g5-ring partial"><span class="g5-ring-inner">1/4</span></div><span class="g5-ring-label">Protein</span></div>
+          <div class="g5-ring-item"><div class="g5-ring"><span class="g5-ring-inner">0/3</span></div><span class="g5-ring-label">Dairy</span></div>
+          <div class="g5-ring-item"><div class="g5-ring"><span class="g5-ring-inner">0/3</span></div><span class="g5-ring-label">Grains</span></div>
+          <div class="g5-ring-item"><div class="g5-ring full"><span class="g5-ring-inner">3/3</span></div><span class="g5-ring-label">Pantry</span></div>
+        </div>
+
+        <div class="g5-section">
+          <div class="g5-cat-label"><div class="g5-cat-dot" style="background:#34D399;"></div><span class="g5-cat-name">Produce</span></div>
+          <div class="g5-item"><div class="g5-cb on"><span style="font-size:10px;color:#fff;font-weight:700;">✓</span></div><span class="g5-item-name" style="text-decoration:line-through;opacity:0.4;">Avocado</span><span class="g5-item-amt">3 pcs</span><span class="g5-item-price">$5.97</span></div>
+          <div class="g5-item"><div class="g5-cb on"><span style="font-size:10px;color:#fff;font-weight:700;">✓</span></div><span class="g5-item-name" style="text-decoration:line-through;opacity:0.4;">Spinach</span><span class="g5-item-amt">200g</span><span class="g5-item-price">$3.49</span></div>
+          <div class="g5-item"><div class="g5-cb"></div><span class="g5-item-name">Banana</span><span class="g5-item-amt">6 pcs</span><span class="g5-item-price">$4.14</span></div>
+          <div class="g5-item"><div class="g5-cb"></div><span class="g5-item-name">Tomato</span><span class="g5-item-amt">4 pcs</span><span class="g5-item-price">$5.96</span></div>
+
+          <div class="g5-cat-label"><div class="g5-cat-dot" style="background:#EF4444;"></div><span class="g5-cat-name">Protein</span></div>
+          <div class="g5-item"><div class="g5-cb on"><span style="font-size:10px;color:#fff;font-weight:700;">✓</span></div><span class="g5-item-name" style="text-decoration:line-through;opacity:0.4;">Chicken breast</span><span class="g5-item-amt">500g</span><span class="g5-item-price">$8.99</span></div>
+          <div class="g5-item"><div class="g5-cb"></div><span class="g5-item-name">Eggs</span><span class="g5-item-amt">12 pk</span><span class="g5-item-price">$4.99</span></div>
+          <div class="g5-item"><div class="g5-cb"></div><span class="g5-item-name">Salmon</span><span class="g5-item-amt">300g</span><span class="g5-item-price">$12.99</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== G6: THE AISLE MAP =============== -->
+  <div>
+    <div class="col-label">G6 — THE AISLE MAP</div>
+    <div class="col-desc">Dark header with trip summary. Items organized as a store aisle path (trail timeline). Walk through produce → dairy → meat → pantry.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="g6-dark">
+          <div class="g6-diag" style="width:100px;top:50px;right:-8px;transform:rotate(-35deg);"></div>
+          <div class="g6-diag" style="width:70px;top:64px;right:-8px;transform:rotate(-35deg);"></div>
+          <div class="g6-back"><span style="font-size:16px;color:var(--sand);">‹</span></div>
+          <div class="g6-header-label">Weekly Shop</div>
+          <div class="g6-header-title">Grocery List</div>
+          <div class="g6-header-stats">
+            <div class="g6-stat"><div class="g6-stat-val">18</div><div class="g6-stat-label">Items</div></div>
+            <div class="g6-stat"><div class="g6-stat-val">6</div><div class="g6-stat-label">Sections</div></div>
+            <div class="g6-stat"><div class="g6-stat-val green">$47</div><div class="g6-stat-label">Est. total</div></div>
+          </div>
+        </div>
+
+        <div class="g6-path">
+          <div class="g6-path-line"></div>
+
+          <div class="g6-aisle">
+            <div class="g6-aisle-dot color"></div>
+            <div class="g6-aisle-content">
+              <div class="g6-aisle-name"><div class="g6-aisle-dot-color" style="background:#34D399;"></div> Produce</div>
+              <div class="g6-aisle-items">
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Avocado</span><span class="g6-a-amt">3 pcs</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Spinach</span><span class="g6-a-amt">200g</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Banana</span><span class="g6-a-amt">6 pcs</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g6-aisle">
+            <div class="g6-aisle-dot gray"></div>
+            <div class="g6-aisle-content">
+              <div class="g6-aisle-name"><div class="g6-aisle-dot-color" style="background:#F59E0B;"></div> Dairy</div>
+              <div class="g6-aisle-items">
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Greek yogurt</span><span class="g6-a-amt">500g</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Butter</span><span class="g6-a-amt">250g</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g6-aisle">
+            <div class="g6-aisle-dot gray"></div>
+            <div class="g6-aisle-content">
+              <div class="g6-aisle-name"><div class="g6-aisle-dot-color" style="background:#EF4444;"></div> Protein</div>
+              <div class="g6-aisle-items">
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Chicken breast</span><span class="g6-a-amt">500g</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Eggs</span><span class="g6-a-amt">12 pk</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Salmon</span><span class="g6-a-amt">300g</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="g6-aisle">
+            <div class="g6-aisle-dot gray"></div>
+            <div class="g6-aisle-content">
+              <div class="g6-aisle-name"><div class="g6-aisle-dot-color" style="background:#6366F1;"></div> Grains</div>
+              <div class="g6-aisle-items">
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Brown rice</span><span class="g6-a-amt">1 kg</span></div>
+                <div class="g6-a-item"><div class="g6-a-cb"></div><span class="g6-a-name">Oats</span><span class="g6-a-amt">500g</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

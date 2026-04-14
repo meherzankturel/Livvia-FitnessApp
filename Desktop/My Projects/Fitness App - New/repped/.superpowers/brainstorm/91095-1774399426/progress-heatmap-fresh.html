@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Fresh Heatmap Ideas</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     G1: WEEK CARDS — Horizontal scroll of week cards.
+     Each card shows the week's days as 7 small dots + count.
+     Current week highlighted. Like a filmstrip of weeks.
+     ============================================================ */
+
+  .g1-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g1-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g1-range { font-size: 10px; color: var(--rock); }
+
+  .g1-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .g1-scroll::-webkit-scrollbar { display: none; }
+
+  .g1-card {
+    min-width: 100px; padding: 14px 12px; border-radius: 16px;
+    flex-shrink: 0; text-align: center;
+  }
+  .g1-card.past { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g1-card.now { background: var(--earth); }
+
+  .g1-week-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; }
+  .g1-card.past .g1-week-label { color: var(--rock); }
+  .g1-card.now .g1-week-label { color: rgba(246,245,240,0.35); }
+
+  .g1-dots { display: flex; gap: 4px; justify-content: center; margin-top: 8px; }
+  .g1-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .g1-card.past .g1-dot.on { background: var(--earth); opacity: 0.2; }
+  .g1-card.past .g1-dot.off { background: var(--stone); }
+  .g1-card.now .g1-dot.on { background: var(--trail); }
+  .g1-card.now .g1-dot.off { background: rgba(246,245,240,0.06); }
+  .g1-card.now .g1-dot.today { background: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.4); }
+
+  .g1-count { font-size: 18px; font-weight: 800; margin-top: 6px; letter-spacing: -0.5px; }
+  .g1-card.past .g1-count { color: var(--earth); }
+  .g1-card.now .g1-count { color: var(--sand); }
+  .g1-of { font-size: 9px; margin-top: 1px; }
+  .g1-card.past .g1-of { color: var(--rock); }
+  .g1-card.now .g1-of { color: rgba(246,245,240,0.25); }
+
+
+  /* ============================================================
+     G2: DARK ACTIVITY CARD — Dark card with a clean grid.
+     Day labels inside. Week count on the right per row.
+     Summary stats at bottom inside the card. All-in-one.
+     ============================================================ */
+
+  .g2-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g2-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g2-range { font-size: 10px; color: var(--rock); }
+
+  .g2-card { padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .g2-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+
+  .g2-days { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; position: relative; }
+  .g2-day { text-align: center; font-size: 8px; color: rgba(246,245,240,0.2); font-weight: 600; }
+
+  .g2-rows { position: relative; }
+  .g2-row { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; margin-bottom: 3px; }
+  .g2-c { aspect-ratio: 1; border-radius: 4px; max-width: 18px; margin: 0 auto; }
+  .g2-c.empty { background: rgba(246,245,240,0.04); }
+  .g2-c.done { background: rgba(246,245,240,0.15); }
+  .g2-c.today { background: var(--trail); opacity: 0.7; }
+
+  .g2-summary { display: flex; justify-content: space-between; margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .g2-sum { text-align: center; }
+  .g2-sum-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .g2-sum-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     G3: PLAYER STATS CARD — Like a sports player card.
+     Activity shown as a horizontal "season" bar at the top.
+     Big stats in the middle. Mini calendar at bottom.
+     ============================================================ */
+
+  .g3-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g3-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .g3-card { border-radius: 20px; background: var(--earth); overflow: hidden; position: relative; }
+  .g3-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .g3-aline { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g3-aline:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .g3-aline:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  /* Season bar — 30 days as tiny cells */
+  .g3-season { display: flex; gap: 1.5px; padding: 14px 18px 0; position: relative; }
+  .g3-sc { flex: 1; height: 6px; border-radius: 3px; }
+  .g3-sc.empty { background: rgba(246,245,240,0.04); }
+  .g3-sc.done { background: rgba(246,245,240,0.12); }
+  .g3-sc.today { background: var(--trail); }
+
+  /* Big stats row */
+  .g3-stats { display: flex; padding: 16px 18px; position: relative; }
+  .g3-stat { flex: 1; text-align: center; position: relative; }
+  .g3-stat::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(246,245,240,0.04); }
+  .g3-stat:last-child::after { display: none; }
+  .g3-stat-val { font-size: 24px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .g3-stat-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  /* Mini 4-week calendar */
+  .g3-mini { padding: 0 18px 14px; position: relative; }
+  .g3-mini-label { font-size: 8px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+  .g3-mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .g3-mc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; margin: 0 auto; }
+  .g3-mc.empty { background: rgba(246,245,240,0.03); }
+  .g3-mc.done { background: rgba(246,245,240,0.1); }
+  .g3-mc.today { background: var(--trail); opacity: 0.6; }
+
+
+  /* ============================================================
+     G4: CONTRIBUTION GRAPH — GitHub-style but vertical.
+     Scrollable horizontally. Each column = 1 week. Rows = days.
+     Intensity = workout volume. Most data-rich.
+     ============================================================ */
+
+  .g4-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g4-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g4-range { font-size: 10px; color: var(--rock); }
+
+  .g4-wrap { display: flex; gap: 6px; }
+  .g4-day-labels { display: flex; flex-direction: column; gap: 2px; padding-top: 0; flex-shrink: 0; }
+  .g4-dl { font-size: 7px; color: var(--rock); font-weight: 600; height: 14px; display: flex; align-items: center; }
+
+  .g4-scroll { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; flex: 1; }
+  .g4-scroll::-webkit-scrollbar { display: none; }
+  .g4-col { display: flex; flex-direction: column; gap: 2px; flex-shrink: 0; }
+  .g4-c { width: 14px; height: 14px; border-radius: 3px; }
+  .g4-c.l0 { background: var(--stone); }
+  .g4-c.l1 { background: rgba(45,42,36,0.08); }
+  .g4-c.l2 { background: rgba(45,42,36,0.2); }
+  .g4-c.l3 { background: var(--earth); }
+  .g4-c.today { background: var(--trail); }
+
+  .g4-legend { display: flex; gap: 6px; align-items: center; margin-top: 8px; justify-content: flex-end; }
+  .g4-leg-label { font-size: 8px; color: var(--rock); }
+  .g4-leg-dots { display: flex; gap: 2px; }
+  .g4-leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+
+  /* ============================================================
+     G5: SPLIT VIEW — Left: big number "18 workouts".
+     Right: tiny 4-week grid. Compact, informative. No scroll.
+     ============================================================ */
+
+  .g5-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g5-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .g5-card { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; gap: 18px; align-items: center; }
+
+  .g5-left { flex-shrink: 0; }
+  .g5-big { font-size: 40px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .g5-label { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .g5-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .g5-right { flex: 1; }
+  .g5-mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .g5-mc { aspect-ratio: 1; border-radius: 3px; }
+  .g5-mc.empty { background: var(--stone); }
+  .g5-mc.done { background: var(--earth); opacity: 0.2; }
+  .g5-mc.today { background: var(--trail); }
+
+
+  /* ============================================================
+     G6: WEEK STREAK BARS — Like a habit tracker.
+     Each day of current + past weeks shown as tall bars.
+     Filled bars = workout. Today bar is green + taller.
+     ============================================================ */
+
+  .g6-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g6-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g6-range { font-size: 10px; color: var(--rock); }
+
+  .g6-card { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .g6-bars { display: flex; gap: 3px; align-items: flex-end; height: 80px; }
+  .g6-bar-group { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; height: 100%; justify-content: flex-end; }
+  .g6-bar { width: 100%; border-radius: 4px; }
+  .g6-bar.done { background: var(--earth); opacity: 0.15; }
+  .g6-bar.empty { background: var(--stone); }
+  .g6-bar.today { background: var(--trail); }
+  .g6-bar-label { font-size: 7px; color: var(--rock); font-weight: 600; }
+
+  .g6-summary { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.03); }
+  .g6-sv { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .g6-sl { font-size: 8px; color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- G1 -->
+<div>
+  <div class="col-label">G1 — Week Cards</div>
+  <div class="col-desc">Swipeable week cards. Each shows 7 dots + workout count. Current week is dark with green dots. Like a filmstrip of your weeks.</div>
+  <div class="block">
+    <div class="g1-head"><span class="g1-title">Activity</span><span class="g1-range">8 weeks</span></div>
+    <div class="g1-scroll">
+      <div class="g1-card past"><div class="g1-week-label">Wk 1</div><div class="g1-dots"><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot off"></div></div><div class="g1-count">3</div><div class="g1-of">of 7</div></div>
+      <div class="g1-card past"><div class="g1-week-label">Wk 2</div><div class="g1-dots"><div class="g1-dot on"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div></div><div class="g1-count">4</div><div class="g1-of">of 7</div></div>
+      <div class="g1-card past"><div class="g1-week-label">Wk 3</div><div class="g1-dots"><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot on"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div></div><div class="g1-count">5</div><div class="g1-of">of 7</div></div>
+      <div class="g1-card past"><div class="g1-week-label">Wk 4</div><div class="g1-dots"><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div><div class="g1-dot off"></div><div class="g1-dot on"></div><div class="g1-dot off"></div></div><div class="g1-count">3</div><div class="g1-of">of 7</div></div>
+      <div class="g1-card now"><div class="g1-week-label">This Wk</div><div class="g1-dots"><div class="g1-dot on"></div><div class="g1-dot on"></div><div class="g1-dot today"></div><div class="g1-dot off"></div><div class="g1-dot off"></div><div class="g1-dot off"></div><div class="g1-dot off"></div></div><div class="g1-count">3</div><div class="g1-of">of 7</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- G2 -->
+<div>
+  <div class="col-label">G2 — Dark Activity Card</div>
+  <div class="col-desc">Everything in one dark card: day labels, grid, summary stats. Self-contained. Decorative accent. Premium look.</div>
+  <div class="block">
+    <div class="g2-head"><span class="g2-title">Activity</span><span class="g2-range">6 weeks</span></div>
+    <div class="g2-card"><div class="g2-accent"></div>
+      <div class="g2-days"><div class="g2-day">M</div><div class="g2-day">T</div><div class="g2-day">W</div><div class="g2-day">T</div><div class="g2-day">F</div><div class="g2-day">S</div><div class="g2-day">S</div></div>
+      <div class="g2-rows" id="g2r"></div>
+      <div class="g2-summary"><div class="g2-sum"><div class="g2-sum-val">18</div><div class="g2-sum-label">Workouts</div></div><div class="g2-sum"><div class="g2-sum-val">42</div><div class="g2-sum-label">Days</div></div><div class="g2-sum"><div class="g2-sum-val">43%</div><div class="g2-sum-label">Rate</div></div><div class="g2-sum"><div class="g2-sum-val">5</div><div class="g2-sum-label">Best Streak</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- G3 -->
+<div>
+  <div class="col-label">G3 — Player Stats Card</div>
+  <div class="col-desc">Like a sports player card. Season bar at top (30 days). Big stats in middle. Mini 4-week calendar at bottom. All in one premium dark card.</div>
+  <div class="block">
+    <div class="g3-head"><span class="g3-title">Activity</span></div>
+    <div class="g3-card"><div class="g3-accent"><div class="g3-aline"></div><div class="g3-aline"></div></div>
+      <div class="g3-season" id="g3s"></div>
+      <div class="g3-stats"><div class="g3-stat"><div class="g3-stat-val">18</div><div class="g3-stat-label">Workouts</div></div><div class="g3-stat"><div class="g3-stat-val">43%</div><div class="g3-stat-label">Rate</div></div><div class="g3-stat"><div class="g3-stat-val">5</div><div class="g3-stat-label">Best Streak</div></div><div class="g3-stat"><div class="g3-stat-val">12</div><div class="g3-stat-label">Current</div></div></div>
+      <div class="g3-mini"><div class="g3-mini-label">Last 4 Weeks</div><div class="g3-mini-grid" id="g3m"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- G4 -->
+<div>
+  <div class="col-label">G4 — Contribution Graph</div>
+  <div class="col-desc">GitHub-style. Vertical day labels on left. Weeks scroll horizontally. 4 intensity levels. Gradient legend. Most data-rich view.</div>
+  <div class="block">
+    <div class="g4-head"><span class="g4-title">Activity</span><span class="g4-range">12 weeks</span></div>
+    <div class="g4-wrap">
+      <div class="g4-day-labels"><div class="g4-dl">M</div><div class="g4-dl">T</div><div class="g4-dl">W</div><div class="g4-dl">T</div><div class="g4-dl">F</div><div class="g4-dl">S</div><div class="g4-dl">S</div></div>
+      <div class="g4-scroll" id="g4s"></div>
+    </div>
+    <div class="g4-legend"><span class="g4-leg-label">Less</span><div class="g4-leg-dots"><div class="g4-leg-dot" style="background:var(--stone);"></div><div class="g4-leg-dot" style="background:rgba(45,42,36,0.08);"></div><div class="g4-leg-dot" style="background:rgba(45,42,36,0.2);"></div><div class="g4-leg-dot" style="background:var(--earth);"></div></div><span class="g4-leg-label">More</span></div>
+  </div>
+</div>
+
+<!-- G5 -->
+<div>
+  <div class="col-label">G5 — Split: Number + Grid</div>
+  <div class="col-desc">Big 40px workout count on the left. Tiny 4-week grid on the right. Trend below the number. Compact, balanced, informative.</div>
+  <div class="block">
+    <div class="g5-head"><span class="g5-title">Activity</span></div>
+    <div class="g5-card">
+      <div class="g5-left"><div class="g5-big">18</div><div class="g5-label">workouts this month</div><div class="g5-trend">▲ 20% vs last month</div></div>
+      <div class="g5-right"><div class="g5-mini-grid" id="g5m"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- G6 -->
+<div>
+  <div class="col-label">G6 — Vertical Bars</div>
+  <div class="col-desc">Last 30 days as vertical bars. Taller = workout done. Short = rest. Today is green + tallest. Summary stats below. Like an audio waveform of your month.</div>
+  <div class="block">
+    <div class="g6-head"><span class="g6-title">Activity</span><span class="g6-range">Last 30 days</span></div>
+    <div class="g6-card">
+      <div class="g6-bars" id="g6b"></div>
+      <div class="g6-summary"><div><div class="g6-sv">18</div><div class="g6-sl">Workouts</div></div><div><div class="g6-sv">43%</div><div class="g6-sl">Consistency</div></div><div><div class="g6-sv">5</div><div class="g6-sl">Best Streak</div></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// G2 dark grid
+const g2r = document.getElementById('g2r');
+for (let w = 0; w < 6; w++) {
+  const row = document.createElement('div');
+  row.className = 'g2-row';
+  for (let d = 0; d < 7; d++) {
+    const c = document.createElement('div');
+    const isToday = w === 5 && d === 2;
+    c.className = 'g2-c ' + (isToday ? 'today' : Math.random() < 0.43 ? 'done' : 'empty');
+    row.appendChild(c);
+  }
+  g2r.appendChild(row);
+}
+
+// G3 season bar
+const g3s = document.getElementById('g3s');
+for (let i = 0; i < 30; i++) {
+  const c = document.createElement('div');
+  c.className = 'g3-sc ' + (i === 29 ? 'today' : Math.random() < 0.43 ? 'done' : 'empty');
+  g3s.appendChild(c);
+}
+
+// G3 mini calendar
+const g3m = document.getElementById('g3m');
+for (let i = 0; i < 28; i++) {
+  const c = document.createElement('div');
+  c.className = 'g3-mc ' + (i === 27 ? 'today' : Math.random() < 0.43 ? 'done' : 'empty');
+  g3m.appendChild(c);
+}
+
+// G4 contribution graph
+const g4s = document.getElementById('g4s');
+const levels = ['l0','l1','l2','l3'];
+for (let w = 0; w < 12; w++) {
+  const col = document.createElement('div');
+  col.className = 'g4-col';
+  for (let d = 0; d < 7; d++) {
+    const c = document.createElement('div');
+    const isToday = w === 11 && d === 2;
+    if (isToday) { c.className = 'g4-c today'; }
+    else { const r = Math.random(); c.className = 'g4-c ' + (r < 0.35 ? 'l0' : r < 0.55 ? 'l1' : r < 0.75 ? 'l2' : 'l3'); }
+    col.appendChild(c);
+  }
+  g4s.appendChild(col);
+}
+
+// G5 mini grid
+const g5m = document.getElementById('g5m');
+for (let i = 0; i < 28; i++) {
+  const c = document.createElement('div');
+  c.className = 'g5-mc ' + (i === 27 ? 'today' : Math.random() < 0.43 ? 'done' : 'empty');
+  g5m.appendChild(c);
+}
+
+// G6 vertical bars
+const g6b = document.getElementById('g6b');
+for (let i = 0; i < 30; i++) {
+  const group = document.createElement('div');
+  group.className = 'g6-bar-group';
+  const bar = document.createElement('div');
+  const isToday = i === 29;
+  const isDone = Math.random() < 0.43;
+  bar.className = 'g6-bar ' + (isToday ? 'today' : isDone ? 'done' : 'empty');
+  bar.style.height = isToday ? '100%' : isDone ? (30 + Math.random() * 50) + '%' : '20%';
+  group.appendChild(bar);
+  if (i % 7 === 0 || isToday) {
+    const lbl = document.createElement('div');
+    lbl.className = 'g6-bar-label';
+    lbl.textContent = isToday ? 'Today' : '';
+    group.appendChild(lbl);
+  }
+  g6b.appendChild(group);
+}
+</script>
+
+</body>
+</html>

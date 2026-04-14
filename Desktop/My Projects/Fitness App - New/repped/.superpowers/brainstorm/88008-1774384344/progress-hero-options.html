@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress Hero Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 400px; height: 320px; top: -80px; left: -80px; }
+
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 4px; }
+  .title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+
+
+  /* ============================================================
+     H1: TRIPLE RINGS — 3 concentric rings, legend below
+     ============================================================ */
+  .h1-rings { display: flex; justify-content: center; padding: 20px 0 10px; position: relative; }
+  .h1-rc { width: 160px; height: 160px; position: relative; }
+  .h1-rc svg { position: absolute; inset: 0; }
+
+  .h1-outer { width: 160px; height: 160px; transform: rotate(-90deg); }
+  .h1-ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .h1-of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 440; animation: h1o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes h1o { to { stroke-dashoffset: 110; } }
+
+  .h1-mid { width: 120px; height: 120px; transform: rotate(-90deg); position: absolute; top: 20px; left: 20px; }
+  .h1-mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .h1-mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 326; stroke-dashoffset: 326; animation: h1m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes h1m { to { stroke-dashoffset: 65; } }
+
+  .h1-inner { width: 80px; height: 80px; transform: rotate(-90deg); position: absolute; top: 40px; left: 40px; }
+  .h1-it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .h1-if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.6; stroke-dasharray: 213; stroke-dashoffset: 213; animation: h1i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes h1i { to { stroke-dashoffset: 75; } }
+
+  .h1-legend { display: flex; gap: 6px; justify-content: center; }
+  .h1-leg { display: flex; align-items: center; gap: 6px; padding: 8px 12px; border-radius: 12px; }
+  .h1-leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .h1-leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .h1-leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .h1-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .h1-leg:nth-child(1) .h1-leg-dot { background: var(--trail); }
+  .h1-leg:nth-child(2) .h1-leg-dot { background: var(--earth); }
+  .h1-leg:nth-child(3) .h1-leg-dot { background: #F59E0B; opacity: 0.6; }
+  .h1-lv { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .h1-ll { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     H2: ELEVATION DARK CARD — Mountain range with hiker dot
+     ============================================================ */
+  .h2-card { border-radius: 22px; background: var(--earth); padding: 22px 22px 0; position: relative; overflow: hidden; margin-top: 10px; }
+  .h2-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .h2-name { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 4px; position: relative; }
+
+  .h2-chart { height: 100px; margin-top: 12px; position: relative; }
+  .h2-chart svg { width: 100%; height: 100%; }
+  .h2-area { fill: url(#h2g); opacity: 0.12; }
+  .h2-line { fill: none; stroke: var(--trail); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 400; stroke-dashoffset: 400; animation: h2draw 2s cubic-bezier(0.16,1,0.3,1) 0.4s forwards; }
+  @keyframes h2draw { to { stroke-dashoffset: 0; } }
+
+  .h2-hiker { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--trail); box-shadow: 0 0 10px rgba(52,211,153,0.4); right: 50px; bottom: 52px; }
+  .h2-hiker::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(52,211,153,0.2); animation: h2ping 2s ease-in-out infinite; }
+  @keyframes h2ping { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.6); opacity: 0; } }
+
+  .h2-weeks { display: flex; justify-content: space-between; padding: 8px 0 16px; position: relative; }
+  .h2-wk { font-size: 8px; color: rgba(246,245,240,0.2); font-weight: 600; }
+  .h2-wk.now { color: var(--trail); }
+
+  .h2-stats { display: flex; gap: 8px; margin-top: 10px; }
+  .h2-stat { flex: 1; text-align: center; padding: 12px 0; }
+  .h2-sv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .h2-sv span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .h2-sl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     H3: PULSE EKG — Heartbeat line with big streak number
+     ============================================================ */
+  .h3-card { border-radius: 22px; background: var(--earth); padding: 22px; position: relative; overflow: hidden; margin-top: 10px; }
+  .h3-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .h3-hero { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; position: relative; }
+  .h3-num { font-size: 48px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .h3-unit { font-size: 14px; color: rgba(246,245,240,0.3); }
+  .h3-sub { font-size: 11px; color: rgba(246,245,240,0.25); margin-top: 4px; position: relative; }
+
+  .h3-ekg { height: 50px; margin-top: 12px; position: relative; }
+  .h3-ekg svg { width: 100%; height: 100%; }
+  .h3-eline { fill: none; stroke: var(--trail); stroke-width: 2; stroke-linecap: round; opacity: 0.5; stroke-dasharray: 600; stroke-dashoffset: 600; animation: h3draw 2s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes h3draw { to { stroke-dashoffset: 0; } }
+  .h3-eglow { fill: none; stroke: var(--trail); stroke-width: 4; stroke-linecap: round; opacity: 0.08; filter: blur(3px); }
+
+  .h3-weeks { display: flex; justify-content: space-between; margin-top: 6px; position: relative; }
+  .h3-wk { font-size: 7px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+  .h3-wk.now { color: var(--trail); opacity: 0.5; }
+
+  .h3-trio { display: flex; gap: 8px; margin-top: 10px; }
+  .h3-tri { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .h3-tri:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .h3-tri:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h3-tri:nth-child(3) { background: var(--stone); }
+  .h3-trv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .h3-tri:nth-child(1) .h3-trv { color: #047857; }
+  .h3-trl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .h3-tri:nth-child(1) .h3-trl { color: #047857; opacity: 0.6; }
+
+
+  /* ============================================================
+     H4: DARK HERO WITH RING + STATS — Ring left, stats right
+     ============================================================ */
+  .h4-card { border-radius: 22px; background: var(--earth); padding: 22px; position: relative; overflow: hidden; margin-top: 10px; display: flex; gap: 18px; align-items: center; }
+  .h4-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .h4-aline { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h4-aline:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .h4-aline:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .h4-ring { width: 90px; height: 90px; position: relative; flex-shrink: 0; }
+  .h4-ring svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+  .h4-rt { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 6; }
+  .h4-rf { fill: none; stroke: var(--trail); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 238; stroke-dashoffset: 238; animation: h4fill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes h4fill { to { stroke-dashoffset: 59; } }
+  .h4-rp { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .h4-rpn { font-size: 24px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .h4-rpl { font-size: 7px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .h4-info { flex: 1; position: relative; }
+  .h4-title { font-size: 18px; font-weight: 700; color: var(--sand); letter-spacing: -0.3px; }
+  .h4-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 3px; }
+  .h4-row { display: flex; gap: 14px; margin-top: 12px; }
+  .h4-sv { font-size: 18px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .h4-sl { font-size: 7px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     H5: BIG NUMBER — Giant streak, stat pills below
+     ============================================================ */
+  .h5-streak { display: flex; align-items: flex-end; gap: 10px; margin-top: 12px; }
+  .h5-num { font-size: 72px; font-weight: 900; color: var(--earth); letter-spacing: -4px; line-height: 0.85; }
+  .h5-info { padding-bottom: 6px; }
+  .h5-label { font-size: 12px; font-weight: 700; color: var(--earth); }
+  .h5-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  .h5-pills { display: flex; gap: 8px; margin-top: 14px; }
+  .h5-pill { display: flex; align-items: center; gap: 6px; padding: 10px 14px; border-radius: 12px; }
+  .h5-pill:nth-child(1) { background: var(--earth); }
+  .h5-pill:nth-child(2) { background: var(--stone); }
+  .h5-pill:nth-child(3) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h5-pv { font-size: 16px; font-weight: 800; }
+  .h5-pill:nth-child(1) .h5-pv { color: var(--sand); }
+  .h5-pill:nth-child(2) .h5-pv, .h5-pill:nth-child(3) .h5-pv { color: var(--earth); }
+  .h5-pl { font-size: 9px; }
+  .h5-pill:nth-child(1) .h5-pl { color: rgba(246,245,240,0.35); }
+  .h5-pill:nth-child(2) .h5-pl, .h5-pill:nth-child(3) .h5-pl { color: var(--rock); }
+
+
+  /* ============================================================
+     H6: CENTERED RING ON SAND — No dark card. Ring sits on sand.
+     Stats as a clean row below. Minimal, open, airy.
+     ============================================================ */
+  .h6-ring-area { display: flex; justify-content: center; padding: 16px 0 8px; }
+  .h6-ring { width: 120px; height: 120px; position: relative; }
+  .h6-ring svg { width: 120px; height: 120px; transform: rotate(-90deg); }
+  .h6-rt { fill: none; stroke: var(--stone); stroke-width: 8; }
+  .h6-rf { fill: none; stroke: var(--trail); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; animation: h6fill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes h6fill { to { stroke-dashoffset: 78; } }
+  .h6-rp { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .h6-rpn { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .h6-rpl { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .h6-stats { display: flex; gap: 0; }
+  .h6-stat { flex: 1; text-align: center; padding: 12px 0; position: relative; }
+  .h6-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--stone); }
+  .h6-stat:last-child::after { display: none; }
+  .h6-sv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .h6-sv span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .h6-sl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- H1 -->
+<div>
+  <div class="col-label">H1 — Triple Rings</div>
+  <div class="col-desc">Three concentric animated rings. Green=completion, Dark=streak, Amber=volume. Legend pills below. Apple Watch energy.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="h1-rings"><div class="h1-rc">
+      <svg class="h1-outer" viewBox="0 0 160 160"><circle class="h1-ot" cx="80" cy="80" r="70"/><circle class="h1-of" cx="80" cy="80" r="70"/></svg>
+      <svg class="h1-mid" viewBox="0 0 120 120"><circle class="h1-mt" cx="60" cy="60" r="52"/><circle class="h1-mf" cx="60" cy="60" r="52"/></svg>
+      <svg class="h1-inner" viewBox="0 0 80 80"><circle class="h1-it" cx="40" cy="40" r="34"/><circle class="h1-if" cx="40" cy="40" r="34"/></svg>
+    </div></div>
+    <div class="h1-legend">
+      <div class="h1-leg"><div class="h1-leg-dot"></div><div><div class="h1-lv">75%</div><div class="h1-ll">Complete</div></div></div>
+      <div class="h1-leg"><div class="h1-leg-dot"></div><div><div class="h1-lv">12d</div><div class="h1-ll">Streak</div></div></div>
+      <div class="h1-leg"><div class="h1-leg-dot"></div><div><div class="h1-lv">2.4t</div><div class="h1-ll">Volume</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H2 -->
+<div>
+  <div class="col-label">H2 — Elevation Dark Card</div>
+  <div class="col-desc">Mountain range SVG. Trail line draws itself. Green hiker dot with ping. Week labels. Stats as a clean row below. Terrain metaphor.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="h2-card">
+      <div class="h2-label">4-Week Elevation</div>
+      <div class="h2-name">Week 3 · Peak Week</div>
+      <div class="h2-chart"><div class="h2-hiker"></div><svg viewBox="0 0 300 90" preserveAspectRatio="none"><defs><linearGradient id="h2g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--trail)"/><stop offset="100%" stop-color="var(--earth)"/></linearGradient></defs><path class="h2-area" d="M0,70 Q25,65 50,55 Q75,30 100,25 Q125,22 150,40 Q175,55 200,42 Q225,22 250,28 Q275,38 300,44 L300,90 L0,90 Z"/><path class="h2-line" d="M0,70 Q25,65 50,55 Q75,30 100,25 Q125,22 150,40 Q175,55 200,42 Q225,22 250,28 Q275,38 300,44"/></svg></div>
+      <div class="h2-weeks"><span class="h2-wk">Wk 1</span><span class="h2-wk">Wk 2</span><span class="h2-wk now">Wk 3</span><span class="h2-wk">Wk 4</span></div>
+    </div>
+    <div class="h2-stats">
+      <div class="h2-stat"><div class="h2-sv">75<span>%</span></div><div class="h2-sl">Complete</div></div>
+      <div class="h2-stat"><div class="h2-sv">12</div><div class="h2-sl">Streak</div></div>
+      <div class="h2-stat"><div class="h2-sv">47</div><div class="h2-sl">Workouts</div></div>
+      <div class="h2-stat"><div class="h2-sv">2.4<span>t</span></div><div class="h2-sl">Volume</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H3 -->
+<div>
+  <div class="col-label">H3 — Pulse EKG</div>
+  <div class="col-desc">Heartbeat visualization. Peaks = workout days. Big 48px streak number. Line draws with glow. Three tinted stat cards below.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="h3-card">
+      <div class="h3-label">Your Rhythm · 4 Weeks</div>
+      <div class="h3-hero"><div class="h3-num">12</div><div class="h3-unit">day streak</div></div>
+      <div class="h3-sub">3 of 4 workouts done this week</div>
+      <div class="h3-ekg"><svg viewBox="0 0 300 50" preserveAspectRatio="none"><path class="h3-eglow" d="M0,35 L20,35 L25,12 L30,40 L35,25 L40,35 L80,35 L85,8 L90,42 L95,20 L100,35 L140,35 L145,18 L150,38 L155,30 L160,35 L200,35 L205,6 L210,42 L215,18 L220,35 L260,35 L265,10 L270,40 L275,24 L280,35 L300,35"/><path class="h3-eline" d="M0,35 L20,35 L25,12 L30,40 L35,25 L40,35 L80,35 L85,8 L90,42 L95,20 L100,35 L140,35 L145,18 L150,38 L155,30 L160,35 L200,35 L205,6 L210,42 L215,18 L220,35 L260,35 L265,10 L270,40 L275,24 L280,35 L300,35"/></svg></div>
+      <div class="h3-weeks"><span class="h3-wk">Wk 1</span><span class="h3-wk">Wk 2</span><span class="h3-wk">Wk 3</span><span class="h3-wk now">Wk 4</span></div>
+    </div>
+    <div class="h3-trio">
+      <div class="h3-tri"><div class="h3-trv">75%</div><div class="h3-trl">Complete</div></div>
+      <div class="h3-tri"><div class="h3-trv">47</div><div class="h3-trl">Workouts</div></div>
+      <div class="h3-tri"><div class="h3-trv">2.4t</div><div class="h3-trl">Volume</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H4 -->
+<div>
+  <div class="col-label">H4 — Ring + Stats Card</div>
+  <div class="col-desc">Dark hero card. Ring on the left, title + stats on the right. Same layout pattern as the nutrition hero. Diagonal line accent. Compact.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="h4-card">
+      <div class="h4-accent"><div class="h4-aline"></div><div class="h4-aline"></div></div>
+      <div class="h4-ring"><svg viewBox="0 0 90 90"><circle class="h4-rt" cx="45" cy="45" r="38"/><circle class="h4-rf" cx="45" cy="45" r="38"/></svg><div class="h4-rp"><div class="h4-rpn">75%</div><div class="h4-rpl">Weekly</div></div></div>
+      <div class="h4-info"><div class="h4-title">This Week</div><div class="h4-sub">3 of 4 workouts done</div><div class="h4-row"><div><div class="h4-sv">12</div><div class="h4-sl">Streak</div></div><div><div class="h4-sv">2.4t</div><div class="h4-sl">Volume</div></div><div><div class="h4-sv">47</div><div class="h4-sl">Total</div></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H5 -->
+<div>
+  <div class="col-label">H5 — Big Streak Number</div>
+  <div class="col-desc">Giant 72px streak number dominates. Stat pills scroll below (dark/stone/white). Typography-driven. Bold, motivating.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="h5-streak"><div class="h5-num">12</div><div class="h5-info"><div class="h5-label">day streak</div><div class="h5-sub">Your longest yet</div></div></div>
+    <div class="h5-pills">
+      <div class="h5-pill"><span class="h5-pv">75%</span><span class="h5-pl">weekly</span></div>
+      <div class="h5-pill"><span class="h5-pv">47</span><span class="h5-pl">workouts</span></div>
+      <div class="h5-pill"><span class="h5-pv">2.4t</span><span class="h5-pl">volume</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- H6 -->
+<div>
+  <div class="col-label">H6 — Open Ring</div>
+  <div class="col-desc">Single ring on sand background (no dark card). 32px number inside. Clean 4-column stat row with dividers below. Most minimal, most airy.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx" style="text-align:center;">Monday, Mar 24</div>
+    <div class="title" style="text-align:center;">Your Journey</div>
+    <div class="h6-ring-area"><div class="h6-ring"><svg viewBox="0 0 120 120"><circle class="h6-rt" cx="60" cy="60" r="50"/><circle class="h6-rf" cx="60" cy="60" r="50"/></svg><div class="h6-rp"><div class="h6-rpn">75%</div><div class="h6-rpl">This Week</div></div></div></div>
+    <div class="h6-stats">
+      <div class="h6-stat"><div class="h6-sv">12</div><div class="h6-sl">Streak</div></div>
+      <div class="h6-stat"><div class="h6-sv">47</div><div class="h6-sl">Workouts</div></div>
+      <div class="h6-stat"><div class="h6-sv">2.4<span>t</span></div><div class="h6-sl">Volume</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

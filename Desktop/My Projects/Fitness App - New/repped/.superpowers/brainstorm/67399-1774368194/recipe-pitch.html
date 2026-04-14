@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Pitch</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 20px; padding: 8px 12px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 8px 6px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; height: 100%; }
+  .back { width: 34px; height: 34px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 15px; color: var(--earth); cursor: pointer; flex-shrink: 0; }
+
+
+  /* ============================================================
+     P1: SPLIT SCREEN — Ingredients always visible on top.
+     Steps scroll below. Solve the real problem: you lose
+     ingredients while following steps.
+     ============================================================ */
+
+  .p1-top-bar { padding: 54px 20px 0; display: flex; align-items: center; gap: 10px; }
+  .p1-info { flex: 1; }
+  .p1-name { font-size: 17px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .p1-meta { font-size: 9px; color: var(--rock); margin-top: 1px; }
+  .p1-video { width: 34px; height: 34px; border-radius: 50%; background: var(--earth); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .p1-video svg { width: 10px; height: 10px; fill: var(--sand); }
+
+  /* TOP HALF: sticky ingredients */
+  .p1-ing-zone {
+    margin: 10px 20px 0; padding: 16px; border-radius: 20px; background: var(--earth);
+    position: sticky; top: 0; z-index: 10;
+    max-height: 240px; overflow-y: auto; scrollbar-width: none;
+  }
+  .p1-ing-zone::-webkit-scrollbar { display: none; }
+
+  .p1-ing-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .p1-ing-title { font-size: 11px; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .p1-ing-count { font-size: 10px; color: rgba(246,245,240,0.25); }
+
+  .p1-ing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+  .p1-ii { display: flex; align-items: center; gap: 6px; padding: 5px 0; cursor: pointer; transition: opacity 0.2s; }
+  .p1-ii.checked { opacity: 0.2; }
+  .p1-ii.checked .p1-ii-name { text-decoration: line-through; }
+  .p1-ii-dot { width: 5px; height: 5px; border-radius: 50%; border: 1.5px solid rgba(246,245,240,0.15); flex-shrink: 0; transition: all 0.2s; }
+  .p1-ii.checked .p1-ii-dot { background: var(--trail); border-color: var(--trail); }
+  .p1-ii-name { font-size: 12px; color: var(--sand); font-weight: 400; flex: 1; }
+  .p1-ii-amount { font-size: 10px; color: rgba(246,245,240,0.3); flex-shrink: 0; }
+
+  /* Highlight ingredients needed for current step */
+  .p1-ii.needed .p1-ii-name { font-weight: 600; color: var(--trail); }
+  .p1-ii.needed .p1-ii-dot { border-color: var(--trail); }
+
+  /* BOTTOM HALF: scrollable steps */
+  .p1-steps { padding: 14px 20px 0; }
+  .p1-steps-title { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 10px; }
+
+  .p1-step {
+    padding: 16px; border-radius: 18px; margin-bottom: 10px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer; transition: all 0.3s;
+    display: flex; gap: 12px;
+  }
+  .p1-step.active { border-color: rgba(52,211,153,0.12); box-shadow: 0 4px 16px rgba(52,211,153,0.05); }
+  .p1-step.done { opacity: 0.3; padding: 10px 16px; }
+  .p1-step.done .p1-step-text { text-decoration: line-through; font-size: 12px; }
+
+  .p1-step-marker { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; transition: all 0.3s; }
+  .p1-step .p1-step-marker { background: var(--stone); color: var(--rock); }
+  .p1-step.active .p1-step-marker { background: var(--trail); color: #fff; }
+  .p1-step.done .p1-step-marker { background: var(--earth); color: var(--sand); font-size: 9px; }
+  .p1-step-text { font-size: 14px; color: var(--earth); line-height: 1.5; }
+
+
+  /* ============================================================
+     P2: FOCUS MODE — Dark screen. One giant step at a time.
+     Nothing else. Maximum readability while cooking.
+     Pull-up handle reveals ingredients.
+     ============================================================ */
+
+  .p2-phone { background: var(--earth); }
+
+  .p2-top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .p2-back { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .p2-name-pill { font-size: 11px; color: rgba(246,245,240,0.4); font-weight: 500; }
+
+  /* The one step — center of the universe */
+  .p2-focus {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 40px 32px; min-height: 400px; text-align: center;
+  }
+
+  .p2-step-label { font-size: 10px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .p2-step-num { font-size: 80px; font-weight: 900; color: rgba(246,245,240,0.04); letter-spacing: -4px; line-height: 1; margin-top: 8px; }
+  .p2-step-text { font-size: 24px; font-weight: 600; color: var(--sand); line-height: 1.5; letter-spacing: -0.3px; margin-top: 16px; }
+  .p2-step-time { font-size: 11px; color: rgba(246,245,240,0.25); margin-top: 16px; }
+
+  /* Progress dots — minimal */
+  .p2-dots { display: flex; justify-content: center; gap: 8px; margin-top: 24px; }
+  .p2-dot { width: 8px; height: 8px; border-radius: 50%; transition: all 0.3s; cursor: pointer; }
+  .p2-dot.done { background: var(--trail); }
+  .p2-dot.active { background: var(--sand); }
+  .p2-dot.pending { background: rgba(246,245,240,0.08); }
+
+  /* Nav arrows */
+  .p2-nav { display: flex; gap: 12px; padding: 0 24px; margin-top: 20px; }
+  .p2-nav-btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .p2-nav-btn:active { transform: scale(0.96); }
+  .p2-nav-btn.prev { background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.5); }
+  .p2-nav-btn.next { background: rgba(246,245,240,0.1); color: var(--sand); }
+
+  /* Pull-up ingredients handle */
+  .p2-drawer-handle {
+    display: flex; flex-direction: column; align-items: center; padding: 16px 0 8px;
+    cursor: pointer;
+  }
+  .p2-handle-bar { width: 36px; height: 4px; border-radius: 2px; background: rgba(246,245,240,0.1); }
+  .p2-handle-text { font-size: 9px; color: rgba(246,245,240,0.2); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Drawer content */
+  .p2-drawer { padding: 0 24px 40px; display: none; animation: p2DrawerIn 0.3s ease; }
+  .p2-drawer.open { display: block; }
+  @keyframes p2DrawerIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .p2-drawer-title { font-size: 11px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .p2-di { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid rgba(246,245,240,0.04); }
+  .p2-di:last-child { border-bottom: none; }
+  .p2-di-name { font-size: 13px; color: var(--sand); font-weight: 400; }
+  .p2-di-amount { font-size: 12px; color: rgba(246,245,240,0.3); }
+
+
+  /* ============================================================
+     P3: TWO-COLUMN NEWSPAPER — Side by side layout.
+     Left narrow: ingredients. Right wide: steps.
+     Everything visible. No scrolling needed for short recipes.
+     ============================================================ */
+
+  .p3-hdr { padding: 54px 20px 0; display: flex; align-items: center; gap: 10px; }
+  .p3-title-area { flex: 1; }
+  .p3-name { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; line-height: 1.1; }
+  .p3-sub { font-size: 10px; color: var(--rock); margin-top: 3px; }
+  .p3-video { width: 34px; height: 34px; border-radius: 50%; background: var(--earth); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .p3-video svg { width: 10px; height: 10px; fill: var(--sand); }
+
+  /* Two columns */
+  .p3-columns { display: flex; gap: 10px; padding: 14px 20px 0; align-items: flex-start; }
+
+  /* Left: ingredients */
+  .p3-left { width: 130px; flex-shrink: 0; }
+  .p3-col-title { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+
+  .p3-ing-card { border-radius: 18px; background: var(--earth); padding: 14px; }
+  .p3-li { padding: 5px 0; border-bottom: 1px solid rgba(246,245,240,0.04); cursor: pointer; transition: opacity 0.2s; }
+  .p3-li:last-child { border-bottom: none; }
+  .p3-li.checked { opacity: 0.2; }
+  .p3-li.checked .p3-li-name { text-decoration: line-through; }
+  .p3-li-name { font-size: 11px; color: var(--sand); font-weight: 400; }
+  .p3-li-amount { font-size: 9px; color: rgba(246,245,240,0.3); margin-top: 1px; }
+
+  /* Right: steps */
+  .p3-right { flex: 1; }
+
+  .p3-step { margin-bottom: 14px; position: relative; cursor: pointer; }
+  .p3-step-num { font-size: 36px; font-weight: 900; color: rgba(45,42,36,0.04); letter-spacing: -2px; line-height: 1; float: left; margin-right: 8px; margin-top: 2px; }
+  .p3-step.done .p3-step-num { color: var(--trail); opacity: 0.2; }
+  .p3-step-text { font-size: 14px; color: var(--earth); line-height: 1.6; }
+  .p3-step.active .p3-step-text { font-weight: 500; }
+  .p3-step.done .p3-step-text { opacity: 0.35; text-decoration: line-through; }
+  .p3-step-time { font-size: 9px; color: var(--rock); margin-top: 3px; clear: both; }
+  .p3-step.done .p3-step-time { display: none; }
+
+
+  /* ============================================================
+     P4: THE CARD STACK — Cards stacked with depth.
+     Top card = current step. Swipe/tap to reveal next.
+     Ingredients in a compact dark strip above.
+     ============================================================ */
+
+  .p4-hdr { padding: 54px 20px 0; display: flex; justify-content: space-between; align-items: center; }
+  .p4-video { padding: 6px 14px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .p4-video svg { width: 10px; height: 10px; fill: var(--sand); }
+  .p4-video span { font-size: 10px; font-weight: 600; color: var(--sand); }
+
+  .p4-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; line-height: 1.1; padding: 10px 20px 0; }
+  .p4-sub { font-size: 10px; color: var(--rock); padding: 4px 20px 0; }
+
+  /* Compact ingredient strip */
+  .p4-ing-strip { margin: 12px 20px 0; padding: 12px 14px; border-radius: 16px; background: var(--earth); position: relative; overflow: hidden; }
+  .p4-ing-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; }
+  .p4-ing-scroll::-webkit-scrollbar { display: none; }
+  .p4-ing-item { flex-shrink: 0; }
+  .p4-ing-name { font-size: 11px; color: var(--sand); font-weight: 500; white-space: nowrap; }
+  .p4-ing-amount { font-size: 9px; color: rgba(246,245,240,0.3); white-space: nowrap; }
+
+  /* The card stack */
+  .p4-stack { position: relative; height: 380px; margin: 16px 20px 0; }
+
+  .p4-card {
+    position: absolute; left: 0; right: 0; border-radius: 24px; padding: 28px;
+    min-height: 320px; display: flex; flex-direction: column;
+    cursor: pointer; transition: all 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+
+  /* Stacking effect — cards behind are scaled down and shifted */
+  .p4-card:nth-child(1) { z-index: 4; top: 0; background: var(--earth); }
+  .p4-card:nth-child(2) { z-index: 3; top: 10px; transform: scale(0.96); background: #fff; border: 1px solid rgba(0,0,0,0.04); opacity: 0.7; }
+  .p4-card:nth-child(3) { z-index: 2; top: 20px; transform: scale(0.92); background: var(--stone); opacity: 0.4; }
+  .p4-card:nth-child(4) { z-index: 1; top: 28px; transform: scale(0.88); background: #fff; border: 1px solid rgba(0,0,0,0.04); opacity: 0.2; }
+
+  .p4-card-step { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .p4-card:nth-child(1) .p4-card-step { color: rgba(246,245,240,0.3); }
+  .p4-card:nth-child(2) .p4-card-step { color: var(--rock); }
+
+  .p4-card-num { font-size: 72px; font-weight: 900; letter-spacing: -4px; line-height: 1; margin-top: 12px; }
+  .p4-card:nth-child(1) .p4-card-num { color: rgba(246,245,240,0.05); }
+  .p4-card:nth-child(2) .p4-card-num { color: rgba(45,42,36,0.04); }
+
+  .p4-card-text { font-size: 20px; font-weight: 600; line-height: 1.5; margin-top: auto; letter-spacing: -0.2px; }
+  .p4-card:nth-child(1) .p4-card-text { color: var(--sand); }
+  .p4-card:nth-child(2) .p4-card-text { color: var(--earth); }
+
+  .p4-card-time { font-size: 10px; margin-top: 12px; }
+  .p4-card:nth-child(1) .p4-card-time { color: rgba(246,245,240,0.2); }
+
+  /* Tap hint */
+  .p4-hint { text-align: center; font-size: 9px; color: var(--rock); margin-top: 8px; opacity: 0.5; }
+
+  /* Dots */
+  .p4-dots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+  .p4-dot { width: 6px; height: 6px; border-radius: 50%; transition: all 0.3s; }
+  .p4-dot.active { background: var(--earth); width: 18px; border-radius: 3px; }
+  .p4-dot.pending { background: var(--stone); }
+  .p4-dot.done { background: var(--trail); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== P1: SPLIT SCREEN ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">P1 — Split Screen</div>
+  <div class="dsc">Dark ingredient card is STICKY — stays at top as you scroll through steps below. Solves the real problem: losing ingredients while following steps. Current step's ingredients highlight in green. Click ingredients.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p1-top-bar"><div class="back">←</div><div class="p1-info"><div class="p1-name">Veggie Stir Fry with Tofu</div><div class="p1-meta">10 min prep · 12 min cook · Easy</div></div><div class="p1-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div></div>
+
+    <!-- Sticky ingredient zone -->
+    <div class="p1-ing-zone">
+      <div class="p1-ing-head"><span class="p1-ing-title">Ingredients</span><span class="p1-ing-count">8 items</span></div>
+      <div class="p1-ing-grid">
+        <div class="p1-ii needed" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Firm tofu</span><span class="p1-ii-amount">½ block</span></div>
+        <div class="p1-ii needed" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Sesame oil</span><span class="p1-ii-amount">1 tbsp</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Broccoli</span><span class="p1-ii-amount">1 cup</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Bell pepper</span><span class="p1-ii-amount">1 sliced</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Snap peas</span><span class="p1-ii-amount">½ cup</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Teriyaki</span><span class="p1-ii-amount">2 tbsp</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">White rice</span><span class="p1-ii-amount">1 cup</span></div>
+        <div class="p1-ii" onclick="this.classList.toggle('checked')"><div class="p1-ii-dot"></div><span class="p1-ii-name">Garlic</span><span class="p1-ii-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <!-- Scrollable steps -->
+    <div class="p1-steps">
+      <div class="p1-steps-title">Steps</div>
+      <div class="p1-step active" onclick="p1Toggle(this)"><div class="p1-step-marker">1</div><div class="p1-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides, about 4 minutes.</div></div>
+      <div class="p1-step" onclick="p1Toggle(this)"><div class="p1-step-marker">2</div><div class="p1-step-text">Remove tofu. Add broccoli, bell pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div></div>
+      <div class="p1-step" onclick="p1Toggle(this)"><div class="p1-step-marker">3</div><div class="p1-step-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.</div></div>
+      <div class="p1-step" onclick="p1Toggle(this)"><div class="p1-step-marker">4</div><div class="p1-step-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P2: FOCUS MODE ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">P2 — Focus Mode</div>
+  <div class="dsc">DARK immersive screen. One giant 24px step in the center. Nothing else. Maximum readability with messy hands. Pull up handle at bottom reveals ingredients. Click "Pull up for ingredients" and use Prev/Next.</div>
+  <div class="phone p2-phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt" style="height:auto;">
+    <div class="p2-top"><div class="back p2-back">←</div><span class="p2-name-pill">Veggie Stir Fry · 22 min</span></div>
+
+    <div class="p2-focus">
+      <div class="p2-step-label">Step <span id="p2Cur">1</span> of 4</div>
+      <div class="p2-step-num" id="p2Num">01</div>
+      <div class="p2-step-text" id="p2Text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+      <div class="p2-step-time" id="p2Time">~4 min · Base camp</div>
+
+      <div class="p2-dots">
+        <div class="p2-dot active" id="p2d0" onclick="p2Go(0)"></div>
+        <div class="p2-dot pending" id="p2d1" onclick="p2Go(1)"></div>
+        <div class="p2-dot pending" id="p2d2" onclick="p2Go(2)"></div>
+        <div class="p2-dot pending" id="p2d3" onclick="p2Go(3)"></div>
+      </div>
+    </div>
+
+    <div class="p2-nav">
+      <div class="p2-nav-btn prev" onclick="p2Nav(-1)">Previous</div>
+      <div class="p2-nav-btn next" onclick="p2Nav(1)">Next</div>
+    </div>
+
+    <div class="p2-drawer-handle" onclick="document.getElementById('p2Drawer').classList.toggle('open')">
+      <div class="p2-handle-bar"></div>
+      <div class="p2-handle-text">Pull up for ingredients</div>
+    </div>
+
+    <div class="p2-drawer" id="p2Drawer">
+      <div class="p2-drawer-title">Ingredients · 8 items</div>
+      <div class="p2-di"><span class="p2-di-name">Firm tofu</span><span class="p2-di-amount">½ block cubed</span></div>
+      <div class="p2-di"><span class="p2-di-name">Broccoli</span><span class="p2-di-amount">1 cup florets</span></div>
+      <div class="p2-di"><span class="p2-di-name">Bell pepper</span><span class="p2-di-amount">1 sliced</span></div>
+      <div class="p2-di"><span class="p2-di-name">Snap peas</span><span class="p2-di-amount">½ cup</span></div>
+      <div class="p2-di"><span class="p2-di-name">Teriyaki sauce</span><span class="p2-di-amount">2 tbsp</span></div>
+      <div class="p2-di"><span class="p2-di-name">White rice</span><span class="p2-di-amount">1 cup cooked</span></div>
+      <div class="p2-di"><span class="p2-di-name">Sesame oil</span><span class="p2-di-amount">1 tbsp</span></div>
+      <div class="p2-di"><span class="p2-di-name">Garlic</span><span class="p2-di-amount">2 cloves</span></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ===== P3: NEWSPAPER ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">P3 — Two Column</div>
+  <div class="dsc">Side-by-side layout. Left column: dark ingredient card (narrow). Right column: steps with drop-cap ghost numbers flowing as prose. Everything visible without scrolling. Click ingredients + steps.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p3-hdr"><div class="back">←</div><div class="p3-title-area"><div class="p3-name">Veggie Stir Fry with Tofu</div><div class="p3-sub">10 min prep · 12 min cook · Easy</div></div><div class="p3-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div></div>
+
+    <div class="p3-columns">
+      <!-- Left: Ingredients -->
+      <div class="p3-left">
+        <div class="p3-col-title">Ingredients</div>
+        <div class="p3-ing-card">
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Firm tofu</div><div class="p3-li-amount">½ block</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Broccoli</div><div class="p3-li-amount">1 cup</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Bell pepper</div><div class="p3-li-amount">1 sliced</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Snap peas</div><div class="p3-li-amount">½ cup</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Teriyaki</div><div class="p3-li-amount">2 tbsp</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">White rice</div><div class="p3-li-amount">1 cup</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Sesame oil</div><div class="p3-li-amount">1 tbsp</div></div>
+          <div class="p3-li" onclick="this.classList.toggle('checked')"><div class="p3-li-name">Garlic</div><div class="p3-li-amount">2 cloves</div></div>
+        </div>
+      </div>
+
+      <!-- Right: Steps -->
+      <div class="p3-right">
+        <div class="p3-col-title">Steps</div>
+        <div class="p3-step active" onclick="this.classList.toggle('done');this.classList.toggle('active')"><div class="p3-step-num">1</div><div class="p3-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="p3-step-time">~4 min</div></div>
+        <div class="p3-step" onclick="this.classList.toggle('done')"><div class="p3-step-num">2</div><div class="p3-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div><div class="p3-step-time">~3 min</div></div>
+        <div class="p3-step" onclick="this.classList.toggle('done')"><div class="p3-step-num">3</div><div class="p3-step-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div><div class="p3-step-time">~2 min</div></div>
+        <div class="p3-step" onclick="this.classList.toggle('done')"><div class="p3-step-num">4</div><div class="p3-step-text">Serve over rice with sesame seeds.</div><div class="p3-step-time">~1 min</div></div>
+      </div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P4: CARD STACK ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">P4 — Card Stack</div>
+  <div class="dsc">Cards stacked with depth — you can see 3-4 behind the active one. Top card shows current step in large text with ghost number. Compact ingredient strip scrolls horizontally. Tap to advance through stack. Dot progress.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt" style="height:auto;">
+    <div class="p4-hdr"><div class="back">←</div><div class="p4-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div></div>
+
+    <div class="p4-name">Veggie Stir Fry with Tofu</div>
+    <div class="p4-sub">10 min prep · 12 min cook · Easy</div>
+
+    <!-- Compact horizontal ingredient strip -->
+    <div class="p4-ing-strip">
+      <div class="p4-ing-scroll">
+        <div class="p4-ing-item"><div class="p4-ing-name">Firm tofu</div><div class="p4-ing-amount">½ block</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Broccoli</div><div class="p4-ing-amount">1 cup</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Bell pepper</div><div class="p4-ing-amount">1 sliced</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Snap peas</div><div class="p4-ing-amount">½ cup</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Teriyaki</div><div class="p4-ing-amount">2 tbsp</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Rice</div><div class="p4-ing-amount">1 cup</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Sesame oil</div><div class="p4-ing-amount">1 tbsp</div></div>
+        <div class="p4-ing-item"><div class="p4-ing-name">Garlic</div><div class="p4-ing-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <!-- Card stack -->
+    <div class="p4-stack" id="p4Stack">
+      <div class="p4-card"><div class="p4-card-step">Step 1 of 4</div><div class="p4-card-num">01</div><div class="p4-card-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="p4-card-time">~4 min · Base camp</div></div>
+      <div class="p4-card"><div class="p4-card-step">Step 2 of 4</div><div class="p4-card-num">02</div><div class="p4-card-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div>
+      <div class="p4-card"><div class="p4-card-step">Step 3 of 4</div><div class="p4-card-num">03</div><div class="p4-card-text">Return tofu. Pour teriyaki sauce and toss to coat.</div></div>
+      <div class="p4-card"><div class="p4-card-step">Step 4 of 4</div><div class="p4-card-num">04</div><div class="p4-card-text">Serve over rice. Garnish with sesame seeds.</div></div>
+    </div>
+
+    <div class="p4-hint">Tap card to advance</div>
+
+    <div class="p4-dots">
+      <div class="p4-dot active" id="p4d0"></div>
+      <div class="p4-dot pending" id="p4d1"></div>
+      <div class="p4-dot pending" id="p4d2"></div>
+      <div class="p4-dot pending" id="p4d3"></div>
+    </div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+// P1
+function p1Toggle(el) {
+  if (el.classList.contains('done')) { el.classList.remove('done'); el.classList.add('active'); }
+  else { el.classList.remove('active'); el.classList.add('done'); el.querySelector('.p1-step-marker').textContent = '✓'; }
+  const steps = document.querySelectorAll('.p1-step');
+  let setActive = false;
+  steps.forEach(s => { if (!s.classList.contains('done') && !setActive) { s.classList.add('active'); setActive = true; } else if (!s.classList.contains('done') && s !== el) { s.classList.remove('active'); } });
+}
+
+// P2
+const p2Steps = [
+  { text: 'Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.', time: '~4 min · Base camp' },
+  { text: 'Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.', time: '~3 min · Waypoint 2' },
+  { text: 'Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.', time: '~2 min · Waypoint 3' },
+  { text: 'Serve over fluffy white rice. Garnish with sesame seeds if desired.', time: '~1 min · Summit' },
+];
+let p2Idx = 0;
+function p2Nav(dir) { p2Go(Math.max(0, Math.min(3, p2Idx + dir))); }
+function p2Go(idx) {
+  p2Idx = idx;
+  document.getElementById('p2Cur').textContent = idx + 1;
+  document.getElementById('p2Num').textContent = String(idx+1).padStart(2,'0');
+  document.getElementById('p2Text').textContent = p2Steps[idx].text;
+  document.getElementById('p2Time').textContent = p2Steps[idx].time;
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('p2d'+i).className = 'p2-dot ' + (i < idx ? 'done' : i === idx ? 'active' : 'pending');
+  }
+}
+
+// P4
+let p4Idx = 0;
+document.getElementById('p4Stack').addEventListener('click', function() {
+  if (p4Idx >= 3) return;
+  const cards = document.querySelectorAll('.p4-card');
+  // Move top card out
+  cards[p4Idx].style.transform = 'translateX(-120%) rotate(-8deg)';
+  cards[p4Idx].style.opacity = '0';
+  cards[p4Idx].style.transition = 'all 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+  p4Idx++;
+  // Reposition remaining
+  setTimeout(() => {
+    cards.forEach((c, i) => {
+      if (i < p4Idx) return;
+      const offset = i - p4Idx;
+      c.style.transition = 'all 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+      c.style.zIndex = 4 - offset;
+      c.style.top = (offset * 10) + 'px';
+      c.style.transform = 'scale(' + (1 - offset * 0.04) + ')';
+      c.style.opacity = offset === 0 ? 1 : offset === 1 ? 0.7 : offset === 2 ? 0.4 : 0.2;
+    });
+    for (let i = 0; i < 4; i++) {
+      document.getElementById('p4d'+i).className = 'p4-dot ' + (i < p4Idx ? 'done' : i === p4Idx ? 'active' : 'pending');
+    }
+  }, 50);
+});
+</script>
+
+</body>
+</html>

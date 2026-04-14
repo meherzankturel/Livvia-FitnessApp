@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Summary Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     W1: INFOGRAPHIC SUMMARY — Stats as big numbers with visual
+     accents. Dark hero card at top. Clean sections below.
+     Like a weekly report card.
+     ============================================================ */
+
+  .w1-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .w1-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  /* Dark hero with week overview */
+  .w1-hero { margin: 14px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .w1-hero-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .w1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .w1-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .w1-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .w1-hero-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .w1-hero-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 4px; position: relative; }
+  .w1-hero-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  /* 3 stat row inside hero */
+  .w1-stats { display: flex; gap: 8px; margin-top: 16px; position: relative; }
+  .w1-stat { flex: 1; padding: 14px 10px; border-radius: 14px; background: rgba(246,245,240,0.04); text-align: center; }
+  .w1-stat-val { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .w1-stat-val.green { color: var(--trail); }
+  .w1-stat-val.amber { color: #F59E0B; }
+  .w1-stat-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  /* Content sections */
+  .w1-sec { padding: 16px 24px 0; }
+  .w1-sec-title { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+
+  /* Volume card */
+  .w1-vol { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .w1-vol-val { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .w1-vol-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .w1-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .w1-vol-bars { display: flex; gap: 3px; align-items: flex-end; height: 32px; }
+  .w1-vb { width: 8px; border-radius: 3px; }
+  .w1-vb.prev { background: var(--stone); }
+  .w1-vb.cur { background: var(--trail); opacity: 0.4; }
+
+  /* Highlight card — dark */
+  .w1-highlight { padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .w1-hl-accent { position: absolute; bottom: -10px; right: -10px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+  .w1-hl-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+  .w1-hl-sub { font-size: 10px; color: rgba(246,245,240,0.35); margin-top: 2px; position: relative; }
+  .w1-hl-val { font-size: 22px; font-weight: 700; color: var(--sand); margin-top: 4px; position: relative; }
+
+  /* Weight trend */
+  .w1-weight { padding: 16px 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .w1-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .w1-w-val { font-size: 20px; font-weight: 800; color: var(--trail); margin-top: 2px; }
+  .w1-w-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* PRs */
+  .w1-pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .w1-pr:last-child { border-bottom: none; }
+  .w1-pr-icon { font-size: 14px; }
+  .w1-pr-name { font-size: 14px; color: var(--earth); font-weight: 500; flex: 1; }
+  .w1-pr-val { font-size: 16px; font-weight: 800; color: var(--trail); }
+  .w1-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Wellness */
+  .w1-wellness { display: flex; gap: 8px; }
+  .w1-well { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .w1-well:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .w1-well:nth-child(2) { background: var(--stone); }
+  .w1-well:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .w1-well-val { font-size: 22px; font-weight: 800; }
+  .w1-well:nth-child(1) .w1-well-val { color: #047857; }
+  .w1-well:nth-child(2) .w1-well-val { color: var(--earth); }
+  .w1-well:nth-child(3) .w1-well-val { color: #92400E; }
+  .w1-well-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     W2: CARD STREAM — Each metric is a distinct card.
+     Alternating dark/light. Clean, scannable.
+     ============================================================ */
+
+  .w2-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .w2-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .w2-title-area { padding: 12px 24px 0; }
+  .w2-title { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; }
+  .w2-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .w2-date { font-size: 10px; color: var(--rock); margin-top: 4px; }
+
+  .w2-cards { padding: 14px 24px 0; }
+
+  /* Stat bento */
+  .w2-bento { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+  .w2-bt { padding: 16px 10px; border-radius: 18px; text-align: center; }
+  .w2-bt:nth-child(1) { background: var(--earth); }
+  .w2-bt:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .w2-bt:nth-child(3) { background: var(--stone); }
+  .w2-bt-val { font-size: 28px; font-weight: 900; letter-spacing: -1px; }
+  .w2-bt:nth-child(1) .w2-bt-val { color: var(--sand); }
+  .w2-bt:nth-child(2) .w2-bt-val { color: var(--trail); }
+  .w2-bt:nth-child(3) .w2-bt-val { color: #F59E0B; }
+  .w2-bt-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .w2-bt:nth-child(1) .w2-bt-label { color: rgba(246,245,240,0.3); }
+  .w2-bt:nth-child(2) .w2-bt-label, .w2-bt:nth-child(3) .w2-bt-label { color: var(--rock); }
+
+  /* Volume dark card */
+  .w2-vol-card { padding: 20px; border-radius: 20px; background: var(--earth); margin-bottom: 12px; position: relative; overflow: hidden; }
+  .w2-vc-accent { position: absolute; bottom: -10px; right: -10px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+  .w2-vc-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+  .w2-vc-val { font-size: 36px; font-weight: 800; color: var(--sand); letter-spacing: -1.5px; margin-top: 4px; position: relative; }
+  .w2-vc-val span { font-size: 14px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .w2-vc-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; position: relative; }
+
+  /* Highlight white card */
+  .w2-hl-card { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px; }
+  .w2-hl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .w2-hl-sub { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .w2-hl-val { font-size: 20px; font-weight: 700; color: var(--earth); margin-top: 4px; }
+
+  /* Weight + PRs inline */
+  .w2-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .w2-duo-card { padding: 16px; border-radius: 18px; }
+  .w2-duo-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .w2-duo-card.stone { background: var(--stone); }
+  .w2-dc-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .w2-dc-val { font-size: 22px; font-weight: 800; margin-top: 4px; letter-spacing: -0.5px; }
+  .w2-duo-card.white .w2-dc-val { color: var(--trail); }
+  .w2-duo-card.stone .w2-dc-val { color: var(--earth); }
+  .w2-dc-sub { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  /* Wellness row */
+  .w2-well { display: flex; gap: 8px; }
+  .w2-wc { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .w2-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .w2-wc:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .w2-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .w2-wc-val { font-size: 20px; font-weight: 800; }
+  .w2-wc:nth-child(1) .w2-wc-val { color: #047857; }
+  .w2-wc:nth-child(2) .w2-wc-val { color: var(--earth); }
+  .w2-wc:nth-child(3) .w2-wc-val { color: #92400E; }
+  .w2-wc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     W3: HORIZONTAL SCROLL — Each metric is a full-height
+     swipeable card. Like a weekly stats "story."
+     ============================================================ */
+
+  .w3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .w3-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .w3-title-area { padding: 12px 24px 0; }
+  .w3-title { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; }
+  .w3-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .w3-scroll { display: flex; gap: 12px; padding: 16px 0 16px 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .w3-scroll::-webkit-scrollbar { display: none; }
+
+  .w3-card {
+    min-width: 280px; max-width: 280px; border-radius: 24px; padding: 24px;
+    min-height: 340px; display: flex; flex-direction: column;
+    flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+  }
+  .w3-card:last-child { margin-right: 24px; }
+  .w3-card:nth-child(odd) { background: var(--earth); }
+  .w3-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .w3-c-watermark { font-size: 100px; font-weight: 900; letter-spacing: -5px; line-height: 1; position: absolute; top: -10px; right: 0; pointer-events: none; }
+  .w3-card:nth-child(odd) .w3-c-watermark { color: rgba(246,245,240,0.03); }
+  .w3-card:nth-child(even) .w3-c-watermark { color: rgba(45,42,36,0.025); }
+
+  .w3-c-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .w3-card:nth-child(odd) .w3-c-label { color: rgba(246,245,240,0.25); }
+  .w3-card:nth-child(even) .w3-c-label { color: var(--rock); }
+
+  .w3-c-val { font-size: 48px; font-weight: 900; letter-spacing: -2px; margin-top: auto; position: relative; line-height: 1; }
+  .w3-card:nth-child(odd) .w3-c-val { color: var(--sand); }
+  .w3-card:nth-child(even) .w3-c-val { color: var(--earth); }
+  .w3-c-val span { font-size: 16px; font-weight: 500; }
+  .w3-card:nth-child(odd) .w3-c-val span { color: rgba(246,245,240,0.3); }
+  .w3-card:nth-child(even) .w3-c-val span { color: var(--rock); }
+
+  .w3-c-sub { font-size: 11px; margin-top: 6px; position: relative; }
+  .w3-card:nth-child(odd) .w3-c-sub { color: rgba(246,245,240,0.3); }
+  .w3-card:nth-child(even) .w3-c-sub { color: var(--rock); }
+  .w3-c-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  .w3-dots { display: flex; justify-content: center; gap: 5px; padding: 0 0 4px; }
+  .w3-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .w3-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+  /* Wellness below */
+  .w3-well-section { padding: 8px 24px 0; }
+  .w3-well-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== W1: INFOGRAPHIC ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">W1 — Infographic</div>
+  <div class="dsc">Dark hero card with stats inside. Clean sections below. Volume with comparison bars. Highlight of the week. Wellness as tinted tiles.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w1-hdr"><div class="back">←</div><span class="w1-hdr-title">Weekly Summary</span></div>
+
+    <div class="w1-hero">
+      <div class="w1-hero-accent"><div class="w1-ha"></div><div class="w1-ha"></div></div>
+      <div class="w1-hero-label">Mar 18 – Mar 24</div>
+      <div class="w1-hero-title">This Week</div>
+      <div class="w1-hero-msg">Crushing it! 💪</div>
+      <div class="w1-stats">
+        <div class="w1-stat"><div class="w1-stat-val">4</div><div class="w1-stat-label">Workouts</div></div>
+        <div class="w1-stat"><div class="w1-stat-val green">80%</div><div class="w1-stat-label">Completion</div></div>
+        <div class="w1-stat"><div class="w1-stat-val amber">12d</div><div class="w1-stat-label">Streak</div></div>
+      </div>
+    </div>
+
+    <div class="w1-sec"><div class="w1-sec-title">Total Volume</div>
+      <div class="w1-vol"><div><div class="w1-vol-val">2.4 <span>tons</span></div><div class="w1-vol-trend">▲ 12% vs last week</div></div><div class="w1-vol-bars"><div class="w1-vb prev" style="height:50%;"></div><div class="w1-vb prev" style="height:65%;"></div><div class="w1-vb prev" style="height:55%;"></div><div class="w1-vb prev" style="height:75%;"></div><div class="w1-vb cur" style="height:60%;"></div><div class="w1-vb cur" style="height:85%;"></div><div class="w1-vb cur" style="height:100%;"></div></div></div>
+    </div>
+
+    <div class="w1-sec"><div class="w1-sec-title">Highlight of the Week</div>
+      <div class="w1-highlight"><div class="w1-hl-accent"></div><div class="w1-hl-label">Best Lift</div><div class="w1-hl-sub">Personal Record</div><div class="w1-hl-val">Bench Press — 80 kg</div></div>
+    </div>
+
+    <div class="w1-sec"><div class="w1-sec-title">Weight Trend</div>
+      <div class="w1-weight"><div><div class="w1-w-label">Net Change</div><div class="w1-w-val">-0.8 <span>kg</span></div></div></div>
+    </div>
+
+    <div class="w1-sec"><div class="w1-sec-title">Personal Records</div>
+      <div class="w1-pr"><span class="w1-pr-icon">🏆</span><span class="w1-pr-name">Bench Press</span><span class="w1-pr-val">80 <span>kg</span></span></div>
+      <div class="w1-pr"><span class="w1-pr-icon">🏆</span><span class="w1-pr-name">Squat</span><span class="w1-pr-val">105 <span>kg</span></span></div>
+    </div>
+
+    <div class="w1-sec"><div class="w1-sec-title">Wellness Averages</div>
+      <div class="w1-wellness"><div class="w1-well"><div class="w1-well-val">4.5</div><div class="w1-well-label">Sleep</div></div><div class="w1-well"><div class="w1-well-val">3.8</div><div class="w1-well-label">Energy</div></div><div class="w1-well"><div class="w1-well-val">2.0</div><div class="w1-well-label">Soreness</div></div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== W2: CARD STREAM ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">W2 — Card Stream</div>
+  <div class="dsc">Big title + message at top. 3-column stat bento. Dark volume card. White highlight. Weight + PRs as bento duo. Wellness tiles. Alternating rhythm.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w2-hdr"><div class="back">←</div><span class="w2-hdr-title">Weekly Summary</span></div>
+
+    <div class="w2-title-area"><div class="w2-title">This Week</div><div class="w2-msg">Crushing it! 💪</div><div class="w2-date">Mar 18 – Mar 24</div></div>
+
+    <div class="w2-cards">
+      <div class="w2-bento">
+        <div class="w2-bt"><div class="w2-bt-val">4</div><div class="w2-bt-label">Workouts</div></div>
+        <div class="w2-bt"><div class="w2-bt-val">80%</div><div class="w2-bt-label">Completion</div></div>
+        <div class="w2-bt"><div class="w2-bt-val">12d</div><div class="w2-bt-label">Streak</div></div>
+      </div>
+
+      <div class="w2-vol-card"><div class="w2-vc-accent"></div><div class="w2-vc-label">Total Volume</div><div class="w2-vc-val">2.4 <span>tons</span></div><div class="w2-vc-trend">▲ 12% vs last week</div></div>
+
+      <div class="w2-hl-card"><div class="w2-hl-label">Highlight of the Week</div><div class="w2-hl-sub">Best Lift · Personal Record</div><div class="w2-hl-val">Bench Press — 80 kg</div></div>
+
+      <div class="w2-duo">
+        <div class="w2-duo-card white"><div class="w2-dc-label">Weight</div><div class="w2-dc-val">-0.8 kg</div><div class="w2-dc-sub">Net change</div></div>
+        <div class="w2-duo-card stone"><div class="w2-dc-label">PRs</div><div class="w2-dc-val">2</div><div class="w2-dc-sub">This week</div></div>
+      </div>
+
+      <div style="font-size:10px;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:8px;">Wellness</div>
+      <div class="w2-well"><div class="w2-wc"><div class="w2-wc-val">4.5</div><div class="w2-wc-label">Sleep</div></div><div class="w2-wc"><div class="w2-wc-val">3.8</div><div class="w2-wc-label">Energy</div></div><div class="w2-wc"><div class="w2-wc-val">2.0</div><div class="w2-wc-label">Soreness</div></div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== W3: HORIZONTAL STORY ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">W3 — Swipe Story</div>
+  <div class="dsc">Each metric is a full swipeable card with giant numbers and watermarks. Dark/light alternating. Like scrolling through your weekly stats story. Dots below. Wellness row at bottom.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w3-hdr"><div class="back">←</div><span class="w3-hdr-title">Weekly Summary</span></div>
+
+    <div class="w3-title-area"><div class="w3-title">This Week</div><div class="w3-msg">Crushing it! 💪</div></div>
+
+    <div class="w3-scroll">
+      <div class="w3-card"><div class="w3-c-watermark">4</div><div class="w3-c-label">Workouts</div><div class="w3-c-val">4 <span>of 5</span></div><div class="w3-c-sub">80% completion rate</div><div class="w3-c-trend">12-day streak</div></div>
+      <div class="w3-card"><div class="w3-c-watermark">2.4</div><div class="w3-c-label">Volume Lifted</div><div class="w3-c-val">2.4 <span>tons</span></div><div class="w3-c-sub">Total weight moved</div><div class="w3-c-trend">▲ 12% vs last week</div></div>
+      <div class="w3-card"><div class="w3-c-watermark">80</div><div class="w3-c-label">Best Lift</div><div class="w3-c-val">80 <span>kg</span></div><div class="w3-c-sub">Bench Press · PR</div><div class="w3-c-trend">New personal record!</div></div>
+      <div class="w3-card"><div class="w3-c-watermark">0.8</div><div class="w3-c-label">Weight Change</div><div class="w3-c-val">-0.8 <span>kg</span></div><div class="w3-c-sub">Net change this week</div><div class="w3-c-trend" style="color:var(--trail);">On track ✓</div></div>
+      <div class="w3-card"><div class="w3-c-watermark">2</div><div class="w3-c-label">Personal Records</div><div class="w3-c-val">2 <span>PRs</span></div><div class="w3-c-sub">Bench 80kg · Squat 105kg</div><div class="w3-c-trend">Keep pushing!</div></div>
+    </div>
+    <div class="w3-dots"><div class="w3-dot"></div><div class="w3-dot"></div><div class="w3-dot"></div><div class="w3-dot"></div><div class="w3-dot"></div></div>
+
+    <div class="w3-well-section"><div class="w3-well-label">Wellness Averages</div>
+      <div class="w2-well"><div class="w2-wc"><div class="w2-wc-val">4.5</div><div class="w2-wc-label">Sleep</div></div><div class="w2-wc"><div class="w2-wc-val">3.8</div><div class="w2-wc-label">Energy</div></div><div class="w2-wc"><div class="w2-wc-val">2.0</div><div class="w2-wc-label">Soreness</div></div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

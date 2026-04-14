@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Nutrition Screen Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; --amber: #F59E0B; }
+
+  .page-head { text-align: center; padding: 28px 24px 8px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #555; margin-top: 4px; }
+
+  .layouts { display: flex; gap: 28px; padding: 16px 24px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .col-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0; }
+  .col-desc { text-align: center; font-size: 11px; color: #555; padding: 0 16px 12px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  /* Topo */
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .topo-c { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.02; }
+  .topo-c:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .topo-c:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  .content { position: relative; z-index: 1; }
+
+  /* ============================================================
+     LAYOUT A: THE FUEL GAUGE — Macro ring + horizontal meal cards
+     ============================================================ */
+  .col-a .col-label { color: var(--trail); }
+
+  .a-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .a-time { font-size: 15px; font-weight: 600; color: var(--earth); }
+
+  .a-hero { padding: 16px 24px 0; }
+  .a-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .a-hero .title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* Macro ring — circular fuel gauge */
+  .a-gauge { margin: 20px 24px 0; padding: 20px; background: var(--earth); border-radius: 24px; display: flex; align-items: center; gap: 20px; }
+  .a-ring { width: 90px; height: 90px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.1); position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .a-ring::before { content: ''; position: absolute; inset: -6px; border-radius: 50%; border: 6px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); transform: rotate(-45deg); }
+  .a-ring .cal { font-size: 22px; font-weight: 800; color: var(--sand); }
+  .a-ring .unit { font-size: 9px; color: rgba(246,245,240,0.4); text-transform: uppercase; letter-spacing: 0.5px; }
+  .a-macros { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .a-macro-row { display: flex; align-items: center; gap: 8px; }
+  .a-macro-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .a-macro-label { font-size: 11px; color: rgba(246,245,240,0.5); flex: 1; }
+  .a-macro-val { font-size: 14px; font-weight: 700; color: var(--sand); }
+  .a-macro-bar { height: 3px; border-radius: 2px; background: rgba(246,245,240,0.08); flex: 1; overflow: hidden; }
+  .a-macro-fill { height: 100%; border-radius: 2px; }
+
+  /* Meal cards — horizontal swipeable feel */
+  .a-meals-head { padding: 20px 24px 10px; display: flex; justify-content: space-between; align-items: center; }
+  .a-meals-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .a-cuisine-btn { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  .a-meal-tabs { display: flex; gap: 6px; padding: 0 24px; margin-bottom: 14px; }
+  .a-tab { padding: 8px 16px; border-radius: 100px; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .a-tab.active { background: var(--earth); color: var(--sand); }
+  .a-tab.inactive { background: var(--stone); color: var(--rock); }
+
+  .a-meal-card { margin: 0 24px 12px; background: #fff; border-radius: 22px; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+  .a-meal-top { padding: 18px; display: flex; gap: 14px; align-items: flex-start; }
+  .a-meal-emoji { width: 52px; height: 52px; border-radius: 16px; background: rgba(52,211,153,0.06); display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; }
+  .a-meal-info { flex: 1; }
+  .a-meal-name { font-size: 15px; font-weight: 600; color: var(--earth); line-height: 1.3; }
+  .a-meal-meta { font-size: 11px; color: var(--rock); margin-top: 4px; }
+  .a-meal-cals { font-size: 18px; font-weight: 800; color: var(--earth); text-align: right; }
+  .a-meal-cals span { font-size: 10px; color: var(--rock); font-weight: 500; }
+
+  .a-meal-actions { display: flex; border-top: 1px solid #EDEBE5; }
+  .a-meal-action { flex: 1; padding: 12px; text-align: center; font-size: 11px; font-weight: 600; cursor: pointer; }
+  .a-meal-action.recipe { color: var(--earth); }
+  .a-meal-action.swap { color: var(--trail); border-left: 1px solid #EDEBE5; }
+  .a-meal-action.eatout { color: var(--amber); border-left: 1px solid #EDEBE5; }
+
+  /* Grocery link */
+  .a-grocery { margin: 8px 24px 40px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; align-items: center; justify-content: space-between; }
+  .a-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .a-grocery .s { font-size: 11px; color: rgba(246,245,240,0.4); }
+  .a-grocery .arr { font-size: 18px; color: rgba(246,245,240,0.3); }
+
+
+  /* ============================================================
+     LAYOUT B: THE TRAIL MEALS — Vertical trail like home screen
+     ============================================================ */
+  .col-b .col-label { color: var(--amber); }
+
+  .b-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .b-hero { padding: 16px 24px 0; }
+  .b-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .b-hero .title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* Compact macro strip */
+  .b-macros { display: flex; gap: 8px; padding: 16px 24px; }
+  .b-macro { flex: 1; background: var(--stone); border-radius: 16px; padding: 12px 10px; text-align: center; }
+  .b-macro.cal-macro { background: var(--earth); }
+  .b-macro .val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .b-macro.cal-macro .val { color: var(--sand); }
+  .b-macro .label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 2px; }
+  .b-macro.cal-macro .label { color: rgba(246,245,240,0.4); }
+
+  /* Trail-style meals */
+  .b-trail { padding: 8px 24px; position: relative; }
+  .b-trail-line { position: absolute; left: 39px; top: 12px; bottom: 20px; width: 2px; background: #DDD9CE; }
+
+  .b-trail-head { display: flex; justify-content: space-between; margin-bottom: 14px; padding-left: 36px; }
+  .b-trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+
+  .b-wp { display: flex; gap: 14px; margin-bottom: 14px; position: relative; z-index: 1; }
+  .b-wp-dot-col { width: 32px; display: flex; flex-direction: column; align-items: center; padding-top: 16px; }
+  .b-wp-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #DDD9CE; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 14px; z-index: 2; }
+  .b-wp-time { font-size: 7px; color: var(--rock); margin-top: 3px; text-transform: uppercase; }
+
+  .b-wp-card { flex: 1; background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); padding: 16px; }
+  .b-wp-card-head { display: flex; justify-content: space-between; align-items: flex-start; }
+  .b-wp-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .b-wp-cal { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .b-wp-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .b-wp-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 6px; line-height: 1.3; }
+  .b-wp-macros { font-size: 11px; color: var(--rock); margin-top: 4px; }
+  .b-wp-actions { display: flex; gap: 6px; margin-top: 10px; }
+  .b-wp-btn { padding: 6px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .b-wp-btn.recipe { background: var(--stone); color: var(--earth); }
+  .b-wp-btn.swap { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .b-wp-btn.eatout { background: rgba(245,158,11,0.08); color: var(--amber); }
+
+
+  /* ============================================================
+     LAYOUT C: THE PLATE — Visual plate metaphor with segments
+     ============================================================ */
+  .col-c .col-label { color: #818CF8; }
+
+  .c-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .c-hero { padding: 16px 24px 0; }
+  .c-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .c-hero .title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* The plate — circular macro view */
+  .c-plate-area { display: flex; justify-content: center; padding: 20px 24px; }
+  .c-plate { width: 180px; height: 180px; border-radius: 50%; position: relative; border: 3px solid var(--stone); }
+  /* Segments simulated with conic gradient */
+  .c-plate-inner { position: absolute; inset: 8px; border-radius: 50%; background: conic-gradient(
+    var(--trail) 0deg 120deg,
+    var(--amber) 120deg 200deg,
+    #818CF8 200deg 290deg,
+    #EF4444 290deg 360deg
+  ); opacity: 0.12; }
+  .c-plate-center { position: absolute; inset: 30px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .c-plate-cal { font-size: 28px; font-weight: 800; color: var(--earth); }
+  .c-plate-unit { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Macro legend around plate */
+  .c-legend { display: flex; justify-content: center; gap: 16px; padding: 0 24px 8px; }
+  .c-legend-item { display: flex; align-items: center; gap: 5px; }
+  .c-legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .c-legend-text { font-size: 10px; color: var(--rock); }
+  .c-legend-val { font-size: 10px; font-weight: 700; color: var(--earth); }
+
+  /* Meal cards — full-width with swipe-to-action feel */
+  .c-meals { padding: 12px 24px; }
+  .c-meal-label { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; margin-top: 8px; }
+
+  .c-meal { background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; position: relative; }
+  .c-meal-emoji { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  .c-meal-emoji.bk { background: rgba(245,158,11,0.08); }
+  .c-meal-emoji.lu { background: rgba(52,211,153,0.08); }
+  .c-meal-emoji.di { background: rgba(129,140,248,0.08); }
+  .c-meal-emoji.sn { background: rgba(239,68,68,0.08); }
+  .c-meal-body { flex: 1; }
+  .c-meal-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .c-meal-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .c-meal-cal { font-size: 16px; font-weight: 800; color: var(--earth); text-align: right; }
+  .c-meal-cal span { font-size: 9px; color: var(--rock); font-weight: 500; display: block; }
+
+  /* Toggle row */
+  .c-toggle-row { display: flex; gap: 6px; padding: 4px 24px 12px; }
+  .c-toggle { flex: 1; padding: 10px; border-radius: 14px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; }
+  .c-toggle.active { background: var(--earth); color: var(--sand); }
+  .c-toggle.inactive { background: var(--stone); color: var(--rock); }
+
+  /* Vote */
+  .vote { display: flex; gap: 12px; justify-content: center; padding: 24px; }
+  .vote-btn { padding: 14px 28px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.06); background: transparent; color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .vote-btn:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+  .vote-btn.va:hover { border-color: var(--trail); color: var(--trail); }
+  .vote-btn.vb:hover { border-color: var(--amber); color: var(--amber); }
+  .vote-btn.vc:hover { border-color: #818CF8; color: #818CF8; }
+  .vote-btn.vmix:hover { border-color: #F472B6; color: #F472B6; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Nutrition Screen — 3 Layout Options</h1>
+  <p>Same data (4 meals, macros, cook/eatout, alternatives). Different spatial structures.</p>
+</div>
+
+<div class="layouts">
+
+  <!-- ===== A: FUEL GAUGE ===== -->
+  <div class="col col-a">
+    <div class="col-label" style="color:#34D399;">A — The Fuel Gauge</div>
+    <div class="col-desc">Dark macro gauge at top shows calories as a ring. Meals as tabbed cards with action bar. Clean separation of data vs food.</div>
+    <div class="phone">
+      <div class="topo"><div class="topo-c"></div><div class="topo-c"></div></div>
+      <div class="phone-scroll"><div class="content">
+        <div class="a-status"><span style="font-size:15px;font-weight:600;color:#2D2A24;">9:41</span></div>
+
+        <div class="a-hero">
+          <div class="ctx">Wednesday · Nutrition</div>
+          <div class="title">Today's Fuel</div>
+        </div>
+
+        <!-- Macro Gauge -->
+        <div class="a-gauge">
+          <div class="a-ring">
+            <div style="text-align:center;"><div class="cal">2,180</div><div class="unit">kcal</div></div>
+          </div>
+          <div class="a-macros">
+            <div class="a-macro-row">
+              <div class="a-macro-dot" style="background:#34D399;"></div>
+              <div class="a-macro-label">Protein</div>
+              <div class="a-macro-val">165g</div>
+            </div>
+            <div class="a-macro-bar"><div class="a-macro-fill" style="width:75%;background:#34D399;"></div></div>
+            <div class="a-macro-row">
+              <div class="a-macro-dot" style="background:#F59E0B;"></div>
+              <div class="a-macro-label">Carbs</div>
+              <div class="a-macro-val">245g</div>
+            </div>
+            <div class="a-macro-bar"><div class="a-macro-fill" style="width:60%;background:#F59E0B;"></div></div>
+            <div class="a-macro-row">
+              <div class="a-macro-dot" style="background:#818CF8;"></div>
+              <div class="a-macro-label">Fat</div>
+              <div class="a-macro-val">72g</div>
+            </div>
+            <div class="a-macro-bar"><div class="a-macro-fill" style="width:55%;background:#818CF8;"></div></div>
+          </div>
+        </div>
+
+        <!-- Meal tabs -->
+        <div class="a-meals-head">
+          <span class="a-meals-title">Meals</span>
+          <span class="a-cuisine-btn">Cuisines ›</span>
+        </div>
+        <div class="a-meal-tabs">
+          <span class="a-tab active">Breakfast</span>
+          <span class="a-tab inactive">Lunch</span>
+          <span class="a-tab inactive">Dinner</span>
+          <span class="a-tab inactive">Snack</span>
+        </div>
+
+        <!-- Active meal card -->
+        <div class="a-meal-card">
+          <div class="a-meal-top">
+            <div class="a-meal-emoji">🥣</div>
+            <div class="a-meal-info">
+              <div class="a-meal-name">Greek Yogurt Power Bowl</div>
+              <div class="a-meal-meta">35g protein · 42g carbs · 12g fat</div>
+            </div>
+            <div class="a-meal-cals">520<span>kcal</span></div>
+          </div>
+          <div class="a-meal-actions">
+            <div class="a-meal-action recipe">Recipe</div>
+            <div class="a-meal-action swap">Swap</div>
+            <div class="a-meal-action eatout">Eat Out</div>
+          </div>
+        </div>
+
+        <!-- Second card (shows scrollability) -->
+        <div class="a-meal-card" style="opacity:0.6;">
+          <div class="a-meal-top">
+            <div class="a-meal-emoji">🍗</div>
+            <div class="a-meal-info">
+              <div class="a-meal-name">Grilled Chicken & Rice</div>
+              <div class="a-meal-meta">45g protein · 55g carbs · 14g fat</div>
+            </div>
+            <div class="a-meal-cals">680<span>kcal</span></div>
+          </div>
+        </div>
+
+        <!-- Grocery -->
+        <div class="a-grocery">
+          <div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div>
+          <div class="arr">›</div>
+        </div>
+
+      </div></div>
+    </div>
+    <div class="col-desc">Dark gauge card commands attention. Tab-based meal switching keeps one visible at a time. Action bar (Recipe/Swap/Eat Out) is always accessible.</div>
+  </div>
+
+  <!-- ===== B: TRAIL MEALS ===== -->
+  <div class="col col-b">
+    <div class="col-label" style="color:#F59E0B;">B — The Trail Meals</div>
+    <div class="col-desc">Same trail waypoint pattern as Home. Meals are stops on your daily nutrition route. Consistent design language across screens.</div>
+    <div class="phone">
+      <div class="topo"><div class="topo-c"></div><div class="topo-c"></div></div>
+      <div class="phone-scroll"><div class="content">
+        <div class="b-status"><span style="font-size:15px;font-weight:600;color:#2D2A24;">9:41</span></div>
+
+        <div class="b-hero">
+          <div class="ctx">Wednesday · Nutrition</div>
+          <div class="title">Today's Fuel</div>
+        </div>
+
+        <!-- Compact macro strip -->
+        <div class="b-macros">
+          <div class="b-macro cal-macro"><div class="val">2,180</div><div class="label">kcal</div></div>
+          <div class="b-macro"><div class="val">165g</div><div class="label">Protein</div></div>
+          <div class="b-macro"><div class="val">245g</div><div class="label">Carbs</div></div>
+          <div class="b-macro"><div class="val">72g</div><div class="label">Fat</div></div>
+        </div>
+
+        <!-- Trail -->
+        <div class="b-trail">
+          <div class="b-trail-line"></div>
+
+          <div class="b-trail-head">
+            <span class="b-trail-title">Daily Route</span>
+          </div>
+
+          <!-- Breakfast -->
+          <div class="b-wp">
+            <div class="b-wp-dot-col">
+              <div class="b-wp-dot">🌅</div>
+              <div class="b-wp-time">8 AM</div>
+            </div>
+            <div class="b-wp-card">
+              <div class="b-wp-card-head">
+                <div class="b-wp-label">Breakfast</div>
+                <div class="b-wp-cal">520 <span>kcal</span></div>
+              </div>
+              <div class="b-wp-name">Greek Yogurt Power Bowl</div>
+              <div class="b-wp-macros">35g P · 42g C · 12g F</div>
+              <div class="b-wp-actions">
+                <span class="b-wp-btn recipe">Recipe</span>
+                <span class="b-wp-btn swap">Swap</span>
+                <span class="b-wp-btn eatout">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lunch -->
+          <div class="b-wp">
+            <div class="b-wp-dot-col">
+              <div class="b-wp-dot">☀️</div>
+              <div class="b-wp-time">12 PM</div>
+            </div>
+            <div class="b-wp-card">
+              <div class="b-wp-card-head">
+                <div class="b-wp-label">Lunch</div>
+                <div class="b-wp-cal">680 <span>kcal</span></div>
+              </div>
+              <div class="b-wp-name">Grilled Chicken & Brown Rice</div>
+              <div class="b-wp-macros">45g P · 55g C · 14g F</div>
+              <div class="b-wp-actions">
+                <span class="b-wp-btn recipe">Recipe</span>
+                <span class="b-wp-btn swap">Swap</span>
+                <span class="b-wp-btn eatout">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dinner -->
+          <div class="b-wp">
+            <div class="b-wp-dot-col">
+              <div class="b-wp-dot">🌙</div>
+              <div class="b-wp-time">7 PM</div>
+            </div>
+            <div class="b-wp-card">
+              <div class="b-wp-card-head">
+                <div class="b-wp-label">Dinner</div>
+                <div class="b-wp-cal">720 <span>kcal</span></div>
+              </div>
+              <div class="b-wp-name">Salmon with Sweet Potato</div>
+              <div class="b-wp-macros">48g P · 62g C · 22g F</div>
+              <div class="b-wp-actions">
+                <span class="b-wp-btn recipe">Recipe</span>
+                <span class="b-wp-btn swap">Swap</span>
+                <span class="b-wp-btn eatout">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Snack -->
+          <div class="b-wp">
+            <div class="b-wp-dot-col">
+              <div class="b-wp-dot">🍎</div>
+              <div class="b-wp-time">4 PM</div>
+            </div>
+            <div class="b-wp-card">
+              <div class="b-wp-card-head">
+                <div class="b-wp-label">Snack</div>
+                <div class="b-wp-cal">260 <span>kcal</span></div>
+              </div>
+              <div class="b-wp-name">Protein Shake & Almonds</div>
+              <div class="b-wp-macros">37g P · 18g C · 14g F</div>
+              <div class="b-wp-actions">
+                <span class="b-wp-btn recipe">Recipe</span>
+                <span class="b-wp-btn swap">Swap</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Grocery -->
+        <div class="a-grocery" style="margin:8px 24px 40px;">
+          <div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div>
+          <div class="arr">›</div>
+        </div>
+
+      </div></div>
+    </div>
+    <div class="col-desc">Trail continuity from Home. Emoji waypoint markers (🌅☀️🌙🍎) replace numbers. Time labels on the trail. Each meal card has inline action pills.</div>
+  </div>
+
+  <!-- ===== C: THE PLATE ===== -->
+  <div class="col col-c">
+    <div class="col-label" style="color:#818CF8;">C — The Plate</div>
+    <div class="col-desc">Circular plate visualization for macros. Compact meal rows with color-coded emoji icons. Cook/Eat-out toggle as a global mode switch.</div>
+    <div class="phone">
+      <div class="topo"><div class="topo-c"></div><div class="topo-c"></div></div>
+      <div class="phone-scroll"><div class="content">
+        <div class="c-status"><span style="font-size:15px;font-weight:600;color:#2D2A24;">9:41</span></div>
+
+        <div class="c-hero">
+          <div class="ctx">Wednesday · Nutrition</div>
+          <div class="title">Today's Plate</div>
+        </div>
+
+        <!-- Plate visualization -->
+        <div class="c-plate-area">
+          <div class="c-plate">
+            <div class="c-plate-inner"></div>
+            <div class="c-plate-center">
+              <div class="c-plate-cal">2,180</div>
+              <div class="c-plate-unit">kcal target</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="c-legend">
+          <div class="c-legend-item"><div class="c-legend-dot" style="background:#34D399;"></div><div class="c-legend-text">Protein</div><div class="c-legend-val">165g</div></div>
+          <div class="c-legend-item"><div class="c-legend-dot" style="background:#F59E0B;"></div><div class="c-legend-text">Carbs</div><div class="c-legend-val">245g</div></div>
+          <div class="c-legend-item"><div class="c-legend-dot" style="background:#818CF8;"></div><div class="c-legend-text">Fat</div><div class="c-legend-val">72g</div></div>
+        </div>
+
+        <!-- Cook / Eat Out toggle -->
+        <div class="c-toggle-row">
+          <div class="c-toggle active">🍳 Cook</div>
+          <div class="c-toggle inactive">🍽️ Eat Out</div>
+        </div>
+
+        <!-- Meal list -->
+        <div class="c-meals">
+          <div class="c-meal-label">Breakfast · 8 AM</div>
+          <div class="c-meal">
+            <div class="c-meal-emoji bk">🥣</div>
+            <div class="c-meal-body">
+              <div class="c-meal-name">Greek Yogurt Power Bowl</div>
+              <div class="c-meal-macros">35g P · 42g C · 12g F</div>
+            </div>
+            <div class="c-meal-cal">520<span>kcal</span></div>
+          </div>
+
+          <div class="c-meal-label">Lunch · 12 PM</div>
+          <div class="c-meal">
+            <div class="c-meal-emoji lu">🍗</div>
+            <div class="c-meal-body">
+              <div class="c-meal-name">Grilled Chicken & Rice</div>
+              <div class="c-meal-macros">45g P · 55g C · 14g F</div>
+            </div>
+            <div class="c-meal-cal">680<span>kcal</span></div>
+          </div>
+
+          <div class="c-meal-label">Dinner · 7 PM</div>
+          <div class="c-meal">
+            <div class="c-meal-emoji di">🐟</div>
+            <div class="c-meal-body">
+              <div class="c-meal-name">Salmon & Sweet Potato</div>
+              <div class="c-meal-macros">48g P · 62g C · 22g F</div>
+            </div>
+            <div class="c-meal-cal">720<span>kcal</span></div>
+          </div>
+
+          <div class="c-meal-label">Snack · 4 PM</div>
+          <div class="c-meal">
+            <div class="c-meal-emoji sn">🍎</div>
+            <div class="c-meal-body">
+              <div class="c-meal-name">Protein Shake & Almonds</div>
+              <div class="c-meal-macros">37g P · 18g C · 14g F</div>
+            </div>
+            <div class="c-meal-cal">260<span>kcal</span></div>
+          </div>
+        </div>
+
+        <!-- Grocery -->
+        <div class="a-grocery" style="margin:12px 24px 40px;">
+          <div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div>
+          <div class="arr">›</div>
+        </div>
+
+      </div></div>
+    </div>
+    <div class="col-desc">Plate visual is bold and unique. Global cook/eatout mode switch. Compact meal rows — all 4 visible without scrolling. Tap a row to expand.</div>
+  </div>
+
+</div>
+
+<div class="vote">
+  <button class="vote-btn va" onclick="pick('A')">A — Fuel Gauge</button>
+  <button class="vote-btn vb" onclick="pick('B')">B — Trail Meals</button>
+  <button class="vote-btn vc" onclick="pick('C')">C — The Plate</button>
+  <button class="vote-btn vmix" onclick="pick('Mix')">Mix Elements</button>
+</div>
+
+<script>
+function pick(c) {
+  document.querySelectorAll('.vote-btn').forEach(b => { b.style.opacity='0.3'; b.style.borderColor='rgba(255,255,255,0.06)'; b.style.color='rgba(255,255,255,0.3)'; });
+  const b = event.target; b.style.opacity='1';
+  const colors = { A:'#34D399', B:'#F59E0B', C:'#818CF8', Mix:'#F472B6' };
+  b.style.borderColor = colors[c]; b.style.color = colors[c];
+}
+</script>
+
+</body>
+</html>

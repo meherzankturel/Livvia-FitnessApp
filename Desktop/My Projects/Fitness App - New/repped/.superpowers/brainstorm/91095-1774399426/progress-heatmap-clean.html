@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Clean Heatmap Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     H1: SIMPLE WEEK BARS — Each week is a horizontal bar.
+     Filled portion = days worked out. Empty = rest.
+     Most intuitive: "this week I did 3 out of 7 days."
+     ============================================================ */
+
+  .h1-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .h1-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h1-range { font-size: 10px; color: var(--rock); }
+
+  .h1-weeks {}
+  .h1-week { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .h1-week-label { font-size: 10px; color: var(--rock); font-weight: 500; width: 42px; flex-shrink: 0; }
+  .h1-week-label.now { color: var(--earth); font-weight: 700; }
+  .h1-bar { flex: 1; height: 10px; border-radius: 5px; background: var(--stone); overflow: hidden; display: flex; }
+  .h1-bar-fill { height: 100%; border-radius: 5px; transition: width 0.6s cubic-bezier(0.16,1,0.3,1); }
+  .h1-week:nth-child(-n+6) .h1-bar-fill { background: var(--earth); opacity: 0.2; }
+  .h1-week:last-child .h1-bar-fill { background: var(--trail); }
+  .h1-week-count { font-size: 10px; color: var(--rock); font-weight: 600; width: 24px; text-align: right; flex-shrink: 0; }
+  .h1-week:last-child .h1-week-count { color: var(--trail); font-weight: 700; }
+
+
+  /* ============================================================
+     H2: DOT CALENDAR — 7 columns (Mon-Sun), each row = 1 week.
+     Day labels on top. Filled dot = workout. Empty = rest.
+     Today highlighted green. Simple, familiar calendar grid.
+     ============================================================ */
+
+  .h2-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .h2-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h2-range { font-size: 10px; color: var(--rock); }
+
+  .h2-card { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .h2-days { display: grid; grid-template-columns: repeat(7, 1fr); margin-bottom: 8px; }
+  .h2-day { text-align: center; font-size: 9px; color: var(--rock); font-weight: 600; }
+
+  .h2-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px 0; }
+  .h2-cell { display: flex; justify-content: center; }
+  .h2-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .h2-dot.empty { background: var(--stone); }
+  .h2-dot.done { background: var(--earth); }
+  .h2-dot.today { background: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+
+  .h2-summary { display: flex; justify-content: space-between; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(0,0,0,0.03); }
+  .h2-sum-item { text-align: center; }
+  .h2-sum-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .h2-sum-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     H3: STREAK BLOCKS — Show consecutive workout streaks as
+     connected blocks. Green for active streaks. Gray for gaps.
+     Tells a story: "you had a 5-day streak, then 2 off, then 3."
+     ============================================================ */
+
+  .h3-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .h3-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h3-range { font-size: 10px; color: var(--rock); }
+
+  .h3-card { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .h3-row { display: flex; gap: 3px; align-items: center; flex-wrap: wrap; }
+  .h3-block { height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; }
+  .h3-block.streak { background: var(--earth); color: var(--sand); min-width: 24px; padding: 0 6px; }
+  .h3-block.streak.active { background: var(--trail); color: #fff; }
+  .h3-block.gap { background: var(--stone); min-width: 12px; padding: 0 4px; color: var(--rock); }
+
+  .h3-explain { font-size: 10px; color: var(--rock); margin-top: 10px; line-height: 1.4; }
+  .h3-explain strong { color: var(--earth); }
+
+
+  /* ============================================================
+     H4: WEEK RINGS — Each of the last 8 weeks is a mini ring.
+     Fill = completion rate that week. Scrollable horizontally.
+     Immediately readable: fuller ring = better week.
+     ============================================================ */
+
+  .h4-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .h4-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h4-range { font-size: 10px; color: var(--rock); }
+
+  .h4-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .h4-scroll::-webkit-scrollbar { display: none; }
+
+  .h4-week { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .h4-ring { width: 40px; height: 40px; position: relative; }
+  .h4-ring svg { width: 40px; height: 40px; transform: rotate(-90deg); }
+  .h4-ring-track { fill: none; stroke: var(--stone); stroke-width: 4; }
+  .h4-ring-fill { fill: none; stroke-width: 4; stroke-linecap: round; }
+  .h4-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 800; color: var(--earth); }
+  .h4-week-label { font-size: 8px; color: var(--rock); font-weight: 600; }
+  .h4-week.now .h4-week-label { color: var(--trail); font-weight: 700; }
+
+
+  /* ============================================================
+     H5: SIMPLE 4-WEEK GRID — Only 4 weeks (28 days).
+     Larger cells. Week labels on left. Much less overwhelming
+     than 12 weeks. Focus on recent activity.
+     ============================================================ */
+
+  .h5-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .h5-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h5-range { font-size: 10px; color: var(--rock); }
+
+  .h5-card { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .h5-days { display: grid; grid-template-columns: 36px repeat(7, 1fr); margin-bottom: 6px; }
+  .h5-day-spacer { }
+  .h5-day { text-align: center; font-size: 9px; color: var(--rock); font-weight: 600; }
+
+  .h5-row { display: grid; grid-template-columns: 36px repeat(7, 1fr); gap: 4px 0; margin-bottom: 4px; align-items: center; }
+  .h5-row-label { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .h5-row.now .h5-row-label { color: var(--earth); font-weight: 700; }
+  .h5-cell { display: flex; justify-content: center; }
+  .h5-sq { width: 22px; height: 22px; border-radius: 6px; }
+  .h5-sq.empty { background: var(--stone); }
+  .h5-sq.done { background: var(--earth); }
+  .h5-sq.today { background: var(--trail); }
+
+  .h5-legend { display: flex; gap: 14px; justify-content: center; margin-top: 10px; }
+  .h5-leg { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--rock); }
+  .h5-leg-dot { width: 10px; height: 10px; border-radius: 4px; }
+
+
+  /* ============================================================
+     H6: MONTHLY SUMMARY CARDS — 3 month cards side by side.
+     Each shows: month name, workout count, a tiny ring.
+     No grid at all. Just numbers. Most readable for naive users.
+     ============================================================ */
+
+  .h6-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .h6-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .h6-range { font-size: 10px; color: var(--rock); }
+
+  .h6-cards { display: flex; gap: 8px; }
+  .h6-card { flex: 1; padding: 14px; border-radius: 16px; text-align: center; }
+  .h6-card:nth-child(1) { background: var(--stone); }
+  .h6-card:nth-child(2) { background: var(--stone); }
+  .h6-card:nth-child(3) { background: var(--earth); }
+
+  .h6-month { font-size: 10px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h6-card:nth-child(1) .h6-month, .h6-card:nth-child(2) .h6-month { color: var(--rock); }
+  .h6-card:nth-child(3) .h6-month { color: rgba(246,245,240,0.35); }
+
+  .h6-num { font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-top: 4px; }
+  .h6-card:nth-child(1) .h6-num, .h6-card:nth-child(2) .h6-num { color: var(--earth); }
+  .h6-card:nth-child(3) .h6-num { color: var(--sand); }
+
+  .h6-unit { font-size: 9px; margin-top: 2px; }
+  .h6-card:nth-child(1) .h6-unit, .h6-card:nth-child(2) .h6-unit { color: var(--rock); }
+  .h6-card:nth-child(3) .h6-unit { color: rgba(246,245,240,0.3); }
+
+  .h6-mini-bar { height: 4px; border-radius: 2px; margin-top: 8px; overflow: hidden; }
+  .h6-card:nth-child(1) .h6-mini-bar, .h6-card:nth-child(2) .h6-mini-bar { background: rgba(45,42,36,0.06); }
+  .h6-card:nth-child(3) .h6-mini-bar { background: rgba(246,245,240,0.06); }
+  .h6-mini-fill { height: 100%; border-radius: 2px; }
+  .h6-card:nth-child(1) .h6-mini-fill { background: var(--earth); opacity: 0.2; width: 60%; }
+  .h6-card:nth-child(2) .h6-mini-fill { background: var(--earth); opacity: 0.2; width: 75%; }
+  .h6-card:nth-child(3) .h6-mini-fill { background: var(--trail); width: 85%; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- H1 -->
+<div>
+  <div class="col-label">H1 — Week Bars</div>
+  <div class="col-desc">Each week is a bar. Filled = days worked out. Current week is green. Instantly readable: "I worked out 4 of 7 days this week."</div>
+  <div class="block">
+    <div class="h1-head"><span class="h1-title">Activity</span><span class="h1-range">Last 8 weeks</span></div>
+    <div class="h1-weeks">
+      <div class="h1-week"><span class="h1-week-label">8 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:43%;"></div></div><span class="h1-week-count">3/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">7 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:57%;"></div></div><span class="h1-week-count">4/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">6 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:43%;"></div></div><span class="h1-week-count">3/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">5 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:71%;"></div></div><span class="h1-week-count">5/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">4 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:57%;"></div></div><span class="h1-week-count">4/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">3 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:43%;"></div></div><span class="h1-week-count">3/7</span></div>
+      <div class="h1-week"><span class="h1-week-label">2 wks</span><div class="h1-bar"><div class="h1-bar-fill" style="width:57%;"></div></div><span class="h1-week-count">4/7</span></div>
+      <div class="h1-week"><span class="h1-week-label now">This wk</span><div class="h1-bar"><div class="h1-bar-fill" style="width:43%;"></div></div><span class="h1-week-count">3/7</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- H2 -->
+<div>
+  <div class="col-label">H2 — Dot Calendar</div>
+  <div class="col-desc">Familiar calendar grid. Dots instead of numbers. Filled = workout day. Green = today. Summary stats below. Everyone understands a calendar.</div>
+  <div class="block">
+    <div class="h2-head"><span class="h2-title">Activity</span><span class="h2-range">Last 6 weeks</span></div>
+    <div class="h2-card">
+      <div class="h2-days"><div class="h2-day">M</div><div class="h2-day">T</div><div class="h2-day">W</div><div class="h2-day">T</div><div class="h2-day">F</div><div class="h2-day">S</div><div class="h2-day">S</div></div>
+      <div class="h2-grid" id="h2g"></div>
+      <div class="h2-summary">
+        <div class="h2-sum-item"><div class="h2-sum-val">18</div><div class="h2-sum-label">Workouts</div></div>
+        <div class="h2-sum-item"><div class="h2-sum-val">42</div><div class="h2-sum-label">Total Days</div></div>
+        <div class="h2-sum-item"><div class="h2-sum-val">43%</div><div class="h2-sum-label">Consistency</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- H3 -->
+<div>
+  <div class="col-label">H3 — Streak Blocks</div>
+  <div class="col-desc">Shows your streaks as connected blocks. Green = current active streak. Dark = past streaks. Gray = rest gaps. Tells YOUR story visually.</div>
+  <div class="block">
+    <div class="h3-head"><span class="h3-title">Activity</span><span class="h3-range">Last 6 weeks</span></div>
+    <div class="h3-card">
+      <div class="h3-row">
+        <div class="h3-block streak">3</div>
+        <div class="h3-block gap">2</div>
+        <div class="h3-block streak">5</div>
+        <div class="h3-block gap">1</div>
+        <div class="h3-block streak">4</div>
+        <div class="h3-block gap">2</div>
+        <div class="h3-block streak">3</div>
+        <div class="h3-block gap">1</div>
+        <div class="h3-block streak">5</div>
+        <div class="h3-block gap">2</div>
+        <div class="h3-block streak">4</div>
+        <div class="h3-block gap">1</div>
+        <div class="h3-block streak active">3</div>
+      </div>
+      <div class="h3-explain">Your current streak: <strong>3 days</strong>. Longest this period: <strong>5 days</strong>.</div>
+    </div>
+  </div>
+</div>
+
+<!-- H4 -->
+<div>
+  <div class="col-label">H4 — Week Rings</div>
+  <div class="col-desc">Each week is a mini ring. Fuller = more workouts that week. Current week in green. Scroll to see all 8 weeks. Instantly comparative.</div>
+  <div class="block">
+    <div class="h4-head"><span class="h4-title">Activity</span><span class="h4-range">Last 8 weeks</span></div>
+    <div class="h4-scroll">
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="57" opacity="0.2"/></svg><div class="h4-ring-pct">3</div></div><div class="h4-week-label">Wk 1</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="43" opacity="0.2"/></svg><div class="h4-ring-pct">4</div></div><div class="h4-week-label">Wk 2</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="29" opacity="0.2"/></svg><div class="h4-ring-pct">5</div></div><div class="h4-week-label">Wk 3</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="57" opacity="0.2"/></svg><div class="h4-ring-pct">3</div></div><div class="h4-week-label">Wk 4</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="43" opacity="0.2"/></svg><div class="h4-ring-pct">4</div></div><div class="h4-week-label">Wk 5</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="57" opacity="0.2"/></svg><div class="h4-ring-pct">3</div></div><div class="h4-week-label">Wk 6</div></div>
+      <div class="h4-week"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--earth)" stroke-dasharray="100" stroke-dashoffset="43" opacity="0.2"/></svg><div class="h4-ring-pct">4</div></div><div class="h4-week-label">Wk 7</div></div>
+      <div class="h4-week now"><div class="h4-ring"><svg viewBox="0 0 40 40"><circle class="h4-ring-track" cx="20" cy="20" r="16"/><circle class="h4-ring-fill" cx="20" cy="20" r="16" stroke="var(--trail)" stroke-dasharray="100" stroke-dashoffset="57"/></svg><div class="h4-ring-pct" style="color:var(--trail);">3</div></div><div class="h4-week-label">Now</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H5 -->
+<div>
+  <div class="col-label">H5 — 4-Week Grid</div>
+  <div class="col-desc">Only 4 weeks — not overwhelming. Larger cells. Week labels on left (Wk 1-4, This Wk). Day labels on top. Legend. Most approachable for beginners.</div>
+  <div class="block">
+    <div class="h5-head"><span class="h5-title">Activity</span><span class="h5-range">Last 4 weeks</span></div>
+    <div class="h5-card">
+      <div class="h5-days"><div class="h5-day-spacer"></div><div class="h5-day">M</div><div class="h5-day">T</div><div class="h5-day">W</div><div class="h5-day">T</div><div class="h5-day">F</div><div class="h5-day">S</div><div class="h5-day">S</div></div>
+      <div class="h5-row"><div class="h5-row-label">Wk 1</div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div></div>
+      <div class="h5-row"><div class="h5-row-label">Wk 2</div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div></div>
+      <div class="h5-row"><div class="h5-row-label">Wk 3</div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div></div>
+      <div class="h5-row now"><div class="h5-row-label">This wk</div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq done"></div></div><div class="h5-cell"><div class="h5-sq today"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div><div class="h5-cell"><div class="h5-sq empty"></div></div></div>
+      <div class="h5-legend"><div class="h5-leg"><div class="h5-leg-dot" style="background:var(--stone);"></div>Rest</div><div class="h5-leg"><div class="h5-leg-dot" style="background:var(--earth);"></div>Workout</div><div class="h5-leg"><div class="h5-leg-dot" style="background:var(--trail);"></div>Today</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- H6 -->
+<div>
+  <div class="col-label">H6 — Monthly Summary Cards</div>
+  <div class="col-desc">No grid at all. Just 3 month cards with big workout counts and mini progress bars. Current month is dark. Everyone understands "16 workouts in March."</div>
+  <div class="block">
+    <div class="h6-head"><span class="h6-title">Activity</span><span class="h6-range">Last 3 months</span></div>
+    <div class="h6-cards">
+      <div class="h6-card"><div class="h6-month">Jan</div><div class="h6-num">12</div><div class="h6-unit">workouts</div><div class="h6-mini-bar"><div class="h6-mini-fill"></div></div></div>
+      <div class="h6-card"><div class="h6-month">Feb</div><div class="h6-num">15</div><div class="h6-unit">workouts</div><div class="h6-mini-bar"><div class="h6-mini-fill"></div></div></div>
+      <div class="h6-card"><div class="h6-month">Mar</div><div class="h6-num">16</div><div class="h6-unit">workouts</div><div class="h6-mini-bar"><div class="h6-mini-fill"></div></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// H2 dot calendar
+const h2g = document.getElementById('h2g');
+for (let i = 0; i < 42; i++) {
+  const cell = document.createElement('div');
+  cell.className = 'h2-cell';
+  const dot = document.createElement('div');
+  dot.className = 'h2-dot ' + (i === 41 ? 'today' : Math.random() < 0.43 ? 'done' : 'empty');
+  cell.appendChild(dot);
+  h2g.appendChild(cell);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — T3 Ring Timer Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 24px 20px; height: 520px; display: flex; flex-direction: column; overflow: hidden; }
+
+
+  /* Shared */
+  .prog-text { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .track { height: 6px; border-radius: 3px; background: var(--stone); margin-top: 6px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 3px; background: var(--trail); width: 16.6%; }
+
+  .center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+
+  .tag { padding: 4px 14px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+
+  .skip-btn { padding: 14px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .skip-text { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .skip-warmup { padding: 10px; text-align: center; }
+  .skip-warmup-text { font-size: 11px; color: var(--rock); }
+
+
+  /* ============================================================
+     V1: ORIGINAL T3 — Reference
+     ============================================================ */
+  .v1-name { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+
+  .v1-ring { width: 160px; height: 160px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 14px; }
+  .v1-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 9px solid var(--stone); }
+  .v1-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 9px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v1-timer { font-size: 48px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; position: relative; z-index: 1; }
+  .v1-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; position: relative; z-index: 1; }
+
+  .v1-desc { font-size: 13px; color: var(--rock); text-align: center; margin-top: 14px; line-height: 1.5; padding: 0 12px; }
+  .v1-demo { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 8px; }
+
+
+  /* ============================================================
+     V2: DARK RING — Ring on dark background. Timer glows.
+     ============================================================ */
+  .v2-block { background: var(--earth); }
+
+  .v2-prog { font-size: 12px; color: rgba(246,245,240,0.25); font-weight: 500; }
+  .v2-track { height: 6px; border-radius: 3px; background: rgba(246,245,240,0.06); margin-top: 6px; overflow: hidden; }
+
+  .v2-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .v2-tag { background: rgba(52,211,153,0.08); color: var(--trail); }
+
+  .v2-ring { width: 160px; height: 160px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 14px; }
+  .v2-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 9px solid rgba(246,245,240,0.06); }
+  .v2-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 9px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v2-ring-glow { position: absolute; inset: -8px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.06) 40%, transparent 70%); }
+  .v2-timer { font-size: 48px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; position: relative; z-index: 1; }
+  .v2-label { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; position: relative; z-index: 1; }
+
+  .v2-desc { font-size: 13px; color: rgba(246,245,240,0.3); text-align: center; margin-top: 14px; line-height: 1.5; padding: 0 12px; }
+  .v2-demo { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 8px; opacity: 0.6; }
+
+  .v2-skip { padding: 14px; border-radius: 14px; background: rgba(246,245,240,0.06); text-align: center; }
+  .v2-skip-text { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .v2-skip-warmup-text { font-size: 11px; color: rgba(246,245,240,0.2); }
+
+
+  /* ============================================================
+     V3: LARGER RING — Bigger 200px ring with thicker stroke.
+     Timer is the hero. Name + description smaller.
+     ============================================================ */
+  .v3-name { font-size: 18px; font-weight: 600; color: var(--earth); }
+
+  .v3-ring { width: 200px; height: 200px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 12px; }
+  .v3-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 12px solid var(--stone); }
+  .v3-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 12px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v3-timer { font-size: 56px; font-weight: 900; color: var(--earth); letter-spacing: -3px; line-height: 1; position: relative; z-index: 1; }
+  .v3-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; position: relative; z-index: 1; }
+
+  .v3-desc { font-size: 12px; color: var(--rock); text-align: center; margin-top: 12px; line-height: 1.4; padding: 0 16px; }
+  .v3-demo { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 6px; }
+
+
+  /* ============================================================
+     V4: RING + SIDE INFO — Ring on left, exercise info on right.
+     Horizontal layout. More compact vertically.
+     ============================================================ */
+  .v4-hero { display: flex; gap: 18px; align-items: center; flex: 1; }
+
+  .v4-ring { width: 140px; height: 140px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .v4-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 8px solid var(--stone); }
+  .v4-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 8px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v4-timer { font-size: 40px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; position: relative; z-index: 1; }
+  .v4-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; position: relative; z-index: 1; }
+
+  .v4-info { flex: 1; }
+  .v4-name { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .v4-desc { font-size: 12px; color: var(--rock); margin-top: 6px; line-height: 1.4; }
+  .v4-footer { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .v4-demo { font-size: 10px; color: var(--trail); font-weight: 600; }
+
+
+  /* ============================================================
+     V5: RING IN DARK CARD — Ring sits inside a dark card.
+     Info below on sand. Separation of timer and content.
+     ============================================================ */
+  .v5-card { padding: 24px; border-radius: 22px; background: var(--earth); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+  .v5-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v5-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v5-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .v5-name { font-size: 20px; font-weight: 700; color: var(--sand); position: relative; }
+
+  .v5-ring { width: 140px; height: 140px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 12px; }
+  .v5-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 8px solid rgba(246,245,240,0.06); }
+  .v5-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 8px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v5-timer { font-size: 42px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; position: relative; z-index: 1; }
+  .v5-label { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; position: relative; z-index: 1; }
+
+  .v5-below { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 14px; }
+  .v5-desc { font-size: 13px; color: var(--rock); text-align: center; line-height: 1.5; padding: 0 12px; }
+  .v5-demo { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 8px; }
+
+
+  /* ============================================================
+     V6: MINIMAL RING — Small ring with just the number.
+     Name big above. Description below. Ring is accent, not hero.
+     ============================================================ */
+  .v6-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; text-align: center; }
+
+  .v6-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; margin-top: 14px; }
+  .v6-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid var(--stone); }
+  .v6-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .v6-timer { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; line-height: 1; position: relative; z-index: 1; }
+
+  .v6-desc { font-size: 14px; color: var(--rock); text-align: center; margin-top: 16px; line-height: 1.5; padding: 0 10px; }
+  .v6-footer { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .v6-demo { font-size: 11px; color: var(--trail); font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- V1 -->
+<div>
+  <div class="col-label">V1 — Original T3</div>
+  <div class="col-desc">Centered ring on sand. Name + tag above. Timer 48px inside. Description + demo below. Reference.</div>
+  <div class="block"><div class="prog-text">Exercise 1 of 6</div><div class="track"><div class="fill"></div></div>
+    <div class="center"><div class="v1-name">High Knees</div><div class="tag general" style="margin-top:6px;">General</div><div class="v1-ring"><div class="v1-ring-track"></div><div class="v1-ring-fill"></div><div style="text-align:center;position:relative;z-index:1;"><div class="v1-timer">59</div><div class="v1-label">seconds</div></div></div><div class="v1-desc">March in place, driving knees up to hip height. Pump your arms.</div><div class="v1-demo">▶ Watch Demo</div></div>
+    <div><div class="skip-btn"><span class="skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+<!-- V2 -->
+<div>
+  <div class="col-label">V2 — Dark Ring</div>
+  <div class="col-desc">Full dark background. Ring with green glow behind. Sand timer text. Maximum contrast for gym visibility.</div>
+  <div class="block v2-block"><div class="v2-prog">Exercise 1 of 6</div><div class="v2-track"><div class="fill"></div></div>
+    <div class="center"><div class="v2-name">High Knees</div><div class="tag v2-tag" style="margin-top:6px;">General</div><div class="v2-ring"><div class="v2-ring-glow"></div><div class="v2-ring-track"></div><div class="v2-ring-fill"></div><div style="text-align:center;position:relative;z-index:1;"><div class="v2-timer">59</div><div class="v2-label">seconds</div></div></div><div class="v2-desc">March in place, driving knees up to hip height. Pump your arms.</div><div class="v2-demo">▶ Watch Demo</div></div>
+    <div><div class="v2-skip"><span class="v2-skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="v2-skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+<!-- V3 -->
+<div>
+  <div class="col-label">V3 — Large Ring</div>
+  <div class="col-desc">Bigger 200px ring with thicker 12px stroke. Timer 56px. Ring dominates. Name and description smaller. Most visual impact.</div>
+  <div class="block"><div class="prog-text">Exercise 1 of 6</div><div class="track"><div class="fill"></div></div>
+    <div class="center"><div class="v3-name">High Knees</div><div class="tag general" style="margin-top:4px;">General</div><div class="v3-ring"><div class="v3-ring-track"></div><div class="v3-ring-fill"></div><div style="text-align:center;position:relative;z-index:1;"><div class="v3-timer">59</div><div class="v3-label">seconds</div></div></div><div class="v3-desc">March in place, driving knees up to hip height.</div><div class="v3-demo">▶ Demo</div></div>
+    <div><div class="skip-btn"><span class="skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+<!-- V4 -->
+<div>
+  <div class="col-label">V4 — Ring + Side Info</div>
+  <div class="col-desc">Ring on left, exercise info on right. Horizontal layout. Name, description, tag, demo all beside the ring. Compact.</div>
+  <div class="block"><div class="prog-text">Exercise 1 of 6</div><div class="track"><div class="fill"></div></div>
+    <div class="v4-hero"><div class="v4-ring"><div class="v4-ring-track"></div><div class="v4-ring-fill"></div><div style="text-align:center;position:relative;z-index:1;"><div class="v4-timer">59</div><div class="v4-label">seconds</div></div></div><div class="v4-info"><div class="v4-name">High Knees</div><div class="v4-desc">March in place, driving knees up to hip height. Pump your arms.</div><div class="v4-footer"><div class="tag general">General</div><span class="v4-demo">▶ Demo</span></div></div></div>
+    <div><div class="skip-btn"><span class="skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+<!-- V5 -->
+<div>
+  <div class="col-label">V5 — Ring in Dark Card</div>
+  <div class="col-desc">Ring + timer inside a dark earth card. Name inside card. Description + demo below on sand. Premium split.</div>
+  <div class="block"><div class="prog-text">Exercise 1 of 6</div><div class="track"><div class="fill"></div></div>
+    <div style="flex:1;display:flex;flex-direction:column;padding-top:12px;">
+      <div class="v5-card"><div class="v5-ha"></div><div class="v5-ha"></div><div class="v5-name">High Knees</div><div class="tag general" style="margin-top:6px;">General</div><div class="v5-ring"><div class="v5-ring-track"></div><div class="v5-ring-fill"></div><div style="text-align:center;position:relative;z-index:1;"><div class="v5-timer">59</div><div class="v5-label">seconds</div></div></div></div>
+      <div class="v5-below"><div class="v5-desc">March in place, driving knees up to hip height. Pump your arms.</div><div class="v5-demo">▶ Watch Demo</div></div>
+    </div>
+    <div><div class="skip-btn"><span class="skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+<!-- V6 -->
+<div>
+  <div class="col-label">V6 — Minimal Ring</div>
+  <div class="col-desc">Smaller 120px ring. Big 28px name is the hero. Ring is an accent, not dominant. Description larger. Most readable during exercise.</div>
+  <div class="block"><div class="prog-text">Exercise 1 of 6</div><div class="track"><div class="fill"></div></div>
+    <div class="center"><div class="v6-name">High Knees</div><div class="tag general" style="margin-top:6px;">General</div><div class="v6-ring"><div class="v6-ring-track"></div><div class="v6-ring-fill"></div><div class="v6-timer" style="position:relative;z-index:1;">59</div></div><div class="v6-desc">March in place, driving knees up to hip height. Pump your arms.</div><div class="v6-footer"><div class="tag general">General</div><span class="v6-demo">▶ Watch Demo</span></div></div>
+    <div><div class="skip-btn"><span class="skip-text">Skip Exercise</span></div><div class="skip-warmup"><span class="skip-warmup-text">Skip Warm-up</span></div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Bold Recipe Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; scroll-snap-type: y proximity; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     A: SCROLL STORY — Each section fills the viewport.
+     Flip through like pages of a premium cookbook.
+     Minimal: one idea per "page." Dots on right edge.
+     ============================================================ */
+
+  .a-page {
+    min-height: 100%; padding: 0 24px;
+    display: flex; flex-direction: column; justify-content: center;
+    scroll-snap-align: start;
+    position: relative;
+  }
+
+  /* Page 1: Name + times */
+  .a-p1 { padding-top: 54px; justify-content: flex-start; padding-bottom: 40px; }
+  .a-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .a-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-top: 24px; }
+  .a-name { font-size: 36px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; margin-top: 8px; }
+
+  .a-times { display: flex; gap: 24px; margin-top: 28px; }
+  .a-time-val { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .a-time-unit { font-size: 12px; color: var(--rock); margin-top: 2px; }
+
+  .a-video-row {
+    margin-top: 28px; display: flex; align-items: center; gap: 12px;
+    cursor: pointer;
+  }
+  .a-video-circle { width: 44px; height: 44px; border-radius: 50%; background: var(--earth); display: flex; align-items: center; justify-content: center; }
+  .a-video-circle svg { width: 14px; height: 14px; fill: var(--sand); }
+  .a-video-text { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .a-video-sub { font-size: 10px; color: var(--rock); }
+
+  .a-scroll-hint { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .a-scroll-arrow { width: 20px; height: 20px; border-right: 2px solid var(--rock); border-bottom: 2px solid var(--rock); transform: rotate(45deg); opacity: 0.3; animation: aScrollBounce 2s ease-in-out infinite; }
+  @keyframes aScrollBounce { 0%,100% { transform: rotate(45deg) translateY(0); } 50% { transform: rotate(45deg) translateY(4px); } }
+  .a-scroll-text { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Page 2: Ingredients — dark card fills page */
+  .a-p2 { padding: 40px 0; }
+  .a-ing-card {
+    margin: 0 24px; padding: 28px 24px; border-radius: 28px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  .a-ing-ring { position: absolute; bottom: -40px; right: -40px; width: 120px; height: 120px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); }
+  .a-ing-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 18px; position: relative; }
+  .a-ing-title { font-size: 11px; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .a-ing-count { font-size: 11px; color: rgba(246,245,240,0.25); }
+
+  .a-ing-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 11px 0; border-bottom: 1px solid rgba(246,245,240,0.04);
+    position: relative; cursor: pointer; transition: opacity 0.2s;
+  }
+  .a-ing-item:last-child { border-bottom: none; }
+  .a-ing-item.checked { opacity: 0.3; }
+  .a-ing-item.checked .a-ing-name { text-decoration: line-through; }
+
+  .a-ing-left { display: flex; align-items: center; gap: 10px; }
+  .a-ing-check { width: 20px; height: 20px; border-radius: 6px; border: 1.5px solid rgba(246,245,240,0.12); display: flex; align-items: center; justify-content: center; transition: all 0.2s; flex-shrink: 0; }
+  .a-ing-item.checked .a-ing-check { background: var(--trail); border-color: var(--trail); }
+  .a-ing-check-mark { font-size: 10px; color: var(--earth); opacity: 0; }
+  .a-ing-item.checked .a-ing-check-mark { opacity: 1; }
+  .a-ing-name { font-size: 15px; color: var(--sand); font-weight: 500; transition: opacity 0.2s; }
+  .a-ing-amount { font-size: 13px; color: rgba(246,245,240,0.35); flex-shrink: 0; }
+
+  /* Page 3+: Steps — one per page, huge number watermark */
+  .a-step-page { padding: 40px 24px; min-height: 70%; display: flex; flex-direction: column; justify-content: center; scroll-snap-align: start; position: relative; }
+
+  .a-step-watermark { font-size: 140px; font-weight: 900; color: rgba(45,42,36,0.03); letter-spacing: -8px; line-height: 1; position: absolute; top: 10%; right: 10px; pointer-events: none; }
+
+  .a-step-counter { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .a-step-text { font-size: 22px; font-weight: 600; color: var(--earth); line-height: 1.5; margin-top: 12px; letter-spacing: -0.3px; max-width: 300px; }
+
+  .a-step-progress { display: flex; gap: 4px; margin-top: 24px; }
+  .a-step-pip { height: 4px; border-radius: 2px; flex: 1; }
+  .a-step-pip.done { background: var(--trail); }
+  .a-step-pip.current { background: var(--earth); }
+  .a-step-pip.pending { background: var(--stone); }
+
+  /* Final page: done */
+  .a-done { padding: 40px 24px; min-height: 60%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; scroll-snap-align: start; }
+  .a-done-check { width: 64px; height: 64px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; }
+  .a-done-title { font-size: 24px; font-weight: 700; color: var(--earth); margin-top: 16px; }
+  .a-done-sub { font-size: 13px; color: var(--rock); margin-top: 6px; }
+
+
+  /* ============================================================
+     B: SWIPE COMPANION — Horizontal swipe between ingredients
+     and each step. Sticky top bar. Bottom progress.
+     Like the nutrition H1 pattern but for cooking.
+     ============================================================ */
+
+  .b-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 12px; }
+  .b-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .b-top-info { flex: 1; }
+  .b-top-name { font-size: 16px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .b-top-meta { font-size: 10px; color: var(--rock); margin-top: 1px; }
+  .b-video-pill { padding: 8px 14px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 5px; cursor: pointer; }
+  .b-video-pill svg { width: 10px; height: 10px; fill: var(--sand); }
+  .b-video-pill span { font-size: 10px; font-weight: 600; color: var(--sand); }
+
+  /* Tab selector */
+  .b-tabs { display: flex; gap: 0; margin: 16px 24px 0; background: var(--stone); border-radius: 14px; padding: 3px; }
+  .b-tab { flex: 1; padding: 10px; border-radius: 11px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .b-tab.active { background: var(--earth); color: var(--sand); }
+  .b-tab.inactive { background: transparent; color: var(--rock); }
+
+  /* Horizontal scroll area */
+  .b-scroll { display: flex; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; margin-top: 14px; }
+  .b-scroll::-webkit-scrollbar { display: none; }
+
+  .b-panel { min-width: 100%; flex-shrink: 0; scroll-snap-align: start; padding: 0 24px; }
+
+  /* Ingredients panel */
+  .b-ing-item {
+    display: flex; align-items: center; gap: 12px; padding: 14px 0;
+    border-bottom: 1px solid var(--stone); cursor: pointer;
+  }
+  .b-ing-item:last-child { border-bottom: none; }
+  .b-ing-check { width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid var(--stone); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.25s; }
+  .b-ing-item.checked .b-ing-check { background: var(--trail); border-color: var(--trail); }
+  .b-ing-item.checked .b-ing-name { text-decoration: line-through; opacity: 0.4; }
+  .b-ing-name { font-size: 15px; font-weight: 500; color: var(--earth); flex: 1; transition: opacity 0.2s; }
+  .b-ing-amount { font-size: 13px; color: var(--rock); }
+
+  /* Step panels */
+  .b-step-panel { display: flex; flex-direction: column; min-height: 440px; }
+  .b-step-num-big { font-size: 80px; font-weight: 900; color: rgba(45,42,36,0.04); letter-spacing: -4px; line-height: 1; }
+  .b-step-text { font-size: 20px; font-weight: 600; color: var(--earth); line-height: 1.55; margin-top: 8px; letter-spacing: -0.2px; }
+  .b-step-spacer { flex: 1; }
+
+  /* Navigation */
+  .b-nav { display: flex; gap: 10px; margin: 0 24px; }
+  .b-nav-btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .b-nav-btn:active { transform: scale(0.96); }
+  .b-nav-btn.prev { background: var(--stone); color: var(--earth); }
+  .b-nav-btn.next { background: var(--earth); color: var(--sand); }
+
+  /* Progress bar at bottom */
+  .b-progress { margin: 14px 24px 40px; display: flex; gap: 4px; }
+  .b-pip { height: 4px; border-radius: 2px; flex: 1; transition: background 0.3s; }
+  .b-pip.done { background: var(--trail); }
+  .b-pip.current { background: var(--earth); }
+  .b-pip.pending { background: var(--stone); }
+
+
+  /* ============================================================
+     C: THE TRAIL GUIDE — Recipe as an expedition.
+     Gear checklist (ingredients). Trail waypoints (steps).
+     Summit at the end. Full terrain metaphor.
+     ============================================================ */
+
+  .c-header { padding: 54px 24px 0; }
+  .c-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+  .c-hero { padding: 12px 24px 0; }
+  .c-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .c-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; margin-top: 6px; }
+
+  /* Compact meta row */
+  .c-meta { display: flex; gap: 16px; padding: 14px 24px 0; align-items: center; }
+  .c-meta-item { display: flex; align-items: baseline; gap: 3px; }
+  .c-meta-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .c-meta-unit { font-size: 10px; color: var(--rock); }
+  .c-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .c-video-link { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  /* Gear Checklist (ingredients) — collapsible */
+  .c-gear { margin: 16px 24px 0; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+  .c-gear-head { padding: 16px 18px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .c-gear-title { font-size: 13px; font-weight: 700; color: var(--earth); display: flex; align-items: center; gap: 8px; }
+  .c-gear-badge { font-size: 9px; font-weight: 600; color: var(--sand); background: var(--earth); padding: 2px 8px; border-radius: 100px; }
+  .c-gear-chev { font-size: 12px; color: var(--rock); transition: transform 0.3s; }
+
+  .c-gear-list { padding: 0 18px 14px; }
+  .c-gear-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid var(--stone); cursor: pointer;
+  }
+  .c-gear-item:last-child { border-bottom: none; }
+  .c-gear-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .c-gear-item.checked .c-gear-check { background: var(--trail); border-color: var(--trail); }
+  .c-gear-item.checked .c-gear-name { text-decoration: line-through; opacity: 0.35; }
+  .c-gear-name { font-size: 14px; color: var(--earth); flex: 1; transition: opacity 0.2s; }
+  .c-gear-amount { font-size: 12px; color: var(--rock); }
+
+  /* Trail waypoints (steps) */
+  .c-trail { padding: 20px 24px 0; position: relative; }
+  .c-trail-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 14px; }
+  .c-trail-line { position: absolute; left: 35px; top: 50px; bottom: 80px; width: 2px; background: var(--stone); }
+  .c-trail-pulse { position: absolute; left: 34px; top: 50px; width: 4px; height: 20px; border-radius: 2px; background: var(--trail); opacity: 0.5; animation: cPulse 3.5s ease-in-out infinite; }
+  @keyframes cPulse { 0% { top: 50px; opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.6; } 100% { top: calc(100% - 100px); opacity: 0; } }
+
+  .c-wp { display: flex; gap: 14px; margin-bottom: 18px; position: relative; }
+  .c-wp-marker { width: 24px; height: 24px; border-radius: 50%; background: var(--sand); border: 2px solid var(--stone); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--rock); z-index: 1; flex-shrink: 0; margin-top: 2px; }
+  .c-wp.active .c-wp-marker { border-color: var(--trail); color: var(--trail); background: rgba(52,211,153,0.06); }
+  .c-wp.done .c-wp-marker { background: var(--earth); border-color: var(--earth); color: var(--sand); }
+
+  .c-wp-card { flex: 1; padding: 14px 16px; border-radius: 16px; background: #fff; border: 1px solid rgba(0,0,0,0.04); transition: box-shadow 0.3s; }
+  .c-wp.active .c-wp-card { box-shadow: 0 4px 16px rgba(45,42,36,0.06); border-color: rgba(52,211,153,0.1); }
+  .c-wp-text { font-size: 14px; color: var(--earth); line-height: 1.5; }
+  .c-wp.done .c-wp-text { opacity: 0.4; text-decoration: line-through; }
+
+  /* Summit marker */
+  .c-summit { display: flex; align-items: center; gap: 14px; padding-left: 0; margin-top: 4px; }
+  .c-summit-flag { font-size: 18px; width: 24px; text-align: center; }
+  .c-summit-text { font-size: 12px; color: var(--trail); font-weight: 600; font-style: italic; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== A: SCROLL STORY ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">A — Scroll Story</div>
+  <div class="dsc">Each section fills the screen. Scroll down like flipping cookbook pages. Giant watermark step numbers. Checkable ingredients in dark card. Progress pips per step. Scroll down to try.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+
+    <!-- Page 1: Name + times -->
+    <div class="a-page a-p1">
+      <div class="a-back">←</div>
+      <div class="a-label">Breakfast · 22 min total</div>
+      <div class="a-name">Veggie<br>Stir Fry<br>with Tofu</div>
+      <div class="a-times">
+        <div><div class="a-time-val">10</div><div class="a-time-unit">min prep</div></div>
+        <div><div class="a-time-val">12</div><div class="a-time-unit">min cook</div></div>
+      </div>
+      <div class="a-video-row">
+        <div class="a-video-circle"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div>
+        <div><div class="a-video-text">Watch Video</div><div class="a-video-sub">YouTube · 4 min</div></div>
+      </div>
+      <div class="a-scroll-hint"><div class="a-scroll-arrow"></div><div class="a-scroll-text">Scroll for recipe</div></div>
+    </div>
+
+    <!-- Page 2: Ingredients -->
+    <div class="a-page a-p2">
+      <div class="a-ing-card">
+        <div class="a-ing-ring"></div>
+        <div class="a-ing-head"><span class="a-ing-title">Ingredients</span><span class="a-ing-count">8 items</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Firm tofu</span></div><span class="a-ing-amount">½ block</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Broccoli</span></div><span class="a-ing-amount">1 cup</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Bell pepper</span></div><span class="a-ing-amount">1 sliced</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Snap peas</span></div><span class="a-ing-amount">½ cup</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Teriyaki sauce</span></div><span class="a-ing-amount">2 tbsp</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">White rice</span></div><span class="a-ing-amount">1 cup</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Sesame oil</span></div><span class="a-ing-amount">1 tbsp</span></div>
+        <div class="a-ing-item" onclick="this.classList.toggle('checked')"><div class="a-ing-left"><div class="a-ing-check"><span class="a-ing-check-mark">✓</span></div><span class="a-ing-name">Garlic</span></div><span class="a-ing-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="a-step-page">
+      <div class="a-step-watermark">01</div>
+      <div class="a-step-counter">Step 1 of 4</div>
+      <div class="a-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+      <div class="a-step-progress"><div class="a-step-pip current"></div><div class="a-step-pip pending"></div><div class="a-step-pip pending"></div><div class="a-step-pip pending"></div></div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="a-step-page">
+      <div class="a-step-watermark">02</div>
+      <div class="a-step-counter">Step 2 of 4</div>
+      <div class="a-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div>
+      <div class="a-step-progress"><div class="a-step-pip done"></div><div class="a-step-pip current"></div><div class="a-step-pip pending"></div><div class="a-step-pip pending"></div></div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="a-step-page">
+      <div class="a-step-watermark">03</div>
+      <div class="a-step-counter">Step 3 of 4</div>
+      <div class="a-step-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.</div>
+      <div class="a-step-progress"><div class="a-step-pip done"></div><div class="a-step-pip done"></div><div class="a-step-pip current"></div><div class="a-step-pip pending"></div></div>
+    </div>
+
+    <!-- Step 4 -->
+    <div class="a-step-page">
+      <div class="a-step-watermark">04</div>
+      <div class="a-step-counter">Step 4 of 4</div>
+      <div class="a-step-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div>
+      <div class="a-step-progress"><div class="a-step-pip done"></div><div class="a-step-pip done"></div><div class="a-step-pip done"></div><div class="a-step-pip current"></div></div>
+    </div>
+
+    <!-- Done -->
+    <div class="a-done">
+      <div class="a-done-check">✓</div>
+      <div class="a-done-title">Dish Complete</div>
+      <div class="a-done-sub">Enjoy your Veggie Stir Fry!</div>
+    </div>
+
+  </div></div></div>
+</div>
+
+<!-- ===== B: SWIPE COMPANION ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">B — Swipe Companion</div>
+  <div class="dsc">Compact top bar with name. Tab selector (Ingredients / Steps). Swipe horizontally between ingredients list and step cards. Big step number watermark. Prev/Next nav. Progress bar. Click tabs to try.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="b-top">
+      <div class="b-back">←</div>
+      <div class="b-top-info"><div class="b-top-name">Veggie Stir Fry with Tofu</div><div class="b-top-meta">10 min prep · 12 min cook</div></div>
+      <div class="b-video-pill"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div>
+    </div>
+
+    <div class="b-tabs">
+      <div class="b-tab active" id="bTabIng" onclick="bShowTab('ing')">Ingredients</div>
+      <div class="b-tab inactive" id="bTabStep" onclick="bShowTab('step')">Steps</div>
+    </div>
+
+    <div class="b-scroll" id="bScroll">
+      <!-- Ingredients panel -->
+      <div class="b-panel" id="bPanelIng">
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"><span style="font-size:10px;color:var(--earth);opacity:0;">✓</span></div><span class="b-ing-name">Firm tofu</span><span class="b-ing-amount">½ block cubed</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Broccoli</span><span class="b-ing-amount">1 cup florets</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Bell pepper</span><span class="b-ing-amount">1 sliced</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Snap peas</span><span class="b-ing-amount">½ cup</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Teriyaki sauce</span><span class="b-ing-amount">2 tbsp</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">White rice</span><span class="b-ing-amount">1 cup cooked</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Sesame oil</span><span class="b-ing-amount">1 tbsp</span></div>
+        <div class="b-ing-item" onclick="this.classList.toggle('checked')"><div class="b-ing-check"></div><span class="b-ing-name">Garlic</span><span class="b-ing-amount">2 cloves</span></div>
+      </div>
+
+      <!-- Step panel -->
+      <div class="b-panel" id="bPanelStep">
+        <div class="b-step-panel">
+          <div class="b-step-num-big" id="bStepNum">01</div>
+          <div class="b-step-text" id="bStepText">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+          <div class="b-step-spacer"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="b-nav" id="bNav" style="display:none;">
+      <div class="b-nav-btn prev" onclick="bStep(-1)">Previous</div>
+      <div class="b-nav-btn next" onclick="bStep(1)">Next</div>
+    </div>
+
+    <div class="b-progress">
+      <div class="b-pip current" id="bp0"></div>
+      <div class="b-pip pending" id="bp1"></div>
+      <div class="b-pip pending" id="bp2"></div>
+      <div class="b-pip pending" id="bp3"></div>
+    </div>
+
+  </div></div></div>
+</div>
+
+<!-- ===== C: TRAIL GUIDE ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">C — Trail Guide</div>
+  <div class="dsc">Recipe as an expedition. Ingredients = gear checklist (tap to check off). Steps = trail waypoints with connected line and green pulse. Summit marker at the end. Click ingredients to check off.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="c-header"><div class="c-back">←</div></div>
+
+    <div class="c-hero">
+      <div class="c-label">Breakfast Recipe</div>
+      <div class="c-name">Veggie Stir Fry<br>with Tofu</div>
+    </div>
+
+    <div class="c-meta">
+      <div class="c-meta-item"><span class="c-meta-val">10</span><span class="c-meta-unit">min prep</span></div>
+      <div class="c-meta-dot"></div>
+      <div class="c-meta-item"><span class="c-meta-val">12</span><span class="c-meta-unit">min cook</span></div>
+      <div class="c-meta-dot"></div>
+      <div class="c-meta-item"><span class="c-meta-val">Easy</span></div>
+      <span class="c-video-link">▶ Video</span>
+    </div>
+
+    <!-- Gear checklist -->
+    <div class="c-gear">
+      <div class="c-gear-head">
+        <div class="c-gear-title">Gear Checklist <span class="c-gear-badge">8</span></div>
+        <span class="c-gear-chev">▾</span>
+      </div>
+      <div class="c-gear-list">
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Firm tofu</span><span class="c-gear-amount">½ block</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Broccoli</span><span class="c-gear-amount">1 cup</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Bell pepper</span><span class="c-gear-amount">1 sliced</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Snap peas</span><span class="c-gear-amount">½ cup</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Teriyaki sauce</span><span class="c-gear-amount">2 tbsp</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">White rice</span><span class="c-gear-amount">1 cup</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Sesame oil</span><span class="c-gear-amount">1 tbsp</span></div>
+        <div class="c-gear-item" onclick="this.classList.toggle('checked')"><div class="c-gear-check"></div><span class="c-gear-name">Garlic</span><span class="c-gear-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <!-- Trail waypoints -->
+    <div class="c-trail">
+      <div class="c-trail-title">Route</div>
+      <div class="c-trail-line"></div>
+      <div class="c-trail-pulse"></div>
+
+      <div class="c-wp done"><div class="c-wp-marker">✓</div><div class="c-wp-card"><div class="c-wp-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div></div>
+      <div class="c-wp active"><div class="c-wp-marker">2</div><div class="c-wp-card"><div class="c-wp-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div></div>
+      <div class="c-wp"><div class="c-wp-marker">3</div><div class="c-wp-card"><div class="c-wp-text">Return tofu to pan. Pour teriyaki sauce over everything. Toss to coat evenly.</div></div></div>
+      <div class="c-wp"><div class="c-wp-marker">4</div><div class="c-wp-card"><div class="c-wp-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div></div></div>
+
+      <div class="c-summit"><div class="c-summit-flag">🏁</div><div class="c-summit-text">Summit — Enjoy your meal!</div></div>
+    </div>
+
+    <div style="height:120px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+// B: Tab + Step navigation
+const bSteps = [
+  'Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.',
+  'Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.',
+  'Return tofu to pan. Pour teriyaki sauce over everything. Toss to coat evenly.',
+  'Serve over fluffy white rice. Garnish with sesame seeds if desired.',
+];
+let bIdx = 0;
+let bMode = 'ing';
+
+function bShowTab(mode) {
+  bMode = mode;
+  document.getElementById('bTabIng').className = mode === 'ing' ? 'b-tab active' : 'b-tab inactive';
+  document.getElementById('bTabStep').className = mode === 'step' ? 'b-tab active' : 'b-tab inactive';
+  document.getElementById('bScroll').scrollTo({ left: mode === 'ing' ? 0 : 393, behavior: 'smooth' });
+  document.getElementById('bNav').style.display = mode === 'step' ? 'flex' : 'none';
+}
+
+function bStep(dir) {
+  bIdx = Math.max(0, Math.min(bSteps.length - 1, bIdx + dir));
+  document.getElementById('bStepNum').textContent = String(bIdx + 1).padStart(2, '0');
+  document.getElementById('bStepText').textContent = bSteps[bIdx];
+  for (let i = 0; i < 4; i++) {
+    const p = document.getElementById('bp' + i);
+    p.className = 'b-pip ' + (i < bIdx ? 'done' : i === bIdx ? 'current' : 'pending');
+  }
+}
+</script>
+
+</body>
+</html>

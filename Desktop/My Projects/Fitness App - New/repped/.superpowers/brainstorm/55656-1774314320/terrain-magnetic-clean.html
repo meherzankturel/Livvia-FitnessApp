@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Clean Fusion</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --hb: 2.4s; --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .page-head { text-align: center; padding: 28px 24px 8px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #555; margin-top: 4px; }
+
+  .showcase { display: flex; gap: 40px; justify-content: center; padding: 16px 24px 60px; flex-wrap: wrap; align-items: flex-start; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  /* ===== TOPO BACKGROUND ===== */
+  .topo-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .topo-line { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.02; }
+  .topo-line:nth-child(1) { width: 550px; height: 440px; top: -100px; left: -100px; }
+  .topo-line:nth-child(2) { width: 420px; height: 340px; top: -50px; left: -50px; }
+  .topo-line:nth-child(3) { width: 500px; height: 400px; bottom: -80px; right: -100px; }
+  .topo-line:nth-child(4) { width: 380px; height: 300px; bottom: -40px; right: -60px; }
+
+  .content { position: relative; z-index: 1; }
+
+  /* ===== STATUS ===== */
+  .status-bar { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .status-right { display: flex; align-items: center; gap: 6px; }
+  .alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: pulse var(--hb) ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.35); } }
+  .status-label { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  /* ===== HERO — compact, personal ===== */
+  .hero { padding: 20px 24px 0; }
+  .hero-ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .hero-msg { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.15; margin-top: 6px; }
+  .hl { color: var(--trail); }
+
+  /* ===== BENTO — 3 compact widgets ===== */
+  .bento { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px 24px 0; }
+  .w { border-radius: 20px; padding: 16px; position: relative; overflow: hidden; opacity: 0; animation: wIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .w:nth-child(1) { animation-delay: 0.05s; }
+  .w:nth-child(2) { animation-delay: 0.1s; }
+  .w:nth-child(3) { animation-delay: 0.15s; }
+  @keyframes wIn { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+
+  .w-streak { background: var(--earth); }
+  .w-streak .num { font-size: 32px; font-weight: 800; color: var(--sand); letter-spacing: -1.5px; line-height: 1; position: relative; }
+  .w-streak .glow { position: absolute; inset: -15px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.1), transparent 70%); animation: sGlow var(--hb) ease-in-out infinite; }
+  @keyframes sGlow { 0%,100% { opacity: 0.3; transform: scale(0.9); } 30% { opacity: 0.8; transform: scale(1.05); } }
+  .w-streak .unit { font-size: 10px; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 4px; }
+
+  .w-momentum { background: var(--stone); }
+  .w-momentum .num { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .w-momentum .unit { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 4px; }
+
+  .w-volume { background: var(--stone); }
+  .w-volume .num { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .w-volume .trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .w-volume .unit { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 2px; }
+
+  /* ===== ELEVATION = WEEKLY VOLUME ===== */
+  .elev-section { margin: 20px 24px 0; }
+  .elev-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .elev-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .elev-subtitle { font-size: 11px; color: var(--rock); }
+
+  .elev-chart { background: var(--stone); border-radius: 20px; padding: 16px 16px 12px; position: relative; overflow: hidden; }
+
+  /* Volume bars as mountain peaks */
+  .elev-bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; padding: 0 4px; }
+  .elev-bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .elev-bar { width: 100%; border-radius: 8px 8px 4px 4px; position: relative; overflow: hidden; animation: barGrow 0.7s cubic-bezier(0.16,1,0.3,1) forwards; transform-origin: bottom; }
+  @keyframes barGrow { from { transform: scaleY(0); } }
+  .elev-bar.done { background: var(--earth); }
+  .elev-bar.today { background: var(--trail); }
+  .elev-bar.rest { background: #D6D3CA; }
+  .elev-bar.future { background: rgba(45,42,36,0.08); }
+  .elev-bar:nth-child(1) { animation-delay: 0.3s; }
+
+  /* Hiker dot on today's bar */
+  .elev-bar.today::after { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.5); animation: hikerPing 1.8s ease-in-out infinite; }
+  @keyframes hikerPing { 0%,100% { box-shadow: 0 0 6px rgba(52,211,153,0.5); } 50% { box-shadow: 0 0 14px rgba(52,211,153,0.3); } }
+
+  .elev-bar-label { font-size: 8px; color: var(--rock); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .elev-bar-vol { font-size: 7px; color: var(--rock); margin-top: 2px; opacity: 0.6; }
+
+  /* Connecting ridge line on top of bars */
+  .ridge-line { position: absolute; top: 16px; left: 16px; right: 16px; height: 90px; pointer-events: none; }
+  .ridge-line svg { width: 100%; height: 100%; }
+  .ridge-path { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; opacity: 0.1; }
+
+  /* ===== TRAIL WORKOUT ===== */
+  .trail-section { padding: 20px 24px 0; position: relative; }
+  .trail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .trail-count { font-size: 11px; color: var(--rock); }
+
+  /* Trail line */
+  .trail-line-area { position: absolute; left: 39px; top: 52px; bottom: 16px; width: 2px; z-index: 0; }
+  .trail-line { width: 100%; height: 100%; background: #DDD9CE; border-radius: 1px; }
+  .trail-pulse { position: absolute; left: -1px; top: 0; width: 4px; height: 20px; border-radius: 2px; background: var(--trail); opacity: 0.5; animation: pDown 4s ease-in-out infinite; }
+  @keyframes pDown { 0% { top: 0; opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.6; } 100% { top: calc(100% - 20px); opacity: 0; } }
+
+  /* Waypoints */
+  .wp { display: flex; gap: 14px; margin-bottom: 12px; position: relative; z-index: 1; opacity: 0; animation: wpIn 0.45s ease-out forwards; }
+  .wp:nth-child(2) { animation-delay: 0.08s; }
+  .wp:nth-child(3) { animation-delay: 0.16s; }
+  .wp:nth-child(4) { animation-delay: 0.24s; }
+  .wp:nth-child(5) { animation-delay: 0.32s; }
+  .wp:nth-child(6) { animation-delay: 0.4s; }
+  @keyframes wpIn { to { opacity: 1; } }
+
+  .wp-dot-area { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px; padding-top: 14px; }
+  .wp-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #DDD9CE; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--rock); z-index: 2; }
+  .wp:first-child .wp-dot { border-color: var(--trail); color: var(--trail); background: rgba(52,211,153,0.06); }
+
+  .wp-card { flex: 1; padding: 14px 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); position: relative; }
+  .wp-card .name { font-size: 14px; font-weight: 600; color: var(--earth); padding-right: 56px; }
+  .wp-card .meta { font-size: 11px; color: var(--rock); margin-top: 3px; }
+  .wp-pips { display: flex; gap: 4px; margin-top: 8px; }
+  .pip { height: 4px; border-radius: 2px; background: var(--stone); }
+  .pip.w1 { width: 26px; } .pip.w2 { width: 20px; }
+
+  .wp-weight { position: absolute; top: 14px; right: 16px; text-align: right; }
+  .wp-weight .val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .wp-weight .u { font-size: 9px; color: var(--rock); }
+
+  /* End marker */
+  .finish { display: flex; align-items: center; gap: 12px; padding-left: 6px; margin-top: 4px; z-index: 1; position: relative; opacity: 0; animation: wpIn 0.4s ease-out 0.48s forwards; }
+  .finish-flag { font-size: 14px; }
+  .finish-text { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* ===== CTA ===== */
+  .cta-area { margin: 24px 24px 40px; position: relative; }
+  .cta-glow { position: absolute; inset: -5px; border-radius: 26px; background: conic-gradient(from 0deg, var(--trail), rgba(99,102,241,0.3), var(--trail)); filter: blur(14px); opacity: 0; animation: ctaG var(--hb) ease-in-out infinite; }
+  @keyframes ctaG { 0%,100% { opacity: 0.04; } 30% { opacity: 0.1; } }
+  .cta-btn { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--earth); color: var(--sand); font-size: 16px; font-weight: 700; cursor: pointer; position: relative; z-index: 1; letter-spacing: 0.2px; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+  .cta-btn:active { transform: scale(0.97); }
+
+  /* ===== NOTES ===== */
+  .notes { max-width: 380px; padding: 16px; }
+  .n-section { margin-bottom: 20px; }
+  .n-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .n-title.green { color: var(--trail); }
+  .n-title.amber { color: #F59E0B; }
+  .n-title.sand { color: #D6D3CA; }
+  .n-item { display: flex; gap: 9px; margin-bottom: 10px; }
+  .n-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .n-text { font-size: 11px; color: #777; line-height: 1.55; }
+  .n-text strong { color: #bbb; }
+
+  .vs { display: flex; gap: 8px; margin-top: 8px; }
+  .vs-card { flex: 1; padding: 10px; border-radius: 8px; font-size: 10px; text-align: center; line-height: 1.4; }
+  .vs-before { background: rgba(255,255,255,0.03); color: #555; border: 1px solid rgba(255,255,255,0.04); }
+  .vs-after { background: rgba(52,211,153,0.06); color: var(--trail); border: 1px solid rgba(52,211,153,0.1); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Terrain × Magnetic — Cleaned Up</h1>
+  <p>Fewer sections. More breathing room. The graph now means something real.</p>
+</div>
+
+<div class="showcase">
+
+  <div class="phone">
+    <div class="topo-bg">
+      <div class="topo-line"></div><div class="topo-line"></div>
+      <div class="topo-line"></div><div class="topo-line"></div>
+    </div>
+    <div class="phone-scroll">
+      <div class="content">
+
+        <!-- STATUS -->
+        <div class="status-bar">
+          <div class="time">9:41</div>
+          <div class="status-right">
+            <div class="alive-dot"></div>
+            <div class="status-label">Fresh</div>
+          </div>
+        </div>
+
+        <!-- HERO — compact -->
+        <div class="hero">
+          <div class="hero-ctx">Wednesday · Push Day · Week 3</div>
+          <div class="hero-msg">You're <span class="hl">1 session away</span> from your longest streak.</div>
+        </div>
+
+        <!-- BENTO — 3 equal compact widgets -->
+        <div class="bento">
+          <div class="w w-streak">
+            <div style="position:relative;"><div class="glow"></div><div class="num">12</div></div>
+            <div class="unit">Day streak</div>
+          </div>
+          <div class="w w-momentum">
+            <div class="num">3/4</div>
+            <div class="unit">This week</div>
+          </div>
+          <div class="w w-volume">
+            <div class="num">12.4k</div>
+            <div class="trend">&#9650; 12%</div>
+            <div class="unit">Volume kg</div>
+          </div>
+        </div>
+
+        <!-- ELEVATION = WEEKLY VOLUME CHART -->
+        <div class="elev-section">
+          <div class="elev-header">
+            <span class="elev-title">Weekly Volume</span>
+            <span class="elev-subtitle">kg lifted per day</span>
+          </div>
+          <div class="elev-chart">
+            <div class="elev-bars">
+              <div class="elev-bar-col">
+                <div class="elev-bar done" style="height:65%;animation-delay:0.3s;"></div>
+                <div class="elev-bar-label">Mon</div>
+                <div class="elev-bar-vol">3.2k</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar done" style="height:80%;animation-delay:0.36s;"></div>
+                <div class="elev-bar-label">Tue</div>
+                <div class="elev-bar-vol">4.1k</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar rest" style="height:15%;animation-delay:0.42s;"></div>
+                <div class="elev-bar-label">Wed</div>
+                <div class="elev-bar-vol">rest</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar done" style="height:90%;animation-delay:0.48s;"></div>
+                <div class="elev-bar-label">Thu</div>
+                <div class="elev-bar-vol">5.1k</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar today" style="height:55%;animation-delay:0.54s;"></div>
+                <div class="elev-bar-label">Fri</div>
+                <div class="elev-bar-vol">today</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar future" style="height:70%;animation-delay:0.6s;"></div>
+                <div class="elev-bar-label">Sat</div>
+                <div class="elev-bar-vol">plan</div>
+              </div>
+              <div class="elev-bar-col">
+                <div class="elev-bar future" style="height:10%;animation-delay:0.66s;"></div>
+                <div class="elev-bar-label">Sun</div>
+                <div class="elev-bar-vol">rest</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRAIL WORKOUT -->
+        <div class="trail-section">
+          <div class="trail-header">
+            <span class="trail-title">Today's Route</span>
+            <span class="trail-count">5 waypoints</span>
+          </div>
+          <div class="trail-line-area">
+            <div class="trail-line"></div>
+            <div class="trail-pulse"></div>
+          </div>
+
+          <div class="wp">
+            <div class="wp-dot-area"><div class="wp-dot">1</div></div>
+            <div class="wp-card">
+              <div class="name">Bench Press</div>
+              <div class="meta">Chest · Compound · 4 sets</div>
+              <div class="wp-pips"><div class="pip w1"></div><div class="pip w1"></div><div class="pip w1"></div><div class="pip w1"></div></div>
+              <div class="wp-weight"><div class="val">77.5</div><div class="u">kg</div></div>
+            </div>
+          </div>
+
+          <div class="wp">
+            <div class="wp-dot-area"><div class="wp-dot">2</div></div>
+            <div class="wp-card">
+              <div class="name">Overhead Press</div>
+              <div class="meta">Shoulders · Compound · 3 sets</div>
+              <div class="wp-pips"><div class="pip w1"></div><div class="pip w1"></div><div class="pip w1"></div></div>
+              <div class="wp-weight"><div class="val">40</div><div class="u">kg</div></div>
+            </div>
+          </div>
+
+          <div class="wp">
+            <div class="wp-dot-area"><div class="wp-dot">3</div></div>
+            <div class="wp-card">
+              <div class="name">Incline DB Press</div>
+              <div class="meta">Upper Chest · Compound · 3 sets</div>
+              <div class="wp-pips"><div class="pip w1"></div><div class="pip w1"></div><div class="pip w1"></div></div>
+              <div class="wp-weight"><div class="val">24</div><div class="u">kg</div></div>
+            </div>
+          </div>
+
+          <div class="wp">
+            <div class="wp-dot-area"><div class="wp-dot">4</div></div>
+            <div class="wp-card">
+              <div class="name">Cable Flyes</div>
+              <div class="meta">Chest · Isolation · 3 sets</div>
+              <div class="wp-pips"><div class="pip w2"></div><div class="pip w2"></div><div class="pip w2"></div></div>
+              <div class="wp-weight"><div class="val">15</div><div class="u">kg</div></div>
+            </div>
+          </div>
+
+          <div class="wp">
+            <div class="wp-dot-area"><div class="wp-dot">5</div></div>
+            <div class="wp-card">
+              <div class="name">Lateral Raises</div>
+              <div class="meta">Delts · Isolation · 3 sets</div>
+              <div class="wp-pips"><div class="pip w2"></div><div class="pip w2"></div><div class="pip w2"></div></div>
+              <div class="wp-weight"><div class="val">10</div><div class="u">kg</div></div>
+            </div>
+          </div>
+
+          <div class="finish">
+            <div class="finish-flag">&#127937;</div>
+            <div class="finish-text">Summit — complete all 5 to keep the streak alive</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-area">
+          <div class="cta-glow"></div>
+          <button class="cta-btn">Begin Ascent &#8599;</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- NOTES -->
+  <div class="notes">
+
+    <div class="n-section">
+      <div class="n-title green">What Changed</div>
+      <div class="n-item">
+        <div class="n-icon">&#10060;</div>
+        <div class="n-text"><strong>Removed:</strong> Nudge card, trail conditions card, summit target card. Three separate info strips that cluttered the space between widgets and exercises.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128260;</div>
+        <div class="n-text"><strong>Readiness → status bar.</strong> "Fresh" now lives next to the alive-dot in the top right. One word, no card needed.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128200;</div>
+        <div class="n-text"><strong>Bento: 2-col → 3-col equal.</strong> The tall streak dominated too much. Now all 3 widgets are compact and equal — streak, days, volume. Less hierarchy in widgets = more focus on the hero message and exercises.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title amber">The Graph — Now Real Data</div>
+      <div class="n-item">
+        <div class="n-icon">&#9968;</div>
+        <div class="n-text"><strong>Weekly Volume per day.</strong> Each bar = total kg lifted that day. Tall bar = heavy training day. Short bar = rest or light day. The bars literally form a mountain range skyline from your real data.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128994;</div>
+        <div class="n-text"><strong>Color coding:</strong><br>
+          Dark (#2D2A24) = completed days<br>
+          Green (#34D399) = today (with pinging hiker dot on top)<br>
+          Light gray = rest days<br>
+          Ghost outline = planned future days</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128290;</div>
+        <div class="n-text"><strong>Volume labels</strong> under each bar (3.2k, 4.1k, etc.) so the data is readable, not just decorative. "rest" and "today" for non-numeric days.</div>
+      </div>
+      <div class="vs">
+        <div class="vs-card vs-before">Before: decorative mountain SVG with no real data</div>
+        <div class="vs-card vs-after">After: actual daily volume with meaningful color states</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title sand">The Screen Flow</div>
+      <div class="n-item">
+        <div class="n-icon">1️⃣</div>
+        <div class="n-text"><strong>Hero</strong> — one personal sentence. Your reason to care today.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">2️⃣</div>
+        <div class="n-text"><strong>3 widgets</strong> — streak, days, volume. Quick glance, then move on.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">3️⃣</div>
+        <div class="n-text"><strong>Volume chart</strong> — your week visualized. Where you've been, where you're going.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">4️⃣</div>
+        <div class="n-text"><strong>Trail exercises</strong> — today's work as waypoints. The living line pulls you down to the CTA.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">5️⃣</div>
+        <div class="n-text"><strong>Begin Ascent</strong> — one CTA. Done.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128203;</div>
+        <div class="n-text">Five sections, clear hierarchy, no info competing for the same attention. Each section answers one question: Why should I care? → How's my week? → What's the data? → What do I do? → Go.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

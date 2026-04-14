@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe V1 Final</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; gap: 24px; flex-wrap: wrap; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; color: var(--trail); }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  /* ===== HEADER ===== */
+  .hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; transition: transform 0.15s; }
+  .back:active { transform: scale(0.9); }
+
+  /* Video button */
+  .video-btn { padding: 7px 16px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 7px; cursor: pointer; transition: transform 0.15s; }
+  .video-btn:active { transform: scale(0.94); }
+  .video-btn svg { width: 10px; height: 10px; fill: var(--sand); }
+  .video-btn span { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+  /* ===== HERO CARD — dark, with recipe identity ===== */
+  .hero {
+    margin: 12px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  .hero-ring { position: absolute; top: -30px; right: -30px; width: 130px; height: 130px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); animation: heroRing 18s linear infinite; }
+  @keyframes heroRing { to { transform: rotate(360deg); } }
+  .hero-ring-in { position: absolute; top: -18px; right: -18px; width: 108px; height: 108px; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); animation: heroRingIn 12s linear infinite reverse; }
+  @keyframes heroRingIn { to { transform: rotate(330deg); } }
+
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-name { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; line-height: 1.08; margin-top: 6px; position: relative; }
+
+  .hero-meta { display: flex; gap: 8px; margin-top: 16px; position: relative; }
+  .hm-pill { padding: 8px 16px; border-radius: 12px; background: rgba(246,245,240,0.06); display: flex; align-items: baseline; gap: 4px; }
+  .hm-val { font-size: 18px; font-weight: 800; color: var(--sand); }
+  .hm-unit { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  /* Mini elevation profile inside hero */
+  .hero-elevation {
+    margin-top: 16px; height: 32px; position: relative; overflow: hidden;
+    border-radius: 8px; background: rgba(246,245,240,0.04);
+  }
+  .hero-elev-path {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 100%;
+  }
+  .hero-elev-path svg { width: 100%; height: 100%; }
+  .elev-bg { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 1.5; }
+  .elev-fg { fill: none; stroke: var(--trail); stroke-width: 2; stroke-linecap: round; opacity: 0.5; stroke-dasharray: 200; stroke-dashoffset: 200; transition: stroke-dashoffset 0.8s cubic-bezier(0.16,1,0.3,1); }
+  .elev-fill { fill: rgba(52,211,153,0.08); opacity: 0; transition: opacity 0.5s; }
+
+  .hero-elev-dots { position: absolute; bottom: 0; left: 0; right: 0; height: 100%; display: flex; align-items: flex-end; justify-content: space-between; padding: 0 8px 4px; }
+  .elev-dot { width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid rgba(246,245,240,0.12); background: transparent; transition: all 0.3s; }
+  .elev-dot.done { background: var(--trail); border-color: var(--trail); }
+  .elev-dot.active { border-color: rgba(246,245,240,0.4); background: rgba(246,245,240,0.2); animation: dotPing 2s ease-in-out infinite; }
+  @keyframes dotPing { 0%,100% { transform: scale(1); } 50% { transform: scale(1.3); } }
+  .elev-dot.pending { border-color: rgba(246,245,240,0.08); }
+
+
+  /* ===== INGREDIENTS — checkable list ===== */
+  .ing-section { margin: 14px 24px 0; }
+
+  .ing-card {
+    border-radius: 22px; background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+
+  .ing-head { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .ing-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .ing-progress { display: flex; align-items: center; gap: 8px; }
+  .ing-progress-text { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .ing-progress-bar { width: 40px; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .ing-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 0%; transition: width 0.4s cubic-bezier(0.16,1,0.3,1); }
+
+  .ing-list { padding: 0 20px 16px; }
+
+  .gi {
+    display: flex; align-items: center; gap: 12px; padding: 11px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.03); cursor: pointer;
+    transition: opacity 0.3s;
+  }
+  .gi:last-child { border-bottom: none; }
+  .gi.checked { opacity: 0.25; }
+  .gi.checked .gi-name { text-decoration: line-through; }
+
+  .gi-check {
+    width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--stone);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .gi.checked .gi-check { background: var(--trail); border-color: var(--trail); transform: scale(1.08); }
+  .gi-cm { font-size: 11px; color: #fff; opacity: 0; transition: opacity 0.2s; font-weight: 700; }
+  .gi.checked .gi-cm { opacity: 1; }
+
+  .gi-body { flex: 1; display: flex; justify-content: space-between; align-items: center; }
+  .gi-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+  .gi-amount { font-size: 13px; color: var(--rock); font-weight: 500; }
+
+  /* Category dot — subtle color hint per ingredient type */
+  .gi-cat { width: 4px; height: 4px; border-radius: 50%; flex-shrink: 0; margin-right: -4px; }
+  .gi-cat.protein { background: #EF4444; opacity: 0.3; }
+  .gi-cat.produce { background: var(--trail); opacity: 0.3; }
+  .gi-cat.pantry { background: #F59E0B; opacity: 0.3; }
+  .gi-cat.grains { background: var(--earth); opacity: 0.2; }
+
+
+  /* ===== TRAIL — the route ===== */
+  .trail-section { padding: 20px 24px 0; position: relative; }
+
+  .trail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .trail-counter { font-size: 11px; color: var(--rock); font-weight: 500; transition: color 0.3s; }
+
+  /* The line */
+  .trail-line { position: absolute; left: 35px; top: 58px; bottom: 70px; width: 2px; background: var(--stone); z-index: 0; overflow: hidden; border-radius: 1px; }
+  .trail-line-fill { width: 100%; background: var(--trail); border-radius: 1px; transition: height 0.6s cubic-bezier(0.16,1,0.3,1); }
+
+  /* The pulse */
+  .trail-pulse { position: absolute; left: 34px; top: 58px; width: 4px; height: 24px; border-radius: 2px; background: var(--trail); opacity: 0; animation: tPulse 4s ease-in-out infinite; z-index: 1; }
+  @keyframes tPulse { 0% { top: 58px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { top: calc(100% - 90px); opacity: 0; } }
+
+  /* Waypoint */
+  .wp {
+    display: flex; gap: 14px; margin-bottom: 14px; position: relative; z-index: 2;
+    cursor: pointer; transition: all 0.3s;
+  }
+
+  .wp-marker {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 14px;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); z-index: 2;
+  }
+  .wp .wp-marker { background: var(--sand); border: 2px solid var(--stone); color: var(--rock); }
+  .wp.active .wp-marker { border-color: var(--trail); color: #fff; background: var(--trail); transform: scale(1.2); box-shadow: 0 0 14px rgba(52,211,153,0.3); }
+  .wp.done .wp-marker { background: var(--earth); border-color: var(--earth); color: var(--sand); }
+
+  .wp-card {
+    flex: 1; padding: 16px 18px; border-radius: 18px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .wp.active .wp-card {
+    border-color: rgba(52,211,153,0.1);
+    box-shadow: 0 6px 24px rgba(52,211,153,0.06);
+  }
+  .wp.done .wp-card { background: var(--stone); border-color: transparent; padding: 12px 16px; }
+
+  /* Shimmer on active card */
+  .wp.active .wp-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(105deg, transparent 40%, rgba(52,211,153,0.04) 50%, transparent 60%);
+    animation: wpShimmer 3s ease infinite;
+  }
+  @keyframes wpShimmer { 0% { transform: translateX(-100%); } 50%,100% { transform: translateX(100%); } }
+
+  .wp-text { font-size: 15px; color: var(--earth); line-height: 1.55; transition: all 0.3s; }
+  .wp.active .wp-text { font-weight: 500; }
+  .wp.done .wp-text { font-size: 13px; opacity: 0.45; text-decoration: line-through; }
+
+  .wp-meta { display: flex; align-items: center; gap: 6px; margin-top: 8px; }
+  .wp-meta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .wp-meta-text { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .wp.active .wp-meta-text { color: var(--trail); }
+  .wp.active .wp-meta-dot { background: var(--trail); }
+  .wp.done .wp-meta { display: none; }
+
+  /* Summit */
+  .summit { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding-bottom: 16px; position: relative; z-index: 2; }
+  .summit-marker { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; transition: all 0.5s; background: rgba(52,211,153,0.06); border: 2px solid rgba(52,211,153,0.1); }
+  .summit.reached .summit-marker { background: var(--trail); border-color: var(--trail); animation: summitPop 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes summitPop { 0% { transform: scale(0.6); } 50% { transform: scale(1.3); } 100% { transform: scale(1); } }
+  .summit-text { font-size: 12px; color: var(--rock); font-weight: 500; transition: color 0.3s; }
+  .summit.reached .summit-text { color: var(--trail); font-weight: 600; }
+
+  /* All done celebration strip */
+  .done-strip {
+    margin: 0 24px 0; padding: 14px 18px; border-radius: 16px;
+    background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.08);
+    display: flex; align-items: center; gap: 10px;
+    opacity: 0; max-height: 0; overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.16,1,0.3,1);
+  }
+  .done-strip.show { opacity: 1; max-height: 60px; margin-bottom: 10px; }
+  .done-check { width: 24px; height: 24px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; font-weight: 700; }
+  .done-text { font-size: 13px; color: #047857; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div>
+  <div class="lbl">V1 Final — Tap ingredients & steps to interact</div>
+  <div class="dsc">Dark hero with mini elevation. Checkable ingredients with progress bar. Trail waypoints — tap to complete. Active step shimmers. Done steps collapse. Summit celebrates when all done.</div>
+</div>
+
+<div class="phone" id="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <!-- HEADER -->
+    <div class="hdr">
+      <div class="back">←</div>
+      <div class="video-btn"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div>
+    </div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-ring"></div><div class="hero-ring-in"></div>
+      <div class="hero-label">Breakfast Recipe</div>
+      <div class="hero-name">Veggie Stir Fry<br>with Tofu</div>
+      <div class="hero-meta">
+        <div class="hm-pill"><span class="hm-val">10</span><span class="hm-unit">min prep</span></div>
+        <div class="hm-pill"><span class="hm-val">12</span><span class="hm-unit">min cook</span></div>
+        <div class="hm-pill"><span class="hm-val">Easy</span></div>
+      </div>
+
+      <!-- Mini elevation showing step progress -->
+      <div class="hero-elevation">
+        <div class="hero-elev-path">
+          <svg viewBox="0 0 300 32" preserveAspectRatio="none">
+            <path class="elev-fill" id="elevFill" d="M0,28 Q40,24 75,18 Q110,8 150,12 Q190,18 225,10 Q260,4 300,14 L300,32 L0,32 Z"/>
+            <path class="elev-bg" d="M0,28 Q40,24 75,18 Q110,8 150,12 Q190,18 225,10 Q260,4 300,14"/>
+            <path class="elev-fg" id="elevFg" d="M0,28 Q40,24 75,18 Q110,8 150,12 Q190,18 225,10 Q260,4 300,14"/>
+          </svg>
+        </div>
+        <div class="hero-elev-dots">
+          <div class="elev-dot active" id="ed0"></div>
+          <div class="elev-dot pending" id="ed1"></div>
+          <div class="elev-dot pending" id="ed2"></div>
+          <div class="elev-dot pending" id="ed3"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INGREDIENTS -->
+    <div class="ing-section">
+      <div class="ing-card">
+        <div class="ing-head">
+          <span class="ing-title">Ingredients</span>
+          <div class="ing-progress">
+            <span class="ing-progress-text" id="ingCount">0 / 8</span>
+            <div class="ing-progress-bar"><div class="ing-progress-fill" id="ingBar"></div></div>
+          </div>
+        </div>
+        <div class="ing-list">
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat protein"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Firm tofu</span><span class="gi-amount">½ block cubed</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat produce"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Broccoli</span><span class="gi-amount">1 cup florets</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat produce"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Bell pepper</span><span class="gi-amount">1 sliced</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat produce"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Snap peas</span><span class="gi-amount">½ cup</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat pantry"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Teriyaki sauce</span><span class="gi-amount">2 tbsp</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat grains"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">White rice</span><span class="gi-amount">1 cup cooked</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat pantry"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Sesame oil</span><span class="gi-amount">1 tbsp</span></div></div>
+          <div class="gi" onclick="toggleIng(this)"><div class="gi-cat produce"></div><div class="gi-check"><span class="gi-cm">✓</span></div><div class="gi-body"><span class="gi-name">Garlic</span><span class="gi-amount">2 cloves</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRAIL -->
+    <div class="trail-section">
+      <div class="trail-head">
+        <span class="trail-title">Route</span>
+        <span class="trail-counter" id="stepCounter">0 of 4 done</span>
+      </div>
+
+      <div class="trail-line"><div class="trail-line-fill" id="trailFill" style="height:0%;"></div></div>
+      <div class="trail-pulse"></div>
+
+      <div class="wp active" id="wp0" onclick="toggleStep(0)">
+        <div class="wp-marker">1</div>
+        <div class="wp-card">
+          <div class="wp-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+          <div class="wp-meta"><span class="wp-meta-text">Base camp</span><div class="wp-meta-dot"></div><span class="wp-meta-text">~4 min</span></div>
+        </div>
+      </div>
+
+      <div class="wp" id="wp1" onclick="toggleStep(1)">
+        <div class="wp-marker">2</div>
+        <div class="wp-card">
+          <div class="wp-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div>
+          <div class="wp-meta"><span class="wp-meta-text">Waypoint 2</span><div class="wp-meta-dot"></div><span class="wp-meta-text">~3 min</span></div>
+        </div>
+      </div>
+
+      <div class="wp" id="wp2" onclick="toggleStep(2)">
+        <div class="wp-marker">3</div>
+        <div class="wp-card">
+          <div class="wp-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.</div>
+          <div class="wp-meta"><span class="wp-meta-text">Waypoint 3</span><div class="wp-meta-dot"></div><span class="wp-meta-text">~2 min</span></div>
+        </div>
+      </div>
+
+      <div class="wp" id="wp3" onclick="toggleStep(3)">
+        <div class="wp-marker">4</div>
+        <div class="wp-card">
+          <div class="wp-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div>
+          <div class="wp-meta"><span class="wp-meta-text">Summit</span><div class="wp-meta-dot"></div><span class="wp-meta-text">~1 min</span></div>
+        </div>
+      </div>
+
+      <div class="summit" id="summit">
+        <div class="summit-marker">🏁</div>
+        <div class="summit-text">Dish complete — enjoy!</div>
+      </div>
+    </div>
+
+    <div class="done-strip" id="doneStrip">
+      <div class="done-check">✓</div>
+      <div class="done-text">All steps complete — enjoy your meal!</div>
+    </div>
+
+    <div style="height:100px;"></div>
+
+  </div></div>
+</div>
+
+<script>
+const TOTAL_STEPS = 4;
+const TOTAL_ING = 8;
+let stepsDone = new Set();
+
+// Ingredients
+function toggleIng(el) {
+  el.classList.toggle('checked');
+  updateIngProgress();
+}
+
+function updateIngProgress() {
+  const checked = document.querySelectorAll('.gi.checked').length;
+  document.getElementById('ingCount').textContent = checked + ' / ' + TOTAL_ING;
+  document.getElementById('ingBar').style.width = (checked / TOTAL_ING * 100) + '%';
+}
+
+// Steps
+function toggleStep(idx) {
+  const wp = document.getElementById('wp' + idx);
+
+  if (stepsDone.has(idx)) {
+    // Undo
+    stepsDone.delete(idx);
+  } else {
+    stepsDone.add(idx);
+  }
+
+  // Update all waypoints
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    const el = document.getElementById('wp' + i);
+    const marker = el.querySelector('.wp-marker');
+
+    if (stepsDone.has(i)) {
+      el.className = 'wp done';
+      marker.textContent = '✓';
+    } else {
+      // First undone step is active
+      const isActive = !stepsDone.has(i) && (i === 0 || [...stepsDone].filter(s => s < i).length === i);
+      el.className = isActive ? 'wp active' : 'wp';
+      marker.textContent = i + 1;
+    }
+  }
+
+  // Find first undone for active state
+  let firstUndone = -1;
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    if (!stepsDone.has(i)) { firstUndone = i; break; }
+  }
+  if (firstUndone >= 0) {
+    document.getElementById('wp' + firstUndone).className = 'wp active';
+  }
+
+  // Trail fill
+  const fillPct = stepsDone.size / TOTAL_STEPS * 100;
+  document.getElementById('trailFill').style.height = fillPct + '%';
+
+  // Counter
+  document.getElementById('stepCounter').textContent = stepsDone.size + ' of ' + TOTAL_STEPS + ' done';
+  if (stepsDone.size === TOTAL_STEPS) {
+    document.getElementById('stepCounter').style.color = 'var(--trail)';
+  } else {
+    document.getElementById('stepCounter').style.color = '';
+  }
+
+  // Elevation dots
+  for (let i = 0; i < TOTAL_STEPS; i++) {
+    const dot = document.getElementById('ed' + i);
+    if (stepsDone.has(i)) {
+      dot.className = 'elev-dot done';
+    } else if (i === firstUndone) {
+      dot.className = 'elev-dot active';
+    } else {
+      dot.className = 'elev-dot pending';
+    }
+  }
+
+  // Elevation path
+  const fg = document.getElementById('elevFg');
+  const fill = document.getElementById('elevFill');
+  const offset = 200 - (stepsDone.size / TOTAL_STEPS * 200);
+  fg.style.strokeDashoffset = offset;
+  fill.style.opacity = stepsDone.size > 0 ? 1 : 0;
+
+  // Summit
+  const summit = document.getElementById('summit');
+  if (stepsDone.size === TOTAL_STEPS) {
+    summit.classList.add('reached');
+  } else {
+    summit.classList.remove('reached');
+  }
+
+  // Done strip
+  const strip = document.getElementById('doneStrip');
+  if (stepsDone.size === TOTAL_STEPS) {
+    strip.classList.add('show');
+  } else {
+    strip.classList.remove('show');
+  }
+}
+</script>
+
+</body>
+</html>

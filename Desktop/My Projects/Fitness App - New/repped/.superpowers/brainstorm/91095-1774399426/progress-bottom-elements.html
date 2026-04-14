@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Bottom Elements Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Shared section */
+  .sec { padding: 16px 24px 0; }
+  .sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+
+  /* Links */
+  .links { display: flex; gap: 8px; padding: 18px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+  /* Placeholder hero */
+  .hero-ph { margin: 56px 24px 0; padding: 18px; border-radius: 20px; background: var(--stone); text-align: center; font-size: 10px; color: var(--rock); }
+
+
+  /* ============================================================
+     OPTION A: CLEAN STREAM — Each section is its own card.
+     Weight with trend line. 1RM as horizontal scroll.
+     PRs as numbered rows. Body measurements as compact grid.
+     ============================================================ */
+
+  /* Weight */
+  .a-weight { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .a-w-top { display: flex; justify-content: space-between; align-items: center; }
+  .a-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .a-w-btn { padding: 8px 16px; border-radius: 10px; background: var(--earth); font-size: 10px; font-weight: 600; color: var(--sand); cursor: pointer; }
+  .a-w-val { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .a-w-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .a-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .a-w-chart { height: 36px; margin-top: 8px; }
+  .a-w-chart svg { width: 100%; height: 100%; }
+
+  /* 1RM horizontal cards */
+  .a-rm-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .a-rm-scroll::-webkit-scrollbar { display: none; }
+  .a-rm { min-width: 120px; padding: 14px; border-radius: 16px; flex-shrink: 0; }
+  .a-rm:nth-child(odd) { background: var(--earth); }
+  .a-rm:nth-child(even) { background: var(--stone); }
+  .a-rm-name { font-size: 10px; font-weight: 600; }
+  .a-rm:nth-child(odd) .a-rm-name { color: rgba(246,245,240,0.35); }
+  .a-rm:nth-child(even) .a-rm-name { color: var(--rock); }
+  .a-rm-val { font-size: 20px; font-weight: 800; margin-top: 4px; letter-spacing: -0.5px; }
+  .a-rm:nth-child(odd) .a-rm-val { color: var(--sand); }
+  .a-rm:nth-child(even) .a-rm-val { color: var(--earth); }
+  .a-rm-val span { font-size: 9px; font-weight: 500; }
+  .a-rm:nth-child(odd) .a-rm-val span { color: rgba(246,245,240,0.3); }
+  .a-rm:nth-child(even) .a-rm-val span { color: var(--rock); }
+  .a-rm-level { font-size: 8px; font-weight: 600; color: var(--trail); margin-top: 3px; }
+  .a-rm:nth-child(odd) .a-rm-level { opacity: 0.6; }
+
+  /* Volume */
+  .a-vol { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .a-vol-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .a-vol-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .a-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .a-vol-bars { display: flex; gap: 3px; align-items: flex-end; height: 32px; }
+  .a-vb { width: 10px; border-radius: 3px; background: var(--stone); }
+  .a-vb.active { background: var(--trail); opacity: 0.4; }
+
+  /* PRs */
+  .a-pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .a-pr:last-child { border-bottom: none; }
+  .a-pr-badge { width: 24px; height: 24px; border-radius: 8px; background: rgba(52,211,153,0.06); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .a-pr-name { font-size: 14px; font-weight: 500; color: var(--earth); flex: 1; }
+  .a-pr-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .a-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Body measurements */
+  .a-body-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .a-bm { padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .a-bm-val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .a-bm-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     OPTION B: DARK + LIGHT ALTERNATING — Weight dark, 1RM
+     as rows in white card, Volume as dark inline, PRs dark,
+     body measurements white. Rhythm of dark/light.
+     ============================================================ */
+
+  /* Weight dark */
+  .b-weight { padding: 20px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .b-w-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .b-w-top { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .b-w-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .b-w-btn { padding: 8px 16px; border-radius: 10px; background: rgba(246,245,240,0.06); font-size: 10px; font-weight: 600; color: var(--sand); cursor: pointer; }
+  .b-w-val { font-size: 32px; font-weight: 800; color: var(--sand); letter-spacing: -1px; margin-top: 4px; position: relative; }
+  .b-w-val span { font-size: 14px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .b-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; position: relative; }
+
+  /* 1RM as white card rows */
+  .b-rm-card { padding: 16px 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .b-rm-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .b-rm-row:last-child { border-bottom: none; }
+  .b-rm-left { }
+  .b-rm-name { font-size: 14px; font-weight: 500; color: var(--earth); }
+  .b-rm-level { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 1px; }
+  .b-rm-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .b-rm-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+
+  /* Volume inline dark */
+  .b-vol { padding: 16px 18px; border-radius: 18px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .b-vol-left {}
+  .b-vol-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .b-vol-val { font-size: 24px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; margin-top: 2px; }
+  .b-vol-val span { font-size: 11px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .b-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  /* PRs dark card */
+  .b-pr-card { padding: 16px 18px; border-radius: 18px; background: var(--earth); position: relative; overflow: hidden; }
+  .b-pr-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; position: relative; }
+  .b-pr { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .b-pr:last-child { border-bottom: none; }
+  .b-pr-icon { font-size: 12px; }
+  .b-pr-name { font-size: 13px; color: var(--sand); font-weight: 500; flex: 1; }
+  .b-pr-val { font-size: 15px; font-weight: 800; color: var(--sand); }
+  .b-pr-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  /* Body white */
+  .b-body { padding: 16px 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .b-body-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .b-body-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .b-bm { text-align: center; }
+  .b-bm-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .b-bm-label { font-size: 8px; color: var(--rock); margin-top: 1px; }
+
+
+  /* ============================================================
+     OPTION C: COMPACT ALL-IN-ONE — Everything tighter.
+     Weight + Volume as a bento duo. 1RM as numbered rows.
+     PRs inline. Body as a single row. Minimum scrolling.
+     ============================================================ */
+
+  /* Weight + Volume bento */
+  .c-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .c-duo-card { padding: 16px; border-radius: 18px; }
+  .c-duo-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .c-duo-card.dark { background: var(--earth); }
+  .c-d-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .c-duo-card.white .c-d-label { color: var(--rock); }
+  .c-duo-card.dark .c-d-label { color: rgba(246,245,240,0.25); }
+  .c-d-val { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-top: 4px; }
+  .c-duo-card.white .c-d-val { color: var(--earth); }
+  .c-duo-card.dark .c-d-val { color: var(--sand); }
+  .c-d-val span { font-size: 11px; font-weight: 500; }
+  .c-duo-card.white .c-d-val span { color: var(--rock); }
+  .c-duo-card.dark .c-d-val span { color: rgba(246,245,240,0.3); }
+  .c-d-trend { font-size: 10px; font-weight: 600; margin-top: 2px; }
+  .c-duo-card.white .c-d-trend { color: var(--trail); }
+  .c-duo-card.dark .c-d-trend { color: var(--trail); }
+  .c-w-btn { margin-top: 8px; padding: 6px 14px; border-radius: 8px; background: var(--stone); font-size: 9px; font-weight: 600; color: var(--earth); display: inline-block; cursor: pointer; }
+
+  /* 1RM numbered rows */
+  .c-rm-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .c-rm-row:last-child { border-bottom: none; }
+  .c-rm-num { width: 22px; height: 22px; border-radius: 7px; background: var(--earth); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--sand); flex-shrink: 0; }
+  .c-rm-name { font-size: 14px; color: var(--earth); font-weight: 500; flex: 1; }
+  .c-rm-level { font-size: 9px; color: var(--trail); font-weight: 600; }
+  .c-rm-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; flex-shrink: 0; }
+  .c-rm-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* PRs + Body inline */
+  .c-pr-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .c-pr-row:last-child { border-bottom: none; }
+  .c-pr-icon { font-size: 11px; }
+  .c-pr-name { font-size: 13px; color: var(--earth); font-weight: 500; flex: 1; }
+  .c-pr-val { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .c-pr-val span { font-size: 9px; color: var(--rock); }
+
+  .c-body-row { display: flex; gap: 6px; }
+  .c-bm { flex: 1; padding: 10px 6px; border-radius: 12px; background: var(--stone); text-align: center; }
+  .c-bm-val { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .c-bm-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== OPTION A: CLEAN STREAM ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">A — Clean Stream</div>
+  <div class="dsc">Each section is its own distinct element. Weight card with SVG trend line. 1RM as horizontal swipeable cards (dark/stone). Volume inline with mini bars. PR rows. Body measurement grid.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Weight</span></div>
+      <div class="a-weight"><div class="a-w-top"><span class="a-w-label">Current</span><span class="a-w-btn">+ Log</span></div><div class="a-w-val">74.2 <span>kg</span></div><div class="a-w-trend">▼ 0.8kg this month</div><div class="a-w-chart"><svg viewBox="0 0 300 36"><path fill="none" stroke="var(--earth)" stroke-width="1.5" stroke-linecap="round" opacity="0.12" d="M0,28 Q40,26 80,22 Q120,18 160,16 Q200,14 240,12 Q270,10 300,8"/></svg></div></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Estimated 1RM</span></div>
+      <div class="a-rm-scroll"><div class="a-rm"><div class="a-rm-name">Bench</div><div class="a-rm-val">80 <span>kg</span></div><div class="a-rm-level">Intermediate</div></div><div class="a-rm"><div class="a-rm-name">Squat</div><div class="a-rm-val">100 <span>kg</span></div><div class="a-rm-level">Intermediate</div></div><div class="a-rm"><div class="a-rm-name">Deadlift</div><div class="a-rm-val">120 <span>kg</span></div><div class="a-rm-level">Novice</div></div><div class="a-rm"><div class="a-rm-name">OHP</div><div class="a-rm-val">50 <span>kg</span></div><div class="a-rm-level">Novice</div></div></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Volume This Week</span></div>
+      <div class="a-vol"><div><div class="a-vol-val">2.4 <span>tons</span></div><div class="a-vol-trend">▲ 12% vs last week</div></div><div class="a-vol-bars"><div class="a-vb" style="height:40%;"></div><div class="a-vb" style="height:55%;"></div><div class="a-vb" style="height:45%;"></div><div class="a-vb" style="height:70%;"></div><div class="a-vb" style="height:60%;"></div><div class="a-vb" style="height:85%;"></div><div class="a-vb active" style="height:100%;"></div></div></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Recent PRs</span><span style="font-size:10px;color:var(--rock);">Last 30 days</span></div>
+      <div class="a-pr"><div class="a-pr-badge">🏆</div><span class="a-pr-name">Bench Press</span><span class="a-pr-val">80 <span>kg</span></span></div>
+      <div class="a-pr"><div class="a-pr-badge">🏆</div><span class="a-pr-name">Squat</span><span class="a-pr-val">105 <span>kg</span></span></div>
+      <div class="a-pr"><div class="a-pr-badge">🏆</div><span class="a-pr-name">Deadlift</span><span class="a-pr-val">120 <span>kg</span></span></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Measurements</span></div>
+      <div class="a-body-grid"><div class="a-bm"><div class="a-bm-val">102</div><div class="a-bm-label">Chest cm</div></div><div class="a-bm"><div class="a-bm-val">82</div><div class="a-bm-label">Waist cm</div></div><div class="a-bm"><div class="a-bm-val">96</div><div class="a-bm-label">Hips cm</div></div><div class="a-bm"><div class="a-bm-val">36</div><div class="a-bm-label">Bicep cm</div></div><div class="a-bm"><div class="a-bm-val">58</div><div class="a-bm-label">Thigh cm</div></div><div class="a-bm"><div class="a-bm-val">18%</div><div class="a-bm-label">Body Fat</div></div></div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION B: DARK/LIGHT RHYTHM ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">B — Dark/Light Rhythm</div>
+  <div class="dsc">Alternating dark and light cards. Weight = dark. 1RM = white rows. Volume = dark inline. PRs = dark card. Measurements = white grid. Visual rhythm.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Weight</span></div>
+      <div class="b-weight"><div class="b-w-accent"></div><div class="b-w-top"><span class="b-w-label">Current</span><span class="b-w-btn">+ Log</span></div><div class="b-w-val">74.2 <span>kg</span></div><div class="b-w-trend">▼ 0.8kg this month</div></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Estimated 1RM</span></div>
+      <div class="b-rm-card">
+        <div class="b-rm-row"><div class="b-rm-left"><div class="b-rm-name">Bench Press</div><div class="b-rm-level">Intermediate</div></div><div class="b-rm-val">80 <span>kg</span></div></div>
+        <div class="b-rm-row"><div class="b-rm-left"><div class="b-rm-name">Squat</div><div class="b-rm-level">Intermediate</div></div><div class="b-rm-val">100 <span>kg</span></div></div>
+        <div class="b-rm-row"><div class="b-rm-left"><div class="b-rm-name">Deadlift</div><div class="b-rm-level">Novice</div></div><div class="b-rm-val">120 <span>kg</span></div></div>
+        <div class="b-rm-row"><div class="b-rm-left"><div class="b-rm-name">OHP</div><div class="b-rm-level">Novice</div></div><div class="b-rm-val">50 <span>kg</span></div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="b-vol"><div class="b-vol-left"><div class="b-vol-label">Volume This Week</div><div class="b-vol-val">2.4 <span>tons</span></div><div class="b-vol-trend">▲ 12% vs last week</div></div></div>
+    </div>
+
+    <div class="sec">
+      <div class="b-pr-card"><div class="b-pr-label">Recent PRs · Last 30 Days</div>
+        <div class="b-pr"><span class="b-pr-icon">🏆</span><span class="b-pr-name">Bench Press</span><span class="b-pr-val">80 <span>kg</span></span></div>
+        <div class="b-pr"><span class="b-pr-icon">🏆</span><span class="b-pr-name">Squat</span><span class="b-pr-val">105 <span>kg</span></span></div>
+        <div class="b-pr"><span class="b-pr-icon">🏆</span><span class="b-pr-name">Deadlift</span><span class="b-pr-val">120 <span>kg</span></span></div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Measurements</span></div>
+      <div class="b-body"><div class="b-body-label">Latest</div><div class="b-body-grid"><div class="b-bm"><div class="b-bm-val">102</div><div class="b-bm-label">Chest</div></div><div class="b-bm"><div class="b-bm-val">82</div><div class="b-bm-label">Waist</div></div><div class="b-bm"><div class="b-bm-val">96</div><div class="b-bm-label">Hips</div></div><div class="b-bm"><div class="b-bm-val">36</div><div class="b-bm-label">Bicep</div></div><div class="b-bm"><div class="b-bm-val">58</div><div class="b-bm-label">Thigh</div></div><div class="b-bm"><div class="b-bm-val">18%</div><div class="b-bm-label">Fat</div></div></div></div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION C: COMPACT ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">C — Compact All-in-One</div>
+  <div class="dsc">Tightest layout. Weight + Volume as side-by-side bento. 1RM as numbered rows. PRs inline. Body as single row of pills. Minimum scrolling.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="sec">
+      <div class="c-duo">
+        <div class="c-duo-card white"><div class="c-d-label">Weight</div><div class="c-d-val">74.2 <span>kg</span></div><div class="c-d-trend">▼ 0.8kg</div><div class="c-w-btn">+ Log</div></div>
+        <div class="c-duo-card dark"><div class="c-d-label">Volume</div><div class="c-d-val">2.4 <span>t</span></div><div class="c-d-trend">▲ 12%</div></div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Estimated 1RM</span></div>
+      <div class="c-rm-row"><div class="c-rm-num">1</div><span class="c-rm-name">Bench Press</span><span class="c-rm-level">Inter.</span><span class="c-rm-val">80 <span>kg</span></span></div>
+      <div class="c-rm-row"><div class="c-rm-num">2</div><span class="c-rm-name">Squat</span><span class="c-rm-level">Inter.</span><span class="c-rm-val">100 <span>kg</span></span></div>
+      <div class="c-rm-row"><div class="c-rm-num">3</div><span class="c-rm-name">Deadlift</span><span class="c-rm-level">Novice</span><span class="c-rm-val">120 <span>kg</span></span></div>
+      <div class="c-rm-row"><div class="c-rm-num">4</div><span class="c-rm-name">OHP</span><span class="c-rm-level">Novice</span><span class="c-rm-val">50 <span>kg</span></span></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Recent PRs</span></div>
+      <div class="c-pr-row"><span class="c-pr-icon">🏆</span><span class="c-pr-name">Bench Press</span><span class="c-pr-val">80 <span>kg</span></span></div>
+      <div class="c-pr-row"><span class="c-pr-icon">🏆</span><span class="c-pr-name">Squat</span><span class="c-pr-val">105 <span>kg</span></span></div>
+      <div class="c-pr-row"><span class="c-pr-icon">🏆</span><span class="c-pr-name">Deadlift</span><span class="c-pr-val">120 <span>kg</span></span></div>
+    </div>
+
+    <div class="sec"><div class="sec-head"><span class="sec-title">Measurements</span></div>
+      <div class="c-body-row"><div class="c-bm"><div class="c-bm-val">102</div><div class="c-bm-label">Chest</div></div><div class="c-bm"><div class="c-bm-val">82</div><div class="c-bm-label">Waist</div></div><div class="c-bm"><div class="c-bm-val">96</div><div class="c-bm-label">Hips</div></div><div class="c-bm"><div class="c-bm-val">36</div><div class="c-bm-label">Bicep</div></div><div class="c-bm"><div class="c-bm-val">58</div><div class="c-bm-label">Thigh</div></div><div class="c-bm"><div class="c-bm-val">18%</div><div class="c-bm-label">Fat</div></div></div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

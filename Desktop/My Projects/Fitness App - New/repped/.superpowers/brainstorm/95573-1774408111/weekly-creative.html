@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Creative Weekly Summary</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     X1: THE REPORT CARD — One full-screen dark card that IS
+     the weekly summary. Everything inside. Like opening an
+     envelope to see your week's results.
+     ============================================================ */
+
+  .x1-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .x1-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .x1-card {
+    margin: 14px 20px 0; border-radius: 28px; background: var(--earth);
+    position: relative; overflow: hidden; padding: 28px 24px;
+  }
+  .x1-accent { position: absolute; top: 0; right: 0; width: 100px; height: 100px; }
+  .x1-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .x1-al:nth-child(1) { width: 120px; top: 16px; right: -10px; transform: rotate(-35deg); }
+  .x1-al:nth-child(2) { width: 100px; top: 28px; right: -10px; transform: rotate(-35deg); }
+  .x1-al:nth-child(3) { width: 80px; top: 40px; right: -10px; transform: rotate(-35deg); }
+
+  .x1-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .x1-title { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; margin-top: 4px; position: relative; }
+  .x1-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  /* Big hero number */
+  .x1-hero-num { margin-top: 24px; position: relative; }
+  .x1-hero-val { font-size: 72px; font-weight: 900; color: var(--sand); letter-spacing: -4px; line-height: 0.9; }
+  .x1-hero-unit { font-size: 16px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .x1-hero-label { font-size: 10px; color: rgba(246,245,240,0.25); margin-top: 4px; }
+
+  /* Divider */
+  .x1-div { height: 1px; background: rgba(246,245,240,0.04); margin: 20px 0; }
+
+  /* Stat row */
+  .x1-stats { display: flex; gap: 0; position: relative; }
+  .x1-st { flex: 1; text-align: center; position: relative; }
+  .x1-st::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(246,245,240,0.04); }
+  .x1-st:last-child::after { display: none; }
+  .x1-st-val { font-size: 24px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .x1-st-val.green { color: var(--trail); }
+  .x1-st-val.amber { color: #F59E0B; }
+  .x1-st-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .x1-div2 { height: 1px; background: rgba(246,245,240,0.04); margin: 20px 0; }
+
+  /* Highlight row */
+  .x1-hl { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .x1-hl-label { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .x1-hl-val { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 3px; }
+  .x1-hl-right { text-align: right; }
+  .x1-hl-weight { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .x1-hl-change { font-size: 18px; font-weight: 700; color: var(--trail); margin-top: 3px; }
+
+  .x1-div3 { height: 1px; background: rgba(246,245,240,0.04); margin: 16px 0; }
+
+  /* PRs compact */
+  .x1-prs { position: relative; }
+  .x1-pr-label { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .x1-pr { display: flex; justify-content: space-between; padding: 5px 0; }
+  .x1-pr-name { font-size: 13px; color: rgba(246,245,240,0.5); }
+  .x1-pr-val { font-size: 13px; font-weight: 700; color: var(--trail); }
+
+  .x1-div4 { height: 1px; background: rgba(246,245,240,0.04); margin: 16px 0; }
+
+  /* Wellness compact */
+  .x1-well { display: flex; gap: 0; position: relative; }
+  .x1-w { flex: 1; text-align: center; }
+  .x1-w-val { font-size: 18px; font-weight: 800; }
+  .x1-w:nth-child(1) .x1-w-val { color: var(--trail); }
+  .x1-w:nth-child(2) .x1-w-val { color: var(--sand); }
+  .x1-w:nth-child(3) .x1-w-val { color: #F59E0B; }
+  .x1-w-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     X2: VISUAL COMPARISON — This week vs Last week side by side.
+     Two columns showing improvement/decline at a glance.
+     ============================================================ */
+
+  .x2-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .x2-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .x2-top { padding: 12px 24px 0; }
+  .x2-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .x2-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .x2-date { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+  /* Comparison columns */
+  .x2-compare { display: flex; gap: 10px; padding: 16px 24px 0; }
+  .x2-col { flex: 1; }
+  .x2-col-title { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; text-align: center; }
+
+  .x2-metric { padding: 14px; border-radius: 16px; margin-bottom: 8px; text-align: center; }
+  .x2-col:first-child .x2-metric { background: var(--stone); }
+  .x2-col:last-child .x2-metric { background: var(--earth); }
+  .x2-col:last-child .x2-metric.highlight { background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.08); }
+
+  .x2-m-val { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+  .x2-col:first-child .x2-m-val { color: var(--rock); }
+  .x2-col:last-child .x2-m-val { color: var(--sand); }
+  .x2-col:last-child .x2-metric.highlight .x2-m-val { color: var(--trail); }
+  .x2-m-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .x2-col:first-child .x2-m-label { color: var(--rock); opacity: 0.5; }
+  .x2-col:last-child .x2-m-label { color: rgba(246,245,240,0.3); }
+  .x2-col:last-child .x2-metric.highlight .x2-m-label { color: #047857; }
+
+  /* Arrow between columns */
+  .x2-arrow { font-size: 10px; color: var(--trail); font-weight: 700; text-align: center; margin: -4px 0; }
+
+  /* Highlight + Wellness below */
+  .x2-bottom { padding: 12px 24px 0; }
+  .x2-sec-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+
+  .x2-hl-card { padding: 16px; border-radius: 18px; background: var(--earth); position: relative; overflow: hidden; margin-bottom: 12px; }
+  .x2-hl-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+  .x2-hl-val { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 4px; position: relative; }
+
+  .x2-well { display: flex; gap: 8px; }
+  .x2-wc { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .x2-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .x2-wc:nth-child(2) { background: var(--stone); }
+  .x2-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .x2-wc-val { font-size: 18px; font-weight: 800; }
+  .x2-wc:nth-child(1) .x2-wc-val { color: #047857; }
+  .x2-wc:nth-child(2) .x2-wc-val { color: var(--earth); }
+  .x2-wc:nth-child(3) .x2-wc-val { color: #92400E; }
+  .x2-wc-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     X3: THE RECEIPT — Looks like a purchase receipt.
+     Clean, structured, familiar format. Line items with totals.
+     Most readable for any user.
+     ============================================================ */
+
+  .x3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .x3-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .x3-receipt { margin: 14px 24px 0; border-radius: 24px; background: #fff; border: 1px solid rgba(0,0,0,0.04); padding: 28px 24px; }
+
+  .x3-r-header { text-align: center; padding-bottom: 16px; border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .x3-r-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .x3-r-date { font-size: 10px; color: var(--rock); margin-top: 4px; }
+  .x3-r-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 6px; }
+
+  /* Line items */
+  .x3-items { padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .x3-item { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 0; }
+  .x3-item-name { font-size: 14px; color: var(--earth); }
+  .x3-item-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .x3-item-val.green { color: var(--trail); }
+  .x3-item-val.amber { color: #F59E0B; }
+
+  /* Total */
+  .x3-total { padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .x3-total-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .x3-total-label { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .x3-total-val { font-size: 24px; font-weight: 900; color: var(--earth); letter-spacing: -0.5px; }
+  .x3-total-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .x3-total-sub { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; text-align: right; }
+
+  /* PRs section */
+  .x3-prs { padding: 16px 0; border-bottom: 1px dashed rgba(0,0,0,0.06); }
+  .x3-pr-title { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .x3-pr { display: flex; justify-content: space-between; padding: 4px 0; }
+  .x3-pr-name { font-size: 13px; color: var(--earth); }
+  .x3-pr-val { font-size: 13px; font-weight: 700; color: var(--trail); }
+
+  /* Wellness */
+  .x3-wellness { padding: 16px 0 0; }
+  .x3-well-title { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .x3-well-row { display: flex; justify-content: space-between; }
+  .x3-well-item { text-align: center; }
+  .x3-well-val { font-size: 18px; font-weight: 800; }
+  .x3-well-item:nth-child(1) .x3-well-val { color: var(--trail); }
+  .x3-well-item:nth-child(2) .x3-well-val { color: var(--earth); }
+  .x3-well-item:nth-child(3) .x3-well-val { color: #F59E0B; }
+  .x3-well-label { font-size: 8px; color: var(--rock); text-transform: uppercase; font-weight: 600; margin-top: 1px; }
+
+  /* Footer */
+  .x3-footer { text-align: center; margin-top: 20px; }
+  .x3-footer-text { font-size: 10px; color: var(--rock); }
+  .x3-footer-motto { font-size: 12px; color: var(--earth); font-weight: 600; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== X1: THE REPORT CARD ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">X1 — The Report Card</div>
+  <div class="dsc">One full dark card IS the weekly summary. Giant hero number (volume lifted). Stats with dividers. Highlight + weight. PRs + wellness. Like opening an envelope to see your results. Everything in one premium card.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x1-hdr"><div class="back">←</div><span class="x1-hdr-title">Weekly Summary</span></div>
+
+    <div class="x1-card">
+      <div class="x1-accent"><div class="x1-al"></div><div class="x1-al"></div><div class="x1-al"></div></div>
+      <div class="x1-date">Mar 18 – Mar 24</div>
+      <div class="x1-title">This Week</div>
+      <div class="x1-msg">Crushing it! 💪</div>
+
+      <div class="x1-hero-num">
+        <div class="x1-hero-val">2.4 <span class="x1-hero-unit">tons</span></div>
+        <div class="x1-hero-label">Total volume lifted</div>
+      </div>
+
+      <div class="x1-div"></div>
+
+      <div class="x1-stats">
+        <div class="x1-st"><div class="x1-st-val">4</div><div class="x1-st-label">Workouts</div></div>
+        <div class="x1-st"><div class="x1-st-val green">80%</div><div class="x1-st-label">Completion</div></div>
+        <div class="x1-st"><div class="x1-st-val amber">12d</div><div class="x1-st-label">Streak</div></div>
+      </div>
+
+      <div class="x1-div2"></div>
+
+      <div class="x1-hl">
+        <div><div class="x1-hl-label">Best Lift</div><div class="x1-hl-val">Bench — 80 kg</div></div>
+        <div class="x1-hl-right"><div class="x1-hl-weight">Weight Change</div><div class="x1-hl-change">-0.8 kg</div></div>
+      </div>
+
+      <div class="x1-div3"></div>
+
+      <div class="x1-prs"><div class="x1-pr-label">Personal Records</div>
+        <div class="x1-pr"><span class="x1-pr-name">Bench Press</span><span class="x1-pr-val">80 kg</span></div>
+        <div class="x1-pr"><span class="x1-pr-name">Squat</span><span class="x1-pr-val">105 kg</span></div>
+      </div>
+
+      <div class="x1-div4"></div>
+
+      <div class="x1-well">
+        <div class="x1-w"><div class="x1-w-val">4.5</div><div class="x1-w-label">Sleep</div></div>
+        <div class="x1-w"><div class="x1-w-val">3.8</div><div class="x1-w-label">Energy</div></div>
+        <div class="x1-w"><div class="x1-w-val">2.0</div><div class="x1-w-label">Soreness</div></div>
+      </div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== X2: VISUAL COMPARISON ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">X2 — This vs Last Week</div>
+  <div class="dsc">Two columns: last week (muted stone) vs this week (dark + green highlights). See improvements at a glance. Wins are green. Highlight + wellness below.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x2-hdr"><div class="back">←</div><span class="x2-hdr-title">Weekly Summary</span></div>
+    <div class="x2-top"><div class="x2-title">This Week</div><div class="x2-msg">Crushing it! 💪</div><div class="x2-date">Mar 18 – Mar 24</div></div>
+
+    <div class="x2-compare">
+      <div class="x2-col">
+        <div class="x2-col-title">Last Week</div>
+        <div class="x2-metric"><div class="x2-m-val">3</div><div class="x2-m-label">Workouts</div></div>
+        <div class="x2-metric"><div class="x2-m-val">60%</div><div class="x2-m-label">Completion</div></div>
+        <div class="x2-metric"><div class="x2-m-val">2.1t</div><div class="x2-m-label">Volume</div></div>
+        <div class="x2-metric"><div class="x2-m-val">75.0</div><div class="x2-m-label">Weight kg</div></div>
+      </div>
+      <div class="x2-col">
+        <div class="x2-col-title">This Week</div>
+        <div class="x2-metric highlight"><div class="x2-m-val">4</div><div class="x2-m-label">Workouts ▲</div></div>
+        <div class="x2-metric highlight"><div class="x2-m-val">80%</div><div class="x2-m-label">Completion ▲</div></div>
+        <div class="x2-metric highlight"><div class="x2-m-val">2.4t</div><div class="x2-m-label">Volume +12%</div></div>
+        <div class="x2-metric highlight"><div class="x2-m-val">74.2</div><div class="x2-m-label">Weight -0.8</div></div>
+      </div>
+    </div>
+
+    <div class="x2-bottom">
+      <div class="x2-sec-label">Highlight</div>
+      <div class="x2-hl-card"><div class="x2-hl-label">Best Lift · PR</div><div class="x2-hl-val">Bench Press — 80 kg</div></div>
+
+      <div class="x2-sec-label">Wellness</div>
+      <div class="x2-well"><div class="x2-wc"><div class="x2-wc-val">4.5</div><div class="x2-wc-label">Sleep</div></div><div class="x2-wc"><div class="x2-wc-val">3.8</div><div class="x2-wc-label">Energy</div></div><div class="x2-wc"><div class="x2-wc-val">2.0</div><div class="x2-wc-label">Soreness</div></div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== X3: THE RECEIPT ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">X3 — The Receipt</div>
+  <div class="dsc">Looks like a purchase receipt. Header, line items, total, PRs, wellness — all in dashed-line sections. Everyone knows how to read a receipt. Most familiar format.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x3-hdr"><div class="back">←</div><span class="x3-hdr-title">Weekly Summary</span></div>
+
+    <div class="x3-receipt">
+      <div class="x3-r-header">
+        <div class="x3-r-title">This Week</div>
+        <div class="x3-r-date">Mar 18 – Mar 24</div>
+        <div class="x3-r-msg">Crushing it! 💪</div>
+      </div>
+
+      <div class="x3-items">
+        <div class="x3-item"><span class="x3-item-name">Workouts</span><span class="x3-item-val">4</span></div>
+        <div class="x3-item"><span class="x3-item-name">Completion</span><span class="x3-item-val green">80%</span></div>
+        <div class="x3-item"><span class="x3-item-name">Streak</span><span class="x3-item-val amber">12 days</span></div>
+        <div class="x3-item"><span class="x3-item-name">Weight Change</span><span class="x3-item-val green">-0.8 kg</span></div>
+      </div>
+
+      <div class="x3-total">
+        <div class="x3-total-row"><span class="x3-total-label">Total Volume</span><span class="x3-total-val">2.4 <span>tons</span></span></div>
+        <div class="x3-total-sub">▲ 12% vs last week</div>
+      </div>
+
+      <div class="x3-prs"><div class="x3-pr-title">Personal Records</div>
+        <div class="x3-pr"><span class="x3-pr-name">Bench Press</span><span class="x3-pr-val">80 kg</span></div>
+        <div class="x3-pr"><span class="x3-pr-name">Squat</span><span class="x3-pr-val">105 kg</span></div>
+      </div>
+
+      <div class="x3-wellness"><div class="x3-well-title">Wellness Averages</div>
+        <div class="x3-well-row"><div class="x3-well-item"><div class="x3-well-val">4.5</div><div class="x3-well-label">Sleep</div></div><div class="x3-well-item"><div class="x3-well-val">3.8</div><div class="x3-well-label">Energy</div></div><div class="x3-well-item"><div class="x3-well-val">2.0</div><div class="x3-well-label">Soreness</div></div></div>
+      </div>
+
+      <div class="x3-footer"><div class="x3-footer-text">Powered by Repped</div><div class="x3-footer-motto">Every rep counts.</div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

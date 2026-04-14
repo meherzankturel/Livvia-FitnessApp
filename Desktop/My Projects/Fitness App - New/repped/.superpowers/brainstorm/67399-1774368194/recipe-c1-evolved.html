@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — C1 Evolved</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; --hb: 2.4s; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     V1: POLISHED TRAIL — The C1 you liked, elevated.
+     Better proportions. Breathing icon hints. Richer checklist.
+     Steps with altitude tags. Active step has a glow.
+     ============================================================ */
+
+  .v1-hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .v1-video { padding: 6px 14px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 6px; cursor: pointer; transition: transform 0.15s; }
+  .v1-video:active { transform: scale(0.94); }
+  .v1-video svg { width: 10px; height: 10px; fill: var(--sand); }
+  .v1-video span { font-size: 10px; font-weight: 600; color: var(--sand); }
+
+  .v1-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; padding: 16px 24px 0; }
+  .v1-name { font-size: 30px; font-weight: 700; color: var(--earth); letter-spacing: -1px; line-height: 1.08; padding: 6px 24px 0; }
+
+  /* Time bento — 3 small widgets inline */
+  .v1-time-row { display: flex; gap: 8px; padding: 16px 24px 0; }
+  .v1-tw { padding: 10px 16px; border-radius: 14px; display: flex; align-items: baseline; gap: 4px; }
+  .v1-tw:nth-child(1) { background: var(--earth); }
+  .v1-tw:nth-child(2) { background: var(--stone); }
+  .v1-tw:nth-child(3) { background: var(--stone); }
+  .v1-tw .v { font-size: 18px; font-weight: 800; }
+  .v1-tw:nth-child(1) .v { color: var(--sand); }
+  .v1-tw:nth-child(2) .v, .v1-tw:nth-child(3) .v { color: var(--earth); }
+  .v1-tw .l { font-size: 9px; }
+  .v1-tw:nth-child(1) .l { color: rgba(246,245,240,0.35); }
+  .v1-tw:nth-child(2) .l, .v1-tw:nth-child(3) .l { color: var(--rock); }
+
+  /* Gear checklist — white card, checkable */
+  .v1-gear { margin: 16px 24px 0; border-radius: 22px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+  .v1-gear-head { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .v1-gear-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v1-gear-count { font-size: 10px; font-weight: 600; color: var(--sand); background: var(--earth); padding: 3px 10px; border-radius: 100px; }
+  .v1-gear-list { padding: 0 20px 16px; }
+
+  .v1-gi {
+    display: flex; align-items: center; gap: 12px; padding: 11px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.03); cursor: pointer;
+    transition: opacity 0.25s;
+  }
+  .v1-gi:last-child { border-bottom: none; }
+  .v1-gi.checked { opacity: 0.3; }
+  .v1-gi.checked .v1-gi-name { text-decoration: line-through; }
+
+  .v1-gi-check {
+    width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--stone);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v1-gi.checked .v1-gi-check { background: var(--trail); border-color: var(--trail); transform: scale(1.05); }
+  .v1-gi-checkmark { font-size: 11px; color: #fff; opacity: 0; transition: opacity 0.2s; font-weight: 700; }
+  .v1-gi.checked .v1-gi-checkmark { opacity: 1; }
+
+  .v1-gi-name { font-size: 15px; color: var(--earth); font-weight: 500; flex: 1; }
+  .v1-gi-amount { font-size: 13px; color: var(--rock); font-weight: 500; }
+
+  /* Trail section */
+  .v1-trail { padding: 22px 24px 0; position: relative; }
+  .v1-trail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .v1-trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v1-trail-progress { font-size: 10px; color: var(--rock); font-weight: 500; }
+
+  /* The trail line */
+  .v1-line { position: absolute; left: 35px; top: 58px; bottom: 60px; width: 2px; background: var(--stone); z-index: 0; }
+  /* Animated pulse */
+  .v1-pulse { position: absolute; left: 34px; top: 58px; width: 4px; height: 24px; border-radius: 2px; background: var(--trail); opacity: 0; animation: v1Pulse 4s ease-in-out infinite; z-index: 1; }
+  @keyframes v1Pulse { 0% { top: 58px; opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { top: calc(100% - 80px); opacity: 0; } }
+
+  /* Waypoint */
+  .v1-wp {
+    display: flex; gap: 14px; margin-bottom: 14px; position: relative; z-index: 2;
+    cursor: pointer;
+  }
+
+  .v1-wp-marker {
+    width: 24px; height: 24px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; flex-shrink: 0; margin-top: 14px;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 2;
+  }
+  .v1-wp .v1-wp-marker { background: var(--sand); border: 2px solid var(--stone); color: var(--rock); }
+  .v1-wp.active .v1-wp-marker { border-color: var(--trail); color: var(--trail); background: rgba(52,211,153,0.08); transform: scale(1.15); }
+  .v1-wp.done .v1-wp-marker { background: var(--earth); border-color: var(--earth); color: var(--sand); }
+
+  .v1-wp-card {
+    flex: 1; padding: 16px 18px; border-radius: 18px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v1-wp.active .v1-wp-card {
+    border-color: rgba(52,211,153,0.12);
+    box-shadow: 0 6px 24px rgba(52,211,153,0.06);
+  }
+  .v1-wp.done .v1-wp-card { opacity: 0.4; }
+  .v1-wp.done .v1-wp-text { text-decoration: line-through; }
+
+  .v1-wp-text { font-size: 15px; color: var(--earth); line-height: 1.55; font-weight: 400; }
+
+  /* Altitude tag — shows cumulative effort */
+  .v1-wp-alt { font-size: 9px; color: var(--rock); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .v1-wp-alt-dot { width: 4px; height: 4px; border-radius: 50%; background: var(--stone); }
+  .v1-wp.active .v1-wp-alt { color: var(--trail); }
+  .v1-wp.active .v1-wp-alt-dot { background: var(--trail); }
+
+  /* Summit */
+  .v1-summit { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding-bottom: 20px; position: relative; z-index: 2; }
+  .v1-summit-marker { width: 24px; height: 24px; border-radius: 50%; background: rgba(52,211,153,0.08); border: 2px solid rgba(52,211,153,0.15); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .v1-summit-text { font-size: 12px; color: var(--trail); font-weight: 600; }
+
+
+  /* ============================================================
+     V2: DARK HERO TRAIL — Hero card holds identity.
+     Steps have a thicker, more visible trail with bigger markers.
+     Active step card is slightly larger. Done steps collapse.
+     ============================================================ */
+
+  .v2-hero {
+    margin: 12px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  .v2-ring { position: absolute; top: -30px; right: -30px; width: 130px; height: 130px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); animation: v2Ring 18s linear infinite; }
+  @keyframes v2Ring { to { transform: rotate(360deg); } }
+  .v2-ring-in { position: absolute; top: -18px; right: -18px; width: 108px; height: 108px; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); animation: v2RingI 12s linear infinite reverse; }
+  @keyframes v2RingI { to { transform: rotate(330deg); } }
+
+  .v2-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v2-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; margin-top: 6px; position: relative; }
+
+  .v2-hero-meta { display: flex; gap: 8px; margin-top: 14px; position: relative; }
+  .v2-hm-pill { padding: 6px 14px; border-radius: 10px; background: rgba(246,245,240,0.06); display: flex; align-items: center; gap: 4px; }
+  .v2-hm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .v2-hm-unit { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  .v2-hero-video { margin-top: 12px; display: flex; align-items: center; gap: 8px; cursor: pointer; position: relative; }
+  .v2-hv-dot { width: 24px; height: 24px; border-radius: 50%; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; }
+  .v2-hv-dot svg { width: 8px; height: 8px; fill: var(--sand); }
+  .v2-hv-text { font-size: 11px; color: rgba(246,245,240,0.4); }
+
+  /* Ingredients — compact checkable list */
+  .v2-ing { margin: 12px 24px 0; padding: 16px 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .v2-ing-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .v2-ing-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .v2-ing-count { font-size: 9px; font-weight: 600; color: var(--rock); }
+
+  .v2-ii { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); cursor: pointer; transition: opacity 0.2s; }
+  .v2-ii:last-child { border-bottom: none; }
+  .v2-ii.checked { opacity: 0.25; }
+  .v2-ii.checked .v2-ii-name { text-decoration: line-through; }
+  .v2-ii-check { width: 18px; height: 18px; border-radius: 5px; border: 1.5px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .v2-ii.checked .v2-ii-check { background: var(--trail); border-color: var(--trail); }
+  .v2-ii-cm { font-size: 9px; color: #fff; opacity: 0; font-weight: 700; }
+  .v2-ii.checked .v2-ii-cm { opacity: 1; }
+  .v2-ii-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .v2-ii-amount { font-size: 11px; color: var(--rock); }
+
+  /* Trail — thicker, more visible */
+  .v2-trail { padding: 18px 24px 0; position: relative; }
+  .v2-trail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .v2-trail-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .v2-tline { position: absolute; left: 37px; top: 54px; bottom: 60px; width: 3px; border-radius: 2px; background: var(--stone); z-index: 0; }
+  .v2-tline-fill { width: 100%; border-radius: 2px; background: var(--earth); transition: height 0.5s cubic-bezier(0.16,1,0.3,1); }
+  .v2-tpulse { position: absolute; left: 36px; width: 5px; height: 20px; border-radius: 3px; background: var(--trail); opacity: 0; animation: v2Pulse 4s ease-in-out infinite; z-index: 1; }
+  @keyframes v2Pulse { 0% { top: 54px; opacity: 0; } 10% { opacity: 0.5; } 90% { opacity: 0.5; } 100% { top: calc(100% - 80px); opacity: 0; } }
+
+  .v2-wp { display: flex; gap: 14px; margin-bottom: 12px; position: relative; z-index: 2; cursor: pointer; }
+
+  .v2-wp-marker {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 12px;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v2-wp .v2-wp-marker { background: var(--sand); border: 2.5px solid var(--stone); color: var(--rock); }
+  .v2-wp.active .v2-wp-marker { border-color: var(--trail); color: #fff; background: var(--trail); transform: scale(1.2); box-shadow: 0 0 12px rgba(52,211,153,0.25); }
+  .v2-wp.done .v2-wp-marker { background: var(--earth); border-color: var(--earth); color: var(--sand); }
+
+  .v2-wp-card {
+    flex: 1; border-radius: 18px; overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v2-wp .v2-wp-card { background: #fff; border: 1px solid rgba(0,0,0,0.04); padding: 14px 16px; }
+  .v2-wp.active .v2-wp-card { background: #fff; border-color: rgba(52,211,153,0.1); box-shadow: 0 6px 24px rgba(52,211,153,0.05); padding: 18px 18px; }
+  .v2-wp.done .v2-wp-card { background: var(--stone); border-color: transparent; padding: 12px 16px; }
+
+  .v2-wp-text { font-size: 14px; color: var(--earth); line-height: 1.55; transition: all 0.3s; }
+  .v2-wp.active .v2-wp-text { font-size: 16px; font-weight: 500; }
+  .v2-wp.done .v2-wp-text { font-size: 13px; opacity: 0.5; text-decoration: line-through; }
+
+  .v2-summit { display: flex; align-items: center; gap: 14px; margin-top: 4px; padding-bottom: 20px; position: relative; z-index: 2; }
+  .v2-summit-m { width: 28px; height: 28px; border-radius: 50%; background: rgba(52,211,153,0.06); border: 2px solid rgba(52,211,153,0.12); display: flex; align-items: center; justify-content: center; font-size: 12px; }
+  .v2-summit-t { font-size: 12px; color: var(--trail); font-weight: 600; }
+
+
+  /* ============================================================
+     V3: EXPEDITION JOURNAL — Feels like a page from a field journal.
+     Handwritten-feel numbers. Ingredient amounts in margin.
+     Steps flow like prose with large drop-cap numbers.
+     Warm, personal, like someone wrote this recipe for you.
+     ============================================================ */
+
+  .v3-hdr { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .v3-video { padding: 6px 14px; border-radius: 100px; background: rgba(45,42,36,0.04); display: flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+  .v3-name { font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.03; padding: 14px 24px 0; }
+  .v3-sub { font-size: 12px; color: var(--rock); padding: 6px 24px 0; }
+
+  .v3-meta { display: flex; gap: 20px; padding: 18px 24px 0; }
+  .v3-meta-item {}
+  .v3-meta-val { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .v3-meta-unit { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+  .v3-rule { height: 2px; background: var(--earth); margin: 20px 24px; opacity: 0.06; }
+
+  /* Ingredients — margin-note style */
+  .v3-ing-section { padding: 0 24px; }
+  .v3-ing-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 12px; }
+
+  .v3-ing {
+    display: flex; align-items: baseline; padding: 6px 0; cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .v3-ing.checked { opacity: 0.25; }
+  .v3-ing.checked .v3-ing-name { text-decoration: line-through; }
+
+  .v3-ing-amount { width: 90px; font-size: 13px; color: var(--rock); text-align: right; padding-right: 14px; flex-shrink: 0; font-weight: 500; }
+  .v3-ing-divider { width: 1px; height: 16px; background: var(--stone); flex-shrink: 0; margin-right: 14px; }
+  .v3-ing-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+
+  .v3-rule-thin { height: 1px; background: var(--stone); margin: 18px 24px; }
+
+  /* Steps — prose style with drop-cap numbers */
+  .v3-steps { padding: 0 24px; }
+  .v3-steps-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-bottom: 14px; }
+
+  .v3-step { margin-bottom: 22px; position: relative; }
+  .v3-step-num {
+    font-size: 52px; font-weight: 900; color: rgba(45,42,36,0.04);
+    float: left; line-height: 0.8; margin-right: 10px; margin-top: 4px;
+    letter-spacing: -2px;
+  }
+  .v3-step-text { font-size: 16px; color: var(--earth); line-height: 1.7; font-weight: 400; }
+
+  .v3-done-strip {
+    margin: 10px 24px 0; padding: 14px 18px; border-radius: 16px;
+    background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.08);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .v3-done-check { width: 24px; height: 24px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 12px; color: #fff; font-weight: 700; }
+  .v3-done-text { font-size: 13px; color: #047857; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== V1: POLISHED TRAIL ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">V1 — Polished Trail</div>
+  <div class="dsc">Better proportions. Time widgets. Richer checkboxes with green fill + checkmark. Steps with altitude tags. Active step has green glow border. Video pill in header. Tap ingredients + steps.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="v1-hdr"><div class="back">←</div><div class="v1-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg><span>Video</span></div></div>
+
+    <div class="v1-label">Breakfast Recipe</div>
+    <div class="v1-name">Veggie Stir Fry<br>with Tofu</div>
+
+    <div class="v1-time-row">
+      <div class="v1-tw"><span class="v">10</span><span class="l">min prep</span></div>
+      <div class="v1-tw"><span class="v">12</span><span class="l">min cook</span></div>
+      <div class="v1-tw"><span class="v">Easy</span><span class="l"></span></div>
+    </div>
+
+    <div class="v1-gear"><div class="v1-gear-head"><span class="v1-gear-title">Ingredients</span><span class="v1-gear-count">8</span></div><div class="v1-gear-list">
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Firm tofu</span><span class="v1-gi-amount">½ block cubed</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Broccoli</span><span class="v1-gi-amount">1 cup florets</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Bell pepper</span><span class="v1-gi-amount">1 sliced</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Snap peas</span><span class="v1-gi-amount">½ cup</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Teriyaki sauce</span><span class="v1-gi-amount">2 tbsp</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">White rice</span><span class="v1-gi-amount">1 cup cooked</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Sesame oil</span><span class="v1-gi-amount">1 tbsp</span></div>
+      <div class="v1-gi" onclick="this.classList.toggle('checked')"><div class="v1-gi-check"><span class="v1-gi-checkmark">✓</span></div><span class="v1-gi-name">Garlic</span><span class="v1-gi-amount">2 cloves</span></div>
+    </div></div>
+
+    <div class="v1-trail"><div class="v1-trail-head"><span class="v1-trail-title">Route</span><span class="v1-trail-progress">1 of 4 done</span></div>
+      <div class="v1-line"></div><div class="v1-pulse"></div>
+
+      <div class="v1-wp done" onclick="this.className='v1-wp done'"><div class="v1-wp-marker">✓</div><div class="v1-wp-card"><div class="v1-wp-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="v1-wp-alt"><span>Base camp</span><div class="v1-wp-alt-dot"></div><span>~4 min</span></div></div></div>
+      <div class="v1-wp active"><div class="v1-wp-marker">2</div><div class="v1-wp-card"><div class="v1-wp-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div><div class="v1-wp-alt"><span>Waypoint 2</span><div class="v1-wp-alt-dot"></div><span>~3 min</span></div></div></div>
+      <div class="v1-wp"><div class="v1-wp-marker">3</div><div class="v1-wp-card"><div class="v1-wp-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.</div><div class="v1-wp-alt"><span>Waypoint 3</span><div class="v1-wp-alt-dot"></div><span>~2 min</span></div></div></div>
+      <div class="v1-wp"><div class="v1-wp-marker">4</div><div class="v1-wp-card"><div class="v1-wp-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div><div class="v1-wp-alt"><span>Summit</span><div class="v1-wp-alt-dot"></div><span>~1 min</span></div></div></div>
+
+      <div class="v1-summit"><div class="v1-summit-marker">🏁</div><div class="v1-summit-text">Dish complete — enjoy!</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== V2: DARK HERO TRAIL ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">V2 — Dark Hero Trail</div>
+  <div class="dsc">Dark hero card with rotating ring (matches nutrition screen). Compact ingredient checklist. Thicker trail line. Active step marker GLOWS green and scales up. Done steps collapse smaller. Tap ingredients.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div style="padding:54px 24px 0;"><div class="back">←</div></div>
+
+    <div class="v2-hero"><div class="v2-ring"></div><div class="v2-ring-in"></div>
+      <div class="v2-label">Breakfast Recipe</div>
+      <div class="v2-name">Veggie Stir Fry<br>with Tofu</div>
+      <div class="v2-hero-meta">
+        <div class="v2-hm-pill"><span class="v2-hm-val">10</span><span class="v2-hm-unit">min prep</span></div>
+        <div class="v2-hm-pill"><span class="v2-hm-val">12</span><span class="v2-hm-unit">min cook</span></div>
+        <div class="v2-hm-pill"><span class="v2-hm-val">Easy</span></div>
+      </div>
+      <div class="v2-hero-video"><div class="v2-hv-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span class="v2-hv-text">Watch Recipe Video</span></div>
+    </div>
+
+    <div class="v2-ing"><div class="v2-ing-head"><span class="v2-ing-title">Ingredients</span><span class="v2-ing-count">8 items</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Firm tofu</span><span class="v2-ii-amount">½ block</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Broccoli</span><span class="v2-ii-amount">1 cup</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Bell pepper</span><span class="v2-ii-amount">1 sliced</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Snap peas</span><span class="v2-ii-amount">½ cup</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Teriyaki sauce</span><span class="v2-ii-amount">2 tbsp</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">White rice</span><span class="v2-ii-amount">1 cup</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Sesame oil</span><span class="v2-ii-amount">1 tbsp</span></div>
+      <div class="v2-ii" onclick="this.classList.toggle('checked')"><div class="v2-ii-check"><span class="v2-ii-cm">✓</span></div><span class="v2-ii-name">Garlic</span><span class="v2-ii-amount">2 cloves</span></div>
+    </div>
+
+    <div class="v2-trail"><div class="v2-trail-head"><span class="v2-trail-title">Route</span></div>
+      <div class="v2-tline"><div class="v2-tline-fill" style="height:25%;"></div></div><div class="v2-tpulse"></div>
+
+      <div class="v2-wp done"><div class="v2-wp-marker">✓</div><div class="v2-wp-card"><div class="v2-wp-text">Press tofu. Pan-fry in sesame oil until golden.</div></div></div>
+      <div class="v2-wp active"><div class="v2-wp-marker">2</div><div class="v2-wp-card"><div class="v2-wp-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div></div></div>
+      <div class="v2-wp"><div class="v2-wp-marker">3</div><div class="v2-wp-card"><div class="v2-wp-text">Return tofu. Pour teriyaki sauce and toss to coat.</div></div></div>
+      <div class="v2-wp"><div class="v2-wp-marker">4</div><div class="v2-wp-card"><div class="v2-wp-text">Serve over rice. Garnish with sesame seeds.</div></div></div>
+
+      <div class="v2-summit"><div class="v2-summit-m">🏁</div><div class="v2-summit-t">Dish complete!</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== V3: EXPEDITION JOURNAL ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">V3 — Expedition Journal</div>
+  <div class="dsc">Feels like a personal field journal. Big bold name. Oversized time numbers. Ingredients with amounts as margin notes (left column). Steps with 52px drop-cap ghost numbers flowing like prose. Tap ingredients to check off.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="v3-hdr"><div class="back">←</div><div class="v3-video">▶ Video</div></div>
+
+    <div class="v3-name">Veggie Stir Fry<br>with Tofu</div>
+    <div class="v3-sub">Breakfast · Easy · 22 min total</div>
+
+    <div class="v3-meta">
+      <div class="v3-meta-item"><div class="v3-meta-val">10</div><div class="v3-meta-unit">min prep</div></div>
+      <div class="v3-meta-item"><div class="v3-meta-val">12</div><div class="v3-meta-unit">min cook</div></div>
+    </div>
+
+    <div class="v3-rule"></div>
+
+    <div class="v3-ing-section">
+      <div class="v3-ing-label">Ingredients</div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">½ block</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Firm tofu, cubed</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">1 cup</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Broccoli florets</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">1 sliced</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Bell pepper</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">½ cup</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Snap peas</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">2 tbsp</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Teriyaki sauce</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">1 cup</span><div class="v3-ing-divider"></div><span class="v3-ing-name">White rice, cooked</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">1 tbsp</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Sesame oil</span></div>
+      <div class="v3-ing" onclick="this.classList.toggle('checked')"><span class="v3-ing-amount">2 cloves</span><div class="v3-ing-divider"></div><span class="v3-ing-name">Garlic, minced</span></div>
+    </div>
+
+    <div class="v3-rule-thin"></div>
+
+    <div class="v3-steps">
+      <div class="v3-steps-label">Steps</div>
+      <div class="v3-step"><div class="v3-step-num">1</div><div class="v3-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil over medium-high heat until golden on all sides, about 4 minutes.</div></div>
+      <div class="v3-step"><div class="v3-step-num">2</div><div class="v3-step-text">Remove tofu and set aside. Add broccoli, bell pepper, snap peas and minced garlic to the hot pan. Stir-fry for 3-4 minutes until crisp-tender.</div></div>
+      <div class="v3-step"><div class="v3-step-num">3</div><div class="v3-step-text">Return the tofu to the pan. Pour teriyaki sauce over everything and toss gently to coat all pieces evenly.</div></div>
+      <div class="v3-step"><div class="v3-step-num">4</div><div class="v3-step-text">Serve immediately over fluffy white rice. Garnish with a sprinkle of sesame seeds if desired.</div></div>
+    </div>
+
+    <div class="v3-done-strip">
+      <div class="v3-done-check">✓</div>
+      <div class="v3-done-text">Ready to cook — enjoy your meal!</div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

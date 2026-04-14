@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Premium Ingredient Lists</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Compact hero */
+.top{padding:56px 24px 0;display:flex;align-items:center;position:relative}
+.bk{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:24px;z-index:2}
+.tp{font-size:12px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;text-align:center;width:100%}
+.aw{display:flex;justify-content:center;margin-top:-4px}
+.ab{width:200px;height:175px}
+.hn{padding:0 20px;font-size:26px;font-weight:800;color:var(--earth);letter-spacing:-1.2px;line-height:1;text-align:center;margin-top:-10px}
+.hs{text-align:center;padding:4px 24px 0;font-size:11px;color:var(--rock)}
+.hs strong{color:var(--earth);font-weight:700}
+.hv{display:flex;justify-content:center;padding:5px 0 0}
+.vp{padding:4px 12px;border-radius:100px;background:var(--earth);font-size:10px;font-weight:600;color:var(--trail);cursor:pointer}
+
+/* Steps placeholder */
+.sp{padding:14px 24px 0}
+.sp-h{display:flex;justify-content:space-between;margin-bottom:6px}
+.sp-t{font-size:12px;font-weight:700;color:var(--earth)}
+.sp-s{font-size:10px;color:var(--rock)}
+.sp-r{height:50px;border-radius:12px;background:var(--stone);opacity:0.12;margin-bottom:6px}
+
+/* Section head */
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.st{font-size:13px;font-weight:700;color:var(--earth)}
+.sc{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   L1: CLEAN DIVIDER LIST
+   Name left (medium weight). Amount right (semi-bold).
+   Hair-thin dividers. No icons, no dots. Pure typography.
+   The Apple Settings list approach.
+   ============================================================ */
+.l1{padding:14px 24px 0}
+.l1-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:0.5px solid rgba(0,0,0,0.06)}
+.l1-row:last-child{border-bottom:none}
+.l1-name{font-size:15px;font-weight:500;color:var(--earth);letter-spacing:-0.2px}
+.l1-amt{font-size:13px;font-weight:600;color:var(--earth);opacity:0.5}
+
+
+/* ============================================================
+   L2: INSET GROUPED
+   Items inside a white rounded card (iOS grouped table style).
+   Each row has thin separator inset from left. Clean, native.
+   ============================================================ */
+.l2{padding:14px 20px 0}
+.l2-card{background:#fff;border-radius:16px;overflow:hidden}
+.l2-row{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-bottom:0.5px solid rgba(0,0,0,0.05)}
+.l2-row:last-child{border-bottom:none}
+.l2-name{font-size:15px;font-weight:500;color:var(--earth);letter-spacing:-0.2px}
+.l2-amt{font-size:13px;color:var(--rock)}
+
+
+/* ============================================================
+   L3: ACCENT DOT + BOLD AMOUNT
+   Small trail-green dot left. Name. Amount bold right.
+   Generous padding. Airy, premium spacing. Like a menu.
+   ============================================================ */
+.l3{padding:14px 24px 0}
+.l3-row{display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l3-row:last-child{border-bottom:none}
+.l3-dot{width:6px;height:6px;border-radius:3px;background:var(--trail);opacity:0.35;flex-shrink:0}
+.l3-name{flex:1;font-size:15px;font-weight:500;color:var(--earth);letter-spacing:-0.2px}
+.l3-amt{font-size:14px;font-weight:700;color:var(--earth)}
+.l3-unit{font-size:11px;font-weight:400;color:var(--rock);margin-left:2px}
+
+
+/* ============================================================
+   L4: LEADING NUMBER + STONE BG ROWS
+   Alternating sand/stone row backgrounds. Leading number
+   in trail green. Name. Amount. Subtle rhythm.
+   ============================================================ */
+.l4{padding:14px 20px 0}
+.l4-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:12px;margin-bottom:3px}
+.l4-row.even{background:var(--stone)}
+.l4-row.odd{background:transparent}
+.l4-num{font-size:12px;font-weight:800;color:var(--trail);width:18px;flex-shrink:0;opacity:0.6}
+.l4-name{flex:1;font-size:14px;font-weight:500;color:var(--earth);letter-spacing:-0.2px}
+.l4-amt{font-size:12px;color:var(--rock);font-weight:500}
+
+
+/* ============================================================
+   L5: TWO-LINE ROWS
+   Name on first line (bold). Amount + preparation on second
+   line (lighter, smaller). More detail per item. Magazine recipe.
+   ============================================================ */
+.l5{padding:14px 24px 0}
+.l5-row{padding:12px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l5-row:last-child{border-bottom:none}
+.l5-top{display:flex;align-items:center;justify-content:space-between}
+.l5-name{font-size:15px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.l5-qty{font-size:14px;font-weight:700;color:var(--earth)}
+.l5-prep{font-size:11px;color:var(--rock);margin-top:2px;padding-left:0}
+
+
+/* ============================================================
+   L6: WHITE CARD + CHECKLIST
+   iOS grouped card. Rounded checkboxes inside. Progress count
+   in header badge. Checked items fade. Most interactive.
+   ============================================================ */
+.l6{padding:14px 20px 0}
+.l6-card{background:#fff;border-radius:16px;overflow:hidden}
+.l6-card-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:0.5px solid rgba(0,0,0,0.05)}
+.l6-card-title{font-size:13px;font-weight:700;color:var(--earth)}
+.l6-badge{padding:3px 10px;border-radius:100px;background:rgba(52,211,153,0.08);font-size:9px;font-weight:700;color:var(--trail)}
+.l6-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:0.5px solid rgba(0,0,0,0.05);cursor:pointer;transition:opacity 0.15s}
+.l6-row:last-child{border-bottom:none}
+.l6-row.done{opacity:0.3}
+.l6-cb{width:22px;height:22px;border-radius:8px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.l6-cb.on{background:var(--trail);border-color:var(--trail)}
+.l6-ck{font-size:11px;color:#fff;font-weight:700}
+.l6-name{flex:1;font-size:15px;font-weight:500;color:var(--earth);letter-spacing:-0.2px;transition:all 0.15s}
+.l6-row.done .l6-name{text-decoration:line-through}
+.l6-amt{font-size:13px;color:var(--rock);transition:all 0.15s}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- L1 -->
+  <div>
+    <div class="col-label">L1 — CLEAN DIVIDER</div>
+    <div class="col-desc">Name left, amount right. Hair-thin dividers. No icons. Pure typography. Apple Settings style.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a1" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l1"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="l1-row"><span class="l1-name">Black beans</span><span class="l1-amt">1/2 can</span></div>
+        <div class="l1-row"><span class="l1-name">White rice</span><span class="l1-amt">1 cup</span></div>
+        <div class="l1-row"><span class="l1-name">Corn</span><span class="l1-amt">1/4 cup</span></div>
+        <div class="l1-row"><span class="l1-name">Avocado</span><span class="l1-amt">1/2</span></div>
+        <div class="l1-row"><span class="l1-name">Salsa</span><span class="l1-amt">3 tbsp</span></div>
+        <div class="l1-row"><span class="l1-name">Sour cream</span><span class="l1-amt">1 tbsp</span></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- L2 -->
+  <div>
+    <div class="col-label">L2 — INSET GROUPED CARD</div>
+    <div class="col-desc">White rounded card. Rows with inset dividers. iOS native grouped table feel. Clean, familiar.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a2" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l2"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="l2-card">
+          <div class="l2-row"><span class="l2-name">Black beans</span><span class="l2-amt">1/2 can</span></div>
+          <div class="l2-row"><span class="l2-name">White rice</span><span class="l2-amt">1 cup</span></div>
+          <div class="l2-row"><span class="l2-name">Corn</span><span class="l2-amt">1/4 cup</span></div>
+          <div class="l2-row"><span class="l2-name">Avocado</span><span class="l2-amt">1/2</span></div>
+          <div class="l2-row"><span class="l2-name">Salsa</span><span class="l2-amt">3 tbsp</span></div>
+          <div class="l2-row"><span class="l2-name">Sour cream</span><span class="l2-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- L3 -->
+  <div>
+    <div class="col-label">L3 — ACCENT DOT + BOLD QTY</div>
+    <div class="col-desc">Green dot left. Name. Bold amount right. Generous 14px padding. Airy, like a restaurant menu.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a3" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l3"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">Black beans</span><span class="l3-amt">1/2<span class="l3-unit"> can</span></span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">White rice</span><span class="l3-amt">1<span class="l3-unit"> cup</span></span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">Corn</span><span class="l3-amt">1/4<span class="l3-unit"> cup</span></span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">Avocado</span><span class="l3-amt">1/2</span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">Salsa</span><span class="l3-amt">3<span class="l3-unit"> tbsp</span></span></div>
+        <div class="l3-row"><span class="l3-dot"></span><span class="l3-name">Sour cream</span><span class="l3-amt">1<span class="l3-unit"> tbsp</span></span></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- L4 -->
+  <div>
+    <div class="col-label">L4 — ZEBRA ROWS</div>
+    <div class="col-desc">Alternating sand/stone backgrounds. Green number left. Subtle rhythm. Easy to scan down the list.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a4" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l4" style="padding-top:14px"><div class="sh" style="padding:0 16px"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="l4-row even"><span class="l4-num">1</span><span class="l4-name">Black beans</span><span class="l4-amt">1/2 can</span></div>
+        <div class="l4-row odd"><span class="l4-num">2</span><span class="l4-name">White rice</span><span class="l4-amt">1 cup</span></div>
+        <div class="l4-row even"><span class="l4-num">3</span><span class="l4-name">Corn</span><span class="l4-amt">1/4 cup</span></div>
+        <div class="l4-row odd"><span class="l4-num">4</span><span class="l4-name">Avocado</span><span class="l4-amt">1/2</span></div>
+        <div class="l4-row even"><span class="l4-num">5</span><span class="l4-name">Salsa</span><span class="l4-amt">3 tbsp</span></div>
+        <div class="l4-row odd"><span class="l4-num">6</span><span class="l4-name">Sour cream</span><span class="l4-amt">1 tbsp</span></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- L5 -->
+  <div>
+    <div class="col-label">L5 — TWO-LINE DETAIL</div>
+    <div class="col-desc">Name bold + quantity on line 1. Preparation note on line 2 (lighter). More info per row. Magazine recipe style.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a5" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l5"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">Black beans</span><span class="l5-qty">1/2 can</span></div><div class="l5-prep">drained and rinsed</div></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">White rice</span><span class="l5-qty">1 cup</span></div><div class="l5-prep">cooked according to package</div></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">Corn</span><span class="l5-qty">1/4 cup</span></div><div class="l5-prep">canned or frozen, thawed</div></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">Avocado</span><span class="l5-qty">1/2</span></div><div class="l5-prep">sliced or diced</div></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">Salsa</span><span class="l5-qty">3 tbsp</span></div><div class="l5-prep">mild or medium</div></div>
+        <div class="l5-row"><div class="l5-top"><span class="l5-name">Sour cream</span><span class="l5-qty">1 tbsp</span></div><div class="l5-prep">or Greek yogurt</div></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- L6 -->
+  <div>
+    <div class="col-label">L6 — CARD + CHECKLIST</div>
+    <div class="col-desc">White grouped card. Rounded checkboxes inside. Green progress badge. Checked items fade. Premium interactive.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a6" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="l6"><div class="l6-card">
+        <div class="l6-card-head"><span class="l6-card-title">Ingredients</span><span class="l6-badge">2 / 6 ready</span></div>
+        <div class="l6-row done"><div class="l6-cb on"><span class="l6-ck">✓</span></div><span class="l6-name">Black beans</span><span class="l6-amt">1/2 can</span></div>
+        <div class="l6-row done"><div class="l6-cb on"><span class="l6-ck">✓</span></div><span class="l6-name">White rice</span><span class="l6-amt">1 cup</span></div>
+        <div class="l6-row"><div class="l6-cb"></div><span class="l6-name">Corn</span><span class="l6-amt">1/4 cup</span></div>
+        <div class="l6-row"><div class="l6-cb"></div><span class="l6-name">Avocado</span><span class="l6-amt">1/2</span></div>
+        <div class="l6-row"><div class="l6-cb"></div><span class="l6-name">Salsa</span><span class="l6-amt">3 tbsp</span></div>
+        <div class="l6-row"><div class="l6-cb"></div><span class="l6-name">Sour cream</span><span class="l6-amt">1 tbsp</span></div>
+      </div></div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+['a1','a2','a3','a4','a5','a6'].forEach(function(id){
+  lottie.loadAnimation({container:document.getElementById(id),renderer:'svg',loop:true,autoplay:true,path:'/cooking-pan.json'});
+});
+</script>
+</body>
+</html>

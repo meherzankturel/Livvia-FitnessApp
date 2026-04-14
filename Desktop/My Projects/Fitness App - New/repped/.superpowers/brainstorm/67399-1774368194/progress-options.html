@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress Screen Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     P1: RING HERO + BENTO + HEATMAP + HORIZONTAL METRICS
+     ============================================================ */
+
+  .p1-hdr { padding: 56px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .p1-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 12px 24px 0; }
+
+  /* Dark hero with completion ring */
+  .p1-hero { margin: 14px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; display: flex; gap: 20px; align-items: center; }
+  .p1-hero-accent { position: absolute; top: 0; right: 0; width: 100px; height: 100px; pointer-events: none; }
+  .p1-hero-line { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .p1-hero-line:nth-child(1) { width: 120px; top: 16px; right: -10px; transform: rotate(-35deg); }
+  .p1-hero-line:nth-child(2) { width: 100px; top: 30px; right: -10px; transform: rotate(-35deg); }
+  .p1-hero-line:nth-child(3) { width: 80px; top: 44px; right: -10px; transform: rotate(-35deg); }
+
+  /* SVG Ring */
+  .p1-ring-wrap { width: 100px; height: 100px; position: relative; flex-shrink: 0; }
+  .p1-ring-wrap svg { width: 100px; height: 100px; transform: rotate(-90deg); }
+  .p1-ring-track { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 7; }
+  .p1-ring-fill { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 264; stroke-dashoffset: 264; animation: ringFill 1.5s cubic-bezier(0.16,1,0.3,1) 0.4s forwards; }
+  @keyframes ringFill { to { stroke-dashoffset: 66; } }
+  .p1-ring-pct { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .p1-ring-num { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .p1-ring-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .p1-hero-stats { flex: 1; position: relative; }
+  .p1-hero-title { font-size: 20px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .p1-hero-sub { font-size: 11px; color: rgba(246,245,240,0.35); margin-top: 4px; }
+  .p1-hero-row { display: flex; gap: 14px; margin-top: 14px; }
+  .p1-hs { }
+  .p1-hs-val { font-size: 20px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .p1-hs-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Bento widgets */
+  .p1-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 24px 0; }
+  .p1-widget { padding: 16px; border-radius: 20px; position: relative; overflow: hidden; }
+  .p1-widget.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p1-widget.stone { background: var(--stone); }
+
+  .p1-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p1-w-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+  .p1-w-sub { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .p1-w-trend { font-size: 10px; font-weight: 600; margin-top: 2px; }
+  .p1-w-trend.up { color: var(--trail); }
+  .p1-w-trend.down { color: #EF4444; }
+
+  /* Mini bar chart inside widget */
+  .p1-bars { display: flex; gap: 3px; align-items: flex-end; height: 28px; margin-top: 8px; }
+  .p1-bar { flex: 1; border-radius: 2px; background: var(--stone); }
+  .p1-widget.stone .p1-bar { background: rgba(45,42,36,0.06); }
+  .p1-bar.filled { background: var(--earth); opacity: 0.15; }
+  .p1-bar.active { background: var(--trail); }
+
+  /* Heatmap */
+  .p1-heat-section { padding: 18px 24px 0; }
+  .p1-heat-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .p1-heat-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .p1-heat-range { font-size: 10px; color: var(--rock); }
+
+  .p1-heat-card { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p1-heat-days { display: flex; gap: 1px; margin-bottom: 6px; padding-left: 2px; }
+  .p1-heat-day { width: 14px; text-align: center; font-size: 7px; color: var(--rock); font-weight: 600; }
+  .p1-heat-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .p1-hc { width: 14px; height: 14px; border-radius: 3px; }
+  .p1-hc.empty { background: var(--stone); }
+  .p1-hc.done { background: var(--earth); }
+  .p1-hc.today { background: var(--trail); }
+  .p1-heat-legend { display: flex; gap: 10px; margin-top: 10px; justify-content: center; }
+  .p1-heat-leg { display: flex; align-items: center; gap: 4px; font-size: 8px; color: var(--rock); }
+  .p1-heat-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+  /* Horizontal metric cards */
+  .p1-metrics { padding: 18px 0 0; }
+  .p1-metrics-head { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-bottom: 10px; }
+  .p1-metrics-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .p1-m-scroll { display: flex; gap: 10px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .p1-m-scroll::-webkit-scrollbar { display: none; }
+
+  .p1-m-card { min-width: 160px; padding: 18px; border-radius: 20px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .p1-m-card:last-child { margin-right: 24px; }
+  .p1-m-card.dark { background: var(--earth); }
+  .p1-m-card.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .p1-m-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p1-m-card.dark .p1-m-label { color: rgba(246,245,240,0.3); }
+  .p1-m-card.light .p1-m-label { color: var(--rock); }
+
+  .p1-m-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
+  .p1-m-card.dark .p1-m-val { color: var(--sand); }
+  .p1-m-card.light .p1-m-val { color: var(--earth); }
+  .p1-m-val span { font-size: 12px; font-weight: 500; letter-spacing: 0; }
+  .p1-m-card.dark .p1-m-val span { color: rgba(246,245,240,0.3); }
+  .p1-m-card.light .p1-m-val span { color: var(--rock); }
+
+  .p1-m-sub { font-size: 10px; margin-top: 3px; }
+  .p1-m-card.dark .p1-m-sub { color: rgba(246,245,240,0.25); }
+  .p1-m-card.light .p1-m-sub { color: var(--rock); }
+
+  /* Mini trend line inside card */
+  .p1-trend-line { margin-top: 10px; height: 24px; }
+  .p1-trend-line svg { width: 100%; height: 100%; }
+  .p1-trend-path { fill: none; stroke-width: 1.5; stroke-linecap: round; }
+  .p1-m-card.dark .p1-trend-path { stroke: var(--trail); opacity: 0.4; }
+  .p1-m-card.light .p1-trend-path { stroke: var(--earth); opacity: 0.15; }
+
+  /* PRs section */
+  .p1-pr-section { padding: 18px 24px 0; }
+  .p1-pr-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .p1-pr-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .p1-pr-count { font-size: 10px; color: var(--rock); }
+
+  .p1-pr { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p1-pr:last-child { border-bottom: none; }
+  .p1-pr-badge { width: 28px; height: 28px; border-radius: 9px; background: rgba(52,211,153,0.08); display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+  .p1-pr-info { flex: 1; }
+  .p1-pr-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .p1-pr-type { font-size: 10px; color: var(--rock); margin-top: 1px; }
+  .p1-pr-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .p1-pr-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+
+  /* Quick links */
+  .p1-links { display: flex; gap: 8px; padding: 20px 24px; }
+  .p1-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     P2: DARK DASHBOARD — Full dark hero section with ring +
+     stats. Light content below. Alternating dark/light cards.
+     ============================================================ */
+
+  .p2-dark-zone { background: var(--earth); padding: 56px 24px 24px; position: relative; overflow: hidden; border-radius: 0 0 28px 28px; }
+  .p2-dz-accent { position: absolute; top: 0; right: 0; width: 100px; height: 100px; }
+  .p2-dz-line { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .p2-dz-line:nth-child(1) { width: 120px; top: 56px; right: -10px; transform: rotate(-35deg); }
+  .p2-dz-line:nth-child(2) { width: 100px; top: 70px; right: -10px; transform: rotate(-35deg); }
+  .p2-dz-line:nth-child(3) { width: 80px; top: 84px; right: -10px; transform: rotate(-35deg); }
+
+  .p2-ctx { font-size: 10px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .p2-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+
+  /* Ring + stats row */
+  .p2-hero-row { display: flex; gap: 20px; align-items: center; margin-top: 18px; position: relative; }
+
+  .p2-ring-wrap { width: 90px; height: 90px; position: relative; flex-shrink: 0; }
+  .p2-ring-wrap svg { width: 90px; height: 90px; transform: rotate(-90deg); }
+  .p2-ring-track { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 6; }
+  .p2-ring-fill { fill: none; stroke: var(--trail); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 238; stroke-dashoffset: 238; animation: p2RingFill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes p2RingFill { to { stroke-dashoffset: 59; } }
+  .p2-ring-pct { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .p2-ring-num { font-size: 24px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .p2-ring-label { font-size: 7px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .p2-hero-stats { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .p2-hs { padding: 10px 12px; border-radius: 12px; background: rgba(246,245,240,0.04); }
+  .p2-hs-val { font-size: 18px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .p2-hs-label { font-size: 7px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 1px; }
+
+  /* Heatmap on dark */
+  .p2-heat { margin-top: 18px; padding: 14px; border-radius: 16px; background: rgba(246,245,240,0.03); position: relative; }
+  .p2-heat-label { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .p2-heat-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .p2-hc { width: 14px; height: 14px; border-radius: 3px; }
+  .p2-hc.empty { background: rgba(246,245,240,0.04); }
+  .p2-hc.done { background: rgba(246,245,240,0.15); }
+  .p2-hc.today { background: var(--trail); opacity: 0.6; }
+
+  /* Light content */
+  .p2-content { padding: 16px 24px 0; }
+  .p2-section-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  /* Weight card with trend line */
+  .p2-weight-card { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px; }
+  .p2-wc-top { display: flex; justify-content: space-between; align-items: center; }
+  .p2-wc-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p2-wc-btn { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+  .p2-wc-val { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .p2-wc-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .p2-wc-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p2-wc-chart { margin-top: 10px; height: 40px; }
+  .p2-wc-chart svg { width: 100%; height: 100%; }
+  .p2-wc-line { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; opacity: 0.15; }
+  .p2-wc-area { fill: url(#weightGrad); opacity: 0.06; }
+
+  /* 1RM cards — horizontal scroll */
+  .p2-rm-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; margin-bottom: 12px; }
+  .p2-rm-scroll::-webkit-scrollbar { display: none; }
+  .p2-rm-card { min-width: 140px; padding: 16px; border-radius: 18px; flex-shrink: 0; }
+  .p2-rm-card:last-child { margin-right: 0; }
+  .p2-rm-card:nth-child(odd) { background: var(--earth); }
+  .p2-rm-card:nth-child(even) { background: var(--stone); }
+  .p2-rm-name { font-size: 11px; font-weight: 600; }
+  .p2-rm-card:nth-child(odd) .p2-rm-name { color: rgba(246,245,240,0.4); }
+  .p2-rm-card:nth-child(even) .p2-rm-name { color: var(--rock); }
+  .p2-rm-val { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-top: 6px; }
+  .p2-rm-card:nth-child(odd) .p2-rm-val { color: var(--sand); }
+  .p2-rm-card:nth-child(even) .p2-rm-val { color: var(--earth); }
+  .p2-rm-val span { font-size: 10px; font-weight: 500; }
+  .p2-rm-card:nth-child(odd) .p2-rm-val span { color: rgba(246,245,240,0.3); }
+  .p2-rm-card:nth-child(even) .p2-rm-val span { color: var(--rock); }
+  .p2-rm-level { font-size: 9px; font-weight: 600; margin-top: 4px; }
+  .p2-rm-card:nth-child(odd) .p2-rm-level { color: var(--trail); opacity: 0.6; }
+  .p2-rm-card:nth-child(even) .p2-rm-level { color: var(--trail); }
+
+  /* PRs as numbered rows */
+  .p2-pr { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p2-pr:last-child { border-bottom: none; }
+  .p2-pr-badge { width: 24px; height: 24px; border-radius: 8px; background: rgba(52,211,153,0.06); display: flex; align-items: center; justify-content: center; font-size: 10px; flex-shrink: 0; }
+  .p2-pr-name { font-size: 14px; font-weight: 500; color: var(--earth); flex: 1; }
+  .p2-pr-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .p2-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .p2-links { display: flex; gap: 8px; padding: 16px 0; }
+  .p2-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     P3: CARD STREAM — Each metric is its own full-width card.
+     Mix of dark and light. Visual charts in each. Clean stream.
+     ============================================================ */
+
+  .p3-hdr { padding: 56px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .p3-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 12px 24px 0; }
+  .p3-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  .p3-stream { padding: 16px 24px 0; }
+
+  /* Completion card — dark with ring */
+  .p3-comp { padding: 22px; border-radius: 22px; background: var(--earth); display: flex; gap: 18px; align-items: center; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .p3-comp-accent { position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.03); }
+
+  .p3-comp-ring { width: 72px; height: 72px; position: relative; flex-shrink: 0; }
+  .p3-comp-ring svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+  .p3-cr-track { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 5; }
+  .p3-cr-fill { fill: none; stroke: var(--trail); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 188; stroke-dashoffset: 188; animation: p3RingFill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes p3RingFill { to { stroke-dashoffset: 47; } }
+  .p3-cr-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; color: var(--sand); letter-spacing: -0.5px; }
+
+  .p3-comp-info { position: relative; }
+  .p3-comp-title { font-size: 15px; font-weight: 700; color: var(--sand); }
+  .p3-comp-sub { font-size: 11px; color: rgba(246,245,240,0.35); margin-top: 3px; }
+  .p3-comp-stats { display: flex; gap: 14px; margin-top: 10px; }
+  .p3-cs-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .p3-cs-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Streak + Volume bento */
+  .p3-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+  .p3-duo-card { padding: 18px; border-radius: 20px; }
+  .p3-duo-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p3-duo-card.stone { background: var(--stone); }
+  .p3-dc-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p3-dc-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .p3-dc-sub { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .p3-dc-trend { font-size: 10px; font-weight: 600; color: var(--trail); margin-top: 2px; }
+
+  /* Heatmap card */
+  .p3-heat { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px; }
+  .p3-heat-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .p3-heat-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .p3-hc { width: 14px; height: 14px; border-radius: 3px; }
+  .p3-hc.empty { background: var(--stone); }
+  .p3-hc.done { background: var(--earth); }
+  .p3-hc.today { background: var(--trail); }
+
+  /* Weight card with chart */
+  .p3-weight { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px; }
+  .p3-w-top { display: flex; justify-content: space-between; align-items: center; }
+  .p3-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p3-w-btn { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+  .p3-w-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .p3-w-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .p3-w-chart { margin-top: 8px; height: 36px; }
+  .p3-w-chart svg { width: 100%; height: 100%; }
+
+  /* 1RM — dark card */
+  .p3-rm { padding: 18px; border-radius: 20px; background: var(--earth); margin-bottom: 12px; position: relative; overflow: hidden; }
+  .p3-rm-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .p3-rm-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 12px; position: relative; }
+  .p3-rm-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .p3-rm-row:last-child { border-bottom: none; }
+  .p3-rm-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .p3-rm-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .p3-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  /* Links */
+  .p3-links { display: flex; gap: 8px; margin-bottom: 12px; }
+  .p3-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== P1: RING HERO + BENTO ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">P1 — Ring Hero + Bento</div>
+  <div class="dsc">Dark hero with animated completion ring + key stats. Bento grid with mini bar charts. White heatmap card. Horizontal scrollable metric cards with trend lines. PR rows.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p1-ctx">Monday, Mar 24</div>
+
+    <!-- Dark hero with ring -->
+    <div class="p1-hero">
+      <div class="p1-hero-accent"><div class="p1-hero-line"></div><div class="p1-hero-line"></div><div class="p1-hero-line"></div></div>
+      <div class="p1-ring-wrap">
+        <svg viewBox="0 0 100 100"><circle class="p1-ring-track" cx="50" cy="50" r="42"/><circle class="p1-ring-fill" cx="50" cy="50" r="42"/></svg>
+        <div class="p1-ring-pct"><div class="p1-ring-num">75%</div><div class="p1-ring-label">Complete</div></div>
+      </div>
+      <div class="p1-hero-stats">
+        <div class="p1-hero-title">This Week</div>
+        <div class="p1-hero-sub">3 of 4 workouts done</div>
+        <div class="p1-hero-row">
+          <div class="p1-hs"><div class="p1-hs-val">12</div><div class="p1-hs-label">Day Streak</div></div>
+          <div class="p1-hs"><div class="p1-hs-val">2.4t</div><div class="p1-hs-label">Volume</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento widgets -->
+    <div class="p1-bento">
+      <div class="p1-widget white"><div class="p1-w-label">Total Workouts</div><div class="p1-w-val">47</div><div class="p1-w-sub">since you started</div></div>
+      <div class="p1-widget stone"><div class="p1-w-label">Volume Trend</div><div class="p1-w-val">2.4<span style="font-size:14px;">t</span></div><div class="p1-w-trend up">▲ 12% vs last week</div><div class="p1-bars"><div class="p1-bar filled" style="height:40%;"></div><div class="p1-bar filled" style="height:55%;"></div><div class="p1-bar filled" style="height:45%;"></div><div class="p1-bar filled" style="height:70%;"></div><div class="p1-bar filled" style="height:60%;"></div><div class="p1-bar filled" style="height:85%;"></div><div class="p1-bar active" style="height:100%;"></div></div></div>
+    </div>
+
+    <!-- Heatmap -->
+    <div class="p1-heat-section">
+      <div class="p1-heat-head"><span class="p1-heat-title">Activity</span><span class="p1-heat-range">12 weeks</span></div>
+      <div class="p1-heat-card">
+        <div class="p1-heat-days"><div class="p1-heat-day">M</div><div class="p1-heat-day">T</div><div class="p1-heat-day">W</div><div class="p1-heat-day">T</div><div class="p1-heat-day">F</div><div class="p1-heat-day">S</div><div class="p1-heat-day">S</div></div>
+        <div class="p1-heat-grid" id="p1Heat"></div>
+        <div class="p1-heat-legend"><div class="p1-heat-leg"><div class="p1-heat-leg-dot" style="background:var(--stone);"></div>Rest</div><div class="p1-heat-leg"><div class="p1-heat-leg-dot" style="background:var(--earth);"></div>Workout</div><div class="p1-heat-leg"><div class="p1-heat-leg-dot" style="background:var(--trail);"></div>Today</div></div>
+      </div>
+    </div>
+
+    <!-- Horizontal metrics -->
+    <div class="p1-metrics">
+      <div class="p1-metrics-head"><span class="p1-metrics-title">Key Metrics</span></div>
+      <div class="p1-m-scroll">
+        <div class="p1-m-card dark"><div class="p1-m-label">Weight</div><div class="p1-m-val">74.2 <span>kg</span></div><div class="p1-m-sub">▼ 0.8kg this month</div><div class="p1-trend-line"><svg viewBox="0 0 120 24"><path class="p1-trend-path" d="M0,18 Q20,20 40,16 Q60,12 80,14 Q100,10 120,8"/></svg></div></div>
+        <div class="p1-m-card light"><div class="p1-m-label">Bench 1RM</div><div class="p1-m-val">80 <span>kg</span></div><div class="p1-m-sub">Intermediate</div><div class="p1-trend-line"><svg viewBox="0 0 120 24"><path class="p1-trend-path" d="M0,20 Q20,18 40,16 Q60,14 80,10 Q100,8 120,4"/></svg></div></div>
+        <div class="p1-m-card dark"><div class="p1-m-label">Squat 1RM</div><div class="p1-m-val">100 <span>kg</span></div><div class="p1-m-sub">Intermediate</div><div class="p1-trend-line"><svg viewBox="0 0 120 24"><path class="p1-trend-path" d="M0,22 Q30,18 60,14 Q90,8 120,6"/></svg></div></div>
+        <div class="p1-m-card light"><div class="p1-m-label">Deadlift 1RM</div><div class="p1-m-val">120 <span>kg</span></div><div class="p1-m-sub">Novice</div><div class="p1-trend-line"><svg viewBox="0 0 120 24"><path class="p1-trend-path" d="M0,20 Q40,16 80,10 Q100,6 120,4"/></svg></div></div>
+      </div>
+    </div>
+
+    <!-- PRs -->
+    <div class="p1-pr-section">
+      <div class="p1-pr-head"><span class="p1-pr-title">Recent PRs</span><span class="p1-pr-count">Last 30 days</span></div>
+      <div class="p1-pr"><div class="p1-pr-badge">🏆</div><div class="p1-pr-info"><div class="p1-pr-name">Bench Press</div><div class="p1-pr-type">Weight PR</div></div><div class="p1-pr-val">80 <span>kg</span></div></div>
+      <div class="p1-pr"><div class="p1-pr-badge">🏆</div><div class="p1-pr-info"><div class="p1-pr-name">Squat</div><div class="p1-pr-type">Est. 1RM</div></div><div class="p1-pr-val">105 <span>kg</span></div></div>
+      <div class="p1-pr"><div class="p1-pr-badge">🏆</div><div class="p1-pr-info"><div class="p1-pr-name">Deadlift</div><div class="p1-pr-type">Weight PR</div></div><div class="p1-pr-val">120 <span>kg</span></div></div>
+    </div>
+
+    <div class="p1-links"><div class="p1-link">Achievements</div><div class="p1-link">Weekly</div><div class="p1-link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P2: DARK DASHBOARD ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">P2 — Dark Dashboard</div>
+  <div class="dsc">Full dark zone at top: ring, stats grid, heatmap all on dark. Light zone below: weight card with SVG trend line, horizontal 1RM cards (dark/stone alternating), PR rows, quick links.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p2-dark-zone">
+      <div class="p2-dz-accent"><div class="p2-dz-line"></div><div class="p2-dz-line"></div><div class="p2-dz-line"></div></div>
+      <div class="p2-ctx">Monday, Mar 24</div>
+      <div class="p2-title">Your Journey</div>
+
+      <div class="p2-hero-row">
+        <div class="p2-ring-wrap">
+          <svg viewBox="0 0 90 90"><circle class="p2-ring-track" cx="45" cy="45" r="38"/><circle class="p2-ring-fill" cx="45" cy="45" r="38"/></svg>
+          <div class="p2-ring-pct"><div class="p2-ring-num">75%</div><div class="p2-ring-label">Weekly</div></div>
+        </div>
+        <div class="p2-hero-stats">
+          <div class="p2-hs"><div class="p2-hs-val">12</div><div class="p2-hs-label">Day Streak</div></div>
+          <div class="p2-hs"><div class="p2-hs-val">47</div><div class="p2-hs-label">Workouts</div></div>
+          <div class="p2-hs"><div class="p2-hs-val">2.4t</div><div class="p2-hs-label">Volume</div></div>
+          <div class="p2-hs"><div class="p2-hs-val">3</div><div class="p2-hs-label">PRs</div></div>
+        </div>
+      </div>
+
+      <div class="p2-heat">
+        <div class="p2-heat-label">12-Week Activity</div>
+        <div class="p2-heat-grid" id="p2Heat"></div>
+      </div>
+    </div>
+
+    <div class="p2-content">
+      <!-- Weight -->
+      <div class="p2-section-title">Body</div>
+      <div class="p2-weight-card">
+        <div class="p2-wc-top"><span class="p2-wc-label">Weight</span><span class="p2-wc-btn">+ Log</span></div>
+        <div class="p2-wc-val">74.2 <span>kg</span></div>
+        <div class="p2-wc-trend">▼ 0.8kg from last month</div>
+        <div class="p2-wc-chart"><svg viewBox="0 0 300 40">
+          <defs><linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--earth)"/><stop offset="100%" stop-color="var(--sand)"/></linearGradient></defs>
+          <path class="p2-wc-area" d="M0,30 Q30,28 60,26 Q90,24 120,22 Q150,20 180,18 Q210,16 240,14 Q270,12 300,10 L300,40 L0,40 Z"/>
+          <path class="p2-wc-line" d="M0,30 Q30,28 60,26 Q90,24 120,22 Q150,20 180,18 Q210,16 240,14 Q270,12 300,10"/>
+        </svg></div>
+      </div>
+
+      <!-- 1RM -->
+      <div class="p2-section-title">Estimated 1RM</div>
+      <div class="p2-rm-scroll">
+        <div class="p2-rm-card"><div class="p2-rm-name">Bench Press</div><div class="p2-rm-val">80 <span>kg</span></div><div class="p2-rm-level">Intermediate</div></div>
+        <div class="p2-rm-card"><div class="p2-rm-name">Squat</div><div class="p2-rm-val">100 <span>kg</span></div><div class="p2-rm-level">Intermediate</div></div>
+        <div class="p2-rm-card"><div class="p2-rm-name">Deadlift</div><div class="p2-rm-val">120 <span>kg</span></div><div class="p2-rm-level">Novice</div></div>
+        <div class="p2-rm-card"><div class="p2-rm-name">OHP</div><div class="p2-rm-val">50 <span>kg</span></div><div class="p2-rm-level">Novice</div></div>
+      </div>
+
+      <!-- PRs -->
+      <div class="p2-section-title">Recent PRs</div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><span class="p2-pr-name">Bench Press</span><div class="p2-pr-val">80 <span>kg</span></div></div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><span class="p2-pr-name">Squat</span><div class="p2-pr-val">105 <span>kg</span></div></div>
+      <div class="p2-pr"><div class="p2-pr-badge">🏆</div><span class="p2-pr-name">Deadlift</span><div class="p2-pr-val">120 <span>kg</span></div></div>
+
+      <div class="p2-links"><div class="p2-link">Achievements</div><div class="p2-link">Weekly</div><div class="p2-link">Wellness</div></div>
+    </div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P3: CARD STREAM ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">P3 — Card Stream</div>
+  <div class="dsc">Each metric is its own card. Dark completion card with ring + stats. Streak/volume bento duo. White heatmap. Weight card with SVG area chart. Dark 1RM card. PR rows. Clean stream.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p3-ctx">Monday, Mar 24</div>
+    <div class="p3-title">Your Journey</div>
+
+    <div class="p3-stream">
+      <!-- Completion -->
+      <div class="p3-comp">
+        <div class="p3-comp-accent"></div>
+        <div class="p3-comp-ring">
+          <svg viewBox="0 0 72 72"><circle class="p3-cr-track" cx="36" cy="36" r="30"/><circle class="p3-cr-fill" cx="36" cy="36" r="30"/></svg>
+          <div class="p3-cr-pct">75%</div>
+        </div>
+        <div class="p3-comp-info">
+          <div class="p3-comp-title">This Week</div>
+          <div class="p3-comp-sub">3 of 4 workouts done</div>
+          <div class="p3-comp-stats"><div><div class="p3-cs-val">12</div><div class="p3-cs-label">Day Streak</div></div><div><div class="p3-cs-val">47</div><div class="p3-cs-label">Workouts</div></div></div>
+        </div>
+      </div>
+
+      <!-- Streak + Volume duo -->
+      <div class="p3-duo">
+        <div class="p3-duo-card white"><div class="p3-dc-label">Volume</div><div class="p3-dc-val">2.4<span style="font-size:14px;">t</span></div><div class="p3-dc-trend">▲ 12% vs last week</div></div>
+        <div class="p3-duo-card stone"><div class="p3-dc-label">This Month</div><div class="p3-dc-val">16</div><div class="p3-dc-sub">workouts logged</div></div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="p3-heat"><div class="p3-heat-label">12-Week Activity</div><div class="p3-heat-grid" id="p3Heat"></div></div>
+
+      <!-- Weight -->
+      <div class="p3-weight">
+        <div class="p3-w-top"><span class="p3-w-label">Weight</span><span class="p3-w-btn">+ Log</span></div>
+        <div class="p3-w-val">74.2 <span>kg</span></div>
+        <div class="p3-w-chart"><svg viewBox="0 0 300 36">
+          <defs><linearGradient id="wg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--earth)"/><stop offset="100%" stop-color="var(--sand)"/></linearGradient></defs>
+          <path fill="url(#wg2)" opacity="0.06" d="M0,28 Q40,26 80,22 Q120,18 160,16 Q200,14 240,12 Q270,10 300,8 L300,36 L0,36 Z"/>
+          <path fill="none" stroke="var(--earth)" stroke-width="1.5" stroke-linecap="round" opacity="0.15" d="M0,28 Q40,26 80,22 Q120,18 160,16 Q200,14 240,12 Q270,10 300,8"/>
+        </svg></div>
+      </div>
+
+      <!-- 1RM dark card -->
+      <div class="p3-rm"><div class="p3-rm-accent"></div>
+        <div class="p3-rm-label">Estimated 1RM</div>
+        <div class="p3-rm-row"><span class="p3-rm-name">Bench Press</span><span class="p3-rm-val">80 <span>kg</span></span></div>
+        <div class="p3-rm-row"><span class="p3-rm-name">Squat</span><span class="p3-rm-val">100 <span>kg</span></span></div>
+        <div class="p3-rm-row"><span class="p3-rm-name">Deadlift</span><span class="p3-rm-val">120 <span>kg</span></span></div>
+        <div class="p3-rm-row"><span class="p3-rm-name">OHP</span><span class="p3-rm-val">50 <span>kg</span></span></div>
+      </div>
+
+      <div class="p3-links"><div class="p3-link">Achievements</div><div class="p3-link">Weekly</div><div class="p3-link">Wellness</div></div>
+    </div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+// Generate heatmaps
+function genHeat(id, cls) {
+  const grid = document.getElementById(id);
+  for (let i = 0; i < 84; i++) {
+    const cell = document.createElement('div');
+    const r = Math.random();
+    const isToday = i === 83;
+    cell.className = cls + (isToday ? ' today' : r < 0.45 ? ' done' : ' empty');
+    grid.appendChild(cell);
+  }
+}
+genHeat('p1Heat', 'p1-hc');
+genHeat('p2Heat', 'p2-hc');
+genHeat('p3Heat', 'p3-hc');
+</script>
+
+</body>
+</html>

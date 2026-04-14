@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Hero Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     V1: SPLIT — Title left, volume right. Stat pills bottom.
+     (The one from the full mockup — kept as reference)
+     ============================================================ */
+
+  .v1-card { padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .v1-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .v1-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v1-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v1-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .v1-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v1-row { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 6px; position: relative; }
+  .v1-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .v1-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .v1-vol { text-align: right; }
+  .v1-vol-val { font-size: 32px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; line-height: 1; }
+  .v1-vol-unit { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .v1-vol-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.6; }
+
+  .v1-pills { display: flex; gap: 6px; margin-top: 14px; position: relative; }
+  .v1-p { padding: 6px 12px; border-radius: 9px; background: rgba(246,245,240,0.04); display: flex; align-items: baseline; gap: 4px; }
+  .v1-pv { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .v1-pv.green { color: var(--trail); }
+  .v1-pv.amber { color: #F59E0B; }
+  .v1-pl { font-size: 8px; color: rgba(246,245,240,0.2); }
+
+
+  /* ============================================================
+     V2: CENTERED — Everything centered. Volume big at top.
+     Title + message below. Stats as a row.
+     ============================================================ */
+
+  .v2-card { padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; text-align: center; }
+  .v2-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v2-vol-val { font-size: 48px; font-weight: 900; color: var(--sand); letter-spacing: -2.5px; line-height: 1; margin-top: 12px; position: relative; }
+  .v2-vol-unit { font-size: 14px; color: rgba(246,245,240,0.25); font-weight: 500; position: relative; }
+  .v2-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; opacity: 0.6; position: relative; }
+  .v2-title { font-size: 16px; font-weight: 600; color: rgba(246,245,240,0.5); margin-top: 12px; position: relative; }
+  .v2-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 2px; position: relative; }
+
+  .v2-stats { display: flex; gap: 0; margin-top: 16px; position: relative; }
+  .v2-st { flex: 1; text-align: center; position: relative; }
+  .v2-st::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(246,245,240,0.04); }
+  .v2-st:last-child::after { display: none; }
+  .v2-stv { font-size: 20px; font-weight: 800; color: var(--sand); }
+  .v2-stv.green { color: var(--trail); }
+  .v2-stv.amber { color: #F59E0B; }
+  .v2-stl { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     V3: STACKED — Volume on its own line. Title below.
+     Stats as inline text. Very compact, editorial.
+     ============================================================ */
+
+  .v3-card { padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .v3-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .v3-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v3-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v3-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .v3-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v3-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+  .v3-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; position: relative; }
+
+  .v3-vol { margin-top: 16px; position: relative; }
+  .v3-vol-val { font-size: 44px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .v3-vol-row { display: flex; align-items: baseline; gap: 6px; }
+  .v3-vol-unit { font-size: 14px; color: rgba(246,245,240,0.25); }
+  .v3-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; opacity: 0.6; }
+
+  .v3-inline { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 12px; position: relative; line-height: 1.6; }
+  .v3-inline strong { color: var(--sand); font-weight: 700; }
+  .v3-inline .g { color: var(--trail); }
+  .v3-inline .a { color: #F59E0B; }
+
+
+  /* ============================================================
+     V4: MINIMAL — No volume in hero. Just title, date, message.
+     Volume moves below as the first section. Hero is clean.
+     ============================================================ */
+
+  .v4-card { padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .v4-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .v4-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v4-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v4-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+  .v4-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--trail); opacity: 0.2; }
+
+  .v4-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v4-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 6px; position: relative; }
+  .v4-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 6px; position: relative; }
+
+  /* Stats pills */
+  .v4-pills { display: flex; gap: 7px; margin-top: 14px; position: relative; }
+  .v4-p { padding: 7px 14px; border-radius: 10px; background: rgba(246,245,240,0.04); display: flex; align-items: baseline; gap: 4px; }
+  .v4-pv { font-size: 15px; font-weight: 800; color: var(--sand); }
+  .v4-pv.green { color: var(--trail); }
+  .v4-pv.amber { color: #F59E0B; }
+  .v4-pl { font-size: 8px; color: rgba(246,245,240,0.2); }
+
+  /* Volume below as separate element */
+  .v4-vol-below { margin-top: 14px; display: flex; align-items: baseline; gap: 6px; }
+  .v4-vb-val { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .v4-vb-unit { font-size: 12px; color: var(--rock); }
+  .v4-vb-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+
+  /* ============================================================
+     V5: WIDE STATS — Stats as wide tiles inside hero, not pills.
+     Volume integrated as the first tile. More visual weight.
+     ============================================================ */
+
+  .v5-card { padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .v5-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v5-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+  .v5-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; position: relative; }
+
+  .v5-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; position: relative; }
+  .v5-t { padding: 12px 14px; border-radius: 14px; background: rgba(246,245,240,0.04); }
+  .v5-t.wide { grid-column: span 2; display: flex; justify-content: space-between; align-items: center; }
+  .v5-tv { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .v5-tv.green { color: var(--trail); }
+  .v5-tv.amber { color: #F59E0B; }
+  .v5-tl { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .v5-t.wide .v5-tv { font-size: 28px; letter-spacing: -1px; }
+  .v5-trend { font-size: 9px; color: var(--trail); font-weight: 600; opacity: 0.6; }
+
+
+  /* ============================================================
+     V6: TEXT ONLY — No pills, no tiles. Just text inside hero.
+     Title, message, volume as text, stats as inline sentence.
+     Most minimal possible.
+     ============================================================ */
+
+  .v6-card { padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .v6-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .v6-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v6-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v6-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .v6-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .v6-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 6px; position: relative; }
+  .v6-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  .v6-summary { font-size: 15px; color: rgba(246,245,240,0.5); line-height: 1.7; margin-top: 16px; position: relative; }
+  .v6-summary strong { color: var(--sand); font-weight: 700; }
+  .v6-summary .hl { color: var(--trail); font-weight: 700; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- V1 -->
+<div>
+  <div class="col-label">V1 — Split (current)</div>
+  <div class="col-desc">Title + message left, volume right. Stat pills bottom. The one from the full mockup.</div>
+  <div class="block">
+    <div class="v1-card"><div class="v1-accent"><div class="v1-al"></div><div class="v1-al"></div></div><div class="v1-date">Mar 18 – 24</div><div class="v1-row"><div><div class="v1-title">This Week</div><div class="v1-msg">Crushing it! 💪</div></div><div class="v1-vol"><div class="v1-vol-val">2.4</div><div class="v1-vol-unit">tons lifted</div><div class="v1-vol-trend">▲ 12%</div></div></div><div class="v1-pills"><div class="v1-p"><span class="v1-pv">4</span><span class="v1-pl">workouts</span></div><div class="v1-p"><span class="v1-pv green">80%</span><span class="v1-pl">complete</span></div><div class="v1-p"><span class="v1-pv amber">12d</span><span class="v1-pl">streak</span></div></div></div>
+  </div>
+</div>
+
+<!-- V2 -->
+<div>
+  <div class="col-label">V2 — Centered</div>
+  <div class="col-desc">Everything centered. Big 48px volume at top. Title + message below. Stats as a divider-separated row.</div>
+  <div class="block">
+    <div class="v2-card"><div class="v2-date">Mar 18 – 24</div><div class="v2-vol-val">2.4</div><div class="v2-vol-unit">tons lifted</div><div class="v2-vol-trend">▲ 12% vs last week</div><div class="v2-title">This Week</div><div class="v2-msg">Crushing it! 💪</div><div class="v2-stats"><div class="v2-st"><div class="v2-stv">4</div><div class="v2-stl">Workouts</div></div><div class="v2-st"><div class="v2-stv green">80%</div><div class="v2-stl">Complete</div></div><div class="v2-st"><div class="v2-stv amber">12d</div><div class="v2-stl">Streak</div></div></div></div>
+  </div>
+</div>
+
+<!-- V3 -->
+<div>
+  <div class="col-label">V3 — Stacked Volume</div>
+  <div class="col-desc">Title first, then big 44px volume below. Stats as an inline sentence: "4 workouts · 80% complete · 12d streak." Most editorial.</div>
+  <div class="block">
+    <div class="v3-card"><div class="v3-accent"><div class="v3-al"></div><div class="v3-al"></div></div><div class="v3-date">Mar 18 – 24</div><div class="v3-title">This Week</div><div class="v3-msg">Crushing it! 💪</div><div class="v3-vol"><div class="v3-vol-row"><span class="v3-vol-val">2.4</span><span class="v3-vol-unit">tons</span><span class="v3-vol-trend">▲ 12%</span></div></div><div class="v3-inline"><strong>4</strong> workouts · <span class="g">80%</span> complete · <span class="a">12 day</span> streak</div></div>
+  </div>
+</div>
+
+<!-- V4 -->
+<div>
+  <div class="col-label">V4 — Clean Hero + Volume Below</div>
+  <div class="col-desc">Hero has only title, date, message, stat pills. Volume sits below as a separate clean element. Hero stays focused on the message.</div>
+  <div class="block">
+    <div class="v4-card"><div class="v4-accent"><div class="v4-al"></div><div class="v4-al"></div></div><div class="v4-dot"></div><div class="v4-date">Mar 18 – 24</div><div class="v4-title">This Week</div><div class="v4-msg">Crushing it! 💪</div><div class="v4-pills"><div class="v4-p"><span class="v4-pv">4</span><span class="v4-pl">workouts</span></div><div class="v4-p"><span class="v4-pv green">80%</span><span class="v4-pl">complete</span></div><div class="v4-p"><span class="v4-pv amber">12d</span><span class="v4-pl">streak</span></div></div></div>
+    <div class="v4-vol-below"><span class="v4-vb-val">2.4</span><span class="v4-vb-unit">tons lifted</span><span class="v4-vb-trend">▲ 12%</span></div>
+  </div>
+</div>
+
+<!-- V5 -->
+<div>
+  <div class="col-label">V5 — Wide Stat Tiles</div>
+  <div class="col-desc">Title + message at top. Stats as 2-column tiles inside hero. Volume spans full width as the first tile. More structured than pills.</div>
+  <div class="block">
+    <div class="v5-card"><div class="v5-date">Mar 18 – 24</div><div class="v5-title">This Week</div><div class="v5-msg">Crushing it! 💪</div><div class="v5-tiles"><div class="v5-t wide"><div><div class="v5-tv">2.4 <span style="font-size:12px;color:rgba(246,245,240,0.25);font-weight:500;">tons</span></div><div class="v5-tl">Volume Lifted</div></div><div class="v5-trend">▲ 12%</div></div><div class="v5-t"><div class="v5-tv">4</div><div class="v5-tl">Workouts</div></div><div class="v5-t"><div class="v5-tv green">80%</div><div class="v5-tl">Completion</div></div></div></div>
+  </div>
+</div>
+
+<!-- V6 -->
+<div>
+  <div class="col-label">V6 — Text Only</div>
+  <div class="col-desc">No pills, no tiles. Stats as a flowing paragraph: "You lifted 2.4 tons across 4 workouts at 80% completion on a 12-day streak." Pure text.</div>
+  <div class="block">
+    <div class="v6-card"><div class="v6-accent"><div class="v6-al"></div><div class="v6-al"></div></div><div class="v6-date">Mar 18 – 24</div><div class="v6-title">This Week</div><div class="v6-msg">Crushing it! 💪</div><div class="v6-summary">You lifted <strong>2.4 tons</strong> across <strong>4 workouts</strong> at <span class="hl">80% completion</span> while riding a <strong>12-day streak</strong>.</div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

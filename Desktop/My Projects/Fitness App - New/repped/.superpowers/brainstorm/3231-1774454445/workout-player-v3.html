@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player v3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     F1: EXERCISE CARD + FOCUSED SETS
+     Dark exercise card with all info (name, muscle, previous
+     best, video link). Below: sets as clean focused rows.
+     Previous shown PER ROW as a small note, not a column.
+     ============================================================ */
+
+  .f1-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .f1-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .f1-of { font-size: 13px; color: var(--rock); }
+  .f1-exit { font-size: 13px; color: var(--rock); margin-left: auto; cursor: pointer; }
+
+  .f1-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .f1-pfill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  /* Dark exercise card */
+  .f1-ex { margin: 14px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .f1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .f1-ha:nth-child(1) { width: 80px; top: 12px; right: -6px; transform: rotate(-35deg); }
+  .f1-ha:nth-child(2) { width: 60px; top: 22px; right: -6px; transform: rotate(-35deg); }
+
+  .f1-ex-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .f1-ex-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .f1-swap { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; opacity: 0.7; }
+
+  .f1-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; position: relative; }
+  .f1-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .f1-suggested { font-size: 11px; color: rgba(246,245,240,0.25); }
+
+  /* Previous best + video in one row inside the card */
+  .f1-ex-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .f1-prev-best { font-size: 10px; color: rgba(246,245,240,0.2); }
+  .f1-prev-best strong { color: rgba(246,245,240,0.4); font-weight: 700; }
+  .f1-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px; opacity: 0.6; }
+
+  /* Focus cue */
+  .f1-cue { margin: 10px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); cursor: pointer; }
+  .f1-cue-row { display: flex; justify-content: space-between; align-items: center; }
+  .f1-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .f1-cue-chev { font-size: 10px; color: var(--trail); opacity: 0.4; }
+
+  /* Sets — no table structure, just focused rows */
+  .f1-sets { padding: 14px 24px 0; }
+  .f1-sets-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .f1-sets-title { font-size: 12px; font-weight: 700; color: var(--earth); }
+  .f1-sets-count { font-size: 10px; color: var(--rock); }
+
+  .f1-set { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .f1-set:last-child { border-bottom: none; }
+  .f1-set.current { background: rgba(52,211,153,0.02); margin: 0 -24px; padding: 14px 24px; border-radius: 14px; border-bottom: none; border-left: 3px solid var(--trail); padding-left: 21px; }
+  .f1-set.upcoming { opacity: 0.3; }
+
+  .f1-set-num { font-size: 17px; font-weight: 800; color: var(--earth); width: 20px; }
+  .f1-set.current .f1-set-num { color: var(--trail); }
+
+  .f1-set-prev { font-size: 10px; color: var(--rock); flex: 1; }
+
+  .f1-set-inputs { display: flex; gap: 8px; flex-shrink: 0; }
+  .f1-input-group { text-align: center; }
+  .f1-input { width: 68px; padding: 10px 4px; border-radius: 12px; background: #fff; border: 1.5px solid var(--stone); text-align: center; font-size: 16px; font-weight: 700; color: var(--earth); outline: none; }
+  .f1-input:focus { border-color: var(--trail); }
+  .f1-input-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  .f1-set-check { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .f1-set-check.done { background: var(--trail); color: #fff; }
+  .f1-set-check.empty { background: var(--stone); }
+
+  /* Upcoming set — no inputs, just dashes */
+  .f1-set.upcoming .f1-set-inputs { opacity: 0.4; }
+  .f1-dash { width: 68px; padding: 10px 4px; border-radius: 12px; background: var(--stone); text-align: center; font-size: 14px; color: var(--rock); opacity: 0.4; }
+
+  /* Done set */
+  .f1-set.done .f1-input { background: var(--stone); border-color: transparent; color: var(--rock); font-weight: 500; }
+
+  .f1-log { margin: 16px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; cursor: pointer; }
+  .f1-log:active { transform: scale(0.97); }
+  .f1-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     F2: CLEAN TABLE + SMART PREVIOUS
+     Exercise name on sand. Previous shown as subtitle.
+     Table with 3 columns only: SET, KG, REPS (no previous col).
+     Video link beside exercise name. Simplest possible.
+     ============================================================ */
+
+  .f2-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .f2-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); }
+  .f2-of { font-size: 13px; color: var(--rock); }
+  .f2-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .f2-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .f2-pfill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .f2-ex { padding: 16px 24px 0; }
+  .f2-ex-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .f2-ex-name { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; }
+  .f2-ex-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .f2-swap { font-size: 11px; color: var(--trail); font-weight: 600; }
+  .f2-video { font-size: 10px; color: var(--rock); display: flex; align-items: center; gap: 3px; cursor: pointer; }
+
+  .f2-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .f2-muscle { padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .f2-suggested { font-size: 12px; color: var(--rock); }
+
+  /* Previous best as a subtitle */
+  .f2-prev { font-size: 11px; color: var(--rock); margin-top: 6px; }
+  .f2-prev strong { color: var(--earth); font-weight: 700; }
+
+  .f2-cue { margin: 10px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .f2-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Simplified 3-column table */
+  .f2-table { margin: 14px 24px 0; }
+  .f2-thead { display: flex; padding: 0 0 8px; }
+  .f2-th { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .f2-th.set { width: 40px; }
+  .f2-th.kg { flex: 1; text-align: center; }
+  .f2-th.reps { flex: 1; text-align: center; }
+  .f2-th.ck { width: 32px; }
+
+  .f2-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .f2-row:last-child { border-bottom: none; }
+  .f2-row.current { background: rgba(52,211,153,0.02); margin: 0 -24px; padding: 12px 24px; border-radius: 14px; border-bottom: none; border-left: 3px solid var(--trail); padding-left: 21px; }
+  .f2-row.upcoming { opacity: 0.3; }
+
+  .f2-td { font-size: 16px; color: var(--earth); }
+  .f2-td.set { width: 40px; font-weight: 800; }
+  .f2-row.current .f2-td.set { color: var(--trail); }
+  .f2-td.kg { flex: 1; padding: 0 4px; }
+  .f2-td.reps { flex: 1; padding: 0 4px; }
+  .f2-td.ck { width: 32px; display: flex; justify-content: center; }
+
+  .f2-input { width: 100%; padding: 12px 8px; border-radius: 14px; background: #fff; border: 1.5px solid var(--stone); text-align: center; font-size: 18px; font-weight: 700; color: var(--earth); outline: none; }
+  .f2-input:focus { border-color: var(--trail); }
+  .f2-dash { color: var(--rock); opacity: 0.2; text-align: center; font-size: 16px; }
+
+  .f2-check { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .f2-check.done { background: var(--trail); color: #fff; }
+  .f2-check.empty { background: var(--stone); }
+
+  .f2-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .f2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     F3: BIG INPUTS — Exercise at top. Current set takes up
+     most of the screen with BIG input fields. Other sets
+     are small chips below. Maximum input friendliness.
+     ============================================================ */
+
+  .f3-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .f3-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); }
+  .f3-of { font-size: 13px; color: var(--rock); }
+  .f3-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .f3-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .f3-pfill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .f3-ex { padding: 14px 24px 0; display: flex; justify-content: space-between; align-items: flex-start; }
+  .f3-ex-left {}
+  .f3-ex-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .f3-ex-meta { display: flex; align-items: center; gap: 6px; margin-top: 4px; }
+  .f3-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .f3-prev { font-size: 10px; color: var(--rock); }
+
+  .f3-ex-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .f3-swap { font-size: 11px; color: var(--trail); font-weight: 600; }
+  .f3-video { font-size: 10px; color: var(--rock); display: flex; align-items: center; gap: 3px; cursor: pointer; }
+
+  /* Current set — BIG */
+  .f3-current { margin: 18px 24px 0; padding: 24px; border-radius: 22px; background: #fff; border: 2px solid rgba(52,211,153,0.1); text-align: center; }
+  .f3-current-label { font-size: 11px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .f3-big-inputs { display: flex; gap: 14px; justify-content: center; margin-top: 14px; }
+  .f3-big-group { text-align: center; }
+  .f3-big-input { width: 110px; padding: 16px 8px; border-radius: 16px; background: var(--sand); border: 2px solid var(--stone); text-align: center; font-size: 28px; font-weight: 900; color: var(--earth); outline: none; letter-spacing: -1px; }
+  .f3-big-input:focus { border-color: var(--trail); }
+  .f3-big-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 6px; }
+
+  .f3-current-prev { font-size: 11px; color: var(--rock); margin-top: 10px; }
+
+  /* Other sets — compact chips */
+  .f3-others { display: flex; gap: 6px; padding: 14px 24px 0; flex-wrap: wrap; }
+  .f3-chip { padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .f3-chip.done { background: var(--trail); color: #fff; opacity: 0.6; }
+  .f3-chip.upcoming { background: var(--stone); color: var(--rock); }
+  .f3-chip-label { font-size: 8px; color: var(--rock); text-transform: uppercase; margin-bottom: 2px; }
+
+  .f3-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .f3-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- F1 -->
+<div>
+  <div class="col-label">F1 — Smart Exercise Card</div>
+  <div class="col-desc">Dark exercise card has everything: name, muscle, suggested weight, previous best, video link. Sets below as clean rows. Previous shown per-row as small text, not a column. No wasted space.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="f1-top"><div class="f1-timer">0:05</div><span class="f1-of">1 of 8</span><span class="f1-exit">Exit</span></div>
+    <div class="f1-progress"><div class="f1-pfill"></div></div>
+
+    <div class="f1-ex"><div class="f1-ha"></div><div class="f1-ha"></div>
+      <div class="f1-ex-top"><div class="f1-ex-name">Goblet Squat</div><span class="f1-swap">Swap</span></div>
+      <div class="f1-ex-meta"><span class="f1-muscle">quads</span><span class="f1-suggested">Suggested: 32.5 kg</span></div>
+      <div class="f1-ex-bottom"><span class="f1-prev-best">Last session: <strong>30 × 8</strong></span><span class="f1-video">▶ Video</span></div>
+    </div>
+
+    <div class="f1-cue" onclick="this.querySelector('.f1-cue-text')&&(this.querySelector('.f1-cue-text').style.display=this.querySelector('.f1-cue-text').style.display==='block'?'none':'block')"><div class="f1-cue-row"><span class="f1-cue-label">Focus Cue</span><span class="f1-cue-chev">▾</span></div></div>
+
+    <div class="f1-sets"><div class="f1-sets-head"><span class="f1-sets-title">Sets</span><span class="f1-sets-count">Set 1 of 4</span></div>
+      <div class="f1-set current"><div class="f1-set-num">1</div><div class="f1-set-prev">prev: —</div><div class="f1-set-inputs"><div class="f1-input-group"><input class="f1-input" value="32.5"><div class="f1-input-label">KG</div></div><div class="f1-input-group"><input class="f1-input" value="6"><div class="f1-input-label">REPS</div></div></div><div class="f1-set-check empty"></div></div>
+      <div class="f1-set upcoming"><div class="f1-set-num">2</div><div class="f1-set-prev">prev: —</div><div class="f1-set-inputs"><div class="f1-input-group"><div class="f1-dash">—</div></div><div class="f1-input-group"><div class="f1-dash">—</div></div></div><div class="f1-set-check empty"></div></div>
+      <div class="f1-set upcoming"><div class="f1-set-num">3</div><div class="f1-set-prev">prev: —</div><div class="f1-set-inputs"><div class="f1-input-group"><div class="f1-dash">—</div></div><div class="f1-input-group"><div class="f1-dash">—</div></div></div><div class="f1-set-check empty"></div></div>
+      <div class="f1-set upcoming"><div class="f1-set-num">4</div><div class="f1-set-prev">prev: —</div><div class="f1-set-inputs"><div class="f1-input-group"><div class="f1-dash">—</div></div><div class="f1-input-group"><div class="f1-dash">—</div></div></div><div class="f1-set-check empty"></div></div>
+    </div>
+
+    <div class="f1-log"><span class="f1-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- F2 -->
+<div>
+  <div class="col-label">F2 — 3-Column Table</div>
+  <div class="col-desc">No "Previous" column — shown as subtitle under exercise name instead ("Last session: 30×8"). 3-column table: SET, KG, REPS. Bigger inputs (18px). Swap + Video links top-right. Cleanest.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="f2-top"><div class="f2-timer">0:05</div><span class="f2-of">1 of 8</span><span class="f2-exit">Exit</span></div>
+    <div class="f2-progress"><div class="f2-pfill"></div></div>
+
+    <div class="f2-ex">
+      <div class="f2-ex-top"><div class="f2-ex-name">Goblet Squat</div><div class="f2-ex-right"><span class="f2-swap">Swap</span><span class="f2-video">▶ Video</span></div></div>
+      <div class="f2-ex-meta"><span class="f2-muscle">quads</span><span class="f2-suggested">Suggested: 32.5 kg</span></div>
+      <div class="f2-prev">Last session: <strong>30 × 8 reps</strong></div>
+    </div>
+
+    <div class="f2-cue"><div class="f2-cue-label">Focus Cue ▾</div></div>
+
+    <div class="f2-table">
+      <div class="f2-thead"><span class="f2-th set">SET</span><span class="f2-th kg">KG</span><span class="f2-th reps">REPS</span><span class="f2-th ck"></span></div>
+      <div class="f2-row current"><span class="f2-td set">1</span><div class="f2-td kg"><input class="f2-input" value="32.5"></div><div class="f2-td reps"><input class="f2-input" value="6"></div><span class="f2-td ck"><div class="f2-check empty"></div></span></div>
+      <div class="f2-row upcoming"><span class="f2-td set">2</span><span class="f2-td kg"><span class="f2-dash">—</span></span><span class="f2-td reps"><span class="f2-dash">—</span></span><span class="f2-td ck"><div class="f2-check empty"></div></span></div>
+      <div class="f2-row upcoming"><span class="f2-td set">3</span><span class="f2-td kg"><span class="f2-dash">—</span></span><span class="f2-td reps"><span class="f2-dash">—</span></span><span class="f2-td ck"><div class="f2-check empty"></div></span></div>
+      <div class="f2-row upcoming"><span class="f2-td set">4</span><span class="f2-td kg"><span class="f2-dash">—</span></span><span class="f2-td reps"><span class="f2-dash">—</span></span><span class="f2-td ck"><div class="f2-check empty"></div></span></div>
+    </div>
+
+    <div class="f2-log"><span class="f2-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- F3 -->
+<div>
+  <div class="col-label">F3 — Big Input Focus</div>
+  <div class="col-desc">Current set gets a big white card with HUGE 28px inputs. Other sets shown as compact chips below (done=green, upcoming=stone). Maximum input friendliness. Best for gym use.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="f3-top"><div class="f3-timer">0:05</div><span class="f3-of">1 of 8</span><span class="f3-exit">Exit</span></div>
+    <div class="f3-progress"><div class="f3-pfill"></div></div>
+
+    <div class="f3-ex"><div class="f3-ex-left"><div class="f3-ex-name">Goblet Squat</div><div class="f3-ex-meta"><span class="f3-muscle">quads</span><span class="f3-prev">Last: 30 × 8</span></div></div><div class="f3-ex-right"><span class="f3-swap">Swap</span><span class="f3-video">▶ Video</span></div></div>
+
+    <div class="f3-current">
+      <div class="f3-current-label">Set 1 of 4</div>
+      <div class="f3-big-inputs">
+        <div class="f3-big-group"><input class="f3-big-input" value="32.5"><div class="f3-big-label">KG</div></div>
+        <div class="f3-big-group"><input class="f3-big-input" value="6"><div class="f3-big-label">REPS</div></div>
+      </div>
+      <div class="f3-current-prev">Previous: — (first session)</div>
+    </div>
+
+    <div class="f3-others">
+      <div><div class="f3-chip-label">Set 2</div><div class="f3-chip upcoming">— / —</div></div>
+      <div><div class="f3-chip-label">Set 3</div><div class="f3-chip upcoming">— / —</div></div>
+      <div><div class="f3-chip-label">Set 4</div><div class="f3-chip upcoming">— / —</div></div>
+    </div>
+
+    <div class="f3-log"><span class="f3-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

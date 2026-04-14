@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Living Organism v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; overflow-x: hidden; }
+
+  .header { text-align: center; padding: 32px 24px 8px; }
+  .header h1 { font-size: 24px; font-weight: 700; color: #34D399; }
+  .header p { color: #444; font-size: 13px; margin-top: 4px; }
+
+  .showcase { display: flex; gap: 32px; justify-content: center; padding: 20px; flex-wrap: wrap; }
+
+  /* ===== PHONE ===== */
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: #FAFAF8; }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  /* ===== LIVING BACKGROUND: CELLULAR MEMBRANE ===== */
+  .membrane { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+  .membrane-blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(60px); opacity: 0.04;
+    animation: membraneDrift 12s ease-in-out infinite alternate;
+  }
+  .membrane-blob:nth-child(1) { width: 300px; height: 300px; background: #6366F1; top: -50px; left: -50px; animation-duration: 14s; }
+  .membrane-blob:nth-child(2) { width: 250px; height: 250px; background: #34D399; bottom: 100px; right: -30px; animation-delay: -5s; animation-duration: 16s; }
+  .membrane-blob:nth-child(3) { width: 200px; height: 200px; background: #F59E0B; top: 40%; left: 30%; animation-delay: -8s; animation-duration: 18s; }
+  @keyframes membraneDrift {
+    0% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.1); }
+    66% { transform: translate(-20px, 30px) scale(0.95); }
+    100% { transform: translate(15px, 15px) scale(1.05); }
+  }
+
+  /* ===== HEARTBEAT SYSTEM — unified pulse cascade ===== */
+  :root {
+    --heartbeat: 2.4s;
+    --pulse-color: rgba(99,102,241,0.06);
+  }
+
+  /* Status bar */
+  .status { padding: 54px 28px 0; display: flex; justify-content: space-between; align-items: center; position: relative; z-index: 1; }
+  .time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .vitals { display: flex; align-items: center; gap: 6px; }
+  .vital-dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; animation: vitalPulse var(--heartbeat) ease-in-out infinite; }
+  @keyframes vitalPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 30% { transform: scale(1.4); opacity: 1; } }
+  .vital-label { font-size: 11px; color: #34D399; font-weight: 600; }
+
+  /* ===== HERO — Morphing text presence ===== */
+  .hero { padding: 20px 28px 0; position: relative; z-index: 1; }
+  .hero-sub { font-size: 13px; color: #AEAEB2; letter-spacing: 0.3px; }
+  .hero-title { font-size: 32px; font-weight: 700; color: #1C1C1E; letter-spacing: -1px; line-height: 1.1; margin-top: 4px; }
+  .hero-title .alive-word {
+    display: inline-block;
+    animation: wordBreathe var(--heartbeat) ease-in-out infinite;
+  }
+  .hero-title .alive-word:nth-child(2) { animation-delay: 0.3s; }
+  .hero-title .alive-word:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes wordBreathe {
+    0%, 100% { transform: scale(1); }
+    25% { transform: scale(1.008); }
+  }
+
+  /* ===== MYCELIUM NETWORK — connecting line canvas ===== */
+  .mycelium-wrap { position: relative; padding: 0 28px; margin-top: 20px; z-index: 1; }
+  canvas#mycelium { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+
+  /* ===== BIOLUMINESCENT STAT ORBS ===== */
+  .orbs { display: flex; gap: 12px; padding: 0 28px; margin-top: 16px; position: relative; z-index: 1; }
+  .orb {
+    flex: 1; padding: 20px 14px; border-radius: 28px; position: relative; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.03);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .orb:hover { transform: scale(1.03); }
+
+  /* Inner bioluminescent glow */
+  .orb::before {
+    content: ''; position: absolute; border-radius: 50%;
+    width: 80px; height: 80px; top: -10px; right: -10px;
+    filter: blur(25px); opacity: 0;
+    animation: bioGlow var(--heartbeat) ease-in-out infinite;
+  }
+  .orb:nth-child(1)::before { background: #6366F1; }
+  .orb:nth-child(2)::before { background: #34D399; }
+  .orb:nth-child(3)::before { background: #F59E0B; animation-delay: calc(var(--heartbeat) * 0.33); }
+  @keyframes bioGlow {
+    0%, 100% { opacity: 0.04; transform: scale(0.9); }
+    40% { opacity: 0.12; transform: scale(1.1); }
+  }
+
+  .orb-num { font-size: 26px; font-weight: 700; color: #1C1C1E; position: relative; font-variant-numeric: tabular-nums; }
+  .orb-label { font-size: 10px; color: #AEAEB2; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .orb-trend { font-size: 10px; font-weight: 600; margin-top: 4px; position: relative; }
+  .orb-trend.up { color: #34D399; }
+
+  /* ===== CELLULAR PROGRESS INDICATOR ===== */
+  .cell-progress { margin: 20px 28px; position: relative; z-index: 1; }
+  .cell-label-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .cell-label-row .title { font-size: 13px; font-weight: 600; color: #1C1C1E; }
+  .cell-label-row .pct { font-size: 13px; font-weight: 700; color: #6366F1; }
+
+  .cell-track { display: flex; gap: 4px; height: 32px; }
+  .cell {
+    flex: 1; border-radius: 10px; position: relative; overflow: hidden;
+    opacity: 0; animation: cellDivide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .cell.filled { background: #6366F1; }
+  .cell.filled::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%);
+  }
+  .cell.filled.recent { background: #818CF8; }
+  .cell.empty { background: #F0F0F4; }
+  .cell:nth-child(1) { animation-delay: 0.1s; }
+  .cell:nth-child(2) { animation-delay: 0.18s; }
+  .cell:nth-child(3) { animation-delay: 0.26s; }
+  .cell:nth-child(4) { animation-delay: 0.34s; }
+  .cell:nth-child(5) { animation-delay: 0.42s; }
+  .cell:nth-child(6) { animation-delay: 0.50s; }
+  .cell:nth-child(7) { animation-delay: 0.58s; }
+  @keyframes cellDivide {
+    0% { opacity: 0; transform: scaleX(0) scaleY(1.4); border-radius: 50%; }
+    60% { border-radius: 14px; }
+    100% { opacity: 1; transform: scaleX(1) scaleY(1); border-radius: 10px; }
+  }
+
+  /* Pulse wave that travels across filled cells */
+  .cell.filled::before {
+    content: ''; position: absolute; inset: 0;
+    background: rgba(255,255,255,0.15);
+    transform: translateX(-100%);
+    animation: cellPulseWave 3s ease-in-out infinite;
+  }
+  .cell:nth-child(1).filled::before { animation-delay: 0s; }
+  .cell:nth-child(2).filled::before { animation-delay: 0.15s; }
+  .cell:nth-child(3).filled::before { animation-delay: 0.3s; }
+  .cell:nth-child(4).filled::before { animation-delay: 0.45s; }
+  .cell:nth-child(5).filled::before { animation-delay: 0.6s; }
+  @keyframes cellPulseWave {
+    0% { transform: translateX(-100%); opacity: 0; }
+    20% { opacity: 1; }
+    40% { transform: translateX(100%); opacity: 0; }
+    100% { transform: translateX(100%); opacity: 0; }
+  }
+
+  /* ===== EXERCISE CARDS — Living Cards with Tendon Lines ===== */
+  .exercises { padding: 0 28px; margin-top: 16px; position: relative; z-index: 1; }
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .section-title { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .section-count { font-size: 12px; color: #AEAEB2; }
+
+  .ex-card {
+    background: #fff; border: 1px solid rgba(0,0,0,0.03); border-radius: 24px;
+    padding: 18px; margin-bottom: 10px; position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(24px) scale(0.96);
+    animation: exCardGrow 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .ex-card:nth-child(2) { animation-delay: 0.15s; }
+  .ex-card:nth-child(3) { animation-delay: 0.3s; }
+  .ex-card:nth-child(4) { animation-delay: 0.45s; }
+  @keyframes exCardGrow {
+    0% { opacity: 0; transform: translateY(24px) scale(0.96); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Living border — a subtle moving gradient border */
+  .ex-card::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 24px; z-index: -1;
+    background: conic-gradient(from var(--angle, 0deg), transparent 80%, rgba(99,102,241,0.15) 90%, transparent 100%);
+    animation: borderRotate 8s linear infinite;
+  }
+  @keyframes borderRotate { to { --angle: 360deg; } }
+  @property --angle { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+  .ex-row { display: flex; align-items: center; gap: 14px; }
+
+  /* Muscle icon with fiber animation */
+  .ex-icon-wrap { width: 52px; height: 52px; position: relative; }
+  .ex-icon {
+    width: 52px; height: 52px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; position: relative; z-index: 1;
+  }
+  .ex-icon.chest { background: rgba(99,102,241,0.06); }
+  .ex-icon.shoulder { background: rgba(245,158,11,0.06); }
+  .ex-icon.fly { background: rgba(239,68,68,0.06); }
+
+  /* Fiber contraction lines inside icon */
+  .ex-fibers { position: absolute; inset: 6px; z-index: 0; overflow: hidden; border-radius: 12px; }
+  .fiber {
+    position: absolute; height: 1px; left: 0; right: 0;
+    background: currentColor; opacity: 0.06;
+    animation: fiberContract 3s ease-in-out infinite;
+  }
+  .fiber:nth-child(1) { top: 25%; animation-delay: 0s; }
+  .fiber:nth-child(2) { top: 50%; animation-delay: 0.2s; }
+  .fiber:nth-child(3) { top: 75%; animation-delay: 0.4s; }
+  @keyframes fiberContract {
+    0%, 100% { transform: scaleX(0.7); opacity: 0.04; }
+    50% { transform: scaleX(1); opacity: 0.1; }
+  }
+
+  .ex-info { flex: 1; }
+  .ex-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .ex-detail { font-size: 12px; color: #AEAEB2; margin-top: 3px; }
+  .ex-sets { display: flex; gap: 4px; margin-top: 8px; }
+  .ex-set-dot { width: 20px; height: 4px; border-radius: 2px; }
+  .ex-set-dot.pending { background: #E8E8ED; }
+  .ex-set-dot.done { background: #6366F1; animation: setFillPulse var(--heartbeat) ease-in-out infinite; }
+  @keyframes setFillPulse { 0%, 100% { opacity: 0.7; } 30% { opacity: 1; } }
+
+  .ex-weight { text-align: right; }
+  .ex-weight .val { font-size: 20px; font-weight: 700; color: #1C1C1E; }
+  .ex-weight .unit { font-size: 11px; color: #AEAEB2; }
+
+  /* ===== READINESS GAUGE — organic ring ===== */
+  .readiness { margin: 20px 28px; padding: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.03); border-radius: 24px; display: flex; align-items: center; gap: 20px; position: relative; z-index: 1; }
+  .readiness-ring { width: 72px; height: 72px; position: relative; flex-shrink: 0; }
+  .readiness-ring svg { width: 72px; height: 72px; transform: rotate(-90deg); }
+  .readiness-ring .track { fill: none; stroke: #F0F0F4; stroke-width: 5; }
+  .readiness-ring .fill { fill: none; stroke: #34D399; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 196; stroke-dashoffset: 196; animation: readinessFill 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards; }
+  @keyframes readinessFill { to { stroke-dashoffset: 30; } }
+  /* Breathing glow on the ring */
+  .readiness-ring::after {
+    content: ''; position: absolute; inset: -6px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,211,153,0.1) 40%, transparent 70%);
+    animation: ringBreathe var(--heartbeat) ease-in-out infinite;
+  }
+  @keyframes ringBreathe { 0%, 100% { transform: scale(0.95); opacity: 0.3; } 30% { transform: scale(1.08); opacity: 0.7; } }
+  .readiness-text .rt-label { font-size: 11px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .readiness-text .rt-status { font-size: 20px; font-weight: 700; color: #1C1C1E; margin-top: 2px; }
+  .readiness-text .rt-detail { font-size: 12px; color: #8E8E93; margin-top: 4px; line-height: 1.4; }
+
+  /* ===== CTA — Organic aura button ===== */
+  .cta-wrap { margin: 20px 28px 40px; position: relative; z-index: 1; }
+  .cta-aura {
+    position: absolute; inset: -8px; border-radius: 28px;
+    background: conic-gradient(from 0deg, #6366F1, #34D399, #818CF8, #6366F1);
+    opacity: 0; filter: blur(16px);
+    animation: auraRotate 6s linear infinite, auraBreathe var(--heartbeat) ease-in-out infinite;
+  }
+  @keyframes auraRotate { to { filter: blur(16px) hue-rotate(360deg); } }
+  @keyframes auraBreathe { 0%, 100% { opacity: 0.08; } 30% { opacity: 0.18; } }
+
+  .cta-btn {
+    width: 100%; padding: 20px; border: none; border-radius: 22px;
+    background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer; position: relative; z-index: 1; overflow: hidden;
+    transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    letter-spacing: 0.2px;
+  }
+  .cta-btn:active { transform: scale(0.97); }
+
+  /* Ripple DNA helix inside button on hover */
+  .cta-btn::before {
+    content: ''; position: absolute; left: 0; top: 50%;
+    width: 100%; height: 1px;
+    background: repeating-linear-gradient(90deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.15) 20px, rgba(255,255,255,0.05) 40px);
+    animation: helixScroll 4s linear infinite;
+  }
+  @keyframes helixScroll { to { transform: translateX(40px); } }
+
+  /* ===== SIDEBAR: CONCEPT NOTES ===== */
+  .notes { max-width: 360px; padding: 20px; }
+  .note-section { margin-bottom: 28px; }
+  .note-title { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .note-title.green { color: #34D399; }
+  .note-title.indigo { color: #818CF8; }
+  .note-title.amber { color: #F59E0B; }
+  .note-title.pink { color: #F472B6; }
+
+  .note-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .note-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+  .note-text { font-size: 12px; color: #888; line-height: 1.5; }
+  .note-text strong { color: #ccc; }
+
+  .note-comparison { display: flex; gap: 8px; margin-top: 6px; }
+  .note-before, .note-after { flex: 1; padding: 8px; border-radius: 8px; font-size: 10px; text-align: center; }
+  .note-before { background: rgba(255,255,255,0.03); color: #555; border: 1px solid rgba(255,255,255,0.04); }
+  .note-after { background: rgba(52,211,153,0.06); color: #34D399; border: 1px solid rgba(52,211,153,0.1); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Direction D — Living Organism v2</h1>
+  <p>The UI is a living thing. Every element breathes, grows, and pulses in rhythm.</p>
+</div>
+
+<div class="showcase">
+  <div class="phone">
+    <div class="membrane">
+      <div class="membrane-blob"></div>
+      <div class="membrane-blob"></div>
+      <div class="membrane-blob"></div>
+    </div>
+    <div class="phone-scroll">
+
+      <div class="status">
+        <div class="time">9:41</div>
+        <div class="vitals">
+          <div class="vital-dot"></div>
+          <div class="vital-label">Ready</div>
+        </div>
+      </div>
+
+      <div class="hero">
+        <div class="hero-sub">Wednesday &middot; Push Day</div>
+        <div class="hero-title">
+          <span class="alive-word">Your&nbsp;</span>
+          <span class="alive-word">body&nbsp;</span>
+          <span class="alive-word">is&nbsp;ready.</span>
+        </div>
+      </div>
+
+      <!-- BIOLUMINESCENT STAT ORBS -->
+      <div class="orbs">
+        <div class="orb">
+          <div class="orb-num">75%</div>
+          <div class="orb-label">Weekly</div>
+          <div class="orb-trend up">+8% vs last wk</div>
+        </div>
+        <div class="orb">
+          <div class="orb-num">3/4</div>
+          <div class="orb-label">Days</div>
+          <div class="orb-trend up">on pace</div>
+        </div>
+        <div class="orb">
+          <div class="orb-num">12.4k</div>
+          <div class="orb-label">Volume</div>
+          <div class="orb-trend up">+12% vol</div>
+        </div>
+      </div>
+
+      <!-- CELLULAR PROGRESS -->
+      <div class="cell-progress">
+        <div class="cell-label-row">
+          <span class="title">Week 3 Progress</span>
+          <span class="pct">5 / 7</span>
+        </div>
+        <div class="cell-track">
+          <div class="cell filled"></div>
+          <div class="cell filled"></div>
+          <div class="cell filled"></div>
+          <div class="cell filled"></div>
+          <div class="cell filled recent"></div>
+          <div class="cell empty"></div>
+          <div class="cell empty"></div>
+        </div>
+      </div>
+
+      <!-- READINESS GAUGE -->
+      <div class="readiness">
+        <div class="readiness-ring">
+          <svg viewBox="0 0 72 72">
+            <circle class="track" cx="36" cy="36" r="31"/>
+            <circle class="fill" cx="36" cy="36" r="31"/>
+          </svg>
+        </div>
+        <div class="readiness-text">
+          <div class="rt-label">Body Readiness</div>
+          <div class="rt-status">Fresh</div>
+          <div class="rt-detail">Slept 7.5h &middot; Low soreness &middot; 2 days since push</div>
+        </div>
+      </div>
+
+      <!-- EXERCISE CARDS -->
+      <div class="exercises">
+        <div class="section-head">
+          <span class="section-title">Today's Exercises</span>
+          <span class="section-count">5 exercises</span>
+        </div>
+
+        <div class="ex-card">
+          <div class="ex-row">
+            <div class="ex-icon-wrap">
+              <div class="ex-icon chest">&#128170;</div>
+              <div class="ex-fibers" style="color:#6366F1;">
+                <div class="fiber"></div><div class="fiber"></div><div class="fiber"></div>
+              </div>
+            </div>
+            <div class="ex-info">
+              <div class="ex-name">Bench Press</div>
+              <div class="ex-detail">Chest &middot; Compound</div>
+              <div class="ex-sets">
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+              </div>
+            </div>
+            <div class="ex-weight">
+              <div class="val">70</div>
+              <div class="unit">kg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ex-card">
+          <div class="ex-row">
+            <div class="ex-icon-wrap">
+              <div class="ex-icon shoulder">&#127947;</div>
+              <div class="ex-fibers" style="color:#F59E0B;">
+                <div class="fiber"></div><div class="fiber"></div><div class="fiber"></div>
+              </div>
+            </div>
+            <div class="ex-info">
+              <div class="ex-name">Overhead Press</div>
+              <div class="ex-detail">Shoulders &middot; Compound</div>
+              <div class="ex-sets">
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+              </div>
+            </div>
+            <div class="ex-weight">
+              <div class="val">40</div>
+              <div class="unit">kg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ex-card">
+          <div class="ex-row">
+            <div class="ex-icon-wrap">
+              <div class="ex-icon fly">&#9889;</div>
+              <div class="ex-fibers" style="color:#EF4444;">
+                <div class="fiber"></div><div class="fiber"></div><div class="fiber"></div>
+              </div>
+            </div>
+            <div class="ex-info">
+              <div class="ex-name">Cable Flyes</div>
+              <div class="ex-detail">Chest &middot; Isolation</div>
+              <div class="ex-sets">
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+                <div class="ex-set-dot pending"></div>
+              </div>
+            </div>
+            <div class="ex-weight">
+              <div class="val">15</div>
+              <div class="unit">kg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta-wrap">
+        <div class="cta-aura"></div>
+        <button class="cta-btn">Start Workout</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ===== CONCEPT NOTES ===== -->
+  <div class="notes">
+
+    <div class="note-section">
+      <div class="note-title green">The Heartbeat System</div>
+      <div class="note-item">
+        <div class="note-icon">&#128147;</div>
+        <div class="note-text"><strong>Unified 2.4s rhythm</strong> — every pulsing element shares one heartbeat CSS variable. The "Ready" dot, stat orb glows, cell wave, readiness ring glow, and CTA aura all breathe in sync. The UI has a resting heart rate.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">&#127918;</div>
+        <div class="note-text"><strong>During workout:</strong> the heartbeat accelerates (1.6s). After completion: it decelerates (3.2s) to a calm resting state. The app literally calms down with you.</div>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-title indigo">Bioluminescent Glows</div>
+      <div class="note-item">
+        <div class="note-icon">&#128300;</div>
+        <div class="note-text"><strong>Stat orbs emit light from within</strong> — not a border glow or shadow. A radial gradient inside each card pulses with the heartbeat. Indigo for progress, green for health, amber for PRs. Like deep-sea creatures.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">&#127752;</div>
+        <div class="note-text"><strong>Membrane blobs</strong> — three huge blurred color shapes drift slowly behind the UI. They're almost invisible (4% opacity) but create a living, shifting warmth underneath the white surface. Like cells under a microscope.</div>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-title amber">Cellular Progress</div>
+      <div class="note-item">
+        <div class="note-icon">&#129516;</div>
+        <div class="note-text"><strong>Progress = cell division.</strong> Each day is a "cell" that divides into existence with a mitosis animation (starts as circle, splits into rectangle). Completed cells have a pulse wave that travels left-to-right like an electrical signal through a nerve.</div>
+      </div>
+      <div class="note-comparison">
+        <div class="note-before">Before: static progress bar</div>
+        <div class="note-after">After: living cellular strip</div>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-title pink">Muscle Fiber Icons</div>
+      <div class="note-item">
+        <div class="note-icon">&#129504;</div>
+        <div class="note-text"><strong>Exercise icons have fiber lines</strong> that contract and relax on the heartbeat. Three horizontal lines inside each icon scale between 70% and 100% width. Subtle but alive — like you're looking at actual muscle tissue.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">&#128260;</div>
+        <div class="note-text"><strong>Living card borders</strong> — a conic-gradient slowly rotates around each exercise card's edge. 80% transparent, 20% faint indigo. Like a cell membrane with an active transport region.</div>
+      </div>
+    </div>
+
+    <div class="note-section">
+      <div class="note-title green">What Makes This Unique</div>
+      <div class="note-item">
+        <div class="note-icon">&#10024;</div>
+        <div class="note-text"><strong>No other fitness app does this.</strong> Strava, Nike, Hevy, Strong — all have static UIs with occasional animations. This is a UI that's always subtly moving, always alive. It's calm, not chaotic. Organic, not mechanical.</div>
+      </div>
+      <div class="note-item">
+        <div class="note-icon">&#9888;&#65039;</div>
+        <div class="note-text"><strong>Expo Go compatible:</strong> Every effect here uses only Animated API spring/timing, opacity, transform, and backgroundColor. No SVG (readiness ring uses border trick in RN). No reanimated. No gradients (membrane blobs become animated opacity Views).</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

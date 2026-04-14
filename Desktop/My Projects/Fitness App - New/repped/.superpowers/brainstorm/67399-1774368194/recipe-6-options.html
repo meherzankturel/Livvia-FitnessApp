@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — 6 Recipe Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 12px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .lbl { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 0 2px; }
+  .dsc { text-align: center; font-size: 8px; color: #555; padding: 0 8px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .bk { width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; cursor: pointer; flex-shrink: 0; }
+
+
+  /* ============================================================
+     O1: HERO CARD + PILL INGREDIENTS + STEP CARDS
+     Like the nutrition screen structure adapted for recipe.
+     Dark hero holds identity. Ingredients as horizontal pills.
+     Steps as clean alternating cards.
+     ============================================================ */
+
+  .o1-hdr { padding: 54px 22px 0; display: flex; justify-content: space-between; }
+  .o1-bk { background: rgba(45,42,36,0.04); color: var(--earth); }
+
+  .o1-hero { margin: 10px 22px 0; padding: 22px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .o1-ring { position: absolute; top: -25px; right: -25px; width: 120px; height: 120px; border-radius: 50%; border: 9px solid rgba(246,245,240,0.03); animation: spin 18s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .o1-ring-in { position: absolute; top: -15px; right: -15px; width: 100px; height: 100px; border-radius: 50%; border: 4px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); }
+  .o1-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .o1-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; margin-top: 5px; position: relative; }
+  .o1-hero-row { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .o1-hp { padding: 5px 12px; border-radius: 8px; background: rgba(246,245,240,0.06); display: flex; align-items: baseline; gap: 3px; }
+  .o1-hpv { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .o1-hpu { font-size: 8px; color: rgba(246,245,240,0.3); }
+  .o1-video-link { margin-top: 10px; font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; position: relative; display: flex; align-items: center; gap: 5px; opacity: 0.7; }
+
+  /* Ingredient pills — horizontal scroll */
+  .o1-ing { padding: 14px 0 0 22px; }
+  .o1-ing-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .o1-pill-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .o1-pill-row::-webkit-scrollbar { display: none; }
+  .o1-pill { padding: 10px 16px; border-radius: 14px; background: #fff; border: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; }
+  .o1-pill:last-child { margin-right: 22px; }
+  .o1-pill-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .o1-pill-amount { font-size: 10px; color: var(--rock); margin-top: 1px; }
+
+  /* Step cards — alternating */
+  .o1-steps { padding: 14px 22px 0; }
+  .o1-steps-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 10px; }
+  .o1-sc { padding: 18px; border-radius: 18px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; }
+  .o1-sc:nth-child(odd) { background: var(--earth); }
+  .o1-sc:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .o1-sc-num { font-size: 20px; font-weight: 900; flex-shrink: 0; width: 28px; letter-spacing: -0.5px; }
+  .o1-sc:nth-child(odd) .o1-sc-num { color: rgba(246,245,240,0.15); }
+  .o1-sc:nth-child(even) .o1-sc-num { color: var(--stone); }
+  .o1-sc-text { font-size: 14px; line-height: 1.55; }
+  .o1-sc:nth-child(odd) .o1-sc-text { color: var(--sand); }
+  .o1-sc:nth-child(even) .o1-sc-text { color: var(--earth); }
+
+
+  /* ============================================================
+     O2: BENTO RECIPE — Mixed widget sizes. Visual interest
+     through asymmetry. Each section is a distinct tile.
+     ============================================================ */
+
+  .o2-hdr { padding: 54px 22px 0; display: flex; justify-content: space-between; }
+  .o2-bk { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .o2-video { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 10px; font-weight: 600; color: var(--sand); cursor: pointer; display: flex; align-items: center; gap: 5px; }
+
+  .o2-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px 22px 0; }
+  .o2-cell { border-radius: 20px; padding: 18px; overflow: hidden; position: relative; }
+
+  /* Name cell — spans 2 cols, dark */
+  .o2-name-cell { grid-column: span 2; background: var(--earth); padding: 22px; }
+  .o2-nc-ring { position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; border: 8px solid rgba(246,245,240,0.03); }
+  .o2-nc-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .o2-nc-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; margin-top: 4px; position: relative; }
+
+  /* Time cells — small squares */
+  .o2-time-cell { background: var(--stone); text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .o2-tc-val { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .o2-tc-unit { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  /* Ingredients cell — spans 2 cols, white */
+  .o2-ing-cell { grid-column: span 2; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .o2-ic-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 12px; display: flex; justify-content: space-between; }
+  .o2-ic-count { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .o2-ir { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .o2-ir:last-child { border-bottom: none; }
+  .o2-ir-name { font-size: 14px; color: var(--earth); }
+  .o2-ir-amount { font-size: 13px; color: var(--rock); }
+
+  /* Steps — each in own cell, alternating sizes */
+  .o2-step-cell { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .o2-step-cell.dark { background: var(--earth); border: none; }
+  .o2-step-cell.wide { grid-column: span 2; }
+  .o2-sn { font-size: 11px; font-weight: 700; margin-bottom: 6px; }
+  .o2-step-cell .o2-sn { color: var(--trail); opacity: 0.5; }
+  .o2-step-cell.dark .o2-sn { color: var(--trail); opacity: 0.4; }
+  .o2-st { font-size: 14px; line-height: 1.5; }
+  .o2-step-cell .o2-st { color: var(--earth); }
+  .o2-step-cell.dark .o2-st { color: var(--sand); }
+
+
+  /* ============================================================
+     O3: DARK IMMERSIVE WITH WHITE INSET
+     Dark screen. White card "floats" in the middle with all content.
+     Like a note card on a dark desk.
+     ============================================================ */
+
+  .o3-phone { background: var(--earth); }
+  .o3-hdr { padding: 54px 22px 0; display: flex; justify-content: space-between; }
+  .o3-bk { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .o3-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .o3-name { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; line-height: 1.08; padding: 16px 22px 0; }
+  .o3-meta { font-size: 11px; color: rgba(246,245,240,0.3); padding: 6px 22px 0; }
+
+  /* White floating card */
+  .o3-card {
+    margin: 16px 16px; padding: 24px 22px; border-radius: 24px; background: var(--sand);
+  }
+
+  .o3-sec-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 10px; }
+  .o3-ir { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid var(--stone); }
+  .o3-ir:last-child { border-bottom: none; }
+  .o3-ir-name { font-size: 14px; color: var(--earth); }
+  .o3-ir-amount { font-size: 13px; color: var(--rock); }
+
+  .o3-divider { height: 1px; background: var(--stone); margin: 16px 0; }
+
+  .o3-step { margin-bottom: 16px; display: flex; gap: 10px; }
+  .o3-step-marker { width: 24px; height: 24px; border-radius: 50%; background: var(--earth); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--sand); flex-shrink: 0; margin-top: 1px; }
+  .o3-step-text { font-size: 14px; color: var(--earth); line-height: 1.55; }
+
+
+  /* ============================================================
+     O4: HORIZONTAL STEP VIEWER
+     Compact header. Ingredients as a dark strip.
+     Steps as large horizontal swipeable cards.
+     One step fills the screen. Like the nutrition H1 for steps.
+     ============================================================ */
+
+  .o4-hdr { padding: 54px 22px 0; display: flex; align-items: center; gap: 10px; }
+  .o4-bk { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .o4-info { flex: 1; }
+  .o4-name { font-size: 17px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .o4-meta { font-size: 9px; color: var(--rock); margin-top: 1px; }
+  .o4-video { width: 34px; height: 34px; border-radius: 50%; background: var(--earth); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .o4-video svg { width: 10px; height: 10px; fill: var(--sand); }
+
+  /* Dark ingredient strip */
+  .o4-strip { margin: 10px 22px 0; padding: 14px 16px; border-radius: 18px; background: var(--earth); position: relative; overflow: hidden; }
+  .o4-strip-ring { position: absolute; top: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.03); }
+  .o4-strip-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; position: relative; }
+  .o4-strip-scroll { display: flex; gap: 14px; overflow-x: auto; scrollbar-width: none; position: relative; }
+  .o4-strip-scroll::-webkit-scrollbar { display: none; }
+  .o4-si { flex-shrink: 0; }
+  .o4-si-name { font-size: 12px; color: var(--sand); font-weight: 500; white-space: nowrap; }
+  .o4-si-amount { font-size: 9px; color: rgba(246,245,240,0.3); white-space: nowrap; }
+
+  /* Horizontal step cards */
+  .o4-scroll { display: flex; gap: 12px; padding: 12px 0 0 22px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .o4-scroll::-webkit-scrollbar { display: none; }
+
+  .o4-card {
+    min-width: 310px; max-width: 310px; border-radius: 24px; padding: 24px;
+    min-height: 300px; display: flex; flex-direction: column;
+    flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+    transition: all 0.3s;
+  }
+  .o4-card:last-child { margin-right: 22px; }
+  .o4-card:nth-child(odd) { background: var(--earth); }
+  .o4-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .o4-card-watermark { font-size: 120px; font-weight: 900; letter-spacing: -6px; line-height: 1; position: absolute; top: -10px; right: 0px; pointer-events: none; }
+  .o4-card:nth-child(odd) .o4-card-watermark { color: rgba(246,245,240,0.03); }
+  .o4-card:nth-child(even) .o4-card-watermark { color: rgba(45,42,36,0.02); }
+
+  .o4-card-step { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .o4-card:nth-child(odd) .o4-card-step { color: rgba(246,245,240,0.3); }
+  .o4-card:nth-child(even) .o4-card-step { color: var(--rock); }
+
+  .o4-card-text { font-size: 20px; font-weight: 600; line-height: 1.5; margin-top: auto; letter-spacing: -0.2px; position: relative; }
+  .o4-card:nth-child(odd) .o4-card-text { color: var(--sand); }
+  .o4-card:nth-child(even) .o4-card-text { color: var(--earth); }
+
+  .o4-card-time { font-size: 9px; margin-top: 10px; position: relative; }
+  .o4-card:nth-child(odd) .o4-card-time { color: rgba(246,245,240,0.2); }
+  .o4-card:nth-child(even) .o4-card-time { color: var(--rock); }
+
+  .o4-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0; }
+  .o4-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .o4-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+
+  /* ============================================================
+     O5: THE TICKET — Recipe as an event ticket.
+     Perforated tear line. Upper portion: name+times.
+     Lower portion: ingredients and steps.
+     ============================================================ */
+
+  .o5-hdr { padding: 54px 22px 0; display: flex; justify-content: space-between; }
+  .o5-bk { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .o5-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  /* Ticket upper */
+  .o5-ticket { margin: 12px 22px 0; border-radius: 22px 22px 0 0; background: var(--earth); padding: 28px 24px; position: relative; overflow: hidden; }
+  .o5-t-ring { position: absolute; top: -20px; right: -20px; width: 100px; height: 100px; border-radius: 50%; border: 8px solid rgba(246,245,240,0.03); }
+  .o5-t-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .o5-t-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; margin-top: 6px; position: relative; }
+  .o5-t-row { display: flex; gap: 20px; margin-top: 16px; position: relative; }
+  .o5-t-val { font-size: 22px; font-weight: 800; color: var(--sand); }
+  .o5-t-unit { font-size: 9px; color: rgba(246,245,240,0.3); margin-top: 1px; }
+
+  /* Perforated line */
+  .o5-perf { margin: 0 22px; height: 2px; background: repeating-linear-gradient(90deg, var(--stone) 0px, var(--stone) 6px, transparent 6px, transparent 12px); position: relative; }
+  .o5-perf::before, .o5-perf::after { content: ''; position: absolute; top: -8px; width: 16px; height: 18px; background: var(--sand); border-radius: 50%; }
+  .o5-perf::before { left: -8px; }
+  .o5-perf::after { right: -8px; }
+
+  /* Ticket lower */
+  .o5-lower { margin: 0 22px; border-radius: 0 0 22px 22px; background: #fff; border: 1px solid rgba(0,0,0,0.04); border-top: none; padding: 20px 24px; }
+  .o5-sec-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .o5-ir { display: flex; justify-content: space-between; padding: 6px 0; }
+  .o5-ir-name { font-size: 13px; color: var(--earth); }
+  .o5-ir-amount { font-size: 12px; color: var(--rock); }
+  .o5-div { height: 1px; background: var(--stone); margin: 14px 0; }
+  .o5-step { display: flex; gap: 10px; margin-bottom: 14px; }
+  .o5-sn { font-size: 11px; font-weight: 700; color: var(--trail); opacity: 0.6; flex-shrink: 0; width: 18px; margin-top: 2px; }
+  .o5-st { font-size: 14px; color: var(--earth); line-height: 1.5; }
+
+
+  /* ============================================================
+     O6: FULL-WIDTH SECTIONS — No margins on content zones.
+     Dark header zone, white ingredient zone, stone step zone.
+     Full-bleed backgrounds create distinct areas.
+     ============================================================ */
+
+  .o6-hdr-zone { background: var(--earth); padding: 54px 24px 24px; position: relative; overflow: hidden; }
+  .o6-hdr-ring { position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; border: 9px solid rgba(246,245,240,0.03); }
+  .o6-hdr-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; position: relative; }
+  .o6-bk { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .o6-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+  .o6-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; position: relative; }
+  .o6-meta-row { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .o6-mp { padding: 5px 12px; border-radius: 8px; background: rgba(246,245,240,0.06); display: flex; align-items: baseline; gap: 3px; }
+  .o6-mp-v { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .o6-mp-u { font-size: 8px; color: rgba(246,245,240,0.3); }
+
+  /* White ingredient zone */
+  .o6-ing-zone { background: #fff; padding: 18px 24px; }
+  .o6-iz-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 10px; }
+  .o6-iz-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+  .o6-iz-row { display: flex; justify-content: space-between; padding: 6px 0; }
+  .o6-iz-name { font-size: 13px; color: var(--earth); }
+  .o6-iz-amount { font-size: 12px; color: var(--rock); }
+
+  /* Trail green separator */
+  .o6-sep { height: 3px; background: var(--trail); opacity: 0.15; }
+
+  /* Stone step zone */
+  .o6-step-zone { background: var(--stone); padding: 18px 24px 40px; }
+  .o6-sz-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 12px; }
+  .o6-step { margin-bottom: 18px; display: flex; gap: 12px; }
+  .o6-step-num { font-size: 24px; font-weight: 900; color: rgba(45,42,36,0.08); letter-spacing: -1px; line-height: 1; width: 28px; flex-shrink: 0; padding-top: 3px; }
+  .o6-step-text { font-size: 15px; color: var(--earth); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- O1 -->
+<div>
+  <div class="lbl" style="color:var(--trail);">O1 — Hero + Pills + Alternating Steps</div>
+  <div class="dsc">Dark hero with ring (like nutrition). Ingredients as horizontal scrollable pills. Steps as alternating dark/white cards. Swipe ingredients sideways.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="o1-hdr"><div class="bk o1-bk">←</div></div>
+    <div class="o1-hero"><div class="o1-ring"></div><div class="o1-ring-in"></div><div class="o1-label">Breakfast Recipe</div><div class="o1-name">Veggie Stir Fry with Tofu</div><div class="o1-hero-row"><div class="o1-hp"><span class="o1-hpv">10</span><span class="o1-hpu">prep</span></div><div class="o1-hp"><span class="o1-hpv">12</span><span class="o1-hpu">cook</span></div><div class="o1-hp"><span class="o1-hpv">Easy</span></div></div><div class="o1-video-link">▶ Watch Video</div></div>
+
+    <div class="o1-ing"><div class="o1-ing-label">Ingredients · 8</div><div class="o1-pill-row"><div class="o1-pill"><div class="o1-pill-name">Firm tofu</div><div class="o1-pill-amount">½ block cubed</div></div><div class="o1-pill"><div class="o1-pill-name">Broccoli</div><div class="o1-pill-amount">1 cup florets</div></div><div class="o1-pill"><div class="o1-pill-name">Bell pepper</div><div class="o1-pill-amount">1 sliced</div></div><div class="o1-pill"><div class="o1-pill-name">Snap peas</div><div class="o1-pill-amount">½ cup</div></div><div class="o1-pill"><div class="o1-pill-name">Teriyaki sauce</div><div class="o1-pill-amount">2 tbsp</div></div><div class="o1-pill"><div class="o1-pill-name">White rice</div><div class="o1-pill-amount">1 cup cooked</div></div><div class="o1-pill"><div class="o1-pill-name">Sesame oil</div><div class="o1-pill-amount">1 tbsp</div></div><div class="o1-pill"><div class="o1-pill-name">Garlic</div><div class="o1-pill-amount">2 cloves</div></div></div></div>
+
+    <div class="o1-steps"><div class="o1-steps-label">Steps</div>
+      <div class="o1-sc"><div class="o1-sc-num">01</div><div class="o1-sc-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="o1-sc"><div class="o1-sc-num">02</div><div class="o1-sc-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div></div>
+      <div class="o1-sc"><div class="o1-sc-num">03</div><div class="o1-sc-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div></div>
+      <div class="o1-sc"><div class="o1-sc-num">04</div><div class="o1-sc-text">Serve over rice. Garnish with sesame seeds.</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- O2 -->
+<div>
+  <div class="lbl" style="color:#818CF8;">O2 — Bento Grid</div>
+  <div class="dsc">Everything as tiles. Name is a wide dark tile. Times are two square tiles. Ingredients in a white tile. Steps in alternating tiles — some span 2 columns.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="o2-hdr"><div class="bk o2-bk">←</div><div class="o2-video">▶ Video</div></div>
+    <div class="o2-bento">
+      <div class="o2-cell o2-name-cell"><div class="o2-nc-ring"></div><div class="o2-nc-label">Breakfast Recipe</div><div class="o2-nc-name">Veggie Stir Fry with Tofu</div></div>
+      <div class="o2-cell o2-time-cell"><div class="o2-tc-val">10</div><div class="o2-tc-unit">min prep</div></div>
+      <div class="o2-cell o2-time-cell"><div class="o2-tc-val">12</div><div class="o2-tc-unit">min cook</div></div>
+      <div class="o2-cell o2-ing-cell"><div class="o2-ic-label"><span>Ingredients</span><span class="o2-ic-count">8 items</span></div><div class="o2-ir"><span class="o2-ir-name">Firm tofu</span><span class="o2-ir-amount">½ block</span></div><div class="o2-ir"><span class="o2-ir-name">Broccoli</span><span class="o2-ir-amount">1 cup</span></div><div class="o2-ir"><span class="o2-ir-name">Bell pepper</span><span class="o2-ir-amount">1 sliced</span></div><div class="o2-ir"><span class="o2-ir-name">Snap peas</span><span class="o2-ir-amount">½ cup</span></div><div class="o2-ir"><span class="o2-ir-name">Teriyaki sauce</span><span class="o2-ir-amount">2 tbsp</span></div><div class="o2-ir"><span class="o2-ir-name">Rice · Oil · Garlic</span><span class="o2-ir-amount">1c · 1T · 2</span></div></div>
+      <div class="o2-cell o2-step-cell dark wide"><div class="o2-sn">Step 01</div><div class="o2-st">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="o2-cell o2-step-cell"><div class="o2-sn">Step 02</div><div class="o2-st">Remove tofu. Add vegetables and garlic. Stir-fry 3-4 min.</div></div>
+      <div class="o2-cell o2-step-cell"><div class="o2-sn">Step 03</div><div class="o2-st">Return tofu. Add teriyaki and toss to coat.</div></div>
+      <div class="o2-cell o2-step-cell dark wide"><div class="o2-sn">Step 04</div><div class="o2-st">Serve over fluffy white rice. Garnish with sesame seeds.</div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- O3 -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">O3 — Dark + Floating White Card</div>
+  <div class="dsc">Dark background with recipe name in large sand type. A floating white card holds ingredients + steps — like a note card on a dark desk. Everything in one clean card.</div>
+  <div class="phone o3-phone"><div class="topo"><div class="tc" style="border-color:var(--sand);"></div><div class="tc" style="border-color:var(--sand);"></div></div><div class="ps"><div class="cnt">
+    <div class="o3-hdr"><div class="bk o3-bk">←</div><span class="o3-video">▶ Watch Video</span></div>
+    <div class="o3-name">Veggie Stir Fry<br>with Tofu</div>
+    <div class="o3-meta">10 min prep · 12 min cook · Easy</div>
+
+    <div class="o3-card">
+      <div class="o3-sec-label">Ingredients · 8 items</div>
+      <div class="o3-ir"><span class="o3-ir-name">Firm tofu</span><span class="o3-ir-amount">½ block cubed</span></div><div class="o3-ir"><span class="o3-ir-name">Broccoli</span><span class="o3-ir-amount">1 cup florets</span></div><div class="o3-ir"><span class="o3-ir-name">Bell pepper</span><span class="o3-ir-amount">1 sliced</span></div><div class="o3-ir"><span class="o3-ir-name">Snap peas</span><span class="o3-ir-amount">½ cup</span></div><div class="o3-ir"><span class="o3-ir-name">Teriyaki sauce</span><span class="o3-ir-amount">2 tbsp</span></div><div class="o3-ir"><span class="o3-ir-name">Rice · Oil · Garlic</span><span class="o3-ir-amount">1c · 1T · 2cl</span></div>
+
+      <div class="o3-divider"></div>
+
+      <div class="o3-sec-label">Steps</div>
+      <div class="o3-step"><div class="o3-step-marker">1</div><div class="o3-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="o3-step"><div class="o3-step-marker">2</div><div class="o3-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div></div>
+      <div class="o3-step"><div class="o3-step-marker">3</div><div class="o3-step-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div></div>
+      <div class="o3-step"><div class="o3-step-marker">4</div><div class="o3-step-text">Serve over rice. Garnish with sesame seeds.</div></div>
+    </div>
+    <div style="height:60px;"></div>
+  </div></div></div>
+</div>
+
+<!-- O4 -->
+<div>
+  <div class="lbl" style="color:var(--trail);">O4 — Swipe Steps</div>
+  <div class="dsc">Compact header. Dark ingredient strip scrolls horizontally. Steps as LARGE swipeable cards with giant watermark numbers. Dark/white alternating. Swipe cards sideways.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="o4-hdr"><div class="bk o4-bk">←</div><div class="o4-info"><div class="o4-name">Veggie Stir Fry with Tofu</div><div class="o4-meta">10 min prep · 12 min cook · Easy</div></div><div class="o4-video"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div></div>
+
+    <div class="o4-strip"><div class="o4-strip-ring"></div><div class="o4-strip-label">Ingredients · 8</div><div class="o4-strip-scroll"><div class="o4-si"><div class="o4-si-name">Firm tofu</div><div class="o4-si-amount">½ block</div></div><div class="o4-si"><div class="o4-si-name">Broccoli</div><div class="o4-si-amount">1 cup</div></div><div class="o4-si"><div class="o4-si-name">Bell pepper</div><div class="o4-si-amount">1 sliced</div></div><div class="o4-si"><div class="o4-si-name">Snap peas</div><div class="o4-si-amount">½ cup</div></div><div class="o4-si"><div class="o4-si-name">Teriyaki</div><div class="o4-si-amount">2 tbsp</div></div><div class="o4-si"><div class="o4-si-name">Rice</div><div class="o4-si-amount">1 cup</div></div><div class="o4-si"><div class="o4-si-name">Sesame oil</div><div class="o4-si-amount">1 tbsp</div></div><div class="o4-si"><div class="o4-si-name">Garlic</div><div class="o4-si-amount">2 cloves</div></div></div></div>
+
+    <div class="o4-scroll">
+      <div class="o4-card"><div class="o4-card-watermark">01</div><div class="o4-card-step">Step 1 of 4 · ~4 min</div><div class="o4-card-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="o4-card"><div class="o4-card-watermark">02</div><div class="o4-card-step">Step 2 of 4 · ~3 min</div><div class="o4-card-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div>
+      <div class="o4-card"><div class="o4-card-watermark">03</div><div class="o4-card-step">Step 3 of 4 · ~2 min</div><div class="o4-card-text">Return tofu to pan. Pour teriyaki sauce and toss to coat evenly.</div></div>
+      <div class="o4-card"><div class="o4-card-watermark">04</div><div class="o4-card-step">Step 4 of 4 · ~1 min</div><div class="o4-card-text">Serve over fluffy white rice. Garnish with sesame seeds.</div></div>
+    </div>
+    <div class="o4-dots"><div class="o4-dot"></div><div class="o4-dot"></div><div class="o4-dot"></div><div class="o4-dot"></div></div>
+  </div></div></div>
+</div>
+
+<!-- O5 -->
+<div>
+  <div class="lbl" style="color:#818CF8;">O5 — The Ticket</div>
+  <div class="dsc">Recipe as an event ticket. Dark upper portion with name + times. Perforated tear line with notches. White lower portion with ingredients + steps. Unique visual concept.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="o5-hdr"><div class="bk o5-bk" style="background:rgba(45,42,36,0.04);color:var(--earth);">←</div><span class="o5-video">▶ Watch Video</span></div>
+
+    <div class="o5-ticket"><div class="o5-t-ring"></div><div class="o5-t-label">Breakfast Recipe</div><div class="o5-t-name">Veggie Stir Fry<br>with Tofu</div><div class="o5-t-row"><div><div class="o5-t-val">10</div><div class="o5-t-unit">min prep</div></div><div><div class="o5-t-val">12</div><div class="o5-t-unit">min cook</div></div><div><div class="o5-t-val">Easy</div><div class="o5-t-unit">difficulty</div></div></div></div>
+    <div class="o5-perf"></div>
+    <div class="o5-lower">
+      <div class="o5-sec-label">Ingredients · 8</div>
+      <div class="o5-ir"><span class="o5-ir-name">Firm tofu</span><span class="o5-ir-amount">½ block</span></div><div class="o5-ir"><span class="o5-ir-name">Broccoli</span><span class="o5-ir-amount">1 cup</span></div><div class="o5-ir"><span class="o5-ir-name">Bell pepper</span><span class="o5-ir-amount">1 sliced</span></div><div class="o5-ir"><span class="o5-ir-name">Snap peas</span><span class="o5-ir-amount">½ cup</span></div><div class="o5-ir"><span class="o5-ir-name">Teriyaki · Rice · Oil · Garlic</span><span class="o5-ir-amount">2T · 1c · 1T · 2</span></div>
+      <div class="o5-div"></div>
+      <div class="o5-sec-label">Steps</div>
+      <div class="o5-step"><div class="o5-sn">01</div><div class="o5-st">Press tofu, cube, pan-fry in sesame oil until golden.</div></div>
+      <div class="o5-step"><div class="o5-sn">02</div><div class="o5-st">Remove tofu. Stir-fry vegetables and garlic 3-4 min.</div></div>
+      <div class="o5-step"><div class="o5-sn">03</div><div class="o5-st">Return tofu. Add teriyaki and toss to coat.</div></div>
+      <div class="o5-step"><div class="o5-sn">04</div><div class="o5-st">Serve over rice with sesame seeds.</div></div>
+    </div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- O6 -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">O6 — Full-Bleed Zones</div>
+  <div class="dsc">Three distinct zones with full-width backgrounds. Dark header zone with name + times. White zone for 2-column ingredients. Stone zone for steps with ghost numbers. Green separator between zones.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="o6-hdr-zone"><div class="o6-hdr-ring"></div><div class="o6-hdr-top"><div class="bk o6-bk">←</div><span class="o6-video">▶ Watch Video</span></div><div class="o6-name">Veggie Stir Fry<br>with Tofu</div><div class="o6-meta-row"><div class="o6-mp"><span class="o6-mp-v">10</span><span class="o6-mp-u">prep</span></div><div class="o6-mp"><span class="o6-mp-v">12</span><span class="o6-mp-u">cook</span></div><div class="o6-mp"><span class="o6-mp-v">Easy</span></div></div></div>
+
+    <div class="o6-ing-zone"><div class="o6-iz-label">Ingredients · 8 items</div><div class="o6-iz-grid"><div class="o6-iz-row"><span class="o6-iz-name">Firm tofu</span><span class="o6-iz-amount">½ block</span></div><div class="o6-iz-row"><span class="o6-iz-name">Broccoli</span><span class="o6-iz-amount">1 cup</span></div><div class="o6-iz-row"><span class="o6-iz-name">Bell pepper</span><span class="o6-iz-amount">1 sliced</span></div><div class="o6-iz-row"><span class="o6-iz-name">Snap peas</span><span class="o6-iz-amount">½ cup</span></div><div class="o6-iz-row"><span class="o6-iz-name">Teriyaki sauce</span><span class="o6-iz-amount">2 tbsp</span></div><div class="o6-iz-row"><span class="o6-iz-name">White rice</span><span class="o6-iz-amount">1 cup</span></div><div class="o6-iz-row"><span class="o6-iz-name">Sesame oil</span><span class="o6-iz-amount">1 tbsp</span></div><div class="o6-iz-row"><span class="o6-iz-name">Garlic</span><span class="o6-iz-amount">2 cloves</span></div></div></div>
+
+    <div class="o6-sep"></div>
+
+    <div class="o6-step-zone"><div class="o6-sz-label">Steps</div>
+      <div class="o6-step"><div class="o6-step-num">1</div><div class="o6-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="o6-step"><div class="o6-step-num">2</div><div class="o6-step-text">Remove tofu. Add broccoli, bell pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div></div>
+      <div class="o6-step"><div class="o6-step-num">3</div><div class="o6-step-text">Return tofu to the pan. Pour teriyaki sauce over everything and toss gently to coat.</div></div>
+      <div class="o6-step"><div class="o6-step-num">4</div><div class="o6-step-text">Serve immediately over fluffy white rice. Garnish with sesame seeds.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

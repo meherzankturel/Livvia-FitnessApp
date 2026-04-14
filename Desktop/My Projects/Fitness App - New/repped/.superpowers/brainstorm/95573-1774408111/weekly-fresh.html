@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Fresh Weekly Ideas</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; }
+
+
+  /* ============================================================
+     F1: THE POSTER — Full dark screen. One giant stat.
+     Three supporting numbers. That's it. Like a movie poster
+     for your week. Screenshottable.
+     ============================================================ */
+
+  .f1-phone { background: var(--earth); }
+
+  .f1-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .f1-back { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .f1-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .f1-content { padding: 0 28px; display: flex; flex-direction: column; min-height: calc(100% - 90px); }
+
+  .f1-date { font-size: 10px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 28px; }
+  .f1-msg { font-size: 16px; color: var(--trail); font-weight: 600; margin-top: 8px; }
+
+  /* Giant hero stat */
+  .f1-hero { margin-top: auto; padding: 40px 0; }
+  .f1-hero-val { font-size: 88px; font-weight: 900; color: var(--sand); letter-spacing: -5px; line-height: 0.85; }
+  .f1-hero-unit { font-size: 20px; color: rgba(246,245,240,0.3); font-weight: 500; margin-top: 4px; }
+  .f1-hero-label { font-size: 12px; color: rgba(246,245,240,0.2); margin-top: 6px; }
+
+  /* Three supporting stats */
+  .f1-stats { display: flex; gap: 0; margin-bottom: 40px; border-top: 1px solid rgba(246,245,240,0.04); padding-top: 20px; }
+  .f1-stat { flex: 1; text-align: center; position: relative; }
+  .f1-stat::after { content: ''; position: absolute; right: 0; top: 5%; height: 90%; width: 1px; background: rgba(246,245,240,0.04); }
+  .f1-stat:last-child::after { display: none; }
+  .f1-stat-val { font-size: 28px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .f1-stat-val.green { color: var(--trail); }
+  .f1-stat-val.amber { color: #F59E0B; }
+  .f1-stat-label { font-size: 8px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 3px; }
+
+  /* Bottom strip — PRs + wellness */
+  .f1-bottom { border-top: 1px solid rgba(246,245,240,0.04); padding: 16px 0 40px; }
+  .f1-bottom-row { display: flex; justify-content: space-between; align-items: baseline; padding: 6px 0; }
+  .f1-br-name { font-size: 12px; color: rgba(246,245,240,0.3); }
+  .f1-br-val { font-size: 14px; font-weight: 700; color: var(--trail); }
+
+  .f1-well { display: flex; gap: 0; margin-top: 14px; padding-top: 14px; border-top: 1px solid rgba(246,245,240,0.04); }
+  .f1-w { flex: 1; text-align: center; }
+  .f1-w-val { font-size: 16px; font-weight: 800; color: rgba(246,245,240,0.4); }
+  .f1-w-label { font-size: 7px; color: rgba(246,245,240,0.12); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     F2: SPLIT ZONES — Dark top zone with hero message + stats.
+     Light bottom zone with details. Green accent strip between.
+     Two visual worlds.
+     ============================================================ */
+
+  .f2-phone { background: var(--sand); }
+
+  .f2-dark { background: var(--earth); padding: 54px 24px 28px; border-radius: 0 0 28px 28px; position: relative; overflow: hidden; }
+  .f2-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .f2-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .f2-al:nth-child(1) { width: 100px; top: 54px; right: -8px; transform: rotate(-35deg); }
+  .f2-al:nth-child(2) { width: 80px; top: 66px; right: -8px; transform: rotate(-35deg); }
+
+  .f2-top-bar { display: flex; align-items: center; position: relative; }
+  .f2-back { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .f2-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .f2-hero { margin-top: 20px; position: relative; }
+  .f2-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .f2-title { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; margin-top: 4px; }
+  .f2-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .f2-stats { display: flex; gap: 8px; margin-top: 18px; }
+  .f2-st { flex: 1; padding: 14px 10px; border-radius: 14px; background: rgba(246,245,240,0.04); text-align: center; }
+  .f2-st-val { font-size: 26px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .f2-st-val.green { color: var(--trail); }
+  .f2-st-val.amber { color: #F59E0B; }
+  .f2-st-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  /* Green accent */
+  .f2-green-strip { height: 3px; background: var(--trail); opacity: 0.15; }
+
+  /* Light content */
+  .f2-light { padding: 18px 24px 0; }
+  .f2-sec-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+
+  .f2-vol { display: flex; align-items: baseline; gap: 6px; margin-bottom: 16px; }
+  .f2-vol-val { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; }
+  .f2-vol-unit { font-size: 14px; color: var(--rock); }
+  .f2-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .f2-hl { padding: 14px 16px; border-radius: 16px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 14px; }
+  .f2-hl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .f2-hl-val { font-size: 18px; font-weight: 700; color: var(--earth); margin-top: 3px; }
+
+  .f2-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .f2-row:last-child { border-bottom: none; }
+  .f2-row-name { font-size: 14px; color: var(--earth); }
+  .f2-row-val { font-size: 14px; font-weight: 700; color: var(--trail); }
+
+  .f2-well { display: flex; gap: 8px; margin-top: 14px; }
+  .f2-wc { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .f2-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .f2-wc:nth-child(2) { background: var(--stone); }
+  .f2-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .f2-wc-val { font-size: 18px; font-weight: 800; }
+  .f2-wc:nth-child(1) .f2-wc-val { color: #047857; }
+  .f2-wc:nth-child(2) .f2-wc-val { color: var(--earth); }
+  .f2-wc:nth-child(3) .f2-wc-val { color: #92400E; }
+  .f2-wc-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     F3: THE STATEMENT — Big bold statements instead of numbers.
+     "You lifted 2.4 tons." "You set 2 personal records."
+     Reads like a personal achievement letter.
+     ============================================================ */
+
+  .f3-phone { background: var(--sand); }
+  .topo3 { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc3 { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc3:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+
+  .f3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .f3-back { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .f3-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .f3-content { padding: 0 28px; }
+
+  .f3-date { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 20px; }
+  .f3-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 6px; }
+
+  /* Statements — big text, reads like sentences */
+  .f3-statements { margin-top: 28px; }
+  .f3-stmt { margin-bottom: 24px; }
+  .f3-stmt-text { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.2; }
+  .f3-stmt-hl { color: var(--trail); }
+  .f3-stmt-amber { color: #F59E0B; }
+  .f3-stmt-sub { font-size: 11px; color: var(--rock); margin-top: 4px; }
+
+  /* Divider */
+  .f3-div { height: 1px; background: var(--stone); margin: 4px 0 24px; }
+
+  /* Compact wellness */
+  .f3-well-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .f3-well { display: flex; gap: 8px; }
+  .f3-wc { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .f3-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .f3-wc:nth-child(2) { background: var(--stone); }
+  .f3-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .f3-wc-val { font-size: 18px; font-weight: 800; }
+  .f3-wc:nth-child(1) .f3-wc-val { color: #047857; }
+  .f3-wc:nth-child(2) .f3-wc-val { color: var(--earth); }
+  .f3-wc:nth-child(3) .f3-wc-val { color: #92400E; }
+  .f3-wc-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== F1: THE POSTER ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">F1 — The Poster</div>
+  <div class="dsc">Full dark screen. ONE giant 88px number dominates. Three supporting stats below. PRs + wellness at the bottom. Like a movie poster for your week. Screenshottable.</div>
+  <div class="phone f1-phone"><div class="ps"><div class="cnt">
+    <div class="f1-hdr"><div class="back f1-back">←</div><span class="f1-hdr-title">Weekly Summary</span></div>
+
+    <div class="f1-content">
+      <div class="f1-date">Mar 18 – 24</div>
+      <div class="f1-msg">Crushing it! 💪</div>
+
+      <div class="f1-hero">
+        <div class="f1-hero-val">2.4</div>
+        <div class="f1-hero-unit">tons lifted</div>
+        <div class="f1-hero-label">▲ 12% more than last week</div>
+      </div>
+
+      <div class="f1-stats">
+        <div class="f1-stat"><div class="f1-stat-val">4</div><div class="f1-stat-label">Workouts</div></div>
+        <div class="f1-stat"><div class="f1-stat-val green">80%</div><div class="f1-stat-label">Completion</div></div>
+        <div class="f1-stat"><div class="f1-stat-val amber">12d</div><div class="f1-stat-label">Streak</div></div>
+      </div>
+
+      <div class="f1-bottom">
+        <div class="f1-bottom-row"><span class="f1-br-name">Best Lift</span><span class="f1-br-val">Bench — 80 kg</span></div>
+        <div class="f1-bottom-row"><span class="f1-br-name">Weight</span><span class="f1-br-val">-0.8 kg</span></div>
+        <div class="f1-bottom-row"><span class="f1-br-name">PRs This Week</span><span class="f1-br-val">2</span></div>
+
+        <div class="f1-well">
+          <div class="f1-w"><div class="f1-w-val">4.5</div><div class="f1-w-label">Sleep</div></div>
+          <div class="f1-w"><div class="f1-w-val">3.8</div><div class="f1-w-label">Energy</div></div>
+          <div class="f1-w"><div class="f1-w-val">2.0</div><div class="f1-w-label">Soreness</div></div>
+        </div>
+      </div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ===== F2: SPLIT ZONES ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">F2 — Split Zones</div>
+  <div class="dsc">Dark header zone with hero stats (rounded bottom). Green accent line. Light zone below with volume, highlight, PRs, wellness. Two visual worlds connected.</div>
+  <div class="phone f2-phone"><div class="ps"><div class="cnt">
+    <div class="f2-dark">
+      <div class="f2-accent"><div class="f2-al"></div><div class="f2-al"></div></div>
+      <div class="f2-top-bar"><div class="back f2-back">←</div><span class="f2-hdr-title">Weekly Summary</span></div>
+      <div class="f2-hero">
+        <div class="f2-date">Mar 18 – 24</div>
+        <div class="f2-title">This Week</div>
+        <div class="f2-msg">Crushing it! 💪</div>
+      </div>
+      <div class="f2-stats">
+        <div class="f2-st"><div class="f2-st-val">4</div><div class="f2-st-label">Workouts</div></div>
+        <div class="f2-st"><div class="f2-st-val green">80%</div><div class="f2-st-label">Complete</div></div>
+        <div class="f2-st"><div class="f2-st-val amber">12d</div><div class="f2-st-label">Streak</div></div>
+      </div>
+    </div>
+    <div class="f2-green-strip"></div>
+
+    <div class="f2-light">
+      <div class="f2-sec-label">Volume Lifted</div>
+      <div class="f2-vol"><span class="f2-vol-val">2.4</span><span class="f2-vol-unit">tons</span><span class="f2-vol-trend">▲ 12%</span></div>
+
+      <div class="f2-hl"><div class="f2-hl-label">Highlight · Best Lift</div><div class="f2-hl-val">Bench Press — 80 kg</div></div>
+
+      <div class="f2-sec-label">Personal Records</div>
+      <div class="f2-row"><span class="f2-row-name">Bench Press</span><span class="f2-row-val">80 kg</span></div>
+      <div class="f2-row"><span class="f2-row-name">Squat</span><span class="f2-row-val">105 kg</span></div>
+
+      <div class="f2-sec-label" style="margin-top:14px;">Wellness</div>
+      <div class="f2-well"><div class="f2-wc"><div class="f2-wc-val">4.5</div><div class="f2-wc-label">Sleep</div></div><div class="f2-wc"><div class="f2-wc-val">3.8</div><div class="f2-wc-label">Energy</div></div><div class="f2-wc"><div class="f2-wc-val">2.0</div><div class="f2-wc-label">Soreness</div></div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== F3: THE STATEMENT ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">F3 — The Statement</div>
+  <div class="dsc">No cards. No containers. Just bold 24px sentences that tell your week's story: "You lifted 2.4 tons." "You set 2 personal records." Reads like a personal achievement letter.</div>
+  <div class="phone f3-phone"><div class="topo3"><div class="tc3"></div></div><div class="ps"><div class="cnt">
+    <div class="f3-hdr"><div class="back f3-back">←</div><span class="f3-hdr-title">Weekly Summary</span></div>
+
+    <div class="f3-content">
+      <div class="f3-date">Mar 18 – 24</div>
+      <div class="f3-msg">Crushing it! 💪</div>
+
+      <div class="f3-statements">
+        <div class="f3-stmt"><div class="f3-stmt-text">You completed <span class="f3-stmt-hl">4 workouts</span> this week.</div><div class="f3-stmt-sub">80% completion rate · 12-day streak</div></div>
+
+        <div class="f3-stmt"><div class="f3-stmt-text">You lifted <span class="f3-stmt-hl">2.4 tons</span> of total volume.</div><div class="f3-stmt-sub">▲ 12% more than last week</div></div>
+
+        <div class="f3-stmt"><div class="f3-stmt-text">Your best lift was <span class="f3-stmt-hl">Bench Press at 80 kg</span>.</div><div class="f3-stmt-sub">New personal record!</div></div>
+
+        <div class="f3-stmt"><div class="f3-stmt-text">You lost <span class="f3-stmt-hl">0.8 kg</span> this week.</div><div class="f3-stmt-sub">Net weight change</div></div>
+
+        <div class="f3-stmt"><div class="f3-stmt-text">You set <span class="f3-stmt-amber">2 personal records</span>.</div><div class="f3-stmt-sub">Bench 80kg · Squat 105kg</div></div>
+      </div>
+
+      <div class="f3-div"></div>
+
+      <div class="f3-well-label">Wellness Averages</div>
+      <div class="f3-well"><div class="f3-wc"><div class="f3-wc-val">4.5</div><div class="f3-wc-label">Sleep</div></div><div class="f3-wc"><div class="f3-wc-val">3.8</div><div class="f3-wc-label">Energy</div></div><div class="f3-wc"><div class="f3-wc-val">2.0</div><div class="f3-wc-label">Soreness</div></div></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

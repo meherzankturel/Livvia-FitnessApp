@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — More Nutrition Variations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; }
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .grocery { margin: 12px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .gt { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .gs { font-size: 11px; color: rgba(246,245,240,0.35); }
+  .alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: pulse 2.4s ease-in-out infinite; display: inline-block; }
+  @keyframes pulse { 0%,100% { opacity:.5; transform:scale(1); } 30% { opacity:1; transform:scale(1.35); } }
+
+
+  /* ============================================================
+     V: THE SCROLL TAPE — Horizontal scroll of meal cards
+     like a film strip. Only current meal is full-size.
+     ============================================================ */
+  .col-v .lbl { color: var(--trail); }
+
+  .v-hero { padding: 54px 24px 0; }
+  .v-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .v-ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+  .v-macros { display: flex; gap: 5px; padding: 12px 24px; }
+  .v-mp { padding: 5px 10px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+
+  /* Horizontal tape */
+  .v-tape { padding: 16px 0 16px 24px; overflow-x: auto; scrollbar-width: none; display: flex; gap: 14px; scroll-snap-type: x mandatory; }
+  .v-tape::-webkit-scrollbar { display: none; }
+
+  .v-card {
+    min-width: 300px; max-width: 300px; border-radius: 24px; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04); flex-shrink: 0;
+    scroll-snap-align: start;
+    opacity: 0; animation: vSlide 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .v-card:nth-child(1) { animation-delay: 0.05s; }
+  .v-card:nth-child(2) { animation-delay: 0.1s; }
+  .v-card:nth-child(3) { animation-delay: 0.15s; }
+  .v-card:nth-child(4) { animation-delay: 0.2s; margin-right: 24px; }
+  @keyframes vSlide { 0% { opacity:0; transform: translateX(20px); } 100% { opacity:1; transform: translateX(0); } }
+
+  .v-card-hero { height: 140px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .v-card-hero .bg { position: absolute; inset: 0; opacity: 0.04; }
+  .v-card-hero .emoji { font-size: 56px; position: relative; z-index: 1; animation: vFloat 5s ease-in-out infinite; }
+  @keyframes vFloat { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+  .v-card-hero .badge { position: absolute; top: 14px; left: 14px; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.85); font-size: 9px; font-weight: 700; color: var(--earth); text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+  .v-card-hero .cal { position: absolute; top: 14px; right: 14px; padding: 5px 12px; border-radius: 100px; background: rgba(255,255,255,0.85); font-size: 14px; font-weight: 800; color: var(--earth); z-index: 2; }
+  .v-card-hero .cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .v-card-body { padding: 18px; }
+  .v-card-name { font-size: 18px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .v-card-macros { font-size: 12px; color: var(--rock); margin-top: 4px; }
+  .v-card-desc { font-size: 12px; color: var(--rock); margin-top: 6px; line-height: 1.5; }
+  .v-card-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .v-card-btn { padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 600; }
+  .v-card-btn.p { background: var(--earth); color: var(--sand); }
+  .v-card-btn.sw { background: rgba(52,211,153,0.06); color: #047857; }
+  .v-card-btn.g { background: var(--stone); color: var(--earth); }
+
+  /* Scroll indicator dots */
+  .v-dots { display: flex; justify-content: center; gap: 6px; padding: 4px 0 8px; }
+  .v-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .v-dot.on { background: var(--earth); width: 18px; border-radius: 3px; }
+
+
+  /* ============================================================
+     W: THE ACCORDION — Full-width stacked panels that expand
+     ============================================================ */
+  .col-w .lbl { color: #F59E0B; }
+
+  .w-hero { padding: 54px 24px 0; }
+  .w-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .w-ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  .w-macros { display: flex; gap: 8px; padding: 16px 24px; }
+  .w-m { flex: 1; border-radius: 16px; padding: 12px 6px; text-align: center; }
+  .w-m.dk { background: var(--earth); }
+  .w-m.st { background: var(--stone); }
+  .w-m .v { font-size: 17px; font-weight: 800; }
+  .w-m.dk .v { color: var(--sand); }
+  .w-m.st .v { color: var(--earth); }
+  .w-m .l { font-size: 7px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .w-m.dk .l { color: rgba(246,245,240,0.35); }
+  .w-m.st .l { color: var(--rock); }
+
+  /* Accordion panels */
+  .w-panels { padding: 8px 24px; }
+
+  .w-panel {
+    border-radius: 22px; overflow: hidden; margin-bottom: 10px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer; transition: box-shadow 0.3s;
+  }
+  .w-panel:hover { box-shadow: 0 2px 12px rgba(0,0,0,0.03); }
+
+  /* Collapsed header */
+  .w-panel-header {
+    padding: 16px 20px; display: flex; align-items: center; gap: 14px;
+  }
+  .w-panel-emoji { font-size: 22px; flex-shrink: 0; }
+  .w-panel-info { flex: 1; }
+  .w-panel-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .w-panel-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 2px; }
+  .w-panel-cal { font-size: 16px; font-weight: 800; color: var(--earth); flex-shrink: 0; }
+  .w-panel-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .w-panel-chev { font-size: 12px; color: var(--stone); flex-shrink: 0; transition: transform 0.3s; }
+
+  /* Expanded body — hidden by default */
+  .w-panel-body { display: none; padding: 0 20px 18px; }
+  .w-panel.open .w-panel-body { display: block; animation: wExpand 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .w-panel.open .w-panel-chev { transform: rotate(180deg); }
+  @keyframes wExpand { 0% { opacity: 0; transform: translateY(-8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+  .w-panel-divider { height: 1px; background: var(--stone); margin-bottom: 14px; }
+  .w-panel-desc { font-size: 12px; color: var(--rock); line-height: 1.5; }
+  .w-panel-macros { font-size: 12px; color: var(--rock); margin-top: 8px; }
+
+  .w-panel-stats { display: flex; gap: 6px; margin-top: 12px; }
+  .w-ps { flex: 1; padding: 10px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .w-ps .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .w-ps .l { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+  .w-panel-mode { display: flex; gap: 6px; margin-top: 12px; }
+  .w-pm { padding: 6px 14px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .w-pm.on { background: var(--earth); color: var(--sand); }
+  .w-pm.off { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  .w-panel-acts { display: flex; gap: 6px; margin-top: 10px; }
+  .w-pa { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .w-pa.p { background: var(--earth); color: var(--sand); }
+  .w-pa.sw { background: rgba(52,211,153,0.06); color: #047857; }
+  .w-pa.g { background: var(--stone); color: var(--earth); }
+  .w-pa.m { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+
+  /* ============================================================
+     X: THE GRID — 2x2 equal cards, each meal is a square tile
+     ============================================================ */
+  .col-x .lbl { color: #818CF8; }
+
+  .x-hero { padding: 54px 24px 0; }
+  .x-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .x-ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  /* Calorie + macros inline */
+  .x-cal-row { padding: 12px 24px 0; display: flex; align-items: baseline; gap: 6px; }
+  .x-cal-big { font-size: 40px; font-weight: 900; color: var(--earth); letter-spacing: -2px; }
+  .x-cal-unit { font-size: 13px; color: var(--rock); }
+  .x-macro-row { display: flex; gap: 12px; padding: 4px 24px 0; }
+  .x-mr { display: flex; align-items: baseline; gap: 2px; }
+  .x-mr .v { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .x-mr .l { font-size: 10px; color: var(--rock); }
+
+  /* 2x2 Grid */
+  .x-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 18px 24px; }
+
+  .x-tile {
+    border-radius: 22px; overflow: hidden; aspect-ratio: 1;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 18px; position: relative; cursor: pointer;
+    transition: transform 0.2s;
+    opacity: 0; animation: xPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .x-tile:active { transform: scale(0.96); }
+  .x-tile:nth-child(1) { animation-delay: 0.05s; }
+  .x-tile:nth-child(2) { animation-delay: 0.1s; }
+  .x-tile:nth-child(3) { animation-delay: 0.15s; }
+  .x-tile:nth-child(4) { animation-delay: 0.2s; }
+  @keyframes xPop { 0% { opacity:0; transform: scale(0.9); } 100% { opacity:1; transform: scale(1); } }
+
+  .x-tile.t1 { background: var(--earth); }
+  .x-tile.t2 { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .x-tile.t3 { background: var(--stone); }
+  .x-tile.t4 { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  /* Emoji floating top-right */
+  .x-tile .emoji { position: absolute; top: 14px; right: 14px; font-size: 28px; opacity: 0.2; }
+  .x-tile.t1 .emoji { opacity: 0.12; }
+
+  .x-tile .time { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .x-tile.t1 .time { color: rgba(246,245,240,0.35); }
+  .x-tile.t2 .time, .x-tile.t4 .time { color: var(--rock); }
+  .x-tile.t3 .time { color: var(--rock); }
+
+  .x-tile .name { font-size: 15px; font-weight: 700; margin-top: 6px; line-height: 1.2; }
+  .x-tile.t1 .name { color: var(--sand); }
+  .x-tile.t2 .name, .x-tile.t4 .name { color: var(--earth); }
+  .x-tile.t3 .name { color: var(--earth); }
+
+  .x-tile .cal { font-size: 24px; font-weight: 800; margin-top: 8px; letter-spacing: -1px; }
+  .x-tile.t1 .cal { color: var(--sand); }
+  .x-tile.t2 .cal, .x-tile.t4 .cal { color: var(--earth); }
+  .x-tile.t3 .cal { color: var(--earth); }
+  .x-tile .cal span { font-size: 10px; font-weight: 500; }
+  .x-tile.t1 .cal span { color: rgba(246,245,240,0.35); }
+  .x-tile.t2 .cal span, .x-tile.t4 .cal span { color: var(--rock); }
+  .x-tile.t3 .cal span { color: var(--rock); }
+
+  /* Quick action strip below grid */
+  .x-strip { padding: 0 24px; font-size: 11px; color: var(--rock); text-align: center; }
+
+  /* Bottom: expanded detail for tapped tile */
+  .x-detail {
+    margin: 12px 24px 0; padding: 20px; border-radius: 22px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    animation: xDetail 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes xDetail { 0% { opacity:0; transform: translateY(8px); } 100% { opacity:1; transform: translateY(0); } }
+  .x-detail-top { display: flex; justify-content: space-between; align-items: center; }
+  .x-detail-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .x-detail-name { font-size: 18px; font-weight: 700; color: var(--earth); margin-top: 8px; }
+  .x-detail-desc { font-size: 12px; color: var(--rock); margin-top: 6px; line-height: 1.5; }
+  .x-detail-macros { font-size: 12px; color: var(--rock); margin-top: 8px; }
+  .x-detail-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .x-detail-btn { padding: 10px 18px; border-radius: 14px; font-size: 12px; font-weight: 600; }
+  .x-detail-btn.p { background: var(--earth); color: var(--sand); }
+  .x-detail-btn.sw { background: rgba(52,211,153,0.06); color: #047857; }
+  .x-detail-btn.g { background: var(--stone); color: var(--earth); }
+  .x-detail-btn.m { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== V: THE SCROLL TAPE ===== -->
+<div class="col col-v">
+  <div class="lbl">V — The Scroll Tape</div>
+  <div class="dsc">Horizontal scroll. Each meal is a tall card with a hero zone, floating emoji, and full detail. Swipe sideways through your day. Dot indicator tracks position.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="v-hero"><div class="v-ctx">Wednesday · Nutrition</div><div class="v-ttl">Today's Fuel</div></div>
+    <div class="v-macros">
+      <span class="v-mp" style="background:var(--earth);color:var(--sand);">2,180 kcal</span>
+      <span class="v-mp" style="background:rgba(45,42,36,0.04);color:var(--rock);">165g P</span>
+      <span class="v-mp" style="background:rgba(45,42,36,0.04);color:var(--rock);">245g C</span>
+      <span class="v-mp" style="background:rgba(45,42,36,0.04);color:var(--rock);">72g F</span>
+    </div>
+
+    <div class="v-tape">
+      <div class="v-card">
+        <div class="v-card-hero" style="background:rgba(245,158,11,0.03);"><div class="bg" style="background:#F59E0B;"></div><span class="badge">🌅 Breakfast</span><span class="cal">520 <span>kcal</span></span><div class="emoji">🥣</div></div>
+        <div class="v-card-body"><div class="v-card-name">Greek Yogurt Power Bowl</div><div class="v-card-macros">35g protein · 42g carbs · 12g fat</div><div class="v-card-desc">Creamy yogurt with berries, granola, chia seeds, and honey.</div><div class="v-card-acts"><span class="v-card-btn p">Recipe</span><span class="v-card-btn sw">Swap</span><span class="v-card-btn g">Eat Out</span></div></div>
+      </div>
+      <div class="v-card">
+        <div class="v-card-hero" style="background:rgba(52,211,153,0.03);"><div class="bg" style="background:#34D399;"></div><span class="badge">☀️ Lunch</span><span class="cal">680 <span>kcal</span></span><div class="emoji">🍗</div></div>
+        <div class="v-card-body"><div class="v-card-name">Grilled Chicken & Rice</div><div class="v-card-macros">45g protein · 55g carbs · 14g fat</div><div class="v-card-desc">Herb chicken with brown rice, broccoli, and lemon.</div><div class="v-card-acts"><span class="v-card-btn p">Recipe</span><span class="v-card-btn sw">Swap</span><span class="v-card-btn g">Eat Out</span></div></div>
+      </div>
+      <div class="v-card">
+        <div class="v-card-hero" style="background:rgba(249,115,22,0.03);"><div class="bg" style="background:#F97316;"></div><span class="badge">🌇 Snack</span><span class="cal">260 <span>kcal</span></span><div class="emoji">🥤</div></div>
+        <div class="v-card-body"><div class="v-card-name">Protein Shake & Almonds</div><div class="v-card-macros">37g protein · 18g carbs · 14g fat</div><div class="v-card-desc">Whey protein with banana, oat milk, and roasted almonds.</div><div class="v-card-acts"><span class="v-card-btn p">Recipe</span><span class="v-card-btn sw">Swap</span></div></div>
+      </div>
+      <div class="v-card">
+        <div class="v-card-hero" style="background:rgba(129,140,248,0.03);"><div class="bg" style="background:#818CF8;"></div><span class="badge">🌙 Dinner</span><span class="cal">720 <span>kcal</span></span><div class="emoji">🐟</div></div>
+        <div class="v-card-body"><div class="v-card-name">Salmon & Sweet Potato</div><div class="v-card-macros">48g protein · 62g carbs · 22g fat</div><div class="v-card-desc">Pan-seared salmon with roasted sweet potato and asparagus.</div><div class="v-card-acts"><span class="v-card-btn p">Recipe</span><span class="v-card-btn sw">Swap</span><span class="v-card-btn g">Eat Out</span></div></div>
+      </div>
+    </div>
+    <div class="v-dots"><div class="v-dot on"></div><div class="v-dot"></div><div class="v-dot"></div><div class="v-dot"></div></div>
+
+    <div class="grocery"><div><div class="gt">Grocery List</div><div class="gs">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== W: THE ACCORDION ===== -->
+<div class="col col-w">
+  <div class="lbl">W — The Accordion</div>
+  <div class="dsc">Clean stacked panels. Tap to expand any meal — reveals description, stat grid, mode toggle, and actions. Only one open at a time. Click cards to try it.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w-hero"><div class="w-ctx">Wednesday · Nutrition</div><div class="w-ttl">Today's Fuel</div></div>
+    <div class="w-macros">
+      <div class="w-m dk"><div class="v">2,180</div><div class="l">kcal</div></div>
+      <div class="w-m st"><div class="v">165g</div><div class="l">Protein</div></div>
+      <div class="w-m st"><div class="v">245g</div><div class="l">Carbs</div></div>
+      <div class="w-m st"><div class="v">72g</div><div class="l">Fat</div></div>
+    </div>
+
+    <div class="w-panels">
+      <div class="w-panel open" onclick="wToggle(this)">
+        <div class="w-panel-header"><span class="w-panel-emoji">🌅</span><div class="w-panel-info"><div class="w-panel-time">8 AM · Breakfast</div><div class="w-panel-name">Greek Yogurt Power Bowl</div></div><div class="w-panel-cal">520 <span>kcal</span></div><div class="w-panel-chev">▾</div></div>
+        <div class="w-panel-body">
+          <div class="w-panel-divider"></div>
+          <div class="w-panel-desc">Creamy Greek yogurt with mixed berries, granola crunch, chia seeds, and a drizzle of honey.</div>
+          <div class="w-panel-stats"><div class="w-ps"><div class="v">35g</div><div class="l">Protein</div></div><div class="w-ps"><div class="v">42g</div><div class="l">Carbs</div></div><div class="w-ps"><div class="v">12g</div><div class="l">Fat</div></div></div>
+          <div class="w-panel-mode"><span class="w-pm on">🍳 Cook</span><span class="w-pm off">🍽️ Eat Out</span></div>
+          <div class="w-panel-acts"><span class="w-pa p">Recipe</span><span class="w-pa sw">Swap</span><span class="w-pa g">Eat Out</span><span class="w-pa m">Nah</span></div>
+        </div>
+      </div>
+
+      <div class="w-panel" onclick="wToggle(this)">
+        <div class="w-panel-header"><span class="w-panel-emoji">☀️</span><div class="w-panel-info"><div class="w-panel-time">12 PM · Lunch</div><div class="w-panel-name">Grilled Chicken & Rice</div></div><div class="w-panel-cal">680 <span>kcal</span></div><div class="w-panel-chev">▾</div></div>
+        <div class="w-panel-body">
+          <div class="w-panel-divider"></div>
+          <div class="w-panel-desc">Herb-marinated chicken breast with brown rice, steamed broccoli, and lemon.</div>
+          <div class="w-panel-stats"><div class="w-ps"><div class="v">45g</div><div class="l">Protein</div></div><div class="w-ps"><div class="v">55g</div><div class="l">Carbs</div></div><div class="w-ps"><div class="v">14g</div><div class="l">Fat</div></div></div>
+          <div class="w-panel-mode"><span class="w-pm on">🍳 Cook</span><span class="w-pm off">🍽️ Eat Out</span></div>
+          <div class="w-panel-acts"><span class="w-pa p">Recipe</span><span class="w-pa sw">Swap</span><span class="w-pa g">Eat Out</span><span class="w-pa m">Nah</span></div>
+        </div>
+      </div>
+
+      <div class="w-panel" onclick="wToggle(this)">
+        <div class="w-panel-header"><span class="w-panel-emoji">🌇</span><div class="w-panel-info"><div class="w-panel-time">4 PM · Snack</div><div class="w-panel-name">Protein Shake & Almonds</div></div><div class="w-panel-cal">260 <span>kcal</span></div><div class="w-panel-chev">▾</div></div>
+        <div class="w-panel-body">
+          <div class="w-panel-divider"></div>
+          <div class="w-panel-desc">Whey protein with banana and oat milk. Roasted almonds on the side.</div>
+          <div class="w-panel-stats"><div class="w-ps"><div class="v">37g</div><div class="l">Protein</div></div><div class="w-ps"><div class="v">18g</div><div class="l">Carbs</div></div><div class="w-ps"><div class="v">14g</div><div class="l">Fat</div></div></div>
+          <div class="w-panel-mode"><span class="w-pm on">🍳 Cook</span><span class="w-pm off">🍽️ Eat Out</span></div>
+          <div class="w-panel-acts"><span class="w-pa p">Recipe</span><span class="w-pa sw">Swap</span><span class="w-pa m">Nah</span></div>
+        </div>
+      </div>
+
+      <div class="w-panel" onclick="wToggle(this)">
+        <div class="w-panel-header"><span class="w-panel-emoji">🌙</span><div class="w-panel-info"><div class="w-panel-time">7 PM · Dinner</div><div class="w-panel-name">Salmon & Sweet Potato</div></div><div class="w-panel-cal">720 <span>kcal</span></div><div class="w-panel-chev">▾</div></div>
+        <div class="w-panel-body">
+          <div class="w-panel-divider"></div>
+          <div class="w-panel-desc">Pan-seared salmon with roasted sweet potato wedges, asparagus, and garlic butter.</div>
+          <div class="w-panel-stats"><div class="w-ps"><div class="v">48g</div><div class="l">Protein</div></div><div class="w-ps"><div class="v">62g</div><div class="l">Carbs</div></div><div class="w-ps"><div class="v">22g</div><div class="l">Fat</div></div></div>
+          <div class="w-panel-mode"><span class="w-pm on">🍳 Cook</span><span class="w-pm off">🍽️ Eat Out</span></div>
+          <div class="w-panel-acts"><span class="w-pa p">Recipe</span><span class="w-pa sw">Swap</span><span class="w-pa g">Eat Out</span><span class="w-pa m">Nah</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grocery"><div><div class="gt">Grocery List</div><div class="gs">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== X: THE GRID ===== -->
+<div class="col col-x">
+  <div class="lbl">X — The Grid</div>
+  <div class="dsc">2×2 square tiles. Each meal is a tactile square — dark, white, stone, white alternating. Big calorie numbers. Tap any tile to see detail below. Minimal above-the-fold.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x-hero"><div class="x-ctx">Wednesday · Nutrition</div><div class="x-ttl">Today's Fuel</div></div>
+
+    <div class="x-cal-row"><div class="x-cal-big">2,180</div><div class="x-cal-unit">kcal</div></div>
+    <div class="x-macro-row"><div class="x-mr"><div class="v">165</div><div class="l">g P</div></div><div class="x-mr"><div class="v">245</div><div class="l">g C</div></div><div class="x-mr"><div class="v">72</div><div class="l">g F</div></div></div>
+
+    <div class="x-grid">
+      <div class="x-tile t1"><div class="emoji">🌅</div><div class="time">8 AM · Breakfast</div><div class="name">Greek Yogurt Power Bowl</div><div class="cal">520 <span>kcal</span></div></div>
+      <div class="x-tile t2"><div class="emoji">☀️</div><div class="time">12 PM · Lunch</div><div class="name">Grilled Chicken & Rice</div><div class="cal">680 <span>kcal</span></div></div>
+      <div class="x-tile t3"><div class="emoji">🌇</div><div class="time">4 PM · Snack</div><div class="name">Protein Shake & Almonds</div><div class="cal">260 <span>kcal</span></div></div>
+      <div class="x-tile t4"><div class="emoji">🌙</div><div class="time">7 PM · Dinner</div><div class="name">Salmon & Sweet Potato</div><div class="cal">720 <span>kcal</span></div></div>
+    </div>
+
+    <div class="x-strip">Tap any meal for details</div>
+
+    <!-- Detail card — shows for tapped tile -->
+    <div class="x-detail">
+      <div class="x-detail-top"><div class="x-detail-time"><span>🌅</span> 8 AM · Breakfast</div></div>
+      <div class="x-detail-name">Greek Yogurt Power Bowl</div>
+      <div class="x-detail-desc">Creamy yogurt with berries, granola crunch, chia seeds, and a honey drizzle.</div>
+      <div class="x-detail-macros">35g protein · 42g carbs · 12g fat</div>
+      <div class="x-detail-acts"><span class="x-detail-btn p">Recipe</span><span class="x-detail-btn sw">Swap</span><span class="x-detail-btn g">Eat Out</span><span class="x-detail-btn m">Nah</span></div>
+    </div>
+
+    <div class="grocery"><div><div class="gt">Grocery List</div><div class="gs">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function wToggle(panel) {
+  const wasOpen = panel.classList.contains('open');
+  document.querySelectorAll('.w-panel').forEach(p => p.classList.remove('open'));
+  if (!wasOpen) panel.classList.add('open');
+}
+</script>
+
+</body>
+</html>

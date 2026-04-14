@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Pan Hero</title>
+<script src="https://unpkg.com/@lottiefiles/dotlottie-wc@0.9.3/dist/dotlottie-wc.js" type="module"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ph { padding: 20px 24px 0; }
+  .ph-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .ph-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .ph-sub { font-size: 11px; color: var(--rock); }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 40px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+  .back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .video-pill { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+  /* V1: LARGE CENTERED */
+  .v1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .v1-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .v1-anim { display: flex; justify-content: center; padding: 4px 0 0; }
+  .v1-name { padding: 0 24px; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; text-align: center; animation: fadeUp 0.4s ease-out 0.2s backwards; margin-top: -16px; }
+  .v1-meta { display: flex; justify-content: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.35s ease-out 0.3s backwards; }
+
+  /* V2: SIDE BY SIDE */
+  .v2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .v2-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .v2-hero { display: flex; align-items: center; padding: 4px 10px 0; animation: fadeUp 0.4s ease-out; }
+  .v2-info { flex: 1; padding-left: 14px; }
+  .v2-name { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; }
+  .v2-meta { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .v2-pill { padding: 4px 10px; border-radius: 8px; background: var(--stone); font-size: 10px; font-weight: 600; color: var(--earth); }
+  .v2-video { padding: 4px 12px; border-radius: 8px; background: var(--earth); font-size: 10px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+  /* V3: OVERLAPPING */
+  .v3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .v3-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .v3-hero { position: relative; padding: 0 24px; margin-top: 8px; }
+  .v3-anim-float { position: absolute; right: 10px; top: -30px; z-index: 2; }
+  .v3-name { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.3px; line-height: 1.05; padding-right: 120px; animation: fadeUp 0.4s ease-out; position: relative; z-index: 1; }
+  .v3-meta { display: flex; gap: 8px; padding: 10px 0 0; flex-wrap: wrap; animation: fadeUp 0.35s ease-out 0.15s backwards; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- V1: LARGE CENTERED -->
+  <div>
+    <div class="col-label">V1 — LARGE CENTERED</div>
+    <div class="col-desc">Big animation on transparent sand bg. Name centered below. Pan + hand + veggies flying.</div>
+    <div class="phone"><div class="ps">
+      <div class="v1-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="v1-type">Breakfast · Recipe</span></div>
+
+      <div class="v1-anim">
+        <dotlottie-wc src="https://lottie.host/86dd1b5c-e8de-40d5-b61b-7a0b2fa7537a/SCEUrOphRy.lottie" style="width: 260px; height: 240px;" autoplay loop></dotlottie-wc>
+      </div>
+
+      <div class="v1-name">Black Bean<br>Burrito Bowl</div>
+      <div class="v1-meta"><span class="pill">5 min prep</span><span class="pill">10 min cook</span><span class="pill">Easy</span><span class="video-pill">▶ Video</span></div>
+
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- V2: SIDE BY SIDE -->
+  <div>
+    <div class="col-label">V2 — SIDE BY SIDE</div>
+    <div class="col-desc">Name + meta left, animation right. Compact editorial.</div>
+    <div class="phone"><div class="ps">
+      <div class="v2-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="v2-type">Breakfast · Recipe</span></div>
+
+      <div class="v2-hero">
+        <div class="v2-info">
+          <div class="v2-name">Black Bean Burrito Bowl</div>
+          <div class="v2-meta">
+            <span class="v2-pill">5 min prep</span>
+            <span class="v2-pill">10 min cook</span>
+            <span class="v2-pill">Easy</span>
+            <span class="v2-video">▶ Video</span>
+          </div>
+        </div>
+        <dotlottie-wc src="https://lottie.host/86dd1b5c-e8de-40d5-b61b-7a0b2fa7537a/SCEUrOphRy.lottie" style="width: 170px; height: 170px; flex-shrink: 0;" autoplay loop></dotlottie-wc>
+      </div>
+
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- V3: OVERLAPPING -->
+  <div>
+    <div class="col-label">V3 — OVERLAPPING</div>
+    <div class="col-desc">Animation floats above-right, overlapping the name. Depth effect. Bold.</div>
+    <div class="phone"><div class="ps">
+      <div class="v3-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="v3-type">Breakfast · Recipe</span></div>
+
+      <div class="v3-hero">
+        <div class="v3-anim-float">
+          <dotlottie-wc src="https://lottie.host/86dd1b5c-e8de-40d5-b61b-7a0b2fa7537a/SCEUrOphRy.lottie" style="width: 200px; height: 200px;" autoplay loop></dotlottie-wc>
+        </div>
+        <div class="v3-name">Black Bean<br>Burrito<br>Bowl</div>
+        <div class="v3-meta"><span class="pill">5 min prep</span><span class="pill">10 min cook</span><span class="pill">Easy</span><span class="video-pill">▶ Video</span></div>
+      </div>
+
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

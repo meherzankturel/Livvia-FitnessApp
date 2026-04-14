@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Ingredient Options</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Locked hero */
+.top{padding:56px 24px 0;display:flex;align-items:center;position:relative}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:24px;z-index:2}
+.type{font-size:12px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;text-align:center;width:100%}
+.anim-wrap{display:flex;justify-content:center;margin-top:-4px}
+.anim-box{width:220px;height:190px}
+.hero-name{padding:0 20px;font-size:28px;font-weight:800;color:var(--earth);letter-spacing:-1.2px;line-height:1;text-align:center;margin-top:-12px}
+.hero-sub{text-align:center;padding:5px 24px 0;font-size:11px;color:var(--rock)}
+.hero-sub strong{color:var(--earth);font-weight:700}
+.hero-video{display:flex;justify-content:center;padding:6px 0 0}
+.video-pill{padding:4px 12px;border-radius:100px;background:var(--earth);font-size:10px;font-weight:600;color:var(--trail);cursor:pointer}
+
+/* Steps placeholder */
+.sph{padding:16px 24px 0}
+.sph-head{display:flex;justify-content:space-between;margin-bottom:8px}
+.sph-title{font-size:13px;font-weight:700;color:var(--earth)}
+.sph-sub{font-size:10px;color:var(--rock)}
+.sph-row{height:56px;border-radius:14px;background:var(--stone);opacity:0.15;margin-bottom:6px}
+
+/* Shared */
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.s-title{font-size:13px;font-weight:700;color:var(--earth)}
+.s-count{font-size:10px;color:var(--trail);font-weight:600}
+.s-sub{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   I1: ELEGANT ROWS
+   Clean rows with subtle left accent bar per item.
+   Name bold, amount light. Thin dividers. Refined.
+   ============================================================ */
+.i1{padding:16px 24px 0}
+.i1-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.i1-item:last-child{border-bottom:none}
+.i1-accent{width:3px;height:28px;border-radius:2px;background:var(--trail);opacity:0.3;flex-shrink:0}
+.i1-info{flex:1}
+.i1-name{font-size:14px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.i1-amt{font-size:11px;color:var(--rock);margin-top:1px}
+
+
+/* ============================================================
+   I2: WHITE CARD CONTAINED
+   All ingredients in one white card with subtle shadow.
+   Clean rows inside. Dividers. Count badge top-right.
+   ============================================================ */
+.i2-wrap{padding:16px 20px 0}
+.i2-card{background:#fff;border-radius:20px;padding:16px 18px;box-shadow:0 1px 8px rgba(0,0,0,0.03)}
+.i2-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.i2-card-title{font-size:13px;font-weight:700;color:var(--earth)}
+.i2-badge{padding:3px 10px;border-radius:100px;background:rgba(52,211,153,0.08);font-size:9px;font-weight:700;color:var(--trail)}
+.i2-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.i2-row:last-child{border-bottom:none}
+.i2-name{font-size:13px;font-weight:600;color:var(--earth)}
+.i2-amt{font-size:11px;color:var(--rock)}
+
+
+/* ============================================================
+   I3: CHECKLIST PREMIUM
+   Rounded checkboxes with smooth styling. Progress bar below
+   header. Checked items fade with strikethrough. Polished.
+   ============================================================ */
+.i3{padding:16px 24px 0}
+.i3-progress{height:3px;border-radius:2px;background:var(--stone);margin-bottom:12px;overflow:hidden}
+.i3-progress-fill{height:100%;border-radius:2px;background:var(--trail)}
+.i3-item{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.03);cursor:pointer;transition:opacity 0.2s}
+.i3-item:last-child{border-bottom:none}
+.i3-item.done{opacity:0.35}
+.i3-cb{width:22px;height:22px;border-radius:8px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
+.i3-cb.on{background:var(--trail);border-color:var(--trail)}
+.i3-ck{font-size:11px;color:#fff;font-weight:700}
+.i3-name{font-size:14px;font-weight:600;color:var(--earth);flex:1;transition:all 0.2s}
+.i3-item.done .i3-name{text-decoration:line-through}
+.i3-amt{font-size:11px;color:var(--rock)}
+
+
+/* ============================================================
+   I4: SPLIT — NAME LEFT, AMOUNTS RIGHT COLUMN
+   Two visual columns: ingredients left, amounts right.
+   Clean alignment. Table feel without looking like a table.
+   ============================================================ */
+.i4{padding:16px 24px 0}
+.i4-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.i4-row:last-child{border-bottom:none}
+.i4-dot{width:5px;height:5px;border-radius:50%;background:var(--trail);opacity:0.4;flex-shrink:0;margin-right:10px}
+.i4-name{flex:1;font-size:14px;font-weight:500;color:var(--earth)}
+.i4-amt{font-size:12px;font-weight:600;color:var(--earth);text-align:right;min-width:80px;padding-left:8px}
+.i4-unit{font-size:10px;color:var(--rock);font-weight:400}
+
+
+/* ============================================================
+   I5: STONE CARD CHIPS
+   Ingredients as rounded chips inside a stone card.
+   Name bold + amount light in each chip. Wrapped flow.
+   ============================================================ */
+.i5-wrap{padding:16px 20px 0}
+.i5-card{background:var(--stone);border-radius:20px;padding:16px 16px 12px}
+.i5-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.i5-card-title{font-size:13px;font-weight:700;color:var(--earth)}
+.i5-card-sub{font-size:10px;color:var(--rock)}
+.i5-chips{display:flex;flex-wrap:wrap;gap:6px}
+.i5-chip{padding:8px 14px;border-radius:12px;background:#fff;display:flex;align-items:center;gap:6px}
+.i5-chip-name{font-size:12px;font-weight:700;color:var(--earth)}
+.i5-chip-amt{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   I6: NUMBERED WITH QUANTITY BADGES
+   Numbered list. Amount shown as a small stone badge/pill
+   right-aligned. Number as earth circle. Clean, structured.
+   ============================================================ */
+.i6{padding:16px 24px 0}
+.i6-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.i6-row:last-child{border-bottom:none}
+.i6-num{width:24px;height:24px;border-radius:12px;background:var(--earth);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.i6-num-text{font-size:10px;font-weight:700;color:var(--sand)}
+.i6-name{flex:1;font-size:14px;font-weight:500;color:var(--earth)}
+.i6-badge{padding:4px 10px;border-radius:8px;background:var(--stone);font-size:10px;font-weight:600;color:var(--earth)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- I1 -->
+  <div>
+    <div class="col-label">I1 — ELEGANT ROWS</div>
+    <div class="col-desc">Subtle green accent bar left. Name + amount per row. Thin dividers. Refined, quiet elegance.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l1" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i1"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">Black beans</div><div class="i1-amt">1/2 can drained</div></div></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">White rice</div><div class="i1-amt">1 cup cooked</div></div></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">Corn</div><div class="i1-amt">1/4 cup</div></div></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">Avocado</div><div class="i1-amt">1/2 sliced</div></div></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">Salsa</div><div class="i1-amt">3 tbsp</div></div></div>
+        <div class="i1-item"><div class="i1-accent"></div><div class="i1-info"><div class="i1-name">Sour cream</div><div class="i1-amt">1 tbsp</div></div></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I2 -->
+  <div>
+    <div class="col-label">I2 — WHITE CARD CONTAINED</div>
+    <div class="col-desc">All ingredients in one white card with shadow. Clean rows inside. Count badge. Self-contained.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l2" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i2-wrap"><div class="i2-card"><div class="i2-card-head"><span class="i2-card-title">Ingredients</span><span class="i2-badge">6 items</span></div>
+        <div class="i2-row"><span class="i2-name">Black beans</span><span class="i2-amt">1/2 can</span></div>
+        <div class="i2-row"><span class="i2-name">White rice</span><span class="i2-amt">1 cup</span></div>
+        <div class="i2-row"><span class="i2-name">Corn</span><span class="i2-amt">1/4 cup</span></div>
+        <div class="i2-row"><span class="i2-name">Avocado</span><span class="i2-amt">1/2</span></div>
+        <div class="i2-row"><span class="i2-name">Salsa</span><span class="i2-amt">3 tbsp</span></div>
+        <div class="i2-row"><span class="i2-name">Sour cream</span><span class="i2-amt">1 tbsp</span></div>
+      </div></div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I3 -->
+  <div>
+    <div class="col-label">I3 — CHECKLIST PREMIUM</div>
+    <div class="col-desc">Rounded checkboxes. Progress bar fills as you check. Smooth fade on checked items. Polished.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l3" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i3"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-count">2 / 6</span></div>
+        <div class="i3-progress"><div class="i3-progress-fill" style="width:33%"></div></div>
+        <div class="i3-item done"><div class="i3-cb on"><span class="i3-ck">✓</span></div><span class="i3-name">Black beans</span><span class="i3-amt">1/2 can</span></div>
+        <div class="i3-item done"><div class="i3-cb on"><span class="i3-ck">✓</span></div><span class="i3-name">White rice</span><span class="i3-amt">1 cup</span></div>
+        <div class="i3-item"><div class="i3-cb"></div><span class="i3-name">Corn</span><span class="i3-amt">1/4 cup</span></div>
+        <div class="i3-item"><div class="i3-cb"></div><span class="i3-name">Avocado</span><span class="i3-amt">1/2</span></div>
+        <div class="i3-item"><div class="i3-cb"></div><span class="i3-name">Salsa</span><span class="i3-amt">3 tbsp</span></div>
+        <div class="i3-item"><div class="i3-cb"></div><span class="i3-name">Sour cream</span><span class="i3-amt">1 tbsp</span></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- I4 -->
+  <div>
+    <div class="col-label">I4 — SPLIT COLUMNS</div>
+    <div class="col-desc">Green dot left. Name left-aligned. Amount right-aligned bold. Clean two-column feel without a table.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l4" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i4"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">Black beans</span><span class="i4-amt">1/2 can <span class="i4-unit">drained</span></span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">White rice</span><span class="i4-amt">1 cup <span class="i4-unit">cooked</span></span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">Corn</span><span class="i4-amt">1/4 cup</span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">Avocado</span><span class="i4-amt">1/2 <span class="i4-unit">sliced</span></span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">Salsa</span><span class="i4-amt">3 tbsp</span></div>
+        <div class="i4-row"><span class="i4-dot"></span><span class="i4-name">Sour cream</span><span class="i4-amt">1 tbsp</span></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I5 -->
+  <div>
+    <div class="col-label">I5 — STONE CARD CHIPS</div>
+    <div class="col-desc">Stone card background. Ingredients as white chips inside. Name bold + amount. Warm, contained.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l5" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i5-wrap"><div class="i5-card"><div class="i5-card-head"><span class="i5-card-title">Ingredients</span><span class="i5-card-sub">6 items</span></div>
+        <div class="i5-chips">
+          <div class="i5-chip"><span class="i5-chip-name">Black beans</span><span class="i5-chip-amt">1/2 can</span></div>
+          <div class="i5-chip"><span class="i5-chip-name">White rice</span><span class="i5-chip-amt">1 cup</span></div>
+          <div class="i5-chip"><span class="i5-chip-name">Corn</span><span class="i5-chip-amt">1/4 cup</span></div>
+          <div class="i5-chip"><span class="i5-chip-name">Avocado</span><span class="i5-chip-amt">1/2</span></div>
+          <div class="i5-chip"><span class="i5-chip-name">Salsa</span><span class="i5-chip-amt">3 tbsp</span></div>
+          <div class="i5-chip"><span class="i5-chip-name">Sour cream</span><span class="i5-chip-amt">1 tbsp</span></div>
+        </div>
+      </div></div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I6 -->
+  <div>
+    <div class="col-label">I6 — NUMBERED + BADGES</div>
+    <div class="col-desc">Dark number circles. Name left. Amount as stone badge/pill right. Structured, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l6" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="i6"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">1</span></div><span class="i6-name">Black beans</span><span class="i6-badge">1/2 can</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">2</span></div><span class="i6-name">White rice</span><span class="i6-badge">1 cup</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">3</span></div><span class="i6-name">Corn</span><span class="i6-badge">1/4 cup</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">4</span></div><span class="i6-name">Avocado</span><span class="i6-badge">1/2</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">5</span></div><span class="i6-name">Salsa</span><span class="i6-badge">3 tbsp</span></div>
+        <div class="i6-row"><div class="i6-num"><span class="i6-num-text">6</span></div><span class="i6-name">Sour cream</span><span class="i6-badge">1 tbsp</span></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+['l1','l2','l3','l4','l5','l6'].forEach(function(id){
+  lottie.loadAnimation({container:document.getElementById(id),renderer:'svg',loop:true,autoplay:true,path:'/cooking-pan.json'});
+});
+</script>
+</body>
+</html>

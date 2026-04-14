@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero Refined</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Playfair+Display:wght@700;800&family=Fraunces:wght@700;800&family=Lora:wght@700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:13px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+
+/* ============================================================
+   V1: DM SERIF — Elegant serif total. Warm card. Icon save btn.
+   ============================================================ */
+.v1-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.v1-card::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.v1-card::after{content:'';position:absolute;bottom:-25px;left:-10px;width:110px;height:110px;border-radius:50%;background:rgba(45,42,36,0.025)}
+
+.v1-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.v1-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.v1-items{font-size:10px;color:var(--rock)}
+
+.v1-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.v1-total{font-family:'DM Serif Display',serif;font-size:46px;color:var(--earth);line-height:1;letter-spacing:-1px}
+.v1-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.v1-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.v1-prog{display:flex;align-items:center;gap:6px}
+.v1-prog-text{font-size:10px;font-weight:600;color:var(--rock)}
+.v1-prog-bar{width:60px;height:4px;border-radius:2px;background:rgba(0,0,0,0.06)}
+.v1-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+.v1-save{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:14px;background:var(--earth);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+.v1-save-sparkle{width:18px;height:18px;border-radius:9px;background:rgba(52,211,153,0.15);display:flex;align-items:center;justify-content:center;font-size:10px}
+.v1-save-text{font-size:10px;font-weight:600;color:var(--sand);letter-spacing:0.3px}
+.v1-save-arrow{font-size:10px;color:rgba(246,245,240,0.3);margin-left:2px}
+
+.v1-strip{display:flex;height:3px;border-radius:2px;overflow:hidden;gap:2px;margin-top:16px;position:relative}
+.v1-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V2: FRAUNCES — Playful serif. Dark card. Glow save button.
+   ============================================================ */
+.v2-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 40%,#32302A 70%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden}
+.v2-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.v2-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.v2-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.v2-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.v2-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.v2-total{font-family:'Fraunces',serif;font-size:46px;color:var(--sand);line-height:1;letter-spacing:-1px}
+.v2-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.v2-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.v2-prog{display:flex;align-items:center;gap:6px}
+.v2-prog-text{font-size:10px;font-weight:600;color:rgba(246,245,240,0.3)}
+.v2-prog-ring{width:36px;height:36px;border-radius:50%;border:3px solid rgba(246,245,240,0.06);position:relative;display:flex;align-items:center;justify-content:center}
+.v2-prog-ring-fill{position:absolute;inset:0;border-radius:50%;border:3px solid var(--trail);border-bottom-color:transparent;border-left-color:transparent;transform:rotate(-45deg)}
+.v2-prog-val{font-size:8px;font-weight:800;color:var(--sand)}
+
+.v2-save{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:14px;background:rgba(52,211,153,0.1);border:1px solid rgba(52,211,153,0.15);cursor:pointer}
+.v2-save-icon{width:20px;height:20px;border-radius:10px;background:rgba(52,211,153,0.15);display:flex;align-items:center;justify-content:center;font-size:10px}
+.v2-save-text{font-size:10px;font-weight:600;color:var(--trail);letter-spacing:0.3px}
+
+.v2-strip{display:flex;height:3px;border-radius:2px;overflow:hidden;gap:2px;margin-top:16px;position:relative}
+.v2-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V3: LORA — Classic serif. White card with warm texture.
+   Save button as outlined pill with icon.
+   ============================================================ */
+.v3-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,0.04);position:relative;overflow:hidden}
+.v3-glow1{position:absolute;top:-30px;right:-10px;width:130px;height:130px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.v3-glow2{position:absolute;bottom:-20px;left:-10px;width:100px;height:100px;border-radius:50%;background:rgba(45,42,36,0.02)}
+
+.v3-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.v3-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.v3-items{font-size:10px;color:var(--rock)}
+
+.v3-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.v3-total{font-family:'Lora',serif;font-size:46px;font-weight:700;color:var(--earth);line-height:1;letter-spacing:-1px}
+.v3-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.v3-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.v3-checked{font-size:11px;font-weight:600;color:var(--rock)}
+.v3-checked span{color:var(--trail);font-weight:800}
+
+.v3-save{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:14px;border:1.5px solid var(--earth);cursor:pointer}
+.v3-save-icon{width:20px;height:20px;border-radius:10px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:10px}
+.v3-save-text{font-size:10px;font-weight:600;color:var(--earth);letter-spacing:0.3px}
+
+.v3-bar{height:4px;border-radius:2px;background:var(--stone);margin-top:16px;position:relative}
+.v3-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   V4: PLAYFAIR — Warm gradient card. Total with underline.
+   Save button as trail green pill. Category dots.
+   ============================================================ */
+.v4-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#D8D3C9 0%,#EAE6DD 30%,#F4F1EA 60%,#DFD9CF 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.v4-card::before{content:'';position:absolute;top:-30px;right:-10px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.v4-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.v4-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+
+.v4-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.v4-total-wrap{position:relative}
+.v4-total{font-family:'Playfair Display',serif;font-size:48px;font-weight:800;color:var(--earth);line-height:1;letter-spacing:-1.5px}
+.v4-total-line{width:50px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:6px}
+.v4-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.v4-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.v4-stats{display:flex;gap:12px}
+.v4-stat{text-align:right}
+.v4-stat-val{font-size:14px;font-weight:800;color:var(--earth)}
+.v4-stat-val.green{color:var(--trail)}
+.v4-stat-label{font-size:8px;color:var(--rock);margin-top:1px}
+
+.v4-save{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:14px;background:var(--trail);cursor:pointer;box-shadow:0 2px 8px rgba(52,211,153,0.2)}
+.v4-save-icon{font-size:12px}
+.v4-save-text{font-size:10px;font-weight:700;color:var(--earth);letter-spacing:0.3px}
+
+.v4-cats{display:flex;gap:8px;margin-top:14px;position:relative}
+.v4-cat{display:flex;align-items:center;gap:3px}
+.v4-cat-dot{width:5px;height:5px;border-radius:50%}
+.v4-cat-text{font-size:8px;color:var(--rock);font-weight:500}
+
+
+/* ============================================================
+   V5: DM SERIF DARK — Elegant. Save as glass morphism button.
+   ============================================================ */
+.v5-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 35%,#33312B 65%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden}
+.v5-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.v5-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.v5-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.v5-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.v5-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.v5-total{font-family:'DM Serif Display',serif;font-size:46px;color:var(--sand);line-height:1;letter-spacing:-0.5px}
+.v5-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.v5-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.v5-stats{display:flex;gap:12px}
+.v5-stat{text-align:right}
+.v5-stat-val{font-size:14px;font-weight:800;color:var(--sand)}
+.v5-stat-val.green{color:var(--trail)}
+.v5-stat-label{font-size:8px;color:rgba(246,245,240,0.2);margin-top:1px}
+
+/* Glassmorphism save button */
+.v5-save{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:14px;background:rgba(246,245,240,0.08);border:1px solid rgba(246,245,240,0.08);cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.v5-save-icon{width:20px;height:20px;border-radius:10px;background:rgba(52,211,153,0.15);display:flex;align-items:center;justify-content:center;font-size:10px}
+.v5-save-text{font-size:10px;font-weight:600;color:var(--sand);letter-spacing:0.3px}
+.v5-save-arrow{font-size:10px;color:rgba(246,245,240,0.3)}
+
+.v5-strip{display:flex;height:3px;border-radius:2px;overflow:hidden;gap:2px;margin-top:16px;position:relative}
+.v5-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V6: FRAUNCES WARM — Big total. Save as outlined trail button.
+   ============================================================ */
+.v6-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#D8D3C9 0%,#E8E4DB 30%,#F4F1EA 60%,#DFD9CF 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.v6-card::before{content:'';position:absolute;top:-30px;right:-10px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.v6-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.v6-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.v6-items{font-size:10px;color:var(--rock)}
+
+.v6-total{font-family:'Fraunces',serif;font-size:50px;font-weight:800;color:var(--earth);line-height:1;letter-spacing:-1px;position:relative}
+
+.v6-bottom{display:flex;justify-content:space-between;align-items:flex-end;margin-top:10px;position:relative}
+.v6-left{display:flex;gap:10px}
+.v6-stat{text-align:center;padding:6px 12px;border-radius:10px;background:rgba(255,255,255,0.4)}
+.v6-stat-val{font-size:14px;font-weight:800;color:var(--earth)}
+.v6-stat-val.green{color:var(--trail)}
+.v6-stat-label{font-size:7px;color:var(--rock);text-transform:uppercase;letter-spacing:0.3px;margin-top:1px}
+
+.v6-save{display:flex;align-items:center;gap:6px;padding:9px 16px;border-radius:14px;background:transparent;border:1.5px solid var(--trail);cursor:pointer}
+.v6-save-icon{width:18px;height:18px;border-radius:9px;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center;font-size:9px}
+.v6-save-text{font-size:10px;font-weight:600;color:var(--trail);letter-spacing:0.3px}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- V1 -->
+  <div>
+    <div class="col-label">V1 — DM SERIF · WARM</div>
+    <div class="col-desc">DM Serif Display total. Warm gradient. Dark save button with sparkle icon + arrow.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v1-card">
+        <div class="v1-row1"><span class="v1-label">Weekly Shop</span><span class="v1-items">18 items</span></div>
+        <div class="v1-row2">
+          <div><div class="v1-total">$47.82</div><div class="v1-est">estimated total</div></div>
+          <div class="v1-right">
+            <div class="v1-prog"><span class="v1-prog-text">5/18</span><div class="v1-prog-bar"><div class="v1-prog-fill" style="width:28%"></div></div></div>
+            <div class="v1-save"><div class="v1-save-sparkle">✦</div><span class="v1-save-text">Smart Save Tips</span><span class="v1-save-arrow">›</span></div>
+          </div>
+        </div>
+        <div class="v1-strip"><div class="v1-seg" style="background:#34D399;flex:5"></div><div class="v1-seg" style="background:#EF4444;flex:4"></div><div class="v1-seg" style="background:#F59E0B;flex:3"></div><div class="v1-seg" style="background:#6366F1;flex:3"></div><div class="v1-seg" style="background:#8E8E7A;flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V2 -->
+  <div>
+    <div class="col-label">V2 — FRAUNCES · DARK</div>
+    <div class="col-desc">Fraunces serif total on dark. Green glow save button with border. Progress ring.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v2-card">
+        <div class="v2-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v2-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v2-row1"><span class="v2-label">Weekly Shop</span><span class="v2-items">18 items</span></div>
+        <div class="v2-row2">
+          <div><div class="v2-total">$47.82</div><div class="v2-est">estimated total</div></div>
+          <div class="v2-right">
+            <div class="v2-prog"><span class="v2-prog-text">5/18</span><div class="v2-prog-ring"><div class="v2-prog-ring-fill"></div><span class="v2-prog-val">28%</span></div></div>
+            <div class="v2-save"><div class="v2-save-icon">✦</div><span class="v2-save-text">Smart Save Tips</span></div>
+          </div>
+        </div>
+        <div class="v2-strip"><div class="v2-seg" style="background:#34D399;flex:5"></div><div class="v2-seg" style="background:rgba(239,68,68,0.6);flex:4"></div><div class="v2-seg" style="background:rgba(245,158,11,0.6);flex:3"></div><div class="v2-seg" style="background:rgba(99,102,241,0.6);flex:3"></div><div class="v2-seg" style="background:rgba(142,142,122,0.4);flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V3 -->
+  <div>
+    <div class="col-label">V3 — LORA · WHITE</div>
+    <div class="col-desc">Lora serif total. Clean white card. Outlined save button with earth border.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v3-card">
+        <div class="v3-glow1"></div><div class="v3-glow2"></div>
+        <div class="v3-row1"><span class="v3-label">Weekly Shop</span><span class="v3-items">18 items</span></div>
+        <div class="v3-row2">
+          <div><div class="v3-total">$47.82</div><div class="v3-est">estimated total</div></div>
+          <div class="v3-right">
+            <div class="v3-checked"><span>5</span> / 18 checked</div>
+            <div class="v3-save"><div class="v3-save-icon">💡</div><span class="v3-save-text">Smart Save Tips</span></div>
+          </div>
+        </div>
+        <div class="v3-bar"><div class="v3-bar-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- V4 -->
+  <div>
+    <div class="col-label">V4 — PLAYFAIR · WARM + GREEN</div>
+    <div class="col-desc">Playfair total with green accent line. Trail green save button. Category dots.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v4-card">
+        <div class="v4-row1"><span class="v4-label">Weekly Shop</span></div>
+        <div class="v4-row2">
+          <div class="v4-total-wrap"><div class="v4-total">$47.82</div><div class="v4-total-line"></div><div class="v4-est">estimated total</div></div>
+          <div class="v4-right">
+            <div class="v4-stats"><div class="v4-stat"><div class="v4-stat-val">18</div><div class="v4-stat-label">items</div></div><div class="v4-stat"><div class="v4-stat-val green">5</div><div class="v4-stat-label">done</div></div></div>
+            <div class="v4-save"><span class="v4-save-icon">✦</span><span class="v4-save-text">Smart Save Tips</span></div>
+          </div>
+        </div>
+        <div class="v4-cats"><div class="v4-cat"><span class="v4-cat-dot" style="background:#34D399"></span><span class="v4-cat-text">Produce</span></div><div class="v4-cat"><span class="v4-cat-dot" style="background:#EF4444"></span><span class="v4-cat-text">Protein</span></div><div class="v4-cat"><span class="v4-cat-dot" style="background:#F59E0B"></span><span class="v4-cat-text">Dairy</span></div><div class="v4-cat"><span class="v4-cat-dot" style="background:#6366F1"></span><span class="v4-cat-text">Grains</span></div><div class="v4-cat"><span class="v4-cat-dot" style="background:#8E8E7A"></span><span class="v4-cat-text">Pantry</span></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V5 -->
+  <div>
+    <div class="col-label">V5 — DM SERIF · GLASS BTN</div>
+    <div class="col-desc">DM Serif on dark. Glassmorphism save button. Stats right. Most premium dark.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v5-card">
+        <div class="v5-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v5-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v5-row1"><span class="v5-label">Weekly Shop</span><span class="v5-items">18 items</span></div>
+        <div class="v5-row2">
+          <div><div class="v5-total">$47.82</div><div class="v5-est">estimated total</div></div>
+          <div class="v5-right">
+            <div class="v5-stats"><div class="v5-stat"><div class="v5-stat-val">18</div><div class="v5-stat-label">items</div></div><div class="v5-stat"><div class="v5-stat-val green">5</div><div class="v5-stat-label">done</div></div></div>
+            <div class="v5-save"><div class="v5-save-icon">✦</div><span class="v5-save-text">Smart Save Tips</span><span class="v5-save-arrow">›</span></div>
+          </div>
+        </div>
+        <div class="v5-strip"><div class="v5-seg" style="background:#34D399;flex:5"></div><div class="v5-seg" style="background:rgba(239,68,68,0.6);flex:4"></div><div class="v5-seg" style="background:rgba(245,158,11,0.6);flex:3"></div><div class="v5-seg" style="background:rgba(99,102,241,0.6);flex:3"></div><div class="v5-seg" style="background:rgba(142,142,122,0.4);flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V6 -->
+  <div>
+    <div class="col-label">V6 — FRAUNCES · OUTLINE BTN</div>
+    <div class="col-desc">Fraunces 50px total. Warm card. Trail green outlined save button. Stat pills.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="v6-card">
+        <div class="v6-row1"><span class="v6-label">Weekly Shop</span><span class="v6-items">18 items</span></div>
+        <div class="v6-total">$47.82</div>
+        <div class="v6-bottom">
+          <div class="v6-left"><div class="v6-stat"><div class="v6-stat-val">18</div><div class="v6-stat-label">items</div></div><div class="v6-stat"><div class="v6-stat-val green">5</div><div class="v6-stat-label">done</div></div><div class="v6-stat"><div class="v6-stat-val">13</div><div class="v6-stat-label">left</div></div></div>
+          <div class="v6-save"><div class="v6-save-icon">✦</div><span class="v6-save-text">Save Tips</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

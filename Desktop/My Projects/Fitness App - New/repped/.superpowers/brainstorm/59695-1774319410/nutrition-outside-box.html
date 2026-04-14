@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Outside the Box Nutrition</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 16px 20px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .grocery { margin: 12px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+
+  /* ============================================================
+     S: THE SINGLE CARD — One meal visible at a time. Full focus.
+     Swipe/tap to rotate through meals. Everything else is minimal.
+     ============================================================ */
+  .col-s .lbl { color: var(--trail); }
+
+  .s-top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+
+  /* Tiny macro pills — out of the way */
+  .s-macros { display: flex; gap: 5px; padding: 14px 24px 0; }
+  .s-mp { padding: 5px 10px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .s-mp.cal { background: var(--earth); color: var(--sand); }
+  .s-mp.other { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  /* The one card — takes up most of the screen */
+  .s-card-area { padding: 20px 24px; }
+
+  .s-card {
+    border-radius: 28px; overflow: hidden; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); min-height: 420px;
+    display: flex; flex-direction: column;
+    animation: sCardIn 0.6s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes sCardIn { 0% { opacity: 0; transform: scale(0.95) translateY(10px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+  /* Hero zone — large, breathing */
+  .s-hero {
+    height: 180px; position: relative; display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+  }
+  .s-hero-bg { position: absolute; inset: 0; opacity: 0.04; }
+  .s-hero .emoji {
+    font-size: 72px; position: relative; z-index: 1;
+    animation: sFloat 5s ease-in-out infinite;
+  }
+  @keyframes sFloat { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-6px) scale(1.02); } }
+
+  .s-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+
+  .s-time { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .s-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 8px; line-height: 1.15; }
+  .s-desc { font-size: 13px; color: var(--rock); margin-top: 8px; line-height: 1.5; }
+
+  .s-stats { display: flex; gap: 8px; margin-top: 16px; }
+  .s-stat { flex: 1; padding: 12px; border-radius: 16px; background: var(--stone); text-align: center; }
+  .s-stat .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .s-stat .l { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .s-acts { display: flex; gap: 8px; margin-top: auto; padding-top: 16px; }
+  .s-btn { flex: 1; padding: 14px; border-radius: 16px; text-align: center; font-size: 13px; font-weight: 600; }
+  .s-btn.primary { background: var(--earth); color: var(--sand); }
+  .s-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+
+  /* Meal dots — which meal is active */
+  .s-dots { display: flex; justify-content: center; gap: 8px; padding: 14px 0; }
+  .s-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--stone); transition: all 0.3s; cursor: pointer; }
+  .s-dot.active { background: var(--earth); width: 24px; border-radius: 4px; }
+
+  /* Other meals peek — tiny strip */
+  .s-peek { padding: 0 24px; }
+  .s-peek-row { display: flex; gap: 8px; }
+  .s-peek-item {
+    flex: 1; padding: 10px; border-radius: 14px; background: var(--stone);
+    text-align: center; cursor: pointer; transition: transform 0.2s;
+  }
+  .s-peek-item:active { transform: scale(0.96); }
+  .s-peek-item .e { font-size: 16px; }
+  .s-peek-item .n { font-size: 9px; color: var(--earth); font-weight: 600; margin-top: 3px; }
+  .s-peek-item .c { font-size: 10px; color: var(--rock); margin-top: 1px; }
+
+
+  /* ============================================================
+     T: THE NUMBERS — Typography-driven. Giant numbers are the UI.
+     ============================================================ */
+  .col-t .lbl { color: #F59E0B; }
+
+  .t-top { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+
+  /* The big number hero */
+  .t-hero { padding: 12px 24px 0; }
+  .t-hero .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .t-number-wall { padding: 0 24px; display: flex; align-items: baseline; gap: 4px; }
+  .t-big { font-size: 72px; font-weight: 900; color: var(--earth); letter-spacing: -4px; line-height: 0.9; opacity: 0; animation: tNumIn 0.8s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
+  @keyframes tNumIn { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
+  .t-big-unit { font-size: 16px; color: var(--rock); font-weight: 500; }
+
+  .t-macro-row { display: flex; gap: 16px; padding: 8px 24px 0; }
+  .t-mr { display: flex; align-items: baseline; gap: 3px; }
+  .t-mr .v { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .t-mr .l { font-size: 10px; color: var(--rock); }
+
+  .t-divider { height: 1px; background: var(--stone); margin: 18px 24px; }
+
+  /* Meal rows — minimal, number-led */
+  .t-meal {
+    padding: 0 24px; margin-bottom: 20px;
+    opacity: 0; animation: tMealIn 0.4s ease-out forwards;
+  }
+  .t-meal:nth-child(2) { animation-delay: 0.1s; }
+  .t-meal:nth-child(4) { animation-delay: 0.2s; }
+  .t-meal:nth-child(6) { animation-delay: 0.3s; }
+  .t-meal:nth-child(8) { animation-delay: 0.4s; }
+  @keyframes tMealIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+  .t-meal-top { display: flex; align-items: baseline; gap: 12px; }
+  .t-meal-cal { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; min-width: 70px; }
+  .t-meal-info { flex: 1; }
+  .t-meal-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .t-meal-name { font-size: 16px; font-weight: 600; color: var(--earth); margin-top: 3px; }
+  .t-meal-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  .t-meal-acts { display: flex; gap: 5px; margin-top: 8px; padding-left: 82px; }
+  .t-meal-btn { padding: 6px 14px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .t-meal-btn.primary { background: var(--earth); color: var(--sand); }
+  .t-meal-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .t-meal-btn.ghost { background: var(--stone); color: var(--earth); }
+
+  .t-meal-div { height: 1px; background: var(--stone); margin: 0 24px 0 106px; }
+
+
+  /* ============================================================
+     U: THE DIAL — Central ring with meals orbiting as segments
+     ============================================================ */
+  .col-u .lbl { color: #818CF8; }
+
+  .u-top { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .u-hero { padding: 12px 24px 0; }
+  .u-hero .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .u-hero .ttl { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+
+  /* The dial — ring with calorie in center */
+  .u-dial-area { display: flex; justify-content: center; padding: 20px 0 8px; position: relative; }
+
+  .u-ring {
+    width: 180px; height: 180px; border-radius: 50%; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  /* Ring segments — 4 arcs using border trick */
+  .u-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 8px solid var(--stone); }
+  .u-ring-seg { position: absolute; inset: -8px; border-radius: 50%; border: 8px solid transparent; }
+  .u-ring-seg.s1 { border-top-color: #D4A574; transform: rotate(-10deg); animation: ringIn 0.8s ease-out 0.3s both; }
+  .u-ring-seg.s2 { border-right-color: var(--trail); transform: rotate(-10deg); animation: ringIn 0.8s ease-out 0.5s both; }
+  .u-ring-seg.s3 { border-bottom-color: var(--rock); transform: rotate(-10deg); animation: ringIn 0.8s ease-out 0.7s both; opacity: 0.6; }
+  .u-ring-seg.s4 { border-left-color: #818CF8; transform: rotate(-10deg); animation: ringIn 0.8s ease-out 0.9s both; opacity: 0.5; }
+  @keyframes ringIn { 0% { opacity: 0; } 100% { opacity: 1; } }
+
+  .u-ring-center { position: relative; z-index: 2; text-align: center; }
+  .u-ring-cal { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; }
+  .u-ring-unit { font-size: 10px; color: var(--rock); }
+
+  /* Floating macro labels around the ring */
+  .u-float { position: absolute; font-size: 10px; font-weight: 700; }
+  .u-float.f1 { top: -8px; left: 50%; transform: translateX(-50%); color: #A07850; }
+  .u-float.f2 { right: -14px; top: 50%; transform: translateY(-50%); color: #047857; }
+  .u-float.f3 { bottom: -8px; left: 50%; transform: translateX(-50%); color: var(--rock); }
+  .u-float.f4 { left: -10px; top: 50%; transform: translateY(-50%); color: #6366F1; }
+
+  /* Meal list below — clean, minimal */
+  .u-meals { padding: 12px 24px; }
+
+  .u-meal {
+    display: flex; gap: 14px; align-items: center; padding: 14px 0;
+    border-bottom: 1px solid var(--stone);
+    cursor: pointer; transition: opacity 0.2s;
+    opacity: 0; animation: uMealIn 0.4s ease-out forwards;
+  }
+  .u-meal:last-child { border-bottom: none; }
+  .u-meal:active { opacity: 0.7; }
+  .u-meal:nth-child(1) { animation-delay: 0.4s; }
+  .u-meal:nth-child(2) { animation-delay: 0.5s; }
+  .u-meal:nth-child(3) { animation-delay: 0.6s; }
+  .u-meal:nth-child(4) { animation-delay: 0.7s; }
+  @keyframes uMealIn { 0% { opacity: 0; transform: translateY(8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+  /* Color dot matching ring segment */
+  .u-meal-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  .u-meal-body { flex: 1; }
+  .u-meal-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .u-meal-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 2px; }
+  .u-meal-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  .u-meal-right { text-align: right; flex-shrink: 0; }
+  .u-meal-cal { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .u-meal-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .u-meal-acts { display: flex; gap: 5px; margin-top: 6px; justify-content: flex-end; }
+  .u-meal-btn { padding: 5px 12px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .u-meal-btn.r { background: var(--stone); color: var(--earth); }
+  .u-meal-btn.sw { background: rgba(52,211,153,0.06); color: #047857; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== S: THE SINGLE CARD ===== -->
+<div class="col col-s">
+  <div class="lbl">S — The Single Card</div>
+  <div class="dsc">One meal fills the screen. Full focus. Giant emoji floats and breathes. Stats grid below. Other meals peek as tiny thumbnails at the bottom. Less is more — see one meal at a time.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="s-top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div class="alive"><div class="alive-dot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="s-macros">
+      <span class="s-mp cal">2,180 kcal</span>
+      <span class="s-mp other">165g P</span>
+      <span class="s-mp other">245g C</span>
+      <span class="s-mp other">72g F</span>
+    </div>
+
+    <div class="s-card-area">
+      <div class="s-card">
+        <div class="s-hero"><div class="s-hero-bg" style="background:#F59E0B;"></div><div class="emoji">🥣</div></div>
+        <div class="s-body">
+          <div class="s-time">🌅 8 AM · Breakfast</div>
+          <div class="s-name">Greek Yogurt Power Bowl</div>
+          <div class="s-desc">Creamy Greek yogurt with mixed berries, granola crunch, chia seeds, and a honey drizzle.</div>
+          <div class="s-stats">
+            <div class="s-stat"><div class="v">520</div><div class="l">kcal</div></div>
+            <div class="s-stat"><div class="v">35g</div><div class="l">Protein</div></div>
+            <div class="s-stat"><div class="v">42g</div><div class="l">Carbs</div></div>
+            <div class="s-stat"><div class="v">12g</div><div class="l">Fat</div></div>
+          </div>
+          <div class="s-acts">
+            <span class="s-btn primary">Recipe</span>
+            <span class="s-btn swap">Swap</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-dots">
+      <div class="s-dot active"></div>
+      <div class="s-dot"></div>
+      <div class="s-dot"></div>
+      <div class="s-dot"></div>
+    </div>
+
+    <div class="s-peek"><div class="s-peek-row">
+      <div class="s-peek-item" style="opacity:0.4;"><div class="e">☀️</div><div class="n">Lunch</div><div class="c">680</div></div>
+      <div class="s-peek-item" style="opacity:0.4;"><div class="e">🌇</div><div class="n">Snack</div><div class="c">260</div></div>
+      <div class="s-peek-item" style="opacity:0.4;"><div class="e">🌙</div><div class="n">Dinner</div><div class="c">720</div></div>
+    </div></div>
+
+    <div class="grocery" style="margin-top:20px;"><div><div class="t">Grocery List</div><div class="s">14 items</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== T: THE NUMBERS ===== -->
+<div class="col col-t">
+  <div class="lbl">T — The Numbers</div>
+  <div class="dsc">Typography IS the interface. Giant 72px calorie total. Each meal led by a bold 36px calorie number. Macros as oversized inline values. Actions aligned to the number gutter. Minimal containers.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="t-top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div class="alive"><div class="alive-dot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="t-hero"><div class="ctx">Wednesday · Nutrition</div></div>
+
+    <div class="t-number-wall">
+      <div class="t-big">2,180</div>
+      <div class="t-big-unit">kcal</div>
+    </div>
+
+    <div class="t-macro-row">
+      <div class="t-mr"><div class="v">165</div><div class="l">g protein</div></div>
+      <div class="t-mr"><div class="v">245</div><div class="l">g carbs</div></div>
+      <div class="t-mr"><div class="v">72</div><div class="l">g fat</div></div>
+    </div>
+
+    <div class="t-divider"></div>
+
+    <div class="t-meal">
+      <div class="t-meal-top">
+        <div class="t-meal-cal">520</div>
+        <div class="t-meal-info"><div class="t-meal-time"><span>🌅</span> 8 AM · Breakfast</div><div class="t-meal-name">Greek Yogurt Power Bowl</div><div class="t-meal-macros">35g P · 42g C · 12g F</div></div>
+      </div>
+      <div class="t-meal-acts"><span class="t-meal-btn primary">Recipe</span><span class="t-meal-btn swap">Swap</span><span class="t-meal-btn ghost">Eat Out</span></div>
+    </div>
+    <div class="t-meal-div"></div>
+
+    <div class="t-meal">
+      <div class="t-meal-top">
+        <div class="t-meal-cal">680</div>
+        <div class="t-meal-info"><div class="t-meal-time"><span>☀️</span> 12 PM · Lunch</div><div class="t-meal-name">Grilled Chicken & Brown Rice</div><div class="t-meal-macros">45g P · 55g C · 14g F</div></div>
+      </div>
+      <div class="t-meal-acts"><span class="t-meal-btn primary">Recipe</span><span class="t-meal-btn swap">Swap</span><span class="t-meal-btn ghost">Eat Out</span></div>
+    </div>
+    <div class="t-meal-div"></div>
+
+    <div class="t-meal">
+      <div class="t-meal-top">
+        <div class="t-meal-cal">260</div>
+        <div class="t-meal-info"><div class="t-meal-time"><span>🌇</span> 4 PM · Snack</div><div class="t-meal-name">Protein Shake & Almonds</div><div class="t-meal-macros">37g P · 18g C · 14g F</div></div>
+      </div>
+      <div class="t-meal-acts"><span class="t-meal-btn primary">Recipe</span><span class="t-meal-btn swap">Swap</span></div>
+    </div>
+    <div class="t-meal-div"></div>
+
+    <div class="t-meal">
+      <div class="t-meal-top">
+        <div class="t-meal-cal">720</div>
+        <div class="t-meal-info"><div class="t-meal-time"><span>🌙</span> 7 PM · Dinner</div><div class="t-meal-name">Salmon & Sweet Potato</div><div class="t-meal-macros">48g P · 62g C · 22g F</div></div>
+      </div>
+      <div class="t-meal-acts"><span class="t-meal-btn primary">Recipe</span><span class="t-meal-btn swap">Swap</span><span class="t-meal-btn ghost">Eat Out</span></div>
+    </div>
+
+    <div style="height:12px;"></div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== U: THE DIAL ===== -->
+<div class="col col-u">
+  <div class="lbl">U — The Dial</div>
+  <div class="dsc">Central ring visualization — each meal is a colored arc segment. Calorie total in the center. Floating macro labels orbit the ring. Clean list below with color-coded dots matching the ring. Animated ring build-in.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="u-top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div class="alive"><div class="alive-dot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="u-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+    <div class="u-dial-area">
+      <div class="u-ring">
+        <div class="u-ring-track"></div>
+        <div class="u-ring-seg s1"></div>
+        <div class="u-ring-seg s2"></div>
+        <div class="u-ring-seg s3"></div>
+        <div class="u-ring-seg s4"></div>
+        <div class="u-ring-center"><div class="u-ring-cal">2,180</div><div class="u-ring-unit">kcal</div></div>
+        <div class="u-float f1">520 bkfst</div>
+        <div class="u-float f2">680 lunch</div>
+        <div class="u-float f3">260 snack</div>
+        <div class="u-float f4">720 dinner</div>
+      </div>
+    </div>
+
+    <div class="u-meals">
+      <div class="u-meal">
+        <div class="u-meal-dot" style="background:#D4A574;"></div>
+        <div class="u-meal-body"><div class="u-meal-time">🌅 8 AM · Breakfast</div><div class="u-meal-name">Greek Yogurt Power Bowl</div><div class="u-meal-macros">35g P · 42g C · 12g F</div></div>
+        <div class="u-meal-right"><div class="u-meal-cal">520 <span>kcal</span></div><div class="u-meal-acts"><span class="u-meal-btn r">Recipe</span><span class="u-meal-btn sw">Swap</span></div></div>
+      </div>
+      <div class="u-meal">
+        <div class="u-meal-dot" style="background:var(--trail);"></div>
+        <div class="u-meal-body"><div class="u-meal-time">☀️ 12 PM · Lunch</div><div class="u-meal-name">Grilled Chicken & Rice</div><div class="u-meal-macros">45g P · 55g C · 14g F</div></div>
+        <div class="u-meal-right"><div class="u-meal-cal">680 <span>kcal</span></div><div class="u-meal-acts"><span class="u-meal-btn r">Recipe</span><span class="u-meal-btn sw">Swap</span></div></div>
+      </div>
+      <div class="u-meal">
+        <div class="u-meal-dot" style="background:var(--rock);"></div>
+        <div class="u-meal-body"><div class="u-meal-time">🌇 4 PM · Snack</div><div class="u-meal-name">Protein Shake & Almonds</div><div class="u-meal-macros">37g P · 18g C · 14g F</div></div>
+        <div class="u-meal-right"><div class="u-meal-cal">260 <span>kcal</span></div><div class="u-meal-acts"><span class="u-meal-btn r">Recipe</span><span class="u-meal-btn sw">Swap</span></div></div>
+      </div>
+      <div class="u-meal">
+        <div class="u-meal-dot" style="background:#818CF8;"></div>
+        <div class="u-meal-body"><div class="u-meal-time">🌙 7 PM · Dinner</div><div class="u-meal-name">Salmon & Sweet Potato</div><div class="u-meal-macros">48g P · 62g C · 22g F</div></div>
+        <div class="u-meal-right"><div class="u-meal-cal">720 <span>kcal</span></div><div class="u-meal-acts"><span class="u-meal-btn r">Recipe</span><span class="u-meal-btn sw">Swap</span></div></div>
+      </div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

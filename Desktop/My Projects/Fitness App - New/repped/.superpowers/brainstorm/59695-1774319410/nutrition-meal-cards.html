@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Meal Card Variations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; }
+
+  /* Shared top — no Fresh element */
+  .top { padding: 54px 24px 0; }
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 14px 24px 0; }
+
+  /* Hero card */
+  .hero-card { margin: 14px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .hero-ring { position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%; border: 12px solid rgba(246,245,240,0.04); }
+  .hero-ring-inner { position: absolute; top: -18px; right: -18px; width: 116px; height: 116px; border-radius: 50%; border: 6px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); transform: rotate(-30deg); opacity: 0.35; }
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-cal-row { display: flex; align-items: baseline; gap: 5px; margin-top: 6px; position: relative; }
+  .cal-num { font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1; }
+  .cal-unit { font-size: 14px; color: rgba(246,245,240,0.35); }
+  .hero-macros { display: flex; gap: 12px; margin-top: 16px; position: relative; }
+  .hm { flex: 1; }
+  .hm-bar { height: 4px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; }
+  .hm-fill { height: 100%; border-radius: 2px; }
+  .hm-fill.p { background: var(--trail); width: 75%; }
+  .hm-fill.c { background: rgba(246,245,240,0.2); width: 60%; }
+  .hm-fill.f { background: rgba(246,245,240,0.12); width: 55%; }
+  .hm-row { display: flex; justify-content: space-between; margin-top: 5px; }
+  .hm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .hm-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Cuisine tiles */
+  .cuisine-section { padding: 16px 24px 14px; }
+  .cuisine-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cuisine-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .cuisine-allergy { font-size: 10px; color: #B91C1C; font-weight: 600; padding: 4px 10px; border-radius: 100px; background: rgba(239,68,68,0.05); }
+  .cuisine-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .cuisine-scroll::-webkit-scrollbar { display: none; }
+  .ct { min-width: 100px; height: 72px; border-radius: 18px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
+  .ct.on { background: var(--earth); box-shadow: 0 4px 16px rgba(45,42,36,0.12); transform: scale(1.02); }
+  .ct.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .ct .flag { font-size: 32px; }
+  .ct .cname { font-size: 10px; font-weight: 600; margin-top: 4px; }
+  .ct.on .cname { color: var(--sand); }
+  .ct.off .cname { color: var(--earth); }
+  .ct.on::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--trail); }
+
+  .grocery { margin: 12px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+  /* Section title for meals */
+  .meals-head { padding: 0 24px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .meals-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .meals-count { font-size: 11px; color: var(--rock); }
+
+
+  /* ============================================================
+     M1: BIG HERO CARDS — Each meal gets a tall, immersive card
+     with large emoji, bold name, prominent calorie, description.
+     Tap for actions.
+     ============================================================ */
+  .m1-meals { padding: 0 24px; }
+
+  .m1-card {
+    border-radius: 24px; overflow: hidden; margin-bottom: 14px;
+    cursor: pointer; transition: transform 0.2s;
+    position: relative;
+  }
+  .m1-card:active { transform: scale(0.98); }
+
+  /* Alternating dark/light cards */
+  .m1-card.dark { background: var(--earth); }
+  .m1-card.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .m1-card-inner { padding: 22px; }
+
+  /* Time badge — top left */
+  .m1-time { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .m1-card.dark .m1-time { color: rgba(246,245,240,0.35); }
+  .m1-card.light .m1-time { color: var(--rock); }
+
+  /* Big emoji + name row */
+  .m1-hero-row { display: flex; align-items: flex-start; gap: 16px; margin-top: 12px; }
+  .m1-emoji { font-size: 44px; flex-shrink: 0; }
+  .m1-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.15; margin-top: 4px; }
+  .m1-card.dark .m1-name { color: var(--sand); }
+  .m1-card.light .m1-name { color: var(--earth); }
+
+  /* Description */
+  .m1-desc { font-size: 12px; line-height: 1.5; margin-top: 10px; }
+  .m1-card.dark .m1-desc { color: rgba(246,245,240,0.4); }
+  .m1-card.light .m1-desc { color: var(--rock); }
+
+  /* Calorie + macro row */
+  .m1-footer { display: flex; justify-content: space-between; align-items: baseline; margin-top: 14px; }
+  .m1-cal { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .m1-card.dark .m1-cal { color: var(--sand); }
+  .m1-card.light .m1-cal { color: var(--earth); }
+  .m1-cal span { font-size: 11px; font-weight: 500; }
+  .m1-card.dark .m1-cal span { color: rgba(246,245,240,0.35); }
+  .m1-card.light .m1-cal span { color: var(--rock); }
+  .m1-macros { font-size: 11px; }
+  .m1-card.dark .m1-macros { color: rgba(246,245,240,0.3); }
+  .m1-card.light .m1-macros { color: var(--rock); }
+
+  /* Actions — hidden until tapped */
+  .m1-actions { display: none; margin-top: 14px; }
+  .m1-card.open .m1-actions { display: flex; gap: 6px; flex-wrap: wrap; animation: mIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes mIn { 0% { opacity:0; transform:translateY(-6px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .m1-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .m1-card.dark .m1-btn.cook { background: rgba(246,245,240,0.1); color: var(--sand); }
+  .m1-card.dark .m1-btn.recipe { background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.6); }
+  .m1-card.dark .m1-btn.swap { background: rgba(52,211,153,0.1); color: var(--trail); }
+  .m1-card.dark .m1-btn.nah { background: rgba(246,245,240,0.04); color: rgba(246,245,240,0.25); }
+  .m1-card.light .m1-btn.cook { background: var(--earth); color: var(--sand); }
+  .m1-card.light .m1-btn.recipe { background: var(--stone); color: var(--earth); }
+  .m1-card.light .m1-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .m1-card.light .m1-btn.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+
+  /* ============================================================
+     M2: SPLIT CARDS — Left: big calorie + emoji. Right: name + details.
+     Strong visual split. Bold numbers lead.
+     ============================================================ */
+  .m2-meals { padding: 0 24px; }
+
+  .m2-card {
+    border-radius: 22px; overflow: hidden; margin-bottom: 12px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    display: flex; cursor: pointer; transition: transform 0.2s;
+    min-height: 120px;
+  }
+  .m2-card:active { transform: scale(0.98); }
+
+  /* Left panel — calorie + emoji */
+  .m2-left {
+    width: 110px; flex-shrink: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 16px 8px;
+    position: relative; overflow: hidden;
+  }
+  .m2-card:nth-child(1) .m2-left { background: var(--earth); }
+  .m2-card:nth-child(2) .m2-left { background: rgba(52,211,153,0.06); }
+  .m2-card:nth-child(3) .m2-left { background: var(--stone); }
+  .m2-card:nth-child(4) .m2-left { background: rgba(129,140,248,0.06); }
+
+  .m2-left .emoji { font-size: 32px; }
+  .m2-left .cal { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
+  .m2-card:nth-child(1) .m2-left .cal { color: var(--sand); }
+  .m2-card:nth-child(2) .m2-left .cal,
+  .m2-card:nth-child(3) .m2-left .cal,
+  .m2-card:nth-child(4) .m2-left .cal { color: var(--earth); }
+  .m2-left .cal-unit { font-size: 9px; }
+  .m2-card:nth-child(1) .m2-left .cal-unit { color: rgba(246,245,240,0.35); }
+  .m2-card:nth-child(2) .m2-left .cal-unit,
+  .m2-card:nth-child(3) .m2-left .cal-unit,
+  .m2-card:nth-child(4) .m2-left .cal-unit { color: var(--rock); }
+
+  /* Right panel — info */
+  .m2-right { flex: 1; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
+  .m2-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .m2-name { font-size: 16px; font-weight: 700; color: var(--earth); margin-top: 4px; line-height: 1.2; letter-spacing: -0.3px; }
+  .m2-macros { font-size: 11px; color: var(--rock); margin-top: 4px; }
+
+  .m2-acts { display: none; margin-top: 10px; }
+  .m2-card.open .m2-acts { display: flex; gap: 5px; flex-wrap: wrap; animation: mIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  .m2-btn { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .m2-btn.cook { background: var(--earth); color: var(--sand); }
+  .m2-btn.recipe { background: var(--stone); color: var(--earth); }
+  .m2-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .m2-btn.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+
+  /* ============================================================
+     M3: COMPACT ROWS WITH INLINE MACRO BARS
+     Each meal is a row with a tiny macro distribution bar.
+     Minimal. Tap to expand full detail.
+     ============================================================ */
+  .m3-meals { padding: 0 24px; }
+
+  .m3-card {
+    border-radius: 20px; overflow: hidden; margin-bottom: 10px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+  }
+
+  .m3-row { padding: 16px 18px; }
+  .m3-row-top { display: flex; align-items: center; gap: 14px; }
+  .m3-emoji { font-size: 24px; flex-shrink: 0; }
+  .m3-info { flex: 1; }
+  .m3-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .m3-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .m3-cal { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; flex-shrink: 0; }
+  .m3-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Inline macro bar — below the name */
+  .m3-macro-bar { display: flex; height: 3px; border-radius: 2px; margin-top: 8px; gap: 2px; overflow: hidden; }
+  .m3-seg { border-radius: 2px; }
+  .m3-seg.p { background: var(--trail); }
+  .m3-seg.c { background: var(--earth); opacity: 0.15; }
+  .m3-seg.f { background: var(--rock); opacity: 0.12; }
+
+  /* Expanded detail */
+  .m3-detail { display: none; padding: 0 18px 16px; }
+  .m3-card.open .m3-detail { display: block; animation: mIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  .m3-div { height: 1px; background: var(--stone); margin-bottom: 12px; }
+  .m3-desc { font-size: 12px; color: var(--rock); line-height: 1.5; }
+  .m3-macro-detail { font-size: 12px; color: var(--rock); margin-top: 6px; }
+  .m3-acts { display: flex; gap: 5px; margin-top: 12px; flex-wrap: wrap; }
+  .m3-btn { padding: 7px 14px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .m3-btn.cook { background: var(--earth); color: var(--sand); }
+  .m3-btn.recipe { background: var(--stone); color: var(--earth); }
+  .m3-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .m3-btn.eatout { background: rgba(245,158,11,0.06); color: #92400E; }
+  .m3-btn.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== M1: BIG HERO CARDS ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">M1 — Hero Cards</div>
+  <div class="dsc">Alternating dark/light. Big emoji + bold name. Description visible. 28px calorie. Tap for actions.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <div class="meals-head"><span class="meals-title">Today's Meals</span><span class="meals-count">4 meals</span></div>
+
+    <div class="m1-meals">
+      <div class="m1-card dark open" onclick="m1Toggle(this)"><div class="m1-card-inner">
+        <div class="m1-time"><span>🌅</span> 8 AM · Breakfast</div>
+        <div class="m1-hero-row"><div class="m1-emoji">🥣</div><div class="m1-name">Greek Yogurt Power Bowl</div></div>
+        <div class="m1-desc">Creamy yogurt with berries, granola, chia seeds, and honey.</div>
+        <div class="m1-footer"><div class="m1-cal">520 <span>kcal</span></div><div class="m1-macros">35P · 42C · 12F</div></div>
+        <div class="m1-actions"><span class="m1-btn cook">🍳 Cook</span><span class="m1-btn recipe">Recipe</span><span class="m1-btn swap">Swap</span><span class="m1-btn nah">Nah</span></div>
+      </div></div>
+
+      <div class="m1-card light" onclick="m1Toggle(this)"><div class="m1-card-inner">
+        <div class="m1-time"><span>☀️</span> 12 PM · Lunch</div>
+        <div class="m1-hero-row"><div class="m1-emoji">🍗</div><div class="m1-name">Grilled Chicken & Rice</div></div>
+        <div class="m1-desc">Herb chicken with brown rice, broccoli, and lemon.</div>
+        <div class="m1-footer"><div class="m1-cal">680 <span>kcal</span></div><div class="m1-macros">45P · 55C · 14F</div></div>
+        <div class="m1-actions"><span class="m1-btn cook">🍳 Cook</span><span class="m1-btn recipe">Recipe</span><span class="m1-btn swap">Swap</span><span class="m1-btn nah">Nah</span></div>
+      </div></div>
+
+      <div class="m1-card dark" onclick="m1Toggle(this)"><div class="m1-card-inner">
+        <div class="m1-time"><span>🌇</span> 4 PM · Snack</div>
+        <div class="m1-hero-row"><div class="m1-emoji">🥤</div><div class="m1-name">Protein Shake & Almonds</div></div>
+        <div class="m1-desc">Whey protein with banana, oat milk, and roasted almonds.</div>
+        <div class="m1-footer"><div class="m1-cal">260 <span>kcal</span></div><div class="m1-macros">37P · 18C · 14F</div></div>
+        <div class="m1-actions"><span class="m1-btn cook">🍳 Cook</span><span class="m1-btn recipe">Recipe</span><span class="m1-btn swap">Swap</span><span class="m1-btn nah">Nah</span></div>
+      </div></div>
+
+      <div class="m1-card light" onclick="m1Toggle(this)"><div class="m1-card-inner">
+        <div class="m1-time"><span>🌙</span> 7 PM · Dinner</div>
+        <div class="m1-hero-row"><div class="m1-emoji">🐟</div><div class="m1-name">Salmon & Sweet Potato</div></div>
+        <div class="m1-desc">Pan-seared salmon with sweet potato wedges and asparagus.</div>
+        <div class="m1-footer"><div class="m1-cal">720 <span>kcal</span></div><div class="m1-macros">48P · 62C · 22F</div></div>
+        <div class="m1-actions"><span class="m1-btn cook">🍳 Cook</span><span class="m1-btn recipe">Recipe</span><span class="m1-btn swap">Swap</span><span class="m1-btn nah">Nah</span></div>
+      </div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== M2: SPLIT CARDS ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">M2 — Split Cards</div>
+  <div class="dsc">Left panel: colored zone with emoji + bold calorie. Right panel: name + macros. Visual split. Each meal has its own color identity. Tap for actions.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <div class="meals-head"><span class="meals-title">Today's Meals</span><span class="meals-count">4 meals</span></div>
+
+    <div class="m2-meals">
+      <div class="m2-card open" onclick="m2Toggle(this)"><div class="m2-left"><div class="emoji">🥣</div><div class="cal">520</div><div class="cal-unit">kcal</div></div><div class="m2-right"><div class="m2-time">🌅 8 AM · Breakfast</div><div class="m2-name">Greek Yogurt Power Bowl</div><div class="m2-macros">35g P · 42g C · 12g F</div><div class="m2-acts"><span class="m2-btn cook">🍳 Cook</span><span class="m2-btn recipe">Recipe</span><span class="m2-btn swap">Swap</span><span class="m2-btn nah">Nah</span></div></div></div>
+
+      <div class="m2-card" onclick="m2Toggle(this)"><div class="m2-left"><div class="emoji">🍗</div><div class="cal">680</div><div class="cal-unit">kcal</div></div><div class="m2-right"><div class="m2-time">☀️ 12 PM · Lunch</div><div class="m2-name">Grilled Chicken & Rice</div><div class="m2-macros">45g P · 55g C · 14g F</div><div class="m2-acts"><span class="m2-btn cook">🍳 Cook</span><span class="m2-btn recipe">Recipe</span><span class="m2-btn swap">Swap</span><span class="m2-btn nah">Nah</span></div></div></div>
+
+      <div class="m2-card" onclick="m2Toggle(this)"><div class="m2-left"><div class="emoji">🥤</div><div class="cal">260</div><div class="cal-unit">kcal</div></div><div class="m2-right"><div class="m2-time">🌇 4 PM · Snack</div><div class="m2-name">Protein Shake & Almonds</div><div class="m2-macros">37g P · 18g C · 14g F</div><div class="m2-acts"><span class="m2-btn cook">🍳 Cook</span><span class="m2-btn recipe">Recipe</span><span class="m2-btn swap">Swap</span><span class="m2-btn nah">Nah</span></div></div></div>
+
+      <div class="m2-card" onclick="m2Toggle(this)"><div class="m2-left"><div class="emoji">🐟</div><div class="cal">720</div><div class="cal-unit">kcal</div></div><div class="m2-right"><div class="m2-time">🌙 7 PM · Dinner</div><div class="m2-name">Salmon & Sweet Potato</div><div class="m2-macros">48g P · 62g C · 22g F</div><div class="m2-acts"><span class="m2-btn cook">🍳 Cook</span><span class="m2-btn recipe">Recipe</span><span class="m2-btn swap">Swap</span><span class="m2-btn nah">Nah</span></div></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== M3: COMPACT + MACRO BARS ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">M3 — Compact + Macro Bars</div>
+  <div class="dsc">Clean rows with an inline P/C/F color bar showing macro distribution at a glance. Tap to expand for description + actions. Most information-dense yet minimal.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <div class="meals-head"><span class="meals-title">Today's Meals</span><span class="meals-count">4 meals</span></div>
+
+    <div class="m3-meals">
+      <div class="m3-card open" onclick="m3Toggle(this)"><div class="m3-row"><div class="m3-row-top"><div class="m3-emoji">🥣</div><div class="m3-info"><div class="m3-name">Greek Yogurt Power Bowl</div><div class="m3-sub">Breakfast · 8 AM</div></div><div class="m3-cal">520 <span>kcal</span></div></div><div class="m3-macro-bar"><div class="m3-seg p" style="flex:35;"></div><div class="m3-seg c" style="flex:42;"></div><div class="m3-seg f" style="flex:12;"></div></div></div><div class="m3-detail"><div class="m3-div"></div><div class="m3-desc">Creamy yogurt with berries, granola, chia seeds, and honey.</div><div class="m3-macro-detail">35g protein · 42g carbs · 12g fat</div><div class="m3-acts"><span class="m3-btn cook">🍳 Cook</span><span class="m3-btn recipe">Recipe</span><span class="m3-btn swap">Swap</span><span class="m3-btn eatout">Eat Out</span><span class="m3-btn nah">Nah</span></div></div></div>
+
+      <div class="m3-card" onclick="m3Toggle(this)"><div class="m3-row"><div class="m3-row-top"><div class="m3-emoji">🍗</div><div class="m3-info"><div class="m3-name">Grilled Chicken & Rice</div><div class="m3-sub">Lunch · 12 PM</div></div><div class="m3-cal">680 <span>kcal</span></div></div><div class="m3-macro-bar"><div class="m3-seg p" style="flex:45;"></div><div class="m3-seg c" style="flex:55;"></div><div class="m3-seg f" style="flex:14;"></div></div></div><div class="m3-detail"><div class="m3-div"></div><div class="m3-desc">Herb chicken with brown rice, broccoli, and lemon.</div><div class="m3-macro-detail">45g protein · 55g carbs · 14g fat</div><div class="m3-acts"><span class="m3-btn cook">🍳 Cook</span><span class="m3-btn recipe">Recipe</span><span class="m3-btn swap">Swap</span><span class="m3-btn eatout">Eat Out</span><span class="m3-btn nah">Nah</span></div></div></div>
+
+      <div class="m3-card" onclick="m3Toggle(this)"><div class="m3-row"><div class="m3-row-top"><div class="m3-emoji">🥤</div><div class="m3-info"><div class="m3-name">Protein Shake & Almonds</div><div class="m3-sub">Snack · 4 PM</div></div><div class="m3-cal">260 <span>kcal</span></div></div><div class="m3-macro-bar"><div class="m3-seg p" style="flex:37;"></div><div class="m3-seg c" style="flex:18;"></div><div class="m3-seg f" style="flex:14;"></div></div></div><div class="m3-detail"><div class="m3-div"></div><div class="m3-desc">Whey protein with banana, oat milk, and roasted almonds.</div><div class="m3-macro-detail">37g protein · 18g carbs · 14g fat</div><div class="m3-acts"><span class="m3-btn cook">🍳 Cook</span><span class="m3-btn recipe">Recipe</span><span class="m3-btn swap">Swap</span><span class="m3-btn nah">Nah</span></div></div></div>
+
+      <div class="m3-card" onclick="m3Toggle(this)"><div class="m3-row"><div class="m3-row-top"><div class="m3-emoji">🐟</div><div class="m3-info"><div class="m3-name">Salmon & Sweet Potato</div><div class="m3-sub">Dinner · 7 PM</div></div><div class="m3-cal">720 <span>kcal</span></div></div><div class="m3-macro-bar"><div class="m3-seg p" style="flex:48;"></div><div class="m3-seg c" style="flex:62;"></div><div class="m3-seg f" style="flex:22;"></div></div></div><div class="m3-detail"><div class="m3-div"></div><div class="m3-desc">Pan-seared salmon with sweet potato wedges and asparagus.</div><div class="m3-macro-detail">48g protein · 62g carbs · 22g fat</div><div class="m3-acts"><span class="m3-btn cook">🍳 Cook</span><span class="m3-btn recipe">Recipe</span><span class="m3-btn swap">Swap</span><span class="m3-btn eatout">Eat Out</span><span class="m3-btn nah">Nah</span></div></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function m1Toggle(el) { const w = el.classList.contains('open'); document.querySelectorAll('.m1-card').forEach(m => m.classList.remove('open')); if (!w) el.classList.add('open'); }
+function m2Toggle(el) { const w = el.classList.contains('open'); document.querySelectorAll('.m2-card').forEach(m => m.classList.remove('open')); if (!w) el.classList.add('open'); }
+function m3Toggle(el) { const w = el.classList.contains('open'); document.querySelectorAll('.m3-card').forEach(m => m.classList.remove('open')); if (!w) el.classList.add('open'); }
+</script>
+
+</body>
+</html>

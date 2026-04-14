@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Warmup T1 Polished</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ===== HEADER ===== */
+  .hdr { padding: 48px 24px 0; display: flex; align-items: center; position: relative; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+
+  /* ===== HERO ===== */
+  .hero {
+    margin: 14px 24px 0; padding: 22px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+  .hero-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--trail); opacity: 0.2; animation: breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.3); } }
+
+  .hero-row { display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+  .hero-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .hero-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 3px; }
+  .hero-dur { text-align: right; }
+  .hero-dur-val { font-size: 32px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; line-height: 1; }
+  .hero-dur-label { font-size: 9px; color: rgba(246,245,240,0.2); }
+
+  .hero-info { margin-top: 12px; padding: 10px 14px; border-radius: 12px; background: rgba(52,211,153,0.04); font-size: 11px; color: var(--trail); font-weight: 500; line-height: 1.45; position: relative; opacity: 0.7; }
+
+
+  /* ===== TIMELINE ===== */
+  .tl-section { padding: 18px 24px 0; }
+  .tl-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .tl-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .tl-count { font-size: 10px; color: var(--rock); }
+
+  .tl { position: relative; padding-left: 30px; }
+  .tl-line { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 2px; background: var(--stone); border-radius: 1px; }
+
+  /* Green pulse traveling down the line */
+  .tl-pulse {
+    position: absolute; left: 5px; top: 6px; width: 4px; height: 20px;
+    border-radius: 2px; background: var(--trail); opacity: 0;
+    animation: tlPulse 4s ease-in-out infinite;
+  }
+  @keyframes tlPulse { 0% { top: 6px; opacity: 0; } 10% { opacity: 0.4; } 90% { opacity: 0.4; } 100% { top: calc(100% - 26px); opacity: 0; } }
+
+  .ex { padding: 0 0 18px; position: relative; }
+  .ex:last-child { padding-bottom: 0; }
+
+  /* Dot */
+  .ex-dot {
+    position: absolute; left: -28px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--stone); background: var(--sand);
+    z-index: 2; transition: all 0.3s;
+  }
+  .ex.first .ex-dot {
+    background: var(--trail); border-color: var(--trail);
+    box-shadow: 0 0 8px rgba(52,211,153,0.2);
+  }
+
+  /* Content */
+  .ex-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .ex-name { font-size: 16px; font-weight: 600; color: var(--earth); }
+  .ex.first .ex-name { color: var(--earth); }
+  .ex-time { font-size: 13px; color: var(--rock); font-weight: 500; }
+
+  .ex-desc { font-size: 13px; color: var(--rock); margin-top: 4px; line-height: 1.5; }
+
+  .ex-footer { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .tag { padding: 4px 11px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .tag.specific { background: rgba(99,102,241,0.06); color: #4338CA; }
+  .demo { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; margin-left: auto; display: flex; align-items: center; gap: 3px; }
+
+  /* Summit marker at the end */
+  .summit { display: flex; align-items: center; gap: 10px; margin-top: 6px; position: relative; z-index: 2; }
+  .summit-dot { width: 12px; height: 12px; border-radius: 50%; background: rgba(52,211,153,0.08); border: 2px solid rgba(52,211,153,0.15); display: flex; align-items: center; justify-content: center; font-size: 7px; margin-left: -28px; }
+  .summit-text { font-size: 11px; color: var(--trail); font-weight: 500; opacity: 0.6; }
+
+
+  /* ===== BUTTONS ===== */
+  .btns { padding: 20px 24px; display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 17px; border-radius: 16px; text-align: center; font-size: 15px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .btn:active { transform: scale(0.97); }
+  .btn.primary { background: var(--earth); color: var(--sand); }
+  .btn.secondary { background: var(--stone); color: var(--earth); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <!-- HEADER -->
+    <div class="hdr"><div class="back">←</div><span class="hdr-title">Warm Up</span></div>
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="ha"></div><div class="ha"></div><div class="hero-dot"></div>
+      <div class="hero-row">
+        <div><div class="hero-title">Get Ready</div><div class="hero-sub">Dynamic stretches · Prevents injury</div></div>
+        <div class="hero-dur"><div class="hero-dur-val">4</div><div class="hero-dur-label">minutes</div></div>
+      </div>
+      <div class="hero-info">💡 Dynamic movements prep your muscles without weakening them.</div>
+    </div>
+
+    <!-- TIMELINE -->
+    <div class="tl-section">
+      <div class="tl-head"><span class="tl-title">Exercises</span><span class="tl-count">6 exercises</span></div>
+      <div class="tl">
+        <div class="tl-line"></div>
+        <div class="tl-pulse"></div>
+
+        <div class="ex first">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Jumping Jacks</span><span class="ex-time">1 min</span></div>
+          <div class="ex-desc">Jump feet wide while raising arms overhead. Keep a steady pace throughout.</div>
+          <div class="ex-footer"><span class="tag general">General</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="ex">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Cat-Cow Stretch</span><span class="ex-time">40s</span></div>
+          <div class="ex-desc">On all fours, arch and round your back alternately. Breathe deeply.</div>
+          <div class="ex-footer"><span class="tag dynamic">Dynamic</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="ex">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Thoracic Rotations</span><span class="ex-time">30s</span></div>
+          <div class="ex-desc">On all fours, place hand behind head. Rotate chest toward ceiling, then floor.</div>
+          <div class="ex-footer"><span class="tag dynamic">Dynamic</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="ex">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Shoulder Dislocates</span><span class="ex-time">30s</span></div>
+          <div class="ex-desc">Hold band wide, pass it over your head and behind your back in an arc.</div>
+          <div class="ex-footer"><span class="tag dynamic">Dynamic</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="ex">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Arm Circles</span><span class="ex-time">30s</span></div>
+          <div class="ex-desc">Small to large circles, forward then backward.</div>
+          <div class="ex-footer"><span class="tag general">General</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="ex">
+          <div class="ex-dot"></div>
+          <div class="ex-top"><span class="ex-name">Bodyweight Squats</span><span class="ex-time">30s</span></div>
+          <div class="ex-desc">Feet shoulder-width, sit back and down. Keep chest up.</div>
+          <div class="ex-footer"><span class="tag general">General</span><span class="demo">▶ Demo</span></div>
+        </div>
+
+        <div class="summit"><div class="summit-dot">✓</div><div class="summit-text">Ready to start</div></div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+
+    <div style="height:80px;"></div>
+
+  </div></div>
+</div>
+
+</body>
+</html>

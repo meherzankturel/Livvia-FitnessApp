@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Nutrition Background Play</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; display: flex; justify-content: center; padding: 20px; gap: 28px; flex-wrap: wrap; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .col { max-width: 420px; }
+  .col-label { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .col-desc { text-align: center; font-size: 10px; color: #555; padding: 0 12px 8px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  /* ============================================================
+     M: WARM ZONES — Background gently shifts warm tones per meal
+        Not bright, not jarring. Think candlelight moving through a room.
+     ============================================================ */
+  .col-m .col-label { color: #D4A574; }
+
+  .phone-m { background: #F5F0E8; }
+
+  /* The background gradient — shifts as you scroll */
+  .m-bg {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    transition: background 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Topo overlay */
+  .m-topo { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .m-tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .m-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .m-tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  .m-cnt { position: relative; z-index: 2; }
+
+  .m-status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .m-time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .m-alive { display: flex; align-items: center; gap: 6px; }
+  .m-alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: mPulse 2.4s ease-in-out infinite; }
+  @keyframes mPulse { 0%,100% { opacity:0.5; transform:scale(1); } 30% { opacity:1; transform:scale(1.35); } }
+  .m-alive-lbl { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  .m-hero { padding: 18px 24px 0; }
+  .m-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .m-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  /* Macro bento — warm tones */
+  .m-macros { display: flex; gap: 8px; padding: 18px 24px; }
+  .m-macro { flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center; }
+  .m-macro.cal { background: var(--earth); }
+  .m-macro.other { background: rgba(45,42,36,0.04); border: 1px solid rgba(45,42,36,0.04); }
+  .m-macro .v { font-size: 18px; font-weight: 800; }
+  .m-macro.cal .v { color: var(--sand); }
+  .m-macro.other .v { color: var(--earth); }
+  .m-macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .m-macro.cal .l { color: rgba(246,245,240,0.35); }
+  .m-macro.other .l { color: var(--rock); }
+
+  /* Chapter-style cards with warm bg that deepens per meal */
+  .m-section { padding: 0 24px; }
+  .m-section-head { font-size: 13px; font-weight: 700; color: var(--earth); margin: 8px 0 14px; }
+
+  .m-card {
+    border-radius: 24px; margin-bottom: 14px; overflow: hidden;
+    position: relative; cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+  .m-card:active { transform: scale(0.98); }
+
+  /* Each card has its own warm background — getting progressively warmer/deeper */
+  .m-card.t1 { background: #F0EBE2; } /* morning cream */
+  .m-card.t2 { background: #EBE8DF; } /* midday warm */
+  .m-card.t3 { background: #E8E2D6; } /* afternoon honey */
+  .m-card.t4 { background: #E0D9CD; } /* evening warm stone */
+
+  /* Ambient glow inside each card */
+  .m-card-glow {
+    position: absolute; border-radius: 50%; filter: blur(60px); pointer-events: none;
+  }
+  .m-card.t1 .m-card-glow { width: 200px; height: 200px; top: -60px; right: -40px; background: #F59E0B; opacity: 0.04; }
+  .m-card.t2 .m-card-glow { width: 180px; height: 180px; top: -50px; right: -30px; background: #34D399; opacity: 0.03; }
+  .m-card.t3 .m-card-glow { width: 190px; height: 190px; top: -55px; right: -35px; background: #F97316; opacity: 0.04; }
+  .m-card.t4 .m-card-glow { width: 200px; height: 200px; top: -60px; right: -40px; background: #818CF8; opacity: 0.035; }
+
+  .m-card-inner { padding: 22px; position: relative; z-index: 1; }
+
+  /* Time + category row */
+  .m-card-top { display: flex; justify-content: space-between; align-items: center; }
+  .m-card-time { display: flex; align-items: center; gap: 6px; }
+  .m-card-emoji { font-size: 18px; }
+  .m-card-when { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .m-card-cal-badge { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .m-card-cal-badge span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Meal name — big */
+  .m-card-name { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 12px; line-height: 1.2; }
+
+  /* Macros */
+  .m-card-macros { font-size: 12px; color: var(--rock); margin-top: 6px; }
+
+  /* Progress bar showing this meal's calorie contribution */
+  .m-card-bar { margin-top: 12px; height: 4px; border-radius: 2px; overflow: hidden; }
+  .m-card.t1 .m-card-bar { background: rgba(45,42,36,0.06); }
+  .m-card.t2 .m-card-bar { background: rgba(45,42,36,0.06); }
+  .m-card.t3 .m-card-bar { background: rgba(45,42,36,0.06); }
+  .m-card.t4 .m-card-bar { background: rgba(45,42,36,0.06); }
+  .m-card-bar-fill { height: 100%; border-radius: 2px; background: var(--earth); transition: width 1s cubic-bezier(0.16,1,0.3,1); }
+
+  /* Action pills */
+  .m-card-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .m-card-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; transition: opacity 0.15s; }
+  .m-card-btn:active { opacity: 0.7; }
+  .m-card-btn.primary { background: var(--earth); color: var(--sand); }
+  .m-card-btn.secondary { background: rgba(45,42,36,0.06); color: var(--earth); }
+  .m-card-btn.trail { background: rgba(52,211,153,0.06); color: #047857; }
+
+  /* Mode toggle inline */
+  .m-card-mode { display: flex; gap: 6px; margin-top: 12px; }
+  .m-mode-pill { padding: 6px 14px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .m-mode-pill.on { background: var(--earth); color: var(--sand); }
+  .m-mode-pill.off { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  /* Grocery */
+  .m-grocery { margin: 8px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .m-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .m-grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+  /* ============================================================
+     N: GRADIENT SCROLL — Single page-wide warm gradient that deepens
+     ============================================================ */
+  .col-n .col-label { color: var(--trail); }
+
+  /* The phone bg itself is a tall gradient */
+  .phone-n {
+    background: linear-gradient(180deg,
+      #F5F0E8 0%,          /* warm cream top */
+      #F2EDE4 15%,
+      #EFEBE0 30%,
+      #EBE5D8 50%,         /* mid honey */
+      #E5DED0 70%,
+      #DDD5C5 85%,
+      #D4CBBA 100%         /* deep warm bottom */
+    );
+  }
+
+  .n-topo { position: absolute; inset: 0; pointer-events: none; }
+  .n-tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.018; }
+  .n-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .n-tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  .n-cnt { position: relative; z-index: 1; }
+
+  .n-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .n-hero { padding: 18px 24px 0; }
+  .n-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .n-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  .n-macros { display: flex; gap: 8px; padding: 18px 24px; }
+  .n-macro { flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .n-macro.cal { background: var(--earth); }
+  .n-macro.other { background: rgba(255,255,255,0.5); border: 1px solid rgba(255,255,255,0.3); }
+  .n-macro .v { font-size: 18px; font-weight: 800; }
+  .n-macro.cal .v { color: var(--sand); }
+  .n-macro.other .v { color: var(--earth); }
+  .n-macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .n-macro.cal .l { color: rgba(246,245,240,0.35); }
+  .n-macro.other .l { color: var(--rock); }
+
+  /* Cards float on glass above the gradient */
+  .n-section { padding: 0 24px; }
+  .n-section-head { font-size: 13px; font-weight: 700; color: var(--earth); margin: 8px 0 14px; }
+
+  .n-card {
+    margin-bottom: 14px; border-radius: 24px; overflow: hidden;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    cursor: pointer; transition: transform 0.2s;
+  }
+  .n-card:active { transform: scale(0.98); }
+
+  .n-card-inner { padding: 20px 22px; }
+  .n-card-top { display: flex; justify-content: space-between; align-items: center; }
+  .n-card-time { display: flex; align-items: center; gap: 6px; }
+  .n-card-emoji { font-size: 16px; }
+  .n-card-when { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .n-card-cal { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .n-card-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .n-card-name { font-size: 18px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; margin-top: 10px; line-height: 1.2; }
+  .n-card-macros { font-size: 12px; color: var(--rock); margin-top: 4px; }
+
+  .n-card-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .n-card-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .n-card-btn.primary { background: var(--earth); color: var(--sand); }
+  .n-card-btn.secondary { background: rgba(45,42,36,0.06); color: var(--earth); }
+  .n-card-btn.trail { background: rgba(52,211,153,0.06); color: #047857; }
+
+  .n-grocery { margin: 8px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .n-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .n-grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+
+  /* ============================================================
+     O: WARM DEPTH — Cards at different visual depth with parallax bg
+     ============================================================ */
+  .col-o .col-label { color: #818CF8; }
+
+  .phone-o { background: #F3EEE5; }
+
+  /* Layered depth bg — multiple warm gradient layers */
+  .o-depth-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .o-layer { position: absolute; border-radius: 50%; filter: blur(100px); }
+  .o-layer.l1 { width: 400px; height: 400px; top: -100px; left: -80px; background: #E8DCC8; opacity: 0.5; animation: oFloat1 18s ease-in-out infinite alternate; }
+  .o-layer.l2 { width: 350px; height: 350px; bottom: -50px; right: -60px; background: #DDD0BA; opacity: 0.4; animation: oFloat2 22s ease-in-out infinite alternate; }
+  .o-layer.l3 { width: 300px; height: 300px; top: 40%; left: 30%; background: #D5C7AF; opacity: 0.3; animation: oFloat3 20s ease-in-out infinite alternate; }
+  @keyframes oFloat1 { 0% { transform: translate(0,0); } 100% { transform: translate(40px,30px); } }
+  @keyframes oFloat2 { 0% { transform: translate(0,0); } 100% { transform: translate(-30px,-40px); } }
+  @keyframes oFloat3 { 0% { transform: translate(0,0); } 100% { transform: translate(20px,-20px); } }
+
+  .o-topo { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .o-tc { position: absolute; border: 1px solid #B8A88E; border-radius: 50%; opacity: 0.04; }
+  .o-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .o-tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  .o-cnt { position: relative; z-index: 2; }
+  .o-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .o-hero { padding: 18px 24px 0; }
+  .o-hero .ctx { font-size: 11px; color: #A09580; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .o-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  .o-macros { display: flex; gap: 8px; padding: 18px 24px; }
+  .o-macro { flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center; }
+  .o-macro.cal { background: var(--earth); }
+  .o-macro.other { background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px); }
+  .o-macro .v { font-size: 18px; font-weight: 800; }
+  .o-macro.cal .v { color: var(--sand); }
+  .o-macro.other .v { color: var(--earth); }
+  .o-macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .o-macro.cal .l { color: rgba(246,245,240,0.35); }
+  .o-macro.other .l { color: #A09580; }
+
+  /* Cards with layered depth — first card elevated, deeper ones recede */
+  .o-section { padding: 0 24px; }
+  .o-section-head { font-size: 13px; font-weight: 700; color: var(--earth); margin: 8px 0 14px; }
+
+  .o-card {
+    margin-bottom: 14px; border-radius: 24px; overflow: hidden;
+    position: relative; cursor: pointer; transition: transform 0.2s, box-shadow 0.3s;
+  }
+  .o-card:active { transform: scale(0.98); }
+
+  /* Depth levels — first card is "closest" (brighter, more shadow), last is "furthest" */
+  .o-card.d1 { background: rgba(255,255,255,0.7); box-shadow: 0 8px 32px rgba(0,0,0,0.06); border: 1px solid rgba(255,255,255,0.6); backdrop-filter: blur(20px); }
+  .o-card.d2 { background: rgba(255,255,255,0.55); box-shadow: 0 4px 20px rgba(0,0,0,0.04); border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(16px); }
+  .o-card.d3 { background: rgba(255,255,255,0.4); box-shadow: 0 2px 12px rgba(0,0,0,0.03); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(12px); }
+  .o-card.d4 { background: rgba(255,255,255,0.3); box-shadow: 0 1px 8px rgba(0,0,0,0.02); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(8px); }
+
+  .o-card-inner { padding: 20px 22px; }
+  .o-card-top { display: flex; justify-content: space-between; align-items: center; }
+  .o-card-time { display: flex; align-items: center; gap: 6px; }
+  .o-card-emoji { font-size: 16px; }
+  .o-card-when { font-size: 10px; color: #A09580; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .o-card-cal { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .o-card-cal span { font-size: 9px; color: #A09580; font-weight: 500; }
+
+  .o-card-name { font-size: 18px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; margin-top: 10px; line-height: 1.2; }
+  .o-card-macros { font-size: 12px; color: #A09580; margin-top: 4px; }
+
+  .o-card-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .o-card-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .o-card-btn.primary { background: var(--earth); color: var(--sand); }
+  .o-card-btn.secondary { background: rgba(45,42,36,0.06); color: var(--earth); }
+  .o-card-btn.trail { background: rgba(52,211,153,0.06); color: #047857; }
+
+  .o-grocery { margin: 8px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .o-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .o-grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+</style>
+</head>
+<body>
+
+<!-- ===== M: WARM ZONES ===== -->
+<div class="col col-m">
+  <div class="col-label">M — Warm Zones</div>
+  <div class="col-desc">Card backgrounds get progressively deeper/warmer as the day goes on. Each has a subtle ambient glow. Calorie contribution bar per meal. Cook/eatout toggle inline.</div>
+  <div class="phone phone-m" id="phone-m">
+    <div class="m-topo"><div class="m-tc"></div><div class="m-tc"></div></div>
+    <div class="ps" id="m-scroll"><div class="m-cnt">
+      <div class="m-status"><span class="m-time">9:41</span><div class="m-alive"><div class="m-alive-dot"></div><span class="m-alive-lbl">Fresh</span></div></div>
+      <div class="m-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+      <div class="m-macros">
+        <div class="m-macro cal"><div class="v">2,180</div><div class="l">kcal</div></div>
+        <div class="m-macro other"><div class="v">165g</div><div class="l">Protein</div></div>
+        <div class="m-macro other"><div class="v">245g</div><div class="l">Carbs</div></div>
+        <div class="m-macro other"><div class="v">72g</div><div class="l">Fat</div></div>
+      </div>
+
+      <div class="m-section">
+        <div class="m-section-head">Today's Meals</div>
+
+        <div class="m-card t1">
+          <div class="m-card-glow"></div>
+          <div class="m-card-inner">
+            <div class="m-card-top"><div class="m-card-time"><span class="m-card-emoji">🌅</span><span class="m-card-when">8 AM · Breakfast</span></div><div class="m-card-cal-badge">520 <span>kcal</span></div></div>
+            <div class="m-card-name">Greek Yogurt Power Bowl</div>
+            <div class="m-card-macros">35g protein · 42g carbs · 12g fat</div>
+            <div class="m-card-bar"><div class="m-card-bar-fill" style="width:24%;"></div></div>
+            <div class="m-card-mode"><span class="m-mode-pill on">🍳 Cook</span><span class="m-mode-pill off">🍽️ Eat Out</span></div>
+            <div class="m-card-acts"><span class="m-card-btn primary">Recipe</span><span class="m-card-btn trail">Swap</span><span class="m-card-btn secondary">Nah</span></div>
+          </div>
+        </div>
+
+        <div class="m-card t2">
+          <div class="m-card-glow"></div>
+          <div class="m-card-inner">
+            <div class="m-card-top"><div class="m-card-time"><span class="m-card-emoji">☀️</span><span class="m-card-when">12 PM · Lunch</span></div><div class="m-card-cal-badge">680 <span>kcal</span></div></div>
+            <div class="m-card-name">Grilled Chicken & Brown Rice</div>
+            <div class="m-card-macros">45g protein · 55g carbs · 14g fat</div>
+            <div class="m-card-bar"><div class="m-card-bar-fill" style="width:31%;"></div></div>
+            <div class="m-card-mode"><span class="m-mode-pill on">🍳 Cook</span><span class="m-mode-pill off">🍽️ Eat Out</span></div>
+            <div class="m-card-acts"><span class="m-card-btn primary">Recipe</span><span class="m-card-btn trail">Swap</span><span class="m-card-btn secondary">Eat Out</span></div>
+          </div>
+        </div>
+
+        <div class="m-card t3">
+          <div class="m-card-glow"></div>
+          <div class="m-card-inner">
+            <div class="m-card-top"><div class="m-card-time"><span class="m-card-emoji">🌇</span><span class="m-card-when">4 PM · Snack</span></div><div class="m-card-cal-badge">260 <span>kcal</span></div></div>
+            <div class="m-card-name">Protein Shake & Almonds</div>
+            <div class="m-card-macros">37g protein · 18g carbs · 14g fat</div>
+            <div class="m-card-bar"><div class="m-card-bar-fill" style="width:12%;"></div></div>
+            <div class="m-card-mode"><span class="m-mode-pill on">🍳 Cook</span><span class="m-mode-pill off">🍽️ Eat Out</span></div>
+            <div class="m-card-acts"><span class="m-card-btn primary">Recipe</span><span class="m-card-btn trail">Swap</span></div>
+          </div>
+        </div>
+
+        <div class="m-card t4">
+          <div class="m-card-glow"></div>
+          <div class="m-card-inner">
+            <div class="m-card-top"><div class="m-card-time"><span class="m-card-emoji">🌙</span><span class="m-card-when">7 PM · Dinner</span></div><div class="m-card-cal-badge">720 <span>kcal</span></div></div>
+            <div class="m-card-name">Salmon & Sweet Potato</div>
+            <div class="m-card-macros">48g protein · 62g carbs · 22g fat</div>
+            <div class="m-card-bar"><div class="m-card-bar-fill" style="width:33%;"></div></div>
+            <div class="m-card-mode"><span class="m-mode-pill on">🍳 Cook</span><span class="m-mode-pill off">🍽️ Eat Out</span></div>
+            <div class="m-card-acts"><span class="m-card-btn primary">Recipe</span><span class="m-card-btn trail">Swap</span><span class="m-card-btn secondary">Eat Out</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ===== N: GRADIENT SCROLL ===== -->
+<div class="col col-n">
+  <div class="col-label">N — Gradient Scroll</div>
+  <div class="col-desc">The phone background itself is one continuous warm gradient — cream at top deepening to warm stone at bottom. Cards float on frosted glass. As you scroll, you move through the warmth.</div>
+  <div class="phone phone-n">
+    <div class="n-topo"><div class="n-tc"></div><div class="n-tc"></div></div>
+    <div class="ps"><div class="n-cnt">
+      <div class="n-status" style="color:var(--earth);font-size:15px;font-weight:600;"><span>9:41</span></div>
+      <div class="n-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+      <div class="n-macros">
+        <div class="n-macro cal"><div class="v">2,180</div><div class="l">kcal</div></div>
+        <div class="n-macro other"><div class="v">165g</div><div class="l">Protein</div></div>
+        <div class="n-macro other"><div class="v">245g</div><div class="l">Carbs</div></div>
+        <div class="n-macro other"><div class="v">72g</div><div class="l">Fat</div></div>
+      </div>
+
+      <div class="n-section">
+        <div class="n-section-head">Today's Meals</div>
+
+        <div class="n-card"><div class="n-card-inner">
+          <div class="n-card-top"><div class="n-card-time"><span class="n-card-emoji">🌅</span><span class="n-card-when">8 AM · Breakfast</span></div><div class="n-card-cal">520 <span>kcal</span></div></div>
+          <div class="n-card-name">Greek Yogurt Power Bowl</div>
+          <div class="n-card-macros">35g protein · 42g carbs · 12g fat</div>
+          <div class="n-card-acts"><span class="n-card-btn primary">Recipe</span><span class="n-card-btn trail">Swap</span><span class="n-card-btn secondary">Eat Out</span></div>
+        </div></div>
+
+        <div class="n-card"><div class="n-card-inner">
+          <div class="n-card-top"><div class="n-card-time"><span class="n-card-emoji">☀️</span><span class="n-card-when">12 PM · Lunch</span></div><div class="n-card-cal">680 <span>kcal</span></div></div>
+          <div class="n-card-name">Grilled Chicken & Brown Rice</div>
+          <div class="n-card-macros">45g protein · 55g carbs · 14g fat</div>
+          <div class="n-card-acts"><span class="n-card-btn primary">Recipe</span><span class="n-card-btn trail">Swap</span><span class="n-card-btn secondary">Eat Out</span></div>
+        </div></div>
+
+        <div class="n-card"><div class="n-card-inner">
+          <div class="n-card-top"><div class="n-card-time"><span class="n-card-emoji">🌇</span><span class="n-card-when">4 PM · Snack</span></div><div class="n-card-cal">260 <span>kcal</span></div></div>
+          <div class="n-card-name">Protein Shake & Almonds</div>
+          <div class="n-card-macros">37g protein · 18g carbs · 14g fat</div>
+          <div class="n-card-acts"><span class="n-card-btn primary">Recipe</span><span class="n-card-btn trail">Swap</span></div>
+        </div></div>
+
+        <div class="n-card"><div class="n-card-inner">
+          <div class="n-card-top"><div class="n-card-time"><span class="n-card-emoji">🌙</span><span class="n-card-when">7 PM · Dinner</span></div><div class="n-card-cal">720 <span>kcal</span></div></div>
+          <div class="n-card-name">Salmon & Sweet Potato</div>
+          <div class="n-card-macros">48g protein · 62g carbs · 22g fat</div>
+          <div class="n-card-acts"><span class="n-card-btn primary">Recipe</span><span class="n-card-btn trail">Swap</span><span class="n-card-btn secondary">Eat Out</span></div>
+        </div></div>
+      </div>
+
+      <div class="n-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+    </div></div>
+  </div>
+</div>
+
+<!-- ===== O: WARM DEPTH ===== -->
+<div class="col col-o">
+  <div class="col-label">O — Warm Depth</div>
+  <div class="col-desc">Slowly moving warm gradient blobs behind everything. Cards at different visual depths — first card is crisp/elevated, later cards are softer/further. Glass morphism with warmth.</div>
+  <div class="phone phone-o">
+    <div class="o-depth-bg"><div class="o-layer l1"></div><div class="o-layer l2"></div><div class="o-layer l3"></div></div>
+    <div class="o-topo"><div class="o-tc"></div><div class="o-tc"></div></div>
+    <div class="ps"><div class="o-cnt">
+      <div class="o-status" style="color:var(--earth);font-size:15px;font-weight:600;"><span>9:41</span></div>
+      <div class="o-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+      <div class="o-macros">
+        <div class="o-macro cal"><div class="v">2,180</div><div class="l">kcal</div></div>
+        <div class="o-macro other"><div class="v">165g</div><div class="l">Protein</div></div>
+        <div class="o-macro other"><div class="v">245g</div><div class="l">Carbs</div></div>
+        <div class="o-macro other"><div class="v">72g</div><div class="l">Fat</div></div>
+      </div>
+
+      <div class="o-section">
+        <div class="o-section-head">Today's Meals</div>
+
+        <div class="o-card d1"><div class="o-card-inner">
+          <div class="o-card-top"><div class="o-card-time"><span class="o-card-emoji">🌅</span><span class="o-card-when">8 AM · Breakfast</span></div><div class="o-card-cal">520 <span>kcal</span></div></div>
+          <div class="o-card-name">Greek Yogurt Power Bowl</div>
+          <div class="o-card-macros">35g protein · 42g carbs · 12g fat</div>
+          <div class="o-card-acts"><span class="o-card-btn primary">Recipe</span><span class="o-card-btn trail">Swap</span><span class="o-card-btn secondary">Eat Out</span></div>
+        </div></div>
+
+        <div class="o-card d2"><div class="o-card-inner">
+          <div class="o-card-top"><div class="o-card-time"><span class="o-card-emoji">☀️</span><span class="o-card-when">12 PM · Lunch</span></div><div class="o-card-cal">680 <span>kcal</span></div></div>
+          <div class="o-card-name">Grilled Chicken & Brown Rice</div>
+          <div class="o-card-macros">45g protein · 55g carbs · 14g fat</div>
+          <div class="o-card-acts"><span class="o-card-btn primary">Recipe</span><span class="o-card-btn trail">Swap</span><span class="o-card-btn secondary">Eat Out</span></div>
+        </div></div>
+
+        <div class="o-card d3"><div class="o-card-inner">
+          <div class="o-card-top"><div class="o-card-time"><span class="o-card-emoji">🌇</span><span class="o-card-when">4 PM · Snack</span></div><div class="o-card-cal">260 <span>kcal</span></div></div>
+          <div class="o-card-name">Protein Shake & Almonds</div>
+          <div class="o-card-macros">37g protein · 18g carbs · 14g fat</div>
+          <div class="o-card-acts"><span class="o-card-btn primary">Recipe</span><span class="o-card-btn trail">Swap</span></div>
+        </div></div>
+
+        <div class="o-card d4"><div class="o-card-inner">
+          <div class="o-card-top"><div class="o-card-time"><span class="o-card-emoji">🌙</span><span class="o-card-when">7 PM · Dinner</span></div><div class="o-card-cal">720 <span>kcal</span></div></div>
+          <div class="o-card-name">Salmon & Sweet Potato</div>
+          <div class="o-card-macros">48g protein · 62g carbs · 22g fat</div>
+          <div class="o-card-acts"><span class="o-card-btn primary">Recipe</span><span class="o-card-btn trail">Swap</span><span class="o-card-btn secondary">Eat Out</span></div>
+        </div></div>
+      </div>
+
+      <div class="o-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+    </div></div>
+  </div>
+</div>
+
+</body>
+</html>

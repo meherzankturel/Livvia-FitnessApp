@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — D1 Streak Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; display: flex; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes numPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+
+  /* ============================================================
+     SHARED WRAP
+     ============================================================ */
+  .wrap {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; width: 100%; min-height: 100%;
+    padding: 80px 24px 40px; position: relative;
+  }
+
+
+  /* ============================================================
+     V1: STREAK + DARK HERO CARD FOR STATS
+     Streak number on sand, then a dark card below with
+     stats + week dots + personal message inside.
+     Cleaner separation of celebration vs data.
+     ============================================================ */
+
+  .v1-glow { position: relative; margin-bottom: 4px; }
+  .v1-glow-bg {
+    position: absolute; width: 130px; height: 130px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    animation: v1pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes v1pulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 1; } 50% { transform: translate(-50%,-50%) scale(1.12); opacity: 0.6; } }
+
+  .v1-num {
+    font-size: 80px; font-weight: 800; color: var(--earth); letter-spacing: -4px;
+    line-height: 1; position: relative; z-index: 1;
+    animation: numPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v1-streak-label {
+    font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 6px;
+    animation: fadeUp 0.4s ease-out 0.15s backwards;
+  }
+  .v1-title {
+    font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px;
+    margin-bottom: 20px; animation: fadeUp 0.4s ease-out 0.25s backwards;
+  }
+
+  /* Dark card */
+  .v1-card {
+    width: 100%; background: var(--earth); border-radius: 22px;
+    padding: 20px; position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease-out 0.35s backwards;
+  }
+  .v1-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v1-diag:nth-child(1) { width: 90px; top: 12px; right: -6px; transform: rotate(-35deg); }
+  .v1-diag:nth-child(2) { width: 65px; top: 22px; right: -6px; transform: rotate(-35deg); }
+
+  .v1-stats { display: flex; justify-content: space-between; position: relative; margin-bottom: 16px; }
+  .v1-stat { text-align: center; flex: 1; }
+  .v1-stat-val { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .v1-stat-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .v1-stat-div { width: 1px; background: rgba(246,245,240,0.06); align-self: stretch; }
+
+  .v1-card-divider { height: 1px; background: rgba(246,245,240,0.06); margin-bottom: 14px; position: relative; }
+
+  .v1-week { display: flex; gap: 6px; justify-content: center; position: relative; }
+  .v1-day {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .v1-day.done { background: rgba(52,211,153,0.1); }
+  .v1-day.today { background: var(--trail); }
+  .v1-day.rest { background: rgba(246,245,240,0.04); }
+  .v1-day-letter { font-size: 9px; font-weight: 700; }
+  .v1-day.done .v1-day-letter { color: var(--trail); }
+  .v1-day.today .v1-day-letter { color: var(--earth); }
+  .v1-day.rest .v1-day-letter { color: rgba(246,245,240,0.15); }
+
+  /* Message below card */
+  .v1-msg {
+    margin-top: 16px; width: 100%;
+    animation: fadeUp 0.4s ease-out 0.5s backwards;
+  }
+  .v1-msg-text { font-size: 12px; color: var(--rock); text-align: center; line-height: 1.5; }
+  .v1-msg-text strong { color: var(--earth); }
+
+  .v1-btn {
+    margin-top: 24px; padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: fadeUp 0.4s ease-out 0.6s backwards;
+  }
+  .v1-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     V2: STREAK INSIDE A RING + CLEANER PILLS
+     Streak number inside a subtle ring. Stats as refined
+     horizontal pills. Week as a thin progress bar.
+     More polished, less busy.
+     ============================================================ */
+
+  .v2-ring-wrap {
+    position: relative; width: 120px; height: 120px; margin-bottom: 16px;
+    animation: numPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v2-ring-track {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 4px solid var(--stone);
+  }
+  .v2-ring-fill {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 4px solid var(--trail);
+    border-bottom-color: transparent;
+    transform: rotate(-45deg);
+  }
+  .v2-ring-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .v2-ring-num { font-size: 42px; font-weight: 800; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .v2-ring-label { font-size: 8px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 2px; }
+
+  /* Pulse */
+  .v2-ring-pulse {
+    position: absolute; inset: -4px; border-radius: 50%;
+    border: 2px solid var(--trail); opacity: 0;
+    animation: v2rp 2.4s ease-out 0.6s infinite;
+  }
+  @keyframes v2rp { 0% { transform: scale(1); opacity: 0.3; } 100% { transform: scale(1.4); opacity: 0; } }
+
+  .v2-title {
+    font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.7px;
+    margin-bottom: 4px; animation: fadeUp 0.4s ease-out 0.2s backwards;
+  }
+  .v2-subtitle {
+    font-size: 13px; color: var(--rock); text-align: center; line-height: 1.5;
+    max-width: 260px; margin-bottom: 24px;
+    animation: fadeUp 0.4s ease-out 0.3s backwards;
+  }
+
+  /* Stat pills — horizontal, refined */
+  .v2-pills {
+    display: flex; gap: 8px; margin-bottom: 20px;
+    animation: fadeUp 0.4s ease-out 0.4s backwards;
+  }
+  .v2-pill {
+    padding: 10px 18px; border-radius: 14px; background: var(--stone);
+    text-align: center;
+  }
+  .v2-pill-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .v2-pill-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+
+  /* Week bar */
+  .v2-week-section {
+    width: 100%; margin-bottom: 24px;
+    animation: fadeUp 0.4s ease-out 0.5s backwards;
+  }
+  .v2-week-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .v2-week-label { font-size: 10px; font-weight: 600; color: var(--rock); }
+  .v2-week-dots { display: flex; gap: 4px; }
+  .v2-wd {
+    width: 36px; height: 6px; border-radius: 3px; background: var(--stone);
+  }
+  .v2-wd.done { background: var(--earth); }
+  .v2-wd.today { background: var(--trail); }
+
+  .v2-msg {
+    margin-bottom: 24px; animation: fadeUp 0.4s ease-out 0.6s backwards;
+  }
+  .v2-msg-text { font-size: 12px; color: var(--rock); text-align: center; line-height: 1.5; }
+  .v2-msg-text strong { color: var(--earth); }
+
+  .v2-btn {
+    padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: fadeUp 0.4s ease-out 0.7s backwards;
+  }
+  .v2-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     V3: STREAK + CONFETTI + BENTO GRID
+     Confetti particles + big streak + bento stat tiles
+     below. Week as circular dots. Most celebratory version.
+     ============================================================ */
+
+  /* Confetti */
+  .v3-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .v3-p {
+    position: absolute; border-radius: 2px; opacity: 0;
+    animation: cfall 3.5s ease-out infinite;
+  }
+  @keyframes cfall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    8% { opacity: 0.6; }
+    100% { transform: translateY(860px) rotate(720deg); opacity: 0; }
+  }
+  .v3-p:nth-child(1) { width: 5px; height: 5px; background: var(--trail); left: 12%; animation-delay: 0s; }
+  .v3-p:nth-child(2) { width: 4px; height: 7px; background: var(--earth); left: 28%; animation-delay: 0.6s; animation-duration: 3s; }
+  .v3-p:nth-child(3) { width: 6px; height: 4px; background: var(--trail); left: 48%; animation-delay: 1.2s; animation-duration: 3.8s; }
+  .v3-p:nth-child(4) { width: 4px; height: 6px; background: var(--rock); left: 65%; animation-delay: 0.3s; animation-duration: 3.2s; }
+  .v3-p:nth-child(5) { width: 5px; height: 5px; background: var(--trail); left: 82%; animation-delay: 0.9s; animation-duration: 3.6s; }
+  .v3-p:nth-child(6) { width: 3px; height: 6px; background: var(--earth); left: 38%; animation-delay: 1.8s; animation-duration: 3.4s; }
+
+  .v3-glow { position: relative; margin-bottom: 4px; }
+  .v3-glow-bg {
+    position: absolute; width: 140px; height: 140px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 70%);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    animation: v1pulse 2.4s ease-in-out infinite;
+  }
+  .v3-num {
+    font-size: 76px; font-weight: 800; color: var(--earth); letter-spacing: -4px;
+    line-height: 1; position: relative; z-index: 1;
+    animation: numPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v3-streak-label {
+    font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 6px;
+    animation: fadeUp 0.4s ease-out 0.15s backwards;
+  }
+  .v3-title {
+    font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.7px;
+    margin-bottom: 4px; animation: fadeUp 0.4s ease-out 0.25s backwards;
+  }
+  .v3-subtitle {
+    font-size: 13px; color: var(--rock); text-align: center; max-width: 260px;
+    margin-bottom: 24px; animation: fadeUp 0.4s ease-out 0.3s backwards;
+  }
+
+  /* Bento grid */
+  .v3-bento {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    width: 100%; margin-bottom: 20px;
+    animation: fadeUp 0.4s ease-out 0.4s backwards;
+  }
+  .v3-tile { border-radius: 16px; padding: 14px 16px; }
+  .v3-tile.stone { background: var(--stone); }
+  .v3-tile.dark { background: var(--earth); }
+  .v3-tile-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .v3-tile.stone .v3-tile-label { color: var(--rock); }
+  .v3-tile.dark .v3-tile-label { color: rgba(246,245,240,0.25); }
+  .v3-tile-val { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .v3-tile.stone .v3-tile-val { color: var(--earth); }
+  .v3-tile.dark .v3-tile-val { color: var(--sand); }
+
+  /* Week dots */
+  .v3-week {
+    display: flex; gap: 8px; margin-bottom: 24px;
+    animation: fadeUp 0.4s ease-out 0.5s backwards;
+  }
+  .v3-day {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700;
+  }
+  .v3-day.done { background: var(--earth); color: var(--sand); }
+  .v3-day.today { background: var(--trail); color: var(--earth); }
+  .v3-day.rest { background: var(--stone); color: var(--rock); }
+
+  .v3-btn {
+    padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: fadeUp 0.4s ease-out 0.6s backwards;
+  }
+  .v3-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== V1: STREAK + DARK CARD =============== -->
+  <div>
+    <div class="col-label">V1 — STREAK + DARK CARD</div>
+    <div class="col-desc">Big streak on sand. Stats + week dots inside a dark hero card below. Personal message outside. Clean separation of celebration vs data.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="wrap">
+
+          <div class="v1-glow">
+            <div class="v1-glow-bg"></div>
+            <div class="v1-num">3</div>
+          </div>
+          <div class="v1-streak-label">Day Streak</div>
+          <div class="v1-title">Session Complete</div>
+
+          <div class="v1-card">
+            <div class="v1-diag"></div>
+            <div class="v1-diag"></div>
+
+            <div class="v1-stats">
+              <div class="v1-stat">
+                <div class="v1-stat-val">6</div>
+                <div class="v1-stat-label">Exercises</div>
+              </div>
+              <div class="v1-stat-div"></div>
+              <div class="v1-stat">
+                <div class="v1-stat-val">47m</div>
+                <div class="v1-stat-label">Duration</div>
+              </div>
+              <div class="v1-stat-div"></div>
+              <div class="v1-stat">
+                <div class="v1-stat-val">8.4k</div>
+                <div class="v1-stat-label">Volume</div>
+              </div>
+            </div>
+
+            <div class="v1-card-divider"></div>
+
+            <div class="v1-week">
+              <div class="v1-day done"><span class="v1-day-letter">M</span></div>
+              <div class="v1-day rest"><span class="v1-day-letter">T</span></div>
+              <div class="v1-day done"><span class="v1-day-letter">W</span></div>
+              <div class="v1-day rest"><span class="v1-day-letter">T</span></div>
+              <div class="v1-day rest"><span class="v1-day-letter">F</span></div>
+              <div class="v1-day today"><span class="v1-day-letter">S</span></div>
+              <div class="v1-day rest"><span class="v1-day-letter">S</span></div>
+            </div>
+          </div>
+
+          <div class="v1-msg">
+            <div class="v1-msg-text"><strong>Consistency wins.</strong> One more session and you hit your weekly goal.</div>
+          </div>
+
+          <div class="v1-btn"><div class="v1-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V2: STREAK RING + PILLS =============== -->
+  <div>
+    <div class="col-label">V2 — STREAK RING + BAR</div>
+    <div class="col-desc">Streak inside a pulsing ring. Stat pills as horizontal tiles. Week shown as a segmented bar. Cleaner, more polished.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="wrap">
+
+          <div class="v2-ring-wrap">
+            <div class="v2-ring-track"></div>
+            <div class="v2-ring-fill"></div>
+            <div class="v2-ring-pulse"></div>
+            <div class="v2-ring-center">
+              <div class="v2-ring-num">3</div>
+              <div class="v2-ring-label">Streak</div>
+            </div>
+          </div>
+
+          <div class="v2-title">Session Complete</div>
+          <div class="v2-subtitle">Full workout + recovery. You're building something real.</div>
+
+          <div class="v2-pills">
+            <div class="v2-pill">
+              <div class="v2-pill-val">6</div>
+              <div class="v2-pill-label">Exercises</div>
+            </div>
+            <div class="v2-pill">
+              <div class="v2-pill-val">47m</div>
+              <div class="v2-pill-label">Duration</div>
+            </div>
+            <div class="v2-pill">
+              <div class="v2-pill-val">8.4k</div>
+              <div class="v2-pill-label">Volume</div>
+            </div>
+          </div>
+
+          <div class="v2-week-section">
+            <div class="v2-week-header">
+              <span class="v2-week-label">This Week</span>
+              <span class="v2-week-label">3 / 4 days</span>
+            </div>
+            <div class="v2-week-dots">
+              <div class="v2-wd done"></div>
+              <div class="v2-wd"></div>
+              <div class="v2-wd done"></div>
+              <div class="v2-wd"></div>
+              <div class="v2-wd"></div>
+              <div class="v2-wd today"></div>
+              <div class="v2-wd"></div>
+            </div>
+          </div>
+
+          <div class="v2-msg">
+            <div class="v2-msg-text"><strong>Consistency wins.</strong> One more session and you hit your weekly goal.</div>
+          </div>
+
+          <div class="v2-btn"><div class="v2-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V3: STREAK + CONFETTI + BENTO =============== -->
+  <div>
+    <div class="col-label">V3 — STREAK + CONFETTI + BENTO</div>
+    <div class="col-desc">Confetti particles in terrain colors. Big streak + glow. Bento stat tiles (stone + dark). Week dots. Most celebratory.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="wrap" style="position: relative;">
+
+          <div class="v3-confetti">
+            <div class="v3-p"></div>
+            <div class="v3-p"></div>
+            <div class="v3-p"></div>
+            <div class="v3-p"></div>
+            <div class="v3-p"></div>
+            <div class="v3-p"></div>
+          </div>
+
+          <div class="v3-glow">
+            <div class="v3-glow-bg"></div>
+            <div class="v3-num">3</div>
+          </div>
+          <div class="v3-streak-label">Day Streak</div>
+
+          <div class="v3-title">Session Complete</div>
+          <div class="v3-subtitle">Workout + recovery done. You showed up.</div>
+
+          <div class="v3-bento">
+            <div class="v3-tile stone">
+              <div class="v3-tile-label">Exercises</div>
+              <div class="v3-tile-val">6</div>
+            </div>
+            <div class="v3-tile stone">
+              <div class="v3-tile-label">Duration</div>
+              <div class="v3-tile-val">47m</div>
+            </div>
+            <div class="v3-tile stone">
+              <div class="v3-tile-label">Volume</div>
+              <div class="v3-tile-val">8,420</div>
+            </div>
+            <div class="v3-tile dark">
+              <div class="v3-tile-label">Focus</div>
+              <div class="v3-tile-val" style="font-size: 15px;">Push Day</div>
+            </div>
+          </div>
+
+          <div class="v3-week">
+            <div class="v3-day done">M</div>
+            <div class="v3-day rest">T</div>
+            <div class="v3-day done">W</div>
+            <div class="v3-day rest">T</div>
+            <div class="v3-day rest">F</div>
+            <div class="v3-day today">S</div>
+            <div class="v3-day rest">S</div>
+          </div>
+
+          <div class="v3-btn"><div class="v3-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

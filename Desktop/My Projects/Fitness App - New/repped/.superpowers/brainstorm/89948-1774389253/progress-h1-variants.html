@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — H1 Ring Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 400px; height: 320px; top: -80px; left: -80px; }
+
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+
+
+  /* ============================================================
+     R1: RINGS ON DARK CARD — Triple rings inside a dark card
+     with legend integrated inside. More premium feel.
+     ============================================================ */
+
+  .r1-card { margin-top: 12px; padding: 24px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .r1-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .r1-aline { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .r1-aline:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .r1-aline:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .r1-top { display: flex; gap: 20px; align-items: center; position: relative; }
+
+  .r1-rings { width: 130px; height: 130px; position: relative; flex-shrink: 0; }
+  .r1-rings svg { position: absolute; inset: 0; }
+
+  .r1o { width: 130px; height: 130px; transform: rotate(-90deg); }
+  .r1ot { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 6; }
+  .r1of { fill: none; stroke: var(--trail); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 358; stroke-dashoffset: 358; animation: r1o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes r1o { to { stroke-dashoffset: 89; } }
+
+  .r1m { width: 98px; height: 98px; transform: rotate(-90deg); position: absolute; top: 16px; left: 16px; }
+  .r1mt { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 6; }
+  .r1mf { fill: none; stroke: rgba(246,245,240,0.25); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 264; stroke-dashoffset: 264; animation: r1m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes r1m { to { stroke-dashoffset: 53; } }
+
+  .r1i { width: 66px; height: 66px; transform: rotate(-90deg); position: absolute; top: 32px; left: 32px; }
+  .r1it { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 6; }
+  .r1if { fill: none; stroke: #F59E0B; stroke-width: 6; stroke-linecap: round; opacity: 0.5; stroke-dasharray: 170; stroke-dashoffset: 170; animation: r1i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes r1i { to { stroke-dashoffset: 60; } }
+
+  .r1-info { flex: 1; position: relative; }
+  .r1-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .r1-big { font-size: 36px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; margin-top: 4px; }
+  .r1-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 2px; }
+
+  .r1-legend { display: flex; gap: 12px; margin-top: 14px; }
+  .r1-leg { display: flex; align-items: center; gap: 5px; }
+  .r1-ld { width: 6px; height: 6px; border-radius: 50%; }
+  .r1-leg:nth-child(1) .r1-ld { background: var(--trail); }
+  .r1-leg:nth-child(2) .r1-ld { background: rgba(246,245,240,0.25); }
+  .r1-leg:nth-child(3) .r1-ld { background: #F59E0B; opacity: 0.5; }
+  .r1-lv { font-size: 12px; font-weight: 800; color: var(--sand); }
+  .r1-ll { font-size: 8px; color: rgba(246,245,240,0.2); margin-left: 1px; }
+
+
+  /* ============================================================
+     R2: RINGS WITH CENTRAL NUMBER — Triple rings with a big
+     number in the center (the main stat). Cleaner, focused.
+     ============================================================ */
+
+  .r2-rings-area { display: flex; justify-content: center; padding: 20px 0 10px; }
+  .r2-rc { width: 170px; height: 170px; position: relative; }
+  .r2-rc svg { position: absolute; inset: 0; }
+
+  .r2o { width: 170px; height: 170px; transform: rotate(-90deg); }
+  .r2ot { fill: none; stroke: var(--stone); stroke-width: 8; }
+  .r2of { fill: none; stroke: var(--trail); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 471; stroke-dashoffset: 471; animation: r2o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes r2o { to { stroke-dashoffset: 118; } }
+
+  .r2m { width: 130px; height: 130px; transform: rotate(-90deg); position: absolute; top: 20px; left: 20px; }
+  .r2mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 8; }
+  .r2mf { fill: none; stroke: var(--earth); stroke-width: 8; stroke-linecap: round; opacity: 0.3; stroke-dasharray: 346; stroke-dashoffset: 346; animation: r2m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes r2m { to { stroke-dashoffset: 69; } }
+
+  .r2i { width: 90px; height: 90px; transform: rotate(-90deg); position: absolute; top: 40px; left: 40px; }
+  .r2it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 8; }
+  .r2if { fill: none; stroke: #F59E0B; stroke-width: 8; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 220; stroke-dashoffset: 220; animation: r2i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes r2i { to { stroke-dashoffset: 77; } }
+
+  /* Central number inside rings */
+  .r2-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .r2-cn { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; }
+  .r2-cl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Legend as a 3-col row */
+  .r2-legend { display: flex; gap: 8px; justify-content: center; }
+  .r2-leg { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; }
+  .r2-leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .r2-leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .r2-leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .r2-ld { width: 8px; height: 8px; border-radius: 50%; }
+  .r2-leg:nth-child(1) .r2-ld { background: var(--trail); }
+  .r2-leg:nth-child(2) .r2-ld { background: var(--earth); opacity: 0.3; }
+  .r2-leg:nth-child(3) .r2-ld { background: #F59E0B; opacity: 0.4; }
+  .r2-lv { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .r2-ll { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     R3: RINGS + STATS ROW — Rings on sand, clean stat row
+     with dividers below. Breathing green dot in center of rings.
+     ============================================================ */
+
+  .r3-rings-area { display: flex; justify-content: center; padding: 18px 0 8px; }
+  .r3-rc { width: 150px; height: 150px; position: relative; }
+  .r3-rc svg { position: absolute; inset: 0; }
+
+  .r3o { width: 150px; height: 150px; transform: rotate(-90deg); }
+  .r3ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .r3of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 415; stroke-dashoffset: 415; animation: r3o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes r3o { to { stroke-dashoffset: 104; } }
+
+  .r3m { width: 114px; height: 114px; transform: rotate(-90deg); position: absolute; top: 18px; left: 18px; }
+  .r3mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .r3mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 302; stroke-dashoffset: 302; animation: r3m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes r3m { to { stroke-dashoffset: 60; } }
+
+  .r3i { width: 78px; height: 78px; transform: rotate(-90deg); position: absolute; top: 36px; left: 36px; }
+  .r3it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .r3if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 192; stroke-dashoffset: 192; animation: r3i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes r3i { to { stroke-dashoffset: 67; } }
+
+  /* Breathing dot in center */
+  .r3-dot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 10px; height: 10px; border-radius: 50%; background: var(--trail); animation: r3breathe 2.4s ease-in-out infinite; }
+  @keyframes r3breathe { 0%,100% { opacity: 0.2; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.5; transform: translate(-50%,-50%) scale(1.3); } }
+
+  /* 4-column stat row */
+  .r3-stats { display: flex; margin-top: 6px; }
+  .r3-stat { flex: 1; text-align: center; padding: 12px 0; position: relative; }
+  .r3-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--stone); }
+  .r3-stat:last-child::after { display: none; }
+  .r3-sv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .r3-sv span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .r3-sl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  /* Ring color labels */
+  .r3-ring-labels { display: flex; justify-content: center; gap: 14px; margin-top: 4px; }
+  .r3-rl { display: flex; align-items: center; gap: 4px; }
+  .r3-rld { width: 6px; height: 6px; border-radius: 50%; }
+  .r3-rl:nth-child(1) .r3-rld { background: var(--trail); }
+  .r3-rl:nth-child(2) .r3-rld { background: var(--earth); opacity: 0.25; }
+  .r3-rl:nth-child(3) .r3-rld { background: #F59E0B; opacity: 0.4; }
+  .r3-rlt { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+
+  /* ============================================================
+     R4: SINGLE THICK RING — One bold ring with 3 colored arcs.
+     All three metrics share one ring as segments.
+     ============================================================ */
+
+  .r4-ring-area { display: flex; justify-content: center; padding: 20px 0 10px; }
+  .r4-rc { width: 160px; height: 160px; position: relative; }
+  .r4-rc svg { width: 160px; height: 160px; transform: rotate(-90deg); }
+
+  .r4t { fill: none; stroke: var(--stone); stroke-width: 14; }
+
+  /* Three arcs on one ring — different colors, different lengths */
+  .r4-arc1 { fill: none; stroke: var(--trail); stroke-width: 14; stroke-linecap: round; stroke-dasharray: 113 340; stroke-dashoffset: 0; animation: r4a1 1.2s cubic-bezier(0.16,1,0.3,1) 0.3s both; opacity: 0; }
+  @keyframes r4a1 { to { opacity: 1; } }
+  .r4-arc2 { fill: none; stroke: var(--earth); stroke-width: 14; stroke-linecap: round; opacity: 0.3; stroke-dasharray: 75 378; stroke-dashoffset: -120; animation: r4a2 1.2s cubic-bezier(0.16,1,0.3,1) 0.5s both; opacity: 0; }
+  @keyframes r4a2 { to { opacity: 0.3; } }
+  .r4-arc3 { fill: none; stroke: #F59E0B; stroke-width: 14; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 55 398; stroke-dashoffset: -205; animation: r4a3 1.2s cubic-bezier(0.16,1,0.3,1) 0.7s both; opacity: 0; }
+  @keyframes r4a3 { to { opacity: 0.4; } }
+
+  .r4-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .r4-cn { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .r4-cl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .r4-legend { display: flex; gap: 8px; justify-content: center; }
+  .r4-leg { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; }
+  .r4-leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .r4-leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .r4-leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .r4-ld { width: 8px; height: 8px; border-radius: 50%; }
+  .r4-leg:nth-child(1) .r4-ld { background: var(--trail); }
+  .r4-leg:nth-child(2) .r4-ld { background: var(--earth); opacity: 0.3; }
+  .r4-leg:nth-child(3) .r4-ld { background: #F59E0B; opacity: 0.4; }
+  .r4-lv { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .r4-ll { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     R5: RINGS + PULSE HYBRID — Triple rings with a mini
+     pulse line below inside the same dark card.
+     Best of H1 + H3 combined.
+     ============================================================ */
+
+  .r5-card { margin-top: 12px; padding: 22px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+
+  .r5-top { display: flex; gap: 18px; align-items: center; position: relative; }
+
+  .r5-rings { width: 110px; height: 110px; position: relative; flex-shrink: 0; }
+  .r5-rings svg { position: absolute; inset: 0; }
+
+  .r5o { width: 110px; height: 110px; transform: rotate(-90deg); }
+  .r5ot { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 5; }
+  .r5of { fill: none; stroke: var(--trail); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 296; stroke-dashoffset: 296; animation: r5o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes r5o { to { stroke-dashoffset: 74; } }
+
+  .r5m { width: 82px; height: 82px; transform: rotate(-90deg); position: absolute; top: 14px; left: 14px; }
+  .r5mt { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 5; }
+  .r5mf { fill: none; stroke: rgba(246,245,240,0.2); stroke-width: 5; stroke-linecap: round; stroke-dasharray: 214; stroke-dashoffset: 214; animation: r5m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes r5m { to { stroke-dashoffset: 43; } }
+
+  .r5i { width: 54px; height: 54px; transform: rotate(-90deg); position: absolute; top: 28px; left: 28px; }
+  .r5it { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 5; }
+  .r5if { fill: none; stroke: #F59E0B; stroke-width: 5; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 133; stroke-dashoffset: 133; animation: r5i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes r5i { to { stroke-dashoffset: 47; } }
+
+  .r5-info { flex: 1; position: relative; }
+  .r5-big { font-size: 32px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; }
+  .r5-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 2px; }
+
+  .r5-row { display: flex; gap: 12px; margin-top: 10px; }
+  .r5-rv { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .r5-rl { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+  /* Mini pulse */
+  .r5-pulse { height: 36px; margin-top: 14px; position: relative; }
+  .r5-pulse svg { width: 100%; height: 100%; }
+  .r5-pline { fill: none; stroke: var(--trail); stroke-width: 1.5; stroke-linecap: round; opacity: 0.35; stroke-dasharray: 400; stroke-dashoffset: 400; animation: r5draw 2s cubic-bezier(0.16,1,0.3,1) 0.8s forwards; }
+  @keyframes r5draw { to { stroke-dashoffset: 0; } }
+  .r5-pglow { fill: none; stroke: var(--trail); stroke-width: 3; stroke-linecap: round; opacity: 0.06; filter: blur(2px); }
+
+  .r5-weeks { display: flex; justify-content: space-between; margin-top: 4px; position: relative; }
+  .r5-wk { font-size: 7px; color: rgba(246,245,240,0.12); font-weight: 600; }
+  .r5-wk.now { color: var(--trail); opacity: 0.4; }
+
+
+  /* ============================================================
+     R6: DUAL RINGS — Just two rings (completion + volume).
+     Streak as a bold number beside. Cleaner, less busy.
+     ============================================================ */
+
+  .r6-hero { display: flex; gap: 18px; align-items: center; margin-top: 14px; }
+
+  .r6-rings { width: 120px; height: 120px; position: relative; flex-shrink: 0; }
+  .r6-rings svg { position: absolute; inset: 0; }
+
+  .r6o { width: 120px; height: 120px; transform: rotate(-90deg); }
+  .r6ot { fill: none; stroke: var(--stone); stroke-width: 8; }
+  .r6of { fill: none; stroke: var(--trail); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; animation: r6o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes r6o { to { stroke-dashoffset: 78; } }
+
+  .r6i { width: 84px; height: 84px; transform: rotate(-90deg); position: absolute; top: 18px; left: 18px; }
+  .r6it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 8; }
+  .r6if { fill: none; stroke: #F59E0B; stroke-width: 8; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 207; stroke-dashoffset: 207; animation: r6i 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes r6i { to { stroke-dashoffset: 72; } }
+
+  .r6-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .r6-cn { font-size: 24px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .r6-cl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  .r6-side { flex: 1; }
+  .r6-streak-num { font-size: 48px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .r6-streak-label { font-size: 11px; color: var(--rock); font-weight: 600; margin-top: 2px; }
+  .r6-streak-sub { font-size: 10px; color: var(--rock); margin-top: 1px; }
+
+  .r6-pills { display: flex; gap: 6px; margin-top: 12px; }
+  .r6-pill { padding: 6px 12px; border-radius: 10px; display: flex; align-items: center; gap: 5px; }
+  .r6-pill:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .r6-pill:nth-child(2) { background: rgba(245,158,11,0.04); }
+  .r6-pld { width: 6px; height: 6px; border-radius: 50%; }
+  .r6-pill:nth-child(1) .r6-pld { background: var(--trail); }
+  .r6-pill:nth-child(2) .r6-pld { background: #F59E0B; opacity: 0.4; }
+  .r6-plv { font-size: 12px; font-weight: 700; color: var(--earth); }
+  .r6-pll { font-size: 8px; color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- R1 -->
+<div>
+  <div class="col-label">R1 — Rings on Dark Card</div>
+  <div class="col-desc">Triple rings inside a dark card with big 36px number beside. Legend integrated. Diagonal accent. Most premium feel.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="r1-card"><div class="r1-accent"><div class="r1-aline"></div><div class="r1-aline"></div></div>
+      <div class="r1-top">
+        <div class="r1-rings">
+          <svg class="r1o" viewBox="0 0 130 130"><circle class="r1ot" cx="65" cy="65" r="57"/><circle class="r1of" cx="65" cy="65" r="57"/></svg>
+          <svg class="r1m" viewBox="0 0 98 98"><circle class="r1mt" cx="49" cy="49" r="42"/><circle class="r1mf" cx="49" cy="49" r="42"/></svg>
+          <svg class="r1i" viewBox="0 0 66 66"><circle class="r1it" cx="33" cy="33" r="27"/><circle class="r1if" cx="33" cy="33" r="27"/></svg>
+        </div>
+        <div class="r1-info">
+          <div class="r1-label">This Week</div>
+          <div class="r1-big">75%</div>
+          <div class="r1-sub">3 of 4 workouts done</div>
+          <div class="r1-legend">
+            <div class="r1-leg"><div class="r1-ld"></div><div class="r1-lv">75%</div><div class="r1-ll">done</div></div>
+            <div class="r1-leg"><div class="r1-ld"></div><div class="r1-lv">12d</div><div class="r1-ll">streak</div></div>
+            <div class="r1-leg"><div class="r1-ld"></div><div class="r1-lv">2.4t</div><div class="r1-ll">vol</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- R2 -->
+<div>
+  <div class="col-label">R2 — Rings + Central Number</div>
+  <div class="col-desc">Large triple rings on sand with 32px number in the center. Tinted legend pills below. Clean, centered, focused. No dark card.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx" style="text-align:center;">Monday, Mar 24</div>
+    <div class="title" style="text-align:center;">Your Journey</div>
+    <div class="r2-rings-area"><div class="r2-rc">
+      <svg class="r2o" viewBox="0 0 170 170"><circle class="r2ot" cx="85" cy="85" r="75"/><circle class="r2of" cx="85" cy="85" r="75"/></svg>
+      <svg class="r2m" viewBox="0 0 130 130"><circle class="r2mt" cx="65" cy="65" r="55"/><circle class="r2mf" cx="65" cy="65" r="55"/></svg>
+      <svg class="r2i" viewBox="0 0 90 90"><circle class="r2it" cx="45" cy="45" r="35"/><circle class="r2if" cx="45" cy="45" r="35"/></svg>
+      <div class="r2-center"><div class="r2-cn">75%</div><div class="r2-cl">This Week</div></div>
+    </div></div>
+    <div class="r2-legend">
+      <div class="r2-leg"><div class="r2-ld"></div><div><div class="r2-lv">75%</div><div class="r2-ll">Complete</div></div></div>
+      <div class="r2-leg"><div class="r2-ld"></div><div><div class="r2-lv">12d</div><div class="r2-ll">Streak</div></div></div>
+      <div class="r2-leg"><div class="r2-ld"></div><div><div class="r2-lv">2.4t</div><div class="r2-ll">Volume</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- R3 -->
+<div>
+  <div class="col-label">R3 — Rings + Breathing Dot</div>
+  <div class="col-desc">Triple rings on sand with a breathing green dot in the center. 4-column stat row with dividers below. Tiny ring color legend. Living, breathing.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx" style="text-align:center;">Monday, Mar 24</div>
+    <div class="title" style="text-align:center;">Your Journey</div>
+    <div class="r3-rings-area"><div class="r3-rc">
+      <svg class="r3o" viewBox="0 0 150 150"><circle class="r3ot" cx="75" cy="75" r="66"/><circle class="r3of" cx="75" cy="75" r="66"/></svg>
+      <svg class="r3m" viewBox="0 0 114 114"><circle class="r3mt" cx="57" cy="57" r="48"/><circle class="r3mf" cx="57" cy="57" r="48"/></svg>
+      <svg class="r3i" viewBox="0 0 78 78"><circle class="r3it" cx="39" cy="39" r="30.5"/><circle class="r3if" cx="39" cy="39" r="30.5"/></svg>
+      <div class="r3-dot"></div>
+    </div></div>
+    <div class="r3-ring-labels"><div class="r3-rl"><div class="r3-rld"></div><span class="r3-rlt">Complete</span></div><div class="r3-rl"><div class="r3-rld"></div><span class="r3-rlt">Streak</span></div><div class="r3-rl"><div class="r3-rld"></div><span class="r3-rlt">Volume</span></div></div>
+    <div class="r3-stats">
+      <div class="r3-stat"><div class="r3-sv">75<span>%</span></div><div class="r3-sl">Complete</div></div>
+      <div class="r3-stat"><div class="r3-sv">12</div><div class="r3-sl">Streak</div></div>
+      <div class="r3-stat"><div class="r3-sv">47</div><div class="r3-sl">Workouts</div></div>
+      <div class="r3-stat"><div class="r3-sv">2.4<span>t</span></div><div class="r3-sl">Volume</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- R4 -->
+<div>
+  <div class="col-label">R4 — Single Segmented Ring</div>
+  <div class="col-desc">ONE thick ring with 3 colored arc segments. All metrics share one ring. Number in center. Legend pills. Cleaner than 3 separate rings.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx" style="text-align:center;">Monday, Mar 24</div>
+    <div class="title" style="text-align:center;">Your Journey</div>
+    <div class="r4-ring-area"><div class="r4-rc">
+      <svg viewBox="0 0 160 160">
+        <circle class="r4t" cx="80" cy="80" r="72"/>
+        <circle class="r4-arc1" cx="80" cy="80" r="72"/>
+        <circle class="r4-arc2" cx="80" cy="80" r="72"/>
+        <circle class="r4-arc3" cx="80" cy="80" r="72"/>
+      </svg>
+      <div class="r4-center"><div class="r4-cn">75%</div><div class="r4-cl">This Week</div></div>
+    </div></div>
+    <div class="r4-legend">
+      <div class="r4-leg"><div class="r4-ld"></div><div><div class="r4-lv">75%</div><div class="r4-ll">Complete</div></div></div>
+      <div class="r4-leg"><div class="r4-ld"></div><div><div class="r4-lv">12d</div><div class="r4-ll">Streak</div></div></div>
+      <div class="r4-leg"><div class="r4-ld"></div><div><div class="r4-lv">2.4t</div><div class="r4-ll">Volume</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- R5 -->
+<div>
+  <div class="col-label">R5 — Rings + Pulse Hybrid</div>
+  <div class="col-desc">Triple rings + mini pulse EKG line inside one dark card. Best of H1 and H3 combined. Big number beside. Week labels under the pulse.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="r5-card">
+      <div class="r5-top">
+        <div class="r5-rings">
+          <svg class="r5o" viewBox="0 0 110 110"><circle class="r5ot" cx="55" cy="55" r="47"/><circle class="r5of" cx="55" cy="55" r="47"/></svg>
+          <svg class="r5m" viewBox="0 0 82 82"><circle class="r5mt" cx="41" cy="41" r="34"/><circle class="r5mf" cx="41" cy="41" r="34"/></svg>
+          <svg class="r5i" viewBox="0 0 54 54"><circle class="r5it" cx="27" cy="27" r="21"/><circle class="r5if" cx="27" cy="27" r="21"/></svg>
+        </div>
+        <div class="r5-info"><div class="r5-big">75%</div><div class="r5-sub">3 of 4 done this week</div><div class="r5-row"><div><div class="r5-rv">12</div><div class="r5-rl">Streak</div></div><div><div class="r5-rv">2.4t</div><div class="r5-rl">Volume</div></div><div><div class="r5-rv">47</div><div class="r5-rl">Total</div></div></div></div>
+      </div>
+      <div class="r5-pulse"><svg viewBox="0 0 280 36" preserveAspectRatio="none"><path class="r5-pglow" d="M0,24 L15,24 L18,8 L21,28 L24,18 L27,24 L65,24 L68,6 L71,30 L74,15 L77,24 L115,24 L118,10 L121,27 L124,20 L127,24 L165,24 L168,4 L171,30 L174,14 L177,24 L215,24 L218,8 L221,28 L224,16 L227,24 L265,24 L268,6 L271,28 L274,18 L280,24"/><path class="r5-pline" d="M0,24 L15,24 L18,8 L21,28 L24,18 L27,24 L65,24 L68,6 L71,30 L74,15 L77,24 L115,24 L118,10 L121,27 L124,20 L127,24 L165,24 L168,4 L171,30 L174,14 L177,24 L215,24 L218,8 L221,28 L224,16 L227,24 L265,24 L268,6 L271,28 L274,18 L280,24"/></svg></div>
+      <div class="r5-weeks"><span class="r5-wk">Wk 1</span><span class="r5-wk">Wk 2</span><span class="r5-wk">Wk 3</span><span class="r5-wk now">Wk 4</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- R6 -->
+<div>
+  <div class="col-label">R6 — Dual Rings + Big Streak</div>
+  <div class="col-desc">Just two rings (completion + volume). Giant 48px streak number beside. Less busy than triple. Bold typography + clean ring visual.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="r6-hero">
+      <div class="r6-rings">
+        <svg class="r6o" viewBox="0 0 120 120"><circle class="r6ot" cx="60" cy="60" r="50"/><circle class="r6of" cx="60" cy="60" r="50"/></svg>
+        <svg class="r6i" viewBox="0 0 84 84"><circle class="r6it" cx="42" cy="42" r="33"/><circle class="r6if" cx="42" cy="42" r="33"/></svg>
+        <div class="r6-center"><div class="r6-cn">75%</div><div class="r6-cl">Weekly</div></div>
+      </div>
+      <div class="r6-side">
+        <div class="r6-streak-num">12</div>
+        <div class="r6-streak-label">day streak</div>
+        <div class="r6-streak-sub">Your longest yet</div>
+        <div class="r6-pills">
+          <div class="r6-pill"><div class="r6-pld"></div><span class="r6-plv">75%</span><span class="r6-pll">done</span></div>
+          <div class="r6-pill"><div class="r6-pld"></div><span class="r6-plv">2.4t</span><span class="r6-pll">vol</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

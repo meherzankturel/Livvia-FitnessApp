@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero Variations</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--heading:'Playfair Display',Georgia,serif}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+
+/* Placeholder list */
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:13px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+
+/* ============================================================
+   V1: DARK CARD — Total left, save tip + mini donut right
+   Premium dark with diagonal accents. Category strip.
+   ============================================================ */
+.v1-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v1-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.v1-week{font-size:10px;color:var(--rock)}
+
+.v1-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 40%,#32302A 70%,#2D2A24 100%);position:relative;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,0.15)}
+.v1-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.v1-row1{display:flex;justify-content:space-between;align-items:flex-start;position:relative}
+.v1-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.3);text-transform:uppercase;letter-spacing:2px}
+.v1-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.v1-row2{display:flex;justify-content:space-between;align-items:flex-end;margin-top:14px;position:relative}
+.v1-total-wrap{}
+.v1-dollar{font-size:16px;font-weight:500;color:rgba(246,245,240,0.4);vertical-align:top}
+.v1-amount{font-family:var(--heading);font-size:44px;font-weight:800;color:var(--sand);letter-spacing:-2px;line-height:1}
+.v1-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.v1-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+/* Mini donut */
+.v1-mini-donut{width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--trail) 0% 28%,rgba(246,245,240,0.08) 28% 100%);display:flex;align-items:center;justify-content:center}
+.v1-mini-hole{width:30px;height:30px;border-radius:50%;background:#32302A;display:flex;align-items:center;justify-content:center}
+.v1-mini-val{font-size:8px;font-weight:800;color:var(--sand)}
+
+.v1-save{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:12px;background:rgba(52,211,153,0.1);cursor:pointer}
+.v1-save-icon{font-size:11px}
+.v1-save-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+.v1-strip{display:flex;height:3px;border-radius:2px;overflow:hidden;gap:2px;margin-top:16px;position:relative}
+.v1-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V2: WHITE CARD — Split layout. Big total left in a dark
+   sub-badge. Right: items/checked/save tip stacked. Clean.
+   ============================================================ */
+.v2-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v2-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.v2-week{font-size:10px;color:var(--rock)}
+
+.v2-card{margin:16px 18px 0;padding:20px;border-radius:22px;background:linear-gradient(155deg,#D8D3C9 0%,#EAE6DD 30%,#F4F1EA 60%,#DFD9CF 100%);box-shadow:0 2px 16px rgba(0,0,0,0.05);position:relative;overflow:hidden}
+.v2-card::before{content:'';position:absolute;top:-35px;right:-15px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.v2-row{display:flex;gap:16px;align-items:stretch;position:relative}
+
+/* Total badge */
+.v2-total-badge{background:var(--earth);border-radius:16px;padding:16px 20px;display:flex;flex-direction:column;justify-content:center;min-width:130px}
+.v2-badge-label{font-size:8px;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:1px;margin-bottom:4px}
+.v2-badge-val{font-family:var(--heading);font-size:32px;font-weight:800;color:var(--sand);letter-spacing:-1.5px;line-height:1}
+.v2-badge-est{font-size:8px;color:rgba(246,245,240,0.2);margin-top:3px}
+
+/* Right info */
+.v2-info{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:2px 0}
+.v2-info-row{display:flex;justify-content:space-between;align-items:center}
+.v2-info-val{font-size:16px;font-weight:800;color:var(--earth)}
+.v2-info-label{font-size:9px;color:var(--rock)}
+.v2-info-div{height:1px;background:rgba(0,0,0,0.04);margin:6px 0}
+
+.v2-save{display:flex;align-items:center;gap:5px;padding:7px 12px;border-radius:10px;background:var(--earth);cursor:pointer;align-self:flex-end}
+.v2-save-icon{font-size:11px}
+.v2-save-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+.v2-strip{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:2px;margin-top:14px;position:relative}
+.v2-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V3: GLASS CARD — Frosted glass feel. Big total centered.
+   Circular progress around total. Save tip as floating fab.
+   ============================================================ */
+.v3-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v3-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.v3-week{font-size:10px;color:var(--rock)}
+
+.v3-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:rgba(255,255,255,0.6);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);box-shadow:0 2px 16px rgba(0,0,0,0.04);position:relative}
+
+.v3-label{font-size:9px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:2px;text-align:center;margin-bottom:12px}
+
+/* Centered ring with total inside */
+.v3-ring-wrap{display:flex;justify-content:center;margin-bottom:12px}
+.v3-ring{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--trail) 0% 28%,var(--stone) 28% 100%);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(52,211,153,0.1)}
+.v3-ring-hole{width:82px;height:82px;border-radius:50%;background:rgba(255,255,255,0.8);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.v3-ring-dollar{font-size:12px;font-weight:500;color:var(--rock)}
+.v3-ring-val{font-family:var(--heading);font-size:28px;font-weight:800;color:var(--earth);letter-spacing:-1px;line-height:1}
+.v3-ring-sub{font-size:8px;color:var(--rock);margin-top:2px}
+
+.v3-stats{display:flex;justify-content:space-around;margin-bottom:14px}
+.v3-stat{text-align:center}
+.v3-stat-val{font-size:16px;font-weight:800;color:var(--earth)}
+.v3-stat-label{font-size:8px;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:1px}
+
+/* Floating save tip */
+.v3-save{position:absolute;bottom:16px;right:16px;display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:12px;background:var(--earth);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1)}
+.v3-save-icon{font-size:11px}
+.v3-save-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+.v3-strip{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:2px}
+.v3-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V4: STACKED — Total big on top. Below: horizontal stat pills.
+   Save tip as full-width button at bottom of card.
+   ============================================================ */
+.v4-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v4-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+
+.v4-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 35%,#F2EFE8 70%,#DDD8CE 100%);box-shadow:0 2px 16px rgba(0,0,0,0.05);position:relative;overflow:hidden}
+.v4-card::before{content:'';position:absolute;top:-30px;right:-10px;width:130px;height:130px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.v4-label{font-size:9px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:2px;position:relative}
+
+.v4-total-row{display:flex;align-items:baseline;gap:4px;margin-top:8px;position:relative}
+.v4-dollar{font-size:20px;font-weight:500;color:var(--rock)}
+.v4-amount{font-family:var(--heading);font-size:52px;font-weight:800;color:var(--earth);letter-spacing:-2.5px;line-height:1}
+
+.v4-pills{display:flex;gap:6px;margin-top:14px;position:relative}
+.v4-pill{flex:1;text-align:center;padding:8px 4px;border-radius:12px;background:rgba(255,255,255,0.5);border:1px solid rgba(0,0,0,0.03)}
+.v4-pill-val{font-size:14px;font-weight:800;color:var(--earth)}
+.v4-pill-label{font-size:7px;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+
+.v4-save{display:flex;align-items:center;justify-content:center;gap:6px;padding:11px;border-radius:14px;background:var(--earth);margin-top:14px;cursor:pointer;position:relative}
+.v4-save-icon{font-size:12px}
+.v4-save-text{font-size:11px;font-weight:600;color:var(--sand)}
+
+.v4-strip{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:2px;margin-top:14px;position:relative}
+.v4-seg{height:100%;border-radius:2px}
+
+
+/* ============================================================
+   V5: RECEIPT CARD — Total as big receipt number. Items count
+   as a checked/total display. Save tip inline.
+   ============================================================ */
+.v5-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v5-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+
+.v5-card{margin:16px 18px 0;padding:22px;border-radius:22px;background:#fff;border:1.5px dashed rgba(0,0,0,0.06);position:relative}
+
+.v5-row1{display:flex;justify-content:space-between;align-items:flex-start}
+.v5-card-title{font-size:14px;font-weight:700;color:var(--earth)}
+.v5-card-date{font-size:10px;color:var(--rock);margin-top:2px}
+.v5-total-wrap{text-align:right}
+.v5-total{font-family:var(--heading);font-size:34px;font-weight:800;color:var(--earth);letter-spacing:-1.5px;line-height:1}
+.v5-total-sub{font-size:8px;color:var(--rock);margin-top:2px}
+
+.v5-divider{height:1px;border-bottom:1.5px dashed rgba(0,0,0,0.06);margin:14px 0}
+
+.v5-row2{display:flex;justify-content:space-between;align-items:center}
+.v5-stats{display:flex;gap:16px}
+.v5-stat-val{font-size:15px;font-weight:800;color:var(--earth)}
+.v5-stat-label{font-size:8px;color:var(--rock);text-transform:uppercase;letter-spacing:0.3px}
+
+.v5-save{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:10px;background:rgba(52,211,153,0.08);cursor:pointer}
+.v5-save-icon{font-size:11px}
+.v5-save-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+.v5-bar{height:4px;border-radius:2px;background:var(--stone);margin-top:14px}
+.v5-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   V6: COMPACT DARK + LIGHT SPLIT
+   Dark left panel (total), light right panel (stats + save).
+   Two-tone card. Category dots row.
+   ============================================================ */
+.v6-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.v6-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+
+.v6-card{margin:16px 18px 0;border-radius:22px;overflow:hidden;display:flex;box-shadow:0 2px 16px rgba(0,0,0,0.06)}
+/* Dark left */
+.v6-left{background:linear-gradient(160deg,#2D2A24,#3A3630);padding:22px 20px;display:flex;flex-direction:column;justify-content:center;min-width:140px;position:relative}
+.v6-left-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.v6-left-label{font-size:8px;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;position:relative}
+.v6-left-val{font-family:var(--heading);font-size:34px;font-weight:800;color:var(--sand);letter-spacing:-1.5px;line-height:1;position:relative}
+.v6-left-sub{font-size:8px;color:rgba(246,245,240,0.2);margin-top:4px;position:relative}
+/* Light right */
+.v6-right{background:linear-gradient(155deg,#EDE9E0,#F4F1EA);padding:18px 16px;flex:1;display:flex;flex-direction:column;justify-content:space-between;gap:8px}
+.v6-stat-row{display:flex;justify-content:space-between;align-items:center}
+.v6-stat-val{font-size:15px;font-weight:800;color:var(--earth)}
+.v6-stat-val.green{color:var(--trail)}
+.v6-stat-label{font-size:9px;color:var(--rock)}
+.v6-save{display:flex;align-items:center;gap:4px;padding:7px 12px;border-radius:10px;background:var(--earth);cursor:pointer;align-self:flex-end}
+.v6-save-icon{font-size:10px}
+.v6-save-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+.v6-cats{display:flex;gap:8px;justify-content:center;padding:12px 24px 0}
+.v6-cat{display:flex;align-items:center;gap:3px}
+.v6-cat-dot{width:5px;height:5px;border-radius:50%}
+.v6-cat-text{font-size:8px;color:var(--rock);font-weight:600}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- V1: DARK CARD -->
+  <div>
+    <div class="col-label">V1 — DARK PREMIUM</div>
+    <div class="col-desc">Dark gradient card. Big total left. Mini donut + save tip right. Category strip. Premium, moody.</div>
+    <div class="phone"><div class="ps">
+      <div class="v1-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v1-title">Grocery List</span><span class="v1-week">Mar 30</span></div>
+      <div class="v1-card">
+        <div class="v1-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v1-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="v1-row1"><span class="v1-label">Weekly Shop</span><span class="v1-items">18 items</span></div>
+        <div class="v1-row2">
+          <div class="v1-total-wrap"><div><span class="v1-dollar">$</span><span class="v1-amount">47.82</span></div><div class="v1-est">estimated total</div></div>
+          <div class="v1-right">
+            <div class="v1-mini-donut"><div class="v1-mini-hole"><span class="v1-mini-val">28%</span></div></div>
+            <div class="v1-save"><span class="v1-save-icon">💡</span><span class="v1-save-text">Save Tips</span></div>
+          </div>
+        </div>
+        <div class="v1-strip"><div class="v1-seg" style="background:#34D399;flex:5"></div><div class="v1-seg" style="background:#EF4444;flex:4"></div><div class="v1-seg" style="background:#F59E0B;flex:3"></div><div class="v1-seg" style="background:#6366F1;flex:3"></div><div class="v1-seg" style="background:#8E8E7A;flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V2: SPLIT WITH BADGE -->
+  <div>
+    <div class="col-label">V2 — BADGE SPLIT</div>
+    <div class="col-desc">Warm card. Dark total badge left. Stats + save tip stacked right. Category strip.</div>
+    <div class="phone"><div class="ps">
+      <div class="v2-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v2-title">Grocery List</span><span class="v2-week">Mar 30</span></div>
+      <div class="v2-card">
+        <div class="v2-row">
+          <div class="v2-total-badge"><div class="v2-badge-label">Total</div><div class="v2-badge-val">$47.82</div><div class="v2-badge-est">estimated</div></div>
+          <div class="v2-info">
+            <div class="v2-info-row"><span class="v2-info-label">Items</span><span class="v2-info-val">18</span></div>
+            <div class="v2-info-div"></div>
+            <div class="v2-info-row"><span class="v2-info-label">Checked</span><span class="v2-info-val" style="color:var(--trail)">5</span></div>
+            <div class="v2-info-div"></div>
+            <div class="v2-save"><span class="v2-save-icon">💡</span><span class="v2-save-text">Smart Save Tips</span></div>
+          </div>
+        </div>
+        <div class="v2-strip"><div class="v2-seg" style="background:#34D399;flex:5"></div><div class="v2-seg" style="background:#EF4444;flex:4"></div><div class="v2-seg" style="background:#F59E0B;flex:3"></div><div class="v2-seg" style="background:#6366F1;flex:3"></div><div class="v2-seg" style="background:#8E8E7A;flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V3: GLASS + RING -->
+  <div>
+    <div class="col-label">V3 — GLASS + RING</div>
+    <div class="col-desc">Frosted glass card. Progress ring with total inside. Stats row. Floating save tip.</div>
+    <div class="phone"><div class="ps">
+      <div class="v3-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v3-title">Grocery List</span><span class="v3-week">Mar 30</span></div>
+      <div class="v3-card">
+        <div class="v3-label">Weekly Shop</div>
+        <div class="v3-ring-wrap"><div class="v3-ring"><div class="v3-ring-hole"><span class="v3-ring-dollar">$</span><span class="v3-ring-val">47</span><span class="v3-ring-sub">est. total</span></div></div></div>
+        <div class="v3-stats">
+          <div class="v3-stat"><div class="v3-stat-val">18</div><div class="v3-stat-label">Items</div></div>
+          <div class="v3-stat"><div class="v3-stat-val" style="color:var(--trail)">5</div><div class="v3-stat-label">Checked</div></div>
+          <div class="v3-stat"><div class="v3-stat-val">13</div><div class="v3-stat-label">Left</div></div>
+        </div>
+        <div class="v3-strip"><div class="v3-seg" style="background:#34D399;flex:5"></div><div class="v3-seg" style="background:#EF4444;flex:4"></div><div class="v3-seg" style="background:#F59E0B;flex:3"></div><div class="v3-seg" style="background:#6366F1;flex:3"></div><div class="v3-seg" style="background:#8E8E7A;flex:3"></div></div>
+        <div class="v3-save"><span class="v3-save-icon">💡</span><span class="v3-save-text">Save Tips</span></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- V4: STACKED TOTAL -->
+  <div>
+    <div class="col-label">V4 — STACKED TOTAL</div>
+    <div class="col-desc">Giant $47 total on warm card. Stat pills below. Full-width save button. Bold, dominant.</div>
+    <div class="phone"><div class="ps">
+      <div class="v4-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v4-title">Grocery List</span></div>
+      <div class="v4-card">
+        <div class="v4-label">Weekly Shop · Mar 30</div>
+        <div class="v4-total-row"><span class="v4-dollar">$</span><span class="v4-amount">47.82</span></div>
+        <div class="v4-pills">
+          <div class="v4-pill"><div class="v4-pill-val">18</div><div class="v4-pill-label">Items</div></div>
+          <div class="v4-pill"><div class="v4-pill-val" style="color:var(--trail)">5</div><div class="v4-pill-label">Checked</div></div>
+          <div class="v4-pill"><div class="v4-pill-val">13</div><div class="v4-pill-label">Left</div></div>
+        </div>
+        <div class="v4-save"><span class="v4-save-icon">💡</span><span class="v4-save-text">Smart Save Tips</span></div>
+        <div class="v4-strip"><div class="v4-seg" style="background:#34D399;flex:5"></div><div class="v4-seg" style="background:#EF4444;flex:4"></div><div class="v4-seg" style="background:#F59E0B;flex:3"></div><div class="v4-seg" style="background:#6366F1;flex:3"></div><div class="v4-seg" style="background:#8E8E7A;flex:3"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V5: RECEIPT -->
+  <div>
+    <div class="col-label">V5 — RECEIPT STYLE</div>
+    <div class="col-desc">White card with dashed border. Receipt feel. Total right, title left. Stats + save inline.</div>
+    <div class="phone"><div class="ps">
+      <div class="v5-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v5-title">Grocery List</span></div>
+      <div class="v5-card">
+        <div class="v5-row1"><div><div class="v5-card-title">Weekly Groceries</div><div class="v5-card-date">Week of Mar 30</div></div><div class="v5-total-wrap"><div class="v5-total">$47</div><div class="v5-total-sub">est. total</div></div></div>
+        <div class="v5-divider"></div>
+        <div class="v5-row2">
+          <div class="v5-stats"><div><div class="v5-stat-val">18</div><div class="v5-stat-label">Items</div></div><div><div class="v5-stat-val" style="color:var(--trail)">5</div><div class="v5-stat-label">Checked</div></div><div><div class="v5-stat-val">13</div><div class="v5-stat-label">Left</div></div></div>
+          <div class="v5-save"><span class="v5-save-icon">💡</span><span class="v5-save-text">Tips</span></div>
+        </div>
+        <div class="v5-bar"><div class="v5-bar-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- V6: TWO-TONE SPLIT -->
+  <div>
+    <div class="col-label">V6 — TWO-TONE SPLIT</div>
+    <div class="col-desc">Dark left panel (total) + light right panel (stats + save). Category dots below. Architectural.</div>
+    <div class="phone"><div class="ps">
+      <div class="v6-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="v6-title">Grocery List</span></div>
+      <div class="v6-card">
+        <div class="v6-left">
+          <div class="v6-left-diag" style="width:60px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="v6-left-label">Total</div>
+          <div class="v6-left-val">$47</div>
+          <div class="v6-left-sub">estimated</div>
+        </div>
+        <div class="v6-right">
+          <div class="v6-stat-row"><span class="v6-stat-label">Items</span><span class="v6-stat-val">18</span></div>
+          <div class="v6-stat-row"><span class="v6-stat-label">Checked</span><span class="v6-stat-val green">5</span></div>
+          <div class="v6-stat-row"><span class="v6-stat-label">Left</span><span class="v6-stat-val">13</span></div>
+          <div class="v6-save"><span class="v6-save-icon">💡</span><span class="v6-save-text">Save Tips</span></div>
+        </div>
+      </div>
+      <div class="v6-cats">
+        <div class="v6-cat"><span class="v6-cat-dot" style="background:#34D399"></span><span class="v6-cat-text">Produce</span></div>
+        <div class="v6-cat"><span class="v6-cat-dot" style="background:#EF4444"></span><span class="v6-cat-text">Protein</span></div>
+        <div class="v6-cat"><span class="v6-cat-dot" style="background:#F59E0B"></span><span class="v6-cat-text">Dairy</span></div>
+        <div class="v6-cat"><span class="v6-cat-dot" style="background:#6366F1"></span><span class="v6-cat-text">Grains</span></div>
+        <div class="v6-cat"><span class="v6-cat-dot" style="background:#8E8E7A"></span><span class="v6-cat-text">Pantry</span></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

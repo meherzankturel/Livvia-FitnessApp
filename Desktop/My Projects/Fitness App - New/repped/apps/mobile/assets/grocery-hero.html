@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--heading:'Playfair Display',Georgia,serif}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+
+/* Placeholder list */
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:14px;font-weight:500;color:var(--earth);flex:1}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+
+/* ============================================================
+   H1: DONUT + LEGEND
+   ============================================================ */
+.h1-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.h1-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.h1-week{font-size:10px;color:var(--rock)}
+
+.h1-hero{display:flex;align-items:center;gap:20px;padding:22px 24px 0}
+.h1-donut{width:120px;height:120px;border-radius:50%;flex-shrink:0;background:conic-gradient(#34D399 0% 28%,#EF4444 28% 50%,#F59E0B 50% 67%,#6366F1 67% 83%,#8E8E7A 83% 100%);display:flex;align-items:center;justify-content:center}
+.h1-hole{width:80px;height:80px;border-radius:50%;background:var(--sand);display:flex;flex-direction:column;align-items:center;justify-content:center}
+.h1-hole-val{font-size:22px;font-weight:800;color:var(--earth);letter-spacing:-1px;line-height:1}
+.h1-hole-sub{font-size:8px;color:var(--rock);margin-top:2px}
+
+.h1-legend{flex:1}
+.h1-leg{display:flex;align-items:center;gap:6px;padding:4px 0}
+.h1-leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.h1-leg-name{font-size:12px;color:var(--earth);flex:1}
+.h1-leg-count{font-size:11px;color:var(--rock);font-weight:600}
+
+.h1-prog{padding:16px 24px 0}
+.h1-prog-row{display:flex;justify-content:space-between;margin-bottom:5px}
+.h1-prog-label{font-size:10px;font-weight:600;color:var(--rock)}
+.h1-prog-track{height:4px;border-radius:2px;background:var(--stone)}
+.h1-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   H2: PERSONAL NOTE CARD
+   ============================================================ */
+.h2-top{padding:56px 24px 0;display:flex;align-items:center}
+
+.h2-card{margin:14px 18px 0;padding:22px;border-radius:22px;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,0.04);position:relative;overflow:hidden}
+.h2-glow{position:absolute;top:-30px;right:-15px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.h2-greet{font-size:11px;color:var(--rock);margin-bottom:4px;position:relative}
+.h2-title{font-family:var(--heading);font-size:22px;font-weight:700;color:var(--earth);letter-spacing:-0.3px;line-height:1.15;position:relative}
+.h2-title em{font-style:italic;color:var(--trail)}
+.h2-div{height:1px;background:rgba(0,0,0,0.04);margin:14px 0;position:relative}
+.h2-stats{display:flex;justify-content:space-between;position:relative}
+.h2-stat-val{font-size:20px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.h2-stat-val.green{color:var(--trail)}
+.h2-stat-label{font-size:8px;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:1px}
+.h2-bar{height:4px;border-radius:2px;background:var(--stone);margin-top:14px;position:relative}
+.h2-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+.h2-bar-row{display:flex;justify-content:space-between;margin-top:5px}
+.h2-bar-text{font-size:9px;color:var(--rock)}
+
+
+/* ============================================================
+   H3: DARK HERO CARD
+   ============================================================ */
+.h3-top{padding:56px 24px 0;display:flex;align-items:center}
+.h3-label{font-size:10px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.2px;margin-left:auto}
+
+.h3-card{margin:14px 18px 0;padding:20px;border-radius:22px;background:var(--earth);position:relative;overflow:hidden}
+.h3-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.h3-row{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+.h3-card-title{font-family:var(--heading);font-size:20px;font-weight:700;color:var(--sand);letter-spacing:-0.3px}
+.h3-card-sub{font-size:11px;color:rgba(246,245,240,0.3);margin-top:3px}
+.h3-card-total{font-size:30px;font-weight:800;color:var(--trail);letter-spacing:-1.5px}
+.h3-card-est{font-size:8px;color:rgba(246,245,240,0.25);text-align:right;margin-top:2px}
+.h3-card-bar{height:3px;border-radius:2px;background:rgba(246,245,240,0.06);margin-top:14px;position:relative}
+.h3-card-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+.h3-card-stats{display:flex;gap:16px;margin-top:12px;position:relative}
+.h3-stat{text-align:center;flex:1}
+.h3-stat-val{font-size:16px;font-weight:800;color:var(--sand)}
+.h3-stat-val.green{color:var(--trail)}
+.h3-stat-label{font-size:7px;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:0.5px;margin-top:1px}
+.h3-stat-div{width:1px;background:rgba(246,245,240,0.06);align-self:stretch}
+
+
+/* ============================================================
+   H4: SPLIT — BENTO TILES
+   ============================================================ */
+.h4-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.h4-title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.h4-week{font-size:10px;color:var(--rock)}
+
+.h4-tiles{display:flex;gap:10px;padding:18px 20px 0}
+.h4-tile{flex:1;border-radius:18px;padding:16px;position:relative;overflow:hidden}
+.h4-tile.dark{background:var(--earth)}
+.h4-tile.stone{background:var(--stone)}
+.h4-tile-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.h4-tile-val{font-size:28px;font-weight:800;letter-spacing:-1.5px}
+.h4-tile.dark .h4-tile-val{color:var(--trail)}
+.h4-tile.stone .h4-tile-val{color:var(--earth)}
+.h4-tile-label{font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:0.8px;margin-top:4px}
+.h4-tile.dark .h4-tile-label{color:rgba(246,245,240,0.25)}
+.h4-tile.stone .h4-tile-label{color:var(--rock)}
+
+.h4-strip{display:flex;height:5px;margin:14px 20px 0;border-radius:3px;overflow:hidden;gap:2px}
+.h4-strip-seg{height:100%;border-radius:3px}
+.h4-strip-labels{display:flex;justify-content:space-between;padding:5px 20px 0}
+.h4-strip-label{font-size:8px;color:var(--rock);display:flex;align-items:center;gap:3px}
+.h4-strip-dot{width:4px;height:4px;border-radius:2px}
+
+
+/* ============================================================
+   H5: MINIMAL — TITLE + INLINE STATS
+   ============================================================ */
+.h5-top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.h5-title{flex:1;font-family:var(--heading);font-size:28px;font-weight:700;color:var(--earth);letter-spacing:-0.5px}
+.h5-total{font-size:18px;font-weight:800;color:var(--trail)}
+
+.h5-meta{display:flex;align-items:center;gap:6px;padding:6px 24px 0;padding-left:56px}
+.h5-meta-text{font-size:11px;color:var(--rock)}
+.h5-sep{width:3px;height:3px;border-radius:50%;background:var(--stone)}
+
+.h5-bar{margin:14px 24px 0;height:3px;border-radius:2px;background:var(--stone)}
+.h5-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   H6: DONUT IN WHITE CARD
+   ============================================================ */
+.h6-top{padding:56px 24px 0;display:flex;align-items:center}
+.h6-label{font-size:10px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.2px;margin-left:auto}
+
+.h6-card{margin:14px 18px 0;padding:20px;border-radius:22px;background:#fff;box-shadow:0 2px 16px rgba(0,0,0,0.04)}
+.h6-card-row{display:flex;align-items:center;gap:18px}
+.h6-donut{width:100px;height:100px;border-radius:50%;flex-shrink:0;background:conic-gradient(#34D399 0% 28%,#EF4444 28% 50%,#F59E0B 50% 67%,#6366F1 67% 83%,#8E8E7A 83% 100%);display:flex;align-items:center;justify-content:center}
+.h6-hole{width:66px;height:66px;border-radius:50%;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.h6-hole-val{font-size:18px;font-weight:800;color:var(--earth);letter-spacing:-0.5px;line-height:1}
+.h6-hole-sub{font-size:7px;color:var(--rock);margin-top:1px}
+.h6-info{flex:1}
+.h6-info-title{font-family:var(--heading);font-size:20px;font-weight:700;color:var(--earth);letter-spacing:-0.3px;line-height:1.15}
+.h6-info-meta{font-size:11px;color:var(--rock);margin-top:5px}
+.h6-div{height:1px;background:rgba(0,0,0,0.04);margin:14px 0}
+.h6-pills{display:flex;gap:5px;flex-wrap:wrap}
+.h6-pill{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:100px;background:var(--sand)}
+.h6-pill-dot{width:5px;height:5px;border-radius:50%}
+.h6-pill-text{font-size:9px;font-weight:600;color:var(--earth)}
+.h6-bar{height:4px;border-radius:2px;background:var(--stone);margin-top:12px}
+.h6-bar-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- H1: DONUT + LEGEND -->
+  <div>
+    <div class="col-label">H1 — DONUT + LEGEND</div>
+    <div class="col-desc">Donut chart with $47 inside. Category legend beside. Progress bar below.</div>
+    <div class="phone"><div class="ps">
+      <div class="h1-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="h1-title">Grocery List</span><span class="h1-week">Mar 30</span></div>
+      <div class="h1-hero">
+        <div class="h1-donut"><div class="h1-hole"><div class="h1-hole-val">$47</div><div class="h1-hole-sub">est. total</div></div></div>
+        <div class="h1-legend">
+          <div class="h1-leg"><div class="h1-leg-dot" style="background:#34D399"></div><span class="h1-leg-name">Produce</span><span class="h1-leg-count">5</span></div>
+          <div class="h1-leg"><div class="h1-leg-dot" style="background:#EF4444"></div><span class="h1-leg-name">Protein</span><span class="h1-leg-count">4</span></div>
+          <div class="h1-leg"><div class="h1-leg-dot" style="background:#F59E0B"></div><span class="h1-leg-name">Dairy</span><span class="h1-leg-count">3</span></div>
+          <div class="h1-leg"><div class="h1-leg-dot" style="background:#6366F1"></div><span class="h1-leg-name">Grains</span><span class="h1-leg-count">3</span></div>
+          <div class="h1-leg"><div class="h1-leg-dot" style="background:#8E8E7A"></div><span class="h1-leg-name">Pantry</span><span class="h1-leg-count">3</span></div>
+        </div>
+      </div>
+      <div class="h1-prog"><div class="h1-prog-row"><span class="h1-prog-label">5 of 18 checked</span><span class="h1-prog-label">28%</span></div><div class="h1-prog-track"><div class="h1-prog-fill" style="width:28%"></div></div></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- H2: PERSONAL NOTE -->
+  <div>
+    <div class="col-label">H2 — PERSONAL NOTE</div>
+    <div class="col-desc">"Your weekly shop is ready" white card. Stats row. Progress bar with labels.</div>
+    <div class="phone"><div class="ps">
+      <div class="h2-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div></div>
+      <div class="h2-card">
+        <div class="h2-glow"></div>
+        <div class="h2-greet">Week of March 30</div>
+        <div class="h2-title">Your weekly<br>shop is <em>ready</em></div>
+        <div class="h2-div"></div>
+        <div class="h2-stats">
+          <div><div class="h2-stat-val">18</div><div class="h2-stat-label">Items</div></div>
+          <div><div class="h2-stat-val green">$47</div><div class="h2-stat-label">Estimated</div></div>
+          <div><div class="h2-stat-val">5</div><div class="h2-stat-label">Checked</div></div>
+          <div><div class="h2-stat-val">13</div><div class="h2-stat-label">Remaining</div></div>
+        </div>
+        <div class="h2-bar"><div class="h2-bar-fill" style="width:28%"></div></div>
+        <div class="h2-bar-row"><span class="h2-bar-text">28% complete</span><span class="h2-bar-text">13 to go</span></div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- H3: DARK HERO -->
+  <div>
+    <div class="col-label">H3 — DARK HERO</div>
+    <div class="col-desc">Dark earth card. Total in green. Stats row with dividers. Progress bar. Diagonal accents.</div>
+    <div class="phone"><div class="ps">
+      <div class="h3-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="h3-label">Grocery List</span></div>
+      <div class="h3-card">
+        <div class="h3-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="h3-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="h3-row">
+          <div><div class="h3-card-title">Weekly Shop</div><div class="h3-card-sub">18 items · 6 categories</div></div>
+          <div><div class="h3-card-total">$47</div><div class="h3-card-est">est. total</div></div>
+        </div>
+        <div class="h3-card-bar"><div class="h3-card-bar-fill" style="width:28%"></div></div>
+        <div class="h3-card-stats">
+          <div class="h3-stat"><div class="h3-stat-val">18</div><div class="h3-stat-label">Items</div></div>
+          <div class="h3-stat-div"></div>
+          <div class="h3-stat"><div class="h3-stat-val green">5</div><div class="h3-stat-label">Checked</div></div>
+          <div class="h3-stat-div"></div>
+          <div class="h3-stat"><div class="h3-stat-val">13</div><div class="h3-stat-label">Left</div></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- H4: BENTO TILES -->
+  <div>
+    <div class="col-label">H4 — BENTO TILES</div>
+    <div class="col-desc">Two big tiles: dark ($47 total) + stone (5/18 items). Category color strip below.</div>
+    <div class="phone"><div class="ps">
+      <div class="h4-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="h4-title">Grocery List</span><span class="h4-week">Mar 30</span></div>
+      <div class="h4-tiles">
+        <div class="h4-tile dark">
+          <div class="h4-tile-diag" style="width:60px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="h4-tile-val">$47</div>
+          <div class="h4-tile-label">Est. total</div>
+        </div>
+        <div class="h4-tile stone">
+          <div class="h4-tile-val">5/18</div>
+          <div class="h4-tile-label">Checked</div>
+        </div>
+      </div>
+      <div class="h4-strip">
+        <div class="h4-strip-seg" style="background:#34D399;flex:5"></div>
+        <div class="h4-strip-seg" style="background:#EF4444;flex:4"></div>
+        <div class="h4-strip-seg" style="background:#F59E0B;flex:3"></div>
+        <div class="h4-strip-seg" style="background:#6366F1;flex:3"></div>
+        <div class="h4-strip-seg" style="background:#8E8E7A;flex:3"></div>
+      </div>
+      <div class="h4-strip-labels">
+        <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#34D399"></span>Produce</span>
+        <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#EF4444"></span>Protein</span>
+        <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#F59E0B"></span>Dairy</span>
+        <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#6366F1"></span>Grains</span>
+        <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#8E8E7A"></span>Pantry</span>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- H5: MINIMAL -->
+  <div>
+    <div class="col-label">H5 — MINIMAL</div>
+    <div class="col-desc">Big title + $47 inline. One line of meta. Thin progress bar. Then straight to list. Apple-like.</div>
+    <div class="phone"><div class="ps">
+      <div class="h5-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="h5-title">Groceries</span><span class="h5-total">$47.82</span></div>
+      <div class="h5-meta"><span class="h5-meta-text">5 of 18 checked</span><span class="h5-sep"></span><span class="h5-meta-text">Week of Mar 30</span></div>
+      <div class="h5-bar"><div class="h5-bar-fill" style="width:28%"></div></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Brown rice</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Spinach</span><span class="ph-dots">·······························</span><span class="ph-price">$3.49</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Salmon</span><span class="ph-dots">·······························</span><span class="ph-price">$12.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- H6: DONUT IN WHITE CARD -->
+  <div>
+    <div class="col-label">H6 — DONUT IN CARD</div>
+    <div class="col-desc">White card with donut left, title + meta right. Category pills. Progress bar. Contained.</div>
+    <div class="phone"><div class="ps">
+      <div class="h6-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="h6-label">Grocery List</span></div>
+      <div class="h6-card">
+        <div class="h6-card-row">
+          <div class="h6-donut"><div class="h6-hole"><div class="h6-hole-val">$47</div><div class="h6-hole-sub">est.</div></div></div>
+          <div class="h6-info">
+            <div class="h6-info-title">Weekly Groceries</div>
+            <div class="h6-info-meta">5 of 18 items checked</div>
+          </div>
+        </div>
+        <div class="h6-div"></div>
+        <div class="h6-pills">
+          <div class="h6-pill"><span class="h6-pill-dot" style="background:#34D399"></span><span class="h6-pill-text">Produce 5</span></div>
+          <div class="h6-pill"><span class="h6-pill-dot" style="background:#EF4444"></span><span class="h6-pill-text">Protein 4</span></div>
+          <div class="h6-pill"><span class="h6-pill-dot" style="background:#F59E0B"></span><span class="h6-pill-text">Dairy 3</span></div>
+          <div class="h6-pill"><span class="h6-pill-dot" style="background:#6366F1"></span><span class="h6-pill-text">Grains 3</span></div>
+          <div class="h6-pill"><span class="h6-pill-dot" style="background:#8E8E7A"></span><span class="h6-pill-text">Pantry 3</span></div>
+        </div>
+        <div class="h6-bar"><div class="h6-bar-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Shopping List</span><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

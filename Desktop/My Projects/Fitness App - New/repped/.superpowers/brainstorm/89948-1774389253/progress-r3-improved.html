@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — R3 Improved Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 400px; height: 320px; top: -80px; left: -80px; }
+
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center; }
+  .title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; text-align: center; margin-top: 2px; }
+
+
+  /* ============================================================
+     SHARED RING BASE
+     ============================================================ */
+  .rings-area { display: flex; justify-content: center; position: relative; }
+  .rc { position: relative; }
+  .rc svg { position: absolute; inset: 0; }
+
+  /* Breathing dot */
+  .bdot {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+    width: 10px; height: 10px; border-radius: 50%; background: var(--trail);
+    animation: breathe 2.4s ease-in-out infinite;
+  }
+  @keyframes breathe { 0%,100% { opacity: 0.15; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.45; transform: translate(-50%,-50%) scale(1.3); } }
+
+
+  /* ============================================================
+     V1: ORIGINAL R3 — Reference, unchanged
+     ============================================================ */
+  .v1-ra { padding: 18px 0 8px; }
+  .v1-rc { width: 150px; height: 150px; }
+
+  .v1o { width: 150px; height: 150px; transform: rotate(-90deg); }
+  .v1ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .v1of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 415; stroke-dashoffset: 415; animation: v1o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v1o { to { stroke-dashoffset: 104; } }
+
+  .v1m { width: 114px; height: 114px; transform: rotate(-90deg); position: absolute; top: 18px; left: 18px; }
+  .v1mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v1mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 302; stroke-dashoffset: 302; animation: v1m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v1m { to { stroke-dashoffset: 60; } }
+
+  .v1i { width: 78px; height: 78px; transform: rotate(-90deg); position: absolute; top: 36px; left: 36px; }
+  .v1it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v1if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 192; stroke-dashoffset: 192; animation: v1i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v1i { to { stroke-dashoffset: 67; } }
+
+  .v1-labels { display: flex; justify-content: center; gap: 14px; margin-top: 4px; }
+  .v1-rl { display: flex; align-items: center; gap: 4px; }
+  .v1-rld { width: 6px; height: 6px; border-radius: 50%; }
+  .v1-rl:nth-child(1) .v1-rld { background: var(--trail); }
+  .v1-rl:nth-child(2) .v1-rld { background: var(--earth); opacity: 0.25; }
+  .v1-rl:nth-child(3) .v1-rld { background: #F59E0B; opacity: 0.4; }
+  .v1-rlt { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+  .v1-stats { display: flex; margin-top: 6px; }
+  .v1-stat { flex: 1; text-align: center; padding: 12px 0; position: relative; }
+  .v1-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--stone); }
+  .v1-stat:last-child::after { display: none; }
+  .v1-sv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .v1-sv span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .v1-sl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     V2: LARGER RINGS + INTEGRATED STATS — Stats sit inside the
+     ring area as floating labels at the 4 compass points.
+     No separate stat row needed.
+     ============================================================ */
+  .v2-ra { padding: 14px 0 6px; }
+  .v2-rc { width: 200px; height: 200px; }
+
+  .v2o { width: 200px; height: 200px; transform: rotate(-90deg); }
+  .v2ot { fill: none; stroke: var(--stone); stroke-width: 8; }
+  .v2of { fill: none; stroke: var(--trail); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 553; stroke-dashoffset: 553; animation: v2o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v2o { to { stroke-dashoffset: 138; } }
+
+  .v2m { width: 156px; height: 156px; transform: rotate(-90deg); position: absolute; top: 22px; left: 22px; }
+  .v2mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 8; }
+  .v2mf { fill: none; stroke: var(--earth); stroke-width: 8; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 415; stroke-dashoffset: 415; animation: v2m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v2m { to { stroke-dashoffset: 83; } }
+
+  .v2i { width: 112px; height: 112px; transform: rotate(-90deg); position: absolute; top: 44px; left: 44px; }
+  .v2it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 8; }
+  .v2if { fill: none; stroke: #F59E0B; stroke-width: 8; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 283; stroke-dashoffset: 283; animation: v2i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v2i { to { stroke-dashoffset: 99; } }
+
+  /* Floating stat labels around the ring */
+  .v2-float { position: absolute; text-align: center; }
+  .v2-float-val { font-size: 16px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .v2-float-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+  .v2-f-top { top: -8px; left: 50%; transform: translateX(-50%); }
+  .v2-f-right { right: -16px; top: 50%; transform: translateY(-50%); }
+  .v2-f-bottom { bottom: -8px; left: 50%; transform: translateX(-50%); }
+  .v2-f-left { left: -16px; top: 50%; transform: translateY(-50%); }
+
+  .v2-legend { display: flex; justify-content: center; gap: 14px; margin-top: 10px; }
+  .v2-rl { display: flex; align-items: center; gap: 4px; }
+  .v2-rld { width: 6px; height: 6px; border-radius: 50%; }
+  .v2-rl:nth-child(1) .v2-rld { background: var(--trail); }
+  .v2-rl:nth-child(2) .v2-rld { background: var(--earth); opacity: 0.25; }
+  .v2-rl:nth-child(3) .v2-rld { background: #F59E0B; opacity: 0.4; }
+  .v2-rlt { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+
+  /* ============================================================
+     V3: RINGS + BENTO STATS — Rings centered. Below: 2x2
+     small bento tiles for stats instead of a plain row.
+     ============================================================ */
+  .v3-ra { padding: 16px 0 8px; }
+  .v3-rc { width: 140px; height: 140px; }
+
+  .v3o { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .v3ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .v3of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 377; stroke-dashoffset: 377; animation: v3o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v3o { to { stroke-dashoffset: 94; } }
+
+  .v3m { width: 106px; height: 106px; transform: rotate(-90deg); position: absolute; top: 17px; left: 17px; }
+  .v3mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v3mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 277; stroke-dashoffset: 277; animation: v3m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v3m { to { stroke-dashoffset: 55; } }
+
+  .v3i { width: 72px; height: 72px; transform: rotate(-90deg); position: absolute; top: 34px; left: 34px; }
+  .v3it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v3if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 176; stroke-dashoffset: 176; animation: v3i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v3i { to { stroke-dashoffset: 62; } }
+
+  .v3-legend { display: flex; justify-content: center; gap: 14px; }
+  .v3-rl { display: flex; align-items: center; gap: 4px; }
+  .v3-rld { width: 6px; height: 6px; border-radius: 50%; }
+  .v3-rl:nth-child(1) .v3-rld { background: var(--trail); }
+  .v3-rl:nth-child(2) .v3-rld { background: var(--earth); opacity: 0.25; }
+  .v3-rl:nth-child(3) .v3-rld { background: #F59E0B; opacity: 0.4; }
+  .v3-rlt { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+  .v3-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  .v3-tile { padding: 12px; border-radius: 14px; }
+  .v3-tile:nth-child(1) { background: var(--earth); }
+  .v3-tile:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .v3-tile:nth-child(3) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .v3-tile:nth-child(4) { background: var(--stone); }
+  .v3-tv { font-size: 20px; font-weight: 800; letter-spacing: -0.5px; }
+  .v3-tile:nth-child(1) .v3-tv { color: var(--sand); }
+  .v3-tile:nth-child(2) .v3-tv, .v3-tile:nth-child(3) .v3-tv, .v3-tile:nth-child(4) .v3-tv { color: var(--earth); }
+  .v3-tl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .v3-tile:nth-child(1) .v3-tl { color: rgba(246,245,240,0.3); }
+  .v3-tile:nth-child(2) .v3-tl, .v3-tile:nth-child(3) .v3-tl, .v3-tile:nth-child(4) .v3-tl { color: var(--rock); }
+
+
+  /* ============================================================
+     V4: RINGS + PERSONAL MESSAGE — Rings with a motivational
+     line below (like nutrition's personal message). Then stats.
+     ============================================================ */
+  .v4-ra { padding: 18px 0 6px; }
+  .v4-rc { width: 150px; height: 150px; }
+
+  .v4o { width: 150px; height: 150px; transform: rotate(-90deg); }
+  .v4ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .v4of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 415; stroke-dashoffset: 415; animation: v4o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v4o { to { stroke-dashoffset: 104; } }
+
+  .v4m { width: 114px; height: 114px; transform: rotate(-90deg); position: absolute; top: 18px; left: 18px; }
+  .v4mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v4mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 302; stroke-dashoffset: 302; animation: v4m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v4m { to { stroke-dashoffset: 60; } }
+
+  .v4i { width: 78px; height: 78px; transform: rotate(-90deg); position: absolute; top: 36px; left: 36px; }
+  .v4it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v4if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 192; stroke-dashoffset: 192; animation: v4i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v4i { to { stroke-dashoffset: 67; } }
+
+  /* Personal message */
+  .v4-msg { text-align: center; margin-top: 10px; padding: 0 20px; }
+  .v4-msg-text { font-size: 16px; font-weight: 600; color: var(--earth); letter-spacing: -0.3px; line-height: 1.4; }
+  .v4-msg-hl { color: var(--trail); }
+
+  .v4-legend { display: flex; justify-content: center; gap: 10px; margin-top: 12px; }
+  .v4-leg { display: flex; align-items: center; gap: 5px; padding: 6px 12px; border-radius: 10px; }
+  .v4-leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .v4-leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .v4-leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .v4-ld { width: 6px; height: 6px; border-radius: 50%; }
+  .v4-leg:nth-child(1) .v4-ld { background: var(--trail); }
+  .v4-leg:nth-child(2) .v4-ld { background: var(--earth); opacity: 0.25; }
+  .v4-leg:nth-child(3) .v4-ld { background: #F59E0B; opacity: 0.4; }
+  .v4-lv { font-size: 13px; font-weight: 800; color: var(--earth); }
+  .v4-ll { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+
+  /* ============================================================
+     V5: RINGS ON DARK CARD — R3 rings but placed inside a dark
+     card. Breathing dot glows brighter on dark. Stats below card.
+     ============================================================ */
+  .v5-card { margin-top: 12px; padding: 24px; border-radius: 22px; background: var(--earth); display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+  .v5-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .v5-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v5-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .v5-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .v5-rc { width: 140px; height: 140px; position: relative; }
+  .v5-rc svg { position: absolute; inset: 0; }
+
+  .v5o { width: 140px; height: 140px; transform: rotate(-90deg); }
+  .v5ot { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 7; }
+  .v5of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 377; stroke-dashoffset: 377; animation: v5o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v5o { to { stroke-dashoffset: 94; } }
+
+  .v5m { width: 106px; height: 106px; transform: rotate(-90deg); position: absolute; top: 17px; left: 17px; }
+  .v5mt { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 7; }
+  .v5mf { fill: none; stroke: rgba(246,245,240,0.2); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 277; stroke-dashoffset: 277; animation: v5m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v5m { to { stroke-dashoffset: 55; } }
+
+  .v5i { width: 72px; height: 72px; transform: rotate(-90deg); position: absolute; top: 34px; left: 34px; }
+  .v5it { fill: none; stroke: rgba(246,245,240,0.04); stroke-width: 7; }
+  .v5if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 176; stroke-dashoffset: 176; animation: v5i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v5i { to { stroke-dashoffset: 62; } }
+
+  .v5-bdot { background: var(--trail); animation: v5breathe 2.4s ease-in-out infinite; }
+  @keyframes v5breathe { 0%,100% { opacity: 0.2; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.6; transform: translate(-50%,-50%) scale(1.4); } }
+
+  .v5-legend { display: flex; gap: 16px; margin-top: 16px; position: relative; }
+  .v5-rl { display: flex; align-items: center; gap: 5px; }
+  .v5-rld { width: 6px; height: 6px; border-radius: 50%; }
+  .v5-rl:nth-child(1) .v5-rld { background: var(--trail); }
+  .v5-rl:nth-child(2) .v5-rld { background: rgba(246,245,240,0.2); }
+  .v5-rl:nth-child(3) .v5-rld { background: #F59E0B; opacity: 0.4; }
+  .v5-rlv { font-size: 13px; font-weight: 800; color: var(--sand); }
+  .v5-rll { font-size: 7px; color: rgba(246,245,240,0.25); text-transform: uppercase; font-weight: 600; }
+
+  .v5-stats { display: flex; margin-top: 10px; }
+  .v5-stat { flex: 1; text-align: center; padding: 12px 0; position: relative; }
+  .v5-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--stone); }
+  .v5-stat:last-child::after { display: none; }
+  .v5-sv { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .v5-sv span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .v5-sl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     V6: RINGS + 3 PILL STATS — Rings above, stats as 3 tinted
+     pills below (matching nutrition screen's action sheet style).
+     ============================================================ */
+  .v6-ra { padding: 18px 0 8px; }
+  .v6-rc { width: 150px; height: 150px; }
+
+  .v6o { width: 150px; height: 150px; transform: rotate(-90deg); }
+  .v6ot { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .v6of { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 415; stroke-dashoffset: 415; animation: v6o 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes v6o { to { stroke-dashoffset: 104; } }
+
+  .v6m { width: 114px; height: 114px; transform: rotate(-90deg); position: absolute; top: 18px; left: 18px; }
+  .v6mt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v6mf { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 302; stroke-dashoffset: 302; animation: v6m 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes v6m { to { stroke-dashoffset: 60; } }
+
+  .v6i { width: 78px; height: 78px; transform: rotate(-90deg); position: absolute; top: 36px; left: 36px; }
+  .v6it { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .v6if { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 192; stroke-dashoffset: 192; animation: v6i 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes v6i { to { stroke-dashoffset: 67; } }
+
+  /* 3 stat pills — styled like tinted chips */
+  .v6-pills { display: flex; gap: 8px; margin-top: 8px; justify-content: center; }
+  .v6-pill { padding: 10px 16px; border-radius: 14px; text-align: center; min-width: 90px; }
+  .v6-pill:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .v6-pill:nth-child(2) { background: var(--earth); }
+  .v6-pill:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .v6-pv { font-size: 18px; font-weight: 800; }
+  .v6-pill:nth-child(1) .v6-pv { color: #047857; }
+  .v6-pill:nth-child(2) .v6-pv { color: var(--sand); }
+  .v6-pill:nth-child(3) .v6-pv { color: #92400E; }
+  .v6-pl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .v6-pill:nth-child(1) .v6-pl { color: #047857; opacity: 0.5; }
+  .v6-pill:nth-child(2) .v6-pl { color: rgba(246,245,240,0.3); }
+  .v6-pill:nth-child(3) .v6-pl { color: #92400E; opacity: 0.5; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- V1: Original R3 -->
+<div>
+  <div class="col-label">V1 — Original R3 (reference)</div>
+  <div class="col-desc">The version you liked. Rings + breathing dot + ring labels + 4-column stat row with dividers.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="rings-area v1-ra"><div class="rc v1-rc">
+      <svg class="v1o" viewBox="0 0 150 150"><circle class="v1ot" cx="75" cy="75" r="66"/><circle class="v1of" cx="75" cy="75" r="66"/></svg>
+      <svg class="v1m" viewBox="0 0 114 114"><circle class="v1mt" cx="57" cy="57" r="48"/><circle class="v1mf" cx="57" cy="57" r="48"/></svg>
+      <svg class="v1i" viewBox="0 0 78 78"><circle class="v1it" cx="39" cy="39" r="30.5"/><circle class="v1if" cx="39" cy="39" r="30.5"/></svg>
+      <div class="bdot"></div>
+    </div></div>
+    <div class="v1-labels"><div class="v1-rl"><div class="v1-rld"></div><span class="v1-rlt">Complete</span></div><div class="v1-rl"><div class="v1-rld"></div><span class="v1-rlt">Streak</span></div><div class="v1-rl"><div class="v1-rld"></div><span class="v1-rlt">Volume</span></div></div>
+    <div class="v1-stats"><div class="v1-stat"><div class="v1-sv">75<span>%</span></div><div class="v1-sl">Complete</div></div><div class="v1-stat"><div class="v1-sv">12</div><div class="v1-sl">Streak</div></div><div class="v1-stat"><div class="v1-sv">47</div><div class="v1-sl">Workouts</div></div><div class="v1-stat"><div class="v1-sv">2.4<span>t</span></div><div class="v1-sl">Volume</div></div></div>
+  </div>
+</div>
+
+<!-- V2: Larger + Floating Stats -->
+<div>
+  <div class="col-label">V2 — Floating Stats on Ring</div>
+  <div class="col-desc">Larger 200px rings. Stats float at compass points around the ring. No separate stat row needed — all integrated.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="rings-area v2-ra"><div class="rc v2-rc">
+      <svg class="v2o" viewBox="0 0 200 200"><circle class="v2ot" cx="100" cy="100" r="88"/><circle class="v2of" cx="100" cy="100" r="88"/></svg>
+      <svg class="v2m" viewBox="0 0 156 156"><circle class="v2mt" cx="78" cy="78" r="66"/><circle class="v2mf" cx="78" cy="78" r="66"/></svg>
+      <svg class="v2i" viewBox="0 0 112 112"><circle class="v2it" cx="56" cy="56" r="44"/><circle class="v2if" cx="56" cy="56" r="44"/></svg>
+      <div class="bdot"></div>
+      <div class="v2-float v2-f-top"><div class="v2-float-val">75%</div><div class="v2-float-label">Complete</div></div>
+      <div class="v2-float v2-f-right"><div class="v2-float-val">12</div><div class="v2-float-label">Streak</div></div>
+      <div class="v2-float v2-f-bottom"><div class="v2-float-val">47</div><div class="v2-float-label">Workouts</div></div>
+      <div class="v2-float v2-f-left"><div class="v2-float-val">2.4t</div><div class="v2-float-label">Volume</div></div>
+    </div></div>
+    <div class="v2-legend"><div class="v2-rl"><div class="v2-rld"></div><span class="v2-rlt">Complete</span></div><div class="v2-rl"><div class="v2-rld"></div><span class="v2-rlt">Streak</span></div><div class="v2-rl"><div class="v2-rld"></div><span class="v2-rlt">Volume</span></div></div>
+  </div>
+</div>
+
+<!-- V3: Rings + Bento Stats -->
+<div>
+  <div class="col-label">V3 — Rings + Bento Stats</div>
+  <div class="col-desc">Rings above, 2x2 bento grid below (dark/white/white/stone alternating). More visual interest than a plain stat row.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="rings-area v3-ra"><div class="rc v3-rc">
+      <svg class="v3o" viewBox="0 0 140 140"><circle class="v3ot" cx="70" cy="70" r="60"/><circle class="v3of" cx="70" cy="70" r="60"/></svg>
+      <svg class="v3m" viewBox="0 0 106 106"><circle class="v3mt" cx="53" cy="53" r="44"/><circle class="v3mf" cx="53" cy="53" r="44"/></svg>
+      <svg class="v3i" viewBox="0 0 72 72"><circle class="v3it" cx="36" cy="36" r="28"/><circle class="v3if" cx="36" cy="36" r="28"/></svg>
+      <div class="bdot"></div>
+    </div></div>
+    <div class="v3-legend"><div class="v3-rl"><div class="v3-rld"></div><span class="v3-rlt">Complete</span></div><div class="v3-rl"><div class="v3-rld"></div><span class="v3-rlt">Streak</span></div><div class="v3-rl"><div class="v3-rld"></div><span class="v3-rlt">Volume</span></div></div>
+    <div class="v3-bento"><div class="v3-tile"><div class="v3-tv">75%</div><div class="v3-tl">Complete</div></div><div class="v3-tile"><div class="v3-tv">12</div><div class="v3-tl">Day Streak</div></div><div class="v3-tile"><div class="v3-tv">47</div><div class="v3-tl">Workouts</div></div><div class="v3-tile"><div class="v3-tv">2.4t</div><div class="v3-tl">Volume</div></div></div>
+  </div>
+</div>
+
+<!-- V4: Rings + Personal Message -->
+<div>
+  <div class="col-label">V4 — Rings + Personal Message</div>
+  <div class="col-desc">Same rings but with a motivational personal message below: "You're 1 session away from your longest streak." Tinted legend pills. Emotional hook.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="rings-area v4-ra"><div class="rc v4-rc">
+      <svg class="v4o" viewBox="0 0 150 150"><circle class="v4ot" cx="75" cy="75" r="66"/><circle class="v4of" cx="75" cy="75" r="66"/></svg>
+      <svg class="v4m" viewBox="0 0 114 114"><circle class="v4mt" cx="57" cy="57" r="48"/><circle class="v4mf" cx="57" cy="57" r="48"/></svg>
+      <svg class="v4i" viewBox="0 0 78 78"><circle class="v4it" cx="39" cy="39" r="30.5"/><circle class="v4if" cx="39" cy="39" r="30.5"/></svg>
+      <div class="bdot"></div>
+    </div></div>
+    <div class="v4-msg"><div class="v4-msg-text">You're <span class="v4-msg-hl">1 session away</span> from your longest streak ever.</div></div>
+    <div class="v4-legend"><div class="v4-leg"><div class="v4-ld"></div><div><div class="v4-lv">75%</div><div class="v4-ll">Complete</div></div></div><div class="v4-leg"><div class="v4-ld"></div><div><div class="v4-lv">12d</div><div class="v4-ll">Streak</div></div></div><div class="v4-leg"><div class="v4-ld"></div><div><div class="v4-lv">2.4t</div><div class="v4-ll">Volume</div></div></div></div>
+  </div>
+</div>
+
+<!-- V5: Rings on Dark Card -->
+<div>
+  <div class="col-label">V5 — Rings on Dark Card</div>
+  <div class="col-desc">R3 rings placed inside a dark earth card. Breathing dot glows brighter on dark. Legend inline. Diagonal accent. Stats below on sand. Most premium.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="v5-card"><div class="v5-accent"><div class="v5-al"></div><div class="v5-al"></div></div>
+      <div class="v5-rc">
+        <svg class="v5o" viewBox="0 0 140 140"><circle class="v5ot" cx="70" cy="70" r="60"/><circle class="v5of" cx="70" cy="70" r="60"/></svg>
+        <svg class="v5m" viewBox="0 0 106 106"><circle class="v5mt" cx="53" cy="53" r="44"/><circle class="v5mf" cx="53" cy="53" r="44"/></svg>
+        <svg class="v5i" viewBox="0 0 72 72"><circle class="v5it" cx="36" cy="36" r="28"/><circle class="v5if" cx="36" cy="36" r="28"/></svg>
+        <div class="bdot v5-bdot"></div>
+      </div>
+      <div class="v5-legend"><div class="v5-rl"><div class="v5-rld"></div><span class="v5-rlv">75%</span><span class="v5-rll">done</span></div><div class="v5-rl"><div class="v5-rld"></div><span class="v5-rlv">12d</span><span class="v5-rll">streak</span></div><div class="v5-rl"><div class="v5-rld"></div><span class="v5-rlv">2.4t</span><span class="v5-rll">vol</span></div></div>
+    </div>
+    <div class="v5-stats"><div class="v5-stat"><div class="v5-sv">75<span>%</span></div><div class="v5-sl">Complete</div></div><div class="v5-stat"><div class="v5-sv">12</div><div class="v5-sl">Streak</div></div><div class="v5-stat"><div class="v5-sv">47</div><div class="v5-sl">Workouts</div></div><div class="v5-stat"><div class="v5-sv">2.4<span>t</span></div><div class="v5-sl">Volume</div></div></div>
+  </div>
+</div>
+
+<!-- V6: Rings + Tinted Stat Pills -->
+<div>
+  <div class="col-label">V6 — Rings + Tinted Stat Pills</div>
+  <div class="col-desc">Same rings. Stats as 3 color-matched pills (green/dark/amber matching ring colors). Each pill's color corresponds to its ring. Visual coherence.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="ctx">Monday, Mar 24</div><div class="title">Your Journey</div>
+    <div class="rings-area v6-ra"><div class="rc v6-rc">
+      <svg class="v6o" viewBox="0 0 150 150"><circle class="v6ot" cx="75" cy="75" r="66"/><circle class="v6of" cx="75" cy="75" r="66"/></svg>
+      <svg class="v6m" viewBox="0 0 114 114"><circle class="v6mt" cx="57" cy="57" r="48"/><circle class="v6mf" cx="57" cy="57" r="48"/></svg>
+      <svg class="v6i" viewBox="0 0 78 78"><circle class="v6it" cx="39" cy="39" r="30.5"/><circle class="v6if" cx="39" cy="39" r="30.5"/></svg>
+      <div class="bdot"></div>
+    </div></div>
+    <div class="v6-pills">
+      <div class="v6-pill"><div class="v6-pv">75%</div><div class="v6-pl">Complete</div></div>
+      <div class="v6-pill"><div class="v6-pv">12d</div><div class="v6-pl">Streak</div></div>
+      <div class="v6-pill"><div class="v6-pv">2.4t</div><div class="v6-pl">Volume</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

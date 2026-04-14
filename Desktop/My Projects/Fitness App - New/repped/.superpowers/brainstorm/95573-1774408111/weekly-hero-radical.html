@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Hero Radical</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     R1: FULL BLEED DARK — No card. The entire top of the screen
+     IS dark. Rounded bottom. Title, message, volume, stats
+     all live on the dark zone. Like the progress screen hero.
+     ============================================================ */
+
+  .r1-zone {
+    background: var(--earth); border-radius: 0 0 28px 28px;
+    padding: 24px 22px 22px; position: relative; overflow: hidden;
+    margin: -20px -20px 0;
+  }
+  .r1-accent { position: absolute; top: 0; right: 0; }
+  .r1-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .r1-al:nth-child(1) { width: 120px; top: 20px; right: -10px; transform: rotate(-35deg); }
+  .r1-al:nth-child(2) { width: 100px; top: 32px; right: -10px; transform: rotate(-35deg); }
+  .r1-al:nth-child(3) { width: 80px; top: 44px; right: -10px; transform: rotate(-35deg); }
+
+  /* Green breathing dot */
+  .r1-dot { position: absolute; top: 22px; right: 22px; width: 8px; height: 8px; border-radius: 50%; background: var(--trail); opacity: 0.25; animation: r1breathe 2.4s ease-in-out infinite; }
+  @keyframes r1breathe { 0%,100% { opacity: 0.15; transform: scale(1); } 50% { opacity: 0.35; transform: scale(1.3); } }
+
+  .r1-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+
+  .r1-hero { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 8px; position: relative; }
+  .r1-left {}
+  .r1-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; }
+  .r1-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .r1-vol { text-align: right; }
+  .r1-vol-val { font-size: 40px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .r1-vol-unit { font-size: 12px; color: rgba(246,245,240,0.2); font-weight: 500; }
+  .r1-vol-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.5; }
+
+  /* Stats as a 3-column bento at the bottom of the dark zone */
+  .r1-stats { display: flex; gap: 6px; margin-top: 16px; position: relative; }
+  .r1-st { flex: 1; padding: 10px 8px; border-radius: 12px; text-align: center; }
+  .r1-st:nth-child(1) { background: rgba(246,245,240,0.04); }
+  .r1-st:nth-child(2) { background: rgba(52,211,153,0.06); }
+  .r1-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .r1-stv { font-size: 20px; font-weight: 800; }
+  .r1-st:nth-child(1) .r1-stv { color: var(--sand); }
+  .r1-st:nth-child(2) .r1-stv { color: var(--trail); }
+  .r1-st:nth-child(3) .r1-stv { color: #F59E0B; }
+  .r1-stl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .r1-st:nth-child(1) .r1-stl { color: rgba(246,245,240,0.15); }
+  .r1-st:nth-child(2) .r1-stl { color: rgba(52,211,153,0.3); }
+  .r1-st:nth-child(3) .r1-stl { color: rgba(245,158,11,0.25); }
+
+  .r1-rest { padding: 16px 0 0; font-size: 10px; color: var(--rock); text-align: center; }
+
+
+  /* ============================================================
+     R2: LAYERED CARDS — Two overlapping cards. Back card is dark
+     with title. Front card (slightly offset) is white with stats.
+     Depth effect. Premium, unique.
+     ============================================================ */
+
+  .r2-wrap { position: relative; height: 240px; }
+
+  /* Back card — dark */
+  .r2-back {
+    position: absolute; top: 0; left: 0; right: 0;
+    padding: 22px; border-radius: 24px; background: var(--earth);
+    height: 160px; z-index: 1;
+  }
+  .r2-b-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .r2-b-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 4px; }
+  .r2-b-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  /* Front card — white, overlapping */
+  .r2-front {
+    position: absolute; bottom: 0; left: 12px; right: 12px;
+    padding: 18px 20px; border-radius: 20px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    z-index: 2;
+  }
+  .r2-f-vol-row { display: flex; align-items: baseline; gap: 6px; }
+  .r2-f-vol { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .r2-f-unit { font-size: 12px; color: var(--rock); }
+  .r2-f-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .r2-f-stats { display: flex; gap: 0; margin-top: 10px; }
+  .r2-f-st { flex: 1; text-align: center; position: relative; }
+  .r2-f-st::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: var(--stone); }
+  .r2-f-st:last-child::after { display: none; }
+  .r2-f-stv { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .r2-f-stv.green { color: #047857; }
+  .r2-f-stv.amber { color: #92400E; }
+  .r2-f-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     R3: TYPOGRAPHIC HERO — No containers at all. Just giant
+     typography on the sand background. Volume HUGE. Title small.
+     Stats as inline colored text. Bold editorial statement.
+     ============================================================ */
+
+  .r3-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .r3-title { font-size: 18px; font-weight: 600; color: var(--rock); margin-top: 4px; }
+  .r3-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .r3-vol { margin-top: 20px; }
+  .r3-vol-val { font-size: 72px; font-weight: 900; color: var(--earth); letter-spacing: -4px; line-height: 0.85; }
+  .r3-vol-unit { font-size: 18px; color: var(--rock); font-weight: 500; margin-top: 2px; }
+  .r3-vol-trend { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .r3-inline { margin-top: 20px; font-size: 16px; color: var(--rock); line-height: 1.7; }
+  .r3-inline strong { color: var(--earth); font-weight: 800; }
+  .r3-inline .g { color: var(--trail); font-weight: 700; }
+  .r3-inline .a { color: #D97706; font-weight: 700; }
+
+
+  /* ============================================================
+     R4: RING SCORE — A single ring (like progress) with a
+     weekly score inside. Color = performance. Stats below.
+     ============================================================ */
+
+  .r4-center { text-align: center; }
+  .r4-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .r4-title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+
+  .r4-ring-area { display: flex; justify-content: center; padding: 16px 0; }
+  .r4-ring { width: 140px; height: 140px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  /* Track */
+  .r4-track { position: absolute; inset: 0; border-radius: 50%; border: 8px solid var(--stone); }
+  /* Fill — shows 80% */
+  .r4-fill { position: absolute; inset: 0; border-radius: 50%; border: 8px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .r4-inner { text-align: center; position: relative; z-index: 1; }
+  .r4-score { font-size: 42px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .r4-score-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .r4-msg { text-align: center; font-size: 13px; color: var(--trail); font-weight: 600; }
+
+  .r4-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .r4-st { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .r4-st:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .r4-st:nth-child(2) { background: var(--stone); }
+  .r4-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .r4-stv { font-size: 20px; font-weight: 800; }
+  .r4-st:nth-child(1) .r4-stv { color: #047857; }
+  .r4-st:nth-child(2) .r4-stv { color: var(--earth); }
+  .r4-st:nth-child(3) .r4-stv { color: #92400E; }
+  .r4-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  .r4-vol { margin-top: 10px; display: flex; align-items: baseline; gap: 5px; justify-content: center; }
+  .r4-vv { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .r4-vu { font-size: 11px; color: var(--rock); }
+  .r4-vt { font-size: 9px; color: var(--trail); font-weight: 600; margin-left: 4px; }
+
+
+  /* ============================================================
+     R5: DARK WITH NEON ACCENTS — Dark earth with colored neon
+     glow lines/accents. Numbers have subtle glow. Futuristic.
+     ============================================================ */
+
+  .r5-card {
+    padding: 24px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  /* Glow lines */
+  .r5-glow1 { position: absolute; top: 0; left: 30%; width: 40%; height: 2px; background: linear-gradient(90deg, transparent, var(--trail), transparent); opacity: 0.15; }
+  .r5-glow2 { position: absolute; bottom: 0; left: 20%; width: 60%; height: 1px; background: linear-gradient(90deg, transparent, rgba(245,158,11,0.3), transparent); opacity: 0.2; }
+
+  .r5-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .r5-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+  .r5-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; position: relative; text-shadow: 0 0 20px rgba(52,211,153,0.15); }
+
+  .r5-vol { margin-top: 16px; position: relative; }
+  .r5-vol-val { font-size: 48px; font-weight: 900; color: var(--sand); letter-spacing: -2.5px; line-height: 1; text-shadow: 0 0 30px rgba(246,245,240,0.05); }
+  .r5-vol-unit { font-size: 14px; color: rgba(246,245,240,0.25); font-weight: 500; }
+  .r5-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; text-shadow: 0 0 10px rgba(52,211,153,0.15); }
+
+  .r5-stats { display: flex; gap: 6px; margin-top: 16px; position: relative; }
+  .r5-st { flex: 1; padding: 10px 8px; border-radius: 12px; text-align: center; border: 1px solid transparent; }
+  .r5-st:nth-child(1) { border-color: rgba(246,245,240,0.04); }
+  .r5-st:nth-child(2) { border-color: rgba(52,211,153,0.08); }
+  .r5-st:nth-child(3) { border-color: rgba(245,158,11,0.06); }
+  .r5-stv { font-size: 20px; font-weight: 800; }
+  .r5-st:nth-child(1) .r5-stv { color: var(--sand); }
+  .r5-st:nth-child(2) .r5-stv { color: var(--trail); text-shadow: 0 0 10px rgba(52,211,153,0.1); }
+  .r5-st:nth-child(3) .r5-stv { color: #F59E0B; text-shadow: 0 0 10px rgba(245,158,11,0.1); }
+  .r5-stl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; color: rgba(246,245,240,0.15); }
+
+
+  /* ============================================================
+     R6: SIDE-BY-SIDE — Left: dark column with title + message.
+     Right: big volume number. Stats below as a full-width row.
+     Horizontal layout, different from everything else.
+     ============================================================ */
+
+  .r6-card { border-radius: 24px; overflow: hidden; background: var(--earth); }
+  .r6-top { display: flex; min-height: 140px; }
+
+  .r6-left { flex: 1; padding: 22px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+  .r6-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .r6-title { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; }
+  .r6-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .r6-right {
+    width: 140px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: rgba(52,211,153,0.04); position: relative;
+  }
+  .r6-vol-val { font-size: 44px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .r6-vol-unit { font-size: 11px; color: rgba(246,245,240,0.25); margin-top: 2px; }
+  .r6-vol-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 4px; opacity: 0.6; }
+
+  .r6-bottom { display: flex; gap: 0; padding: 12px 0; margin: 0 22px; border-top: 1px solid rgba(246,245,240,0.04); }
+  .r6-st { flex: 1; text-align: center; position: relative; }
+  .r6-st::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(246,245,240,0.04); }
+  .r6-st:last-child::after { display: none; }
+  .r6-stv { font-size: 18px; font-weight: 800; color: var(--sand); }
+  .r6-stv.green { color: var(--trail); }
+  .r6-stv.amber { color: #F59E0B; }
+  .r6-stl { font-size: 7px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- R1 -->
+<div>
+  <div class="col-label">R1 — Full Bleed Dark Zone</div>
+  <div class="col-desc">No card — the entire top IS dark with rounded bottom. Breathing green dot. Color-tinted stat tiles (sand/green/amber). Volume right-aligned. Matches progress screen pattern.</div>
+  <div class="block">
+    <div class="r1-zone"><div class="r1-accent"><div class="r1-al"></div><div class="r1-al"></div><div class="r1-al"></div></div><div class="r1-dot"></div><div class="r1-date">Mar 18 – 24</div><div class="r1-hero"><div class="r1-left"><div class="r1-title">This Week</div><div class="r1-msg">Crushing it! 💪</div></div><div class="r1-vol"><div class="r1-vol-val">2.4</div><div class="r1-vol-unit">tons lifted</div><div class="r1-vol-trend">▲ 12%</div></div></div><div class="r1-stats"><div class="r1-st"><div class="r1-stv">4</div><div class="r1-stl">Workouts</div></div><div class="r1-st"><div class="r1-stv">80%</div><div class="r1-stl">Complete</div></div><div class="r1-st"><div class="r1-stv">12d</div><div class="r1-stl">Streak</div></div></div></div>
+    <div class="r1-rest">↓ Timeline below ↓</div>
+  </div>
+</div>
+
+<!-- R2 -->
+<div>
+  <div class="col-label">R2 — Layered Cards</div>
+  <div class="col-desc">Two overlapping cards. Dark back card has title + message. White front card (offset, shadow) shows volume + stats. Creates depth. Unique 3D feel.</div>
+  <div class="block">
+    <div class="r2-wrap"><div class="r2-back"><div class="r2-b-date">Mar 18 – 24</div><div class="r2-b-title">This Week</div><div class="r2-b-msg">Crushing it! 💪</div></div><div class="r2-front"><div class="r2-f-vol-row"><span class="r2-f-vol">2.4</span><span class="r2-f-unit">tons lifted</span><span class="r2-f-trend">▲ 12%</span></div><div class="r2-f-stats"><div class="r2-f-st"><div class="r2-f-stv">4</div><div class="r2-f-stl">Workouts</div></div><div class="r2-f-st"><div class="r2-f-stv green">80%</div><div class="r2-f-stl">Complete</div></div><div class="r2-f-st"><div class="r2-f-stv amber">12d</div><div class="r2-f-stl">Streak</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- R3 -->
+<div>
+  <div class="col-label">R3 — Typographic Hero</div>
+  <div class="col-desc">No containers. Just HUGE 72px typography on the sand background. Stats as an inline colored sentence. Raw, bold, editorial poster.</div>
+  <div class="block">
+    <div class="r3-date">Mar 18 – 24</div>
+    <div class="r3-title">This Week</div>
+    <div class="r3-msg">Crushing it! 💪</div>
+    <div class="r3-vol"><div class="r3-vol-val">2.4</div><div class="r3-vol-unit">tons lifted</div><div class="r3-vol-trend">▲ 12% vs last week</div></div>
+    <div class="r3-inline"><strong>4</strong> workouts at <span class="g">80%</span> completion on a <span class="a">12-day</span> streak.</div>
+  </div>
+</div>
+
+<!-- R4 -->
+<div>
+  <div class="col-label">R4 — Ring Score</div>
+  <div class="col-desc">Single completion ring with "80%" score inside. Color-tinted stat tiles below. Volume centered. Gamified — your week has a score.</div>
+  <div class="block">
+    <div class="r4-center"><div class="r4-date">Mar 18 – 24</div><div class="r4-title">This Week</div></div>
+    <div class="r4-ring-area"><div class="r4-ring"><div class="r4-track"></div><div class="r4-fill"></div><div class="r4-inner"><div class="r4-score">80%</div><div class="r4-score-label">Complete</div></div></div></div>
+    <div class="r4-msg">Crushing it! 💪</div>
+    <div class="r4-vol"><span class="r4-vv">2.4</span><span class="r4-vu">tons</span><span class="r4-vt">▲ 12%</span></div>
+    <div class="r4-stats"><div class="r4-st"><div class="r4-stv">4</div><div class="r4-stl">Workouts</div></div><div class="r4-st"><div class="r4-stv">80%</div><div class="r4-stl">Complete</div></div><div class="r4-st"><div class="r4-stv">12d</div><div class="r4-stl">Streak</div></div></div>
+  </div>
+</div>
+
+<!-- R5 -->
+<div>
+  <div class="col-label">R5 — Neon Accents</div>
+  <div class="col-desc">Dark card with subtle glow lines at top (green) and bottom (amber). Numbers have faint text-shadow glow. Stat tiles with colored borders. Futuristic premium.</div>
+  <div class="block">
+    <div class="r5-card"><div class="r5-glow1"></div><div class="r5-glow2"></div><div class="r5-date">Mar 18 – 24</div><div class="r5-title">This Week</div><div class="r5-msg">Crushing it! 💪</div><div class="r5-vol"><div class="r5-vol-val">2.4</div><div class="r5-vol-unit">tons lifted</div><div class="r5-vol-trend">▲ 12% vs last week</div></div><div class="r5-stats"><div class="r5-st"><div class="r5-stv">4</div><div class="r5-stl">Workouts</div></div><div class="r5-st"><div class="r5-stv">80%</div><div class="r5-stl">Complete</div></div><div class="r5-st"><div class="r5-stv">12d</div><div class="r5-stl">Streak</div></div></div></div>
+  </div>
+</div>
+
+<!-- R6 -->
+<div>
+  <div class="col-label">R6 — Side-by-Side</div>
+  <div class="col-desc">Dark card split horizontally. Left: title + message. Right: green-tinted zone with big volume. Stats below as a row with dividers. Unique horizontal layout.</div>
+  <div class="block">
+    <div class="r6-card"><div class="r6-top"><div class="r6-left"><div class="r6-date">Mar 18 – 24</div><div class="r6-title">This Week</div><div class="r6-msg">Crushing it! 💪</div></div><div class="r6-right"><div class="r6-vol-val">2.4</div><div class="r6-vol-unit">tons lifted</div><div class="r6-vol-trend">▲ 12%</div></div></div><div class="r6-bottom"><div class="r6-st"><div class="r6-stv">4</div><div class="r6-stl">Workouts</div></div><div class="r6-st"><div class="r6-stv green">80%</div><div class="r6-stl">Complete</div></div><div class="r6-st"><div class="r6-stv amber">12d</div><div class="r6-stl">Streak</div></div></div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

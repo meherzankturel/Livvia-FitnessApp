@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Simple Nutrition</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Header */
+  .top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 14px 24px 0; }
+
+  /* Dark hero card with calorie + macro visual */
+  .hero-card {
+    margin: 14px 24px 0; padding: 22px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+
+  /* Subtle ring decoration */
+  .hero-ring {
+    position: absolute; top: -30px; right: -30px;
+    width: 140px; height: 140px; border-radius: 50%;
+    border: 12px solid rgba(246,245,240,0.04);
+  }
+  .hero-ring-inner {
+    position: absolute; top: -18px; right: -18px;
+    width: 116px; height: 116px; border-radius: 50%;
+    border: 6px solid transparent;
+    border-top-color: var(--trail); border-right-color: var(--trail);
+    transform: rotate(-30deg);
+    opacity: 0.35;
+  }
+
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+
+  .hero-cal-row { display: flex; align-items: baseline; gap: 5px; margin-top: 6px; position: relative; }
+  .cal-num { font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1; }
+  .cal-unit { font-size: 14px; color: rgba(246,245,240,0.35); }
+
+  /* Macro bars inside the hero card */
+  .hero-macros { display: flex; gap: 12px; margin-top: 16px; position: relative; }
+  .hm { flex: 1; }
+  .hm-bar { height: 4px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; }
+  .hm-fill { height: 100%; border-radius: 2px; }
+  .hm-fill.p { background: var(--trail); width: 75%; }
+  .hm-fill.c { background: rgba(246,245,240,0.2); width: 60%; }
+  .hm-fill.f { background: rgba(246,245,240,0.12); width: 55%; }
+  .hm-row { display: flex; justify-content: space-between; margin-top: 5px; }
+  .hm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .hm-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Cuisine section */
+  .cuisine-section { padding: 16px 24px 14px; }
+  .cuisine-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cuisine-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .cuisine-allergy { font-size: 10px; color: #B91C1C; font-weight: 600; cursor: pointer; padding: 4px 10px; border-radius: 100px; background: rgba(239,68,68,0.05); }
+
+  /* V1 large flag tiles */
+  .cuisine-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .cuisine-scroll::-webkit-scrollbar { display: none; }
+
+  .cuisine-tile {
+    min-width: 100px; height: 72px; border-radius: 18px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .cuisine-tile:active { transform: scale(0.93); }
+  .cuisine-tile.on { background: var(--earth); box-shadow: 0 4px 16px rgba(45,42,36,0.12); transform: scale(1.02); }
+  .cuisine-tile.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .cuisine-tile.on::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(246,245,240,0.06) 0%, transparent 60%); }
+  .cuisine-tile .flag { font-size: 32px; transition: transform 0.3s; }
+  .cuisine-tile.on .flag { transform: scale(1.1); }
+  .cuisine-tile .cname { font-size: 10px; font-weight: 600; margin-top: 4px; }
+  .cuisine-tile.on .cname { color: var(--sand); }
+  .cuisine-tile.off .cname { color: var(--earth); }
+  .cuisine-tile.on::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--trail); }
+
+  /* Meals — clean, simple, tap to expand */
+  .meals { padding: 0 24px; }
+
+  .meal {
+    border-radius: 20px; margin-bottom: 10px; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+  }
+
+  /* Collapsed — just the essentials */
+  .meal-row { padding: 16px 18px; display: flex; align-items: center; gap: 14px; }
+  .meal-emoji { font-size: 24px; flex-shrink: 0; }
+  .meal-mid { flex: 1; }
+  .meal-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .meal-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .meal-kcal { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; flex-shrink: 0; }
+  .meal-kcal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Expanded — slides open */
+  .meal-detail { display: none; padding: 0 18px 16px; }
+  .meal.open .meal-detail { display: block; animation: mExp 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes mExp { 0% { opacity:0; transform:translateY(-6px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .meal-div { height: 1px; background: var(--stone); margin-bottom: 12px; }
+
+  .meal-desc { font-size: 12px; color: var(--rock); line-height: 1.5; }
+  .meal-macro-row { font-size: 12px; color: var(--rock); margin-top: 6px; }
+
+  /* Mode + actions in one clean row */
+  .meal-actions { display: flex; gap: 5px; margin-top: 12px; flex-wrap: wrap; }
+  .ma { padding: 7px 14px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .ma.cook { background: var(--earth); color: var(--sand); }
+  .ma.recipe { background: var(--stone); color: var(--earth); }
+  .ma.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .ma.eatout { background: rgba(245,158,11,0.06); color: #92400E; }
+  .ma.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+  /* Grocery */
+  .grocery { margin: 14px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <div class="top">
+      <span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--trail);"></div>
+        <span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span>
+      </div>
+    </div>
+
+    <div class="ctx">Wednesday · Nutrition</div>
+
+    <div class="hero-card">
+      <div class="hero-ring"></div>
+      <div class="hero-ring-inner"></div>
+
+      <div class="hero-label">Daily Target</div>
+      <div class="hero-cal-row">
+        <div class="cal-num">2,180</div>
+        <div class="cal-unit">kcal</div>
+      </div>
+
+      <div class="hero-macros">
+        <div class="hm">
+          <div class="hm-bar"><div class="hm-fill p"></div></div>
+          <div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div>
+        </div>
+        <div class="hm">
+          <div class="hm-bar"><div class="hm-fill c"></div></div>
+          <div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div>
+        </div>
+        <div class="hm">
+          <div class="hm-bar"><div class="hm-fill f"></div></div>
+          <div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cuisine-section">
+      <div class="cuisine-head">
+        <span class="cuisine-title">Cuisine</span>
+        <span class="cuisine-allergy">⚠️ Allergies</span>
+      </div>
+      <div class="cuisine-scroll">
+        <div class="cuisine-tile on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div>
+        <div class="cuisine-tile on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div>
+        <div class="cuisine-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div>
+        <div class="cuisine-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div>
+        <div class="cuisine-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇺🇸</span><span class="cname">American</span></div>
+        <div class="cuisine-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇹🇭</span><span class="cname">Thai</span></div>
+        <div class="cuisine-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇬🇷</span><span class="cname">Greek</span></div>
+      </div>
+    </div>
+
+    <div class="meals">
+
+      <div class="meal open" onclick="toggle(this)">
+        <div class="meal-row">
+          <div class="meal-emoji">🥣</div>
+          <div class="meal-mid">
+            <div class="meal-name">Greek Yogurt Power Bowl</div>
+            <div class="meal-sub">Breakfast · 8 AM</div>
+          </div>
+          <div class="meal-kcal">520 <span>kcal</span></div>
+        </div>
+        <div class="meal-detail">
+          <div class="meal-div"></div>
+          <div class="meal-desc">Creamy yogurt with berries, granola, chia seeds, and honey.</div>
+          <div class="meal-macro-row">35g protein · 42g carbs · 12g fat</div>
+          <div class="meal-actions">
+            <span class="ma cook">🍳 Cook</span>
+            <span class="ma recipe">Recipe</span>
+            <span class="ma swap">Swap</span>
+            <span class="ma eatout">Eat Out</span>
+            <span class="ma nah">Nah</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meal" onclick="toggle(this)">
+        <div class="meal-row">
+          <div class="meal-emoji">🍗</div>
+          <div class="meal-mid">
+            <div class="meal-name">Grilled Chicken & Rice</div>
+            <div class="meal-sub">Lunch · 12 PM</div>
+          </div>
+          <div class="meal-kcal">680 <span>kcal</span></div>
+        </div>
+        <div class="meal-detail">
+          <div class="meal-div"></div>
+          <div class="meal-desc">Herb chicken with brown rice, broccoli, and lemon.</div>
+          <div class="meal-macro-row">45g protein · 55g carbs · 14g fat</div>
+          <div class="meal-actions">
+            <span class="ma cook">🍳 Cook</span>
+            <span class="ma recipe">Recipe</span>
+            <span class="ma swap">Swap</span>
+            <span class="ma eatout">Eat Out</span>
+            <span class="ma nah">Nah</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meal" onclick="toggle(this)">
+        <div class="meal-row">
+          <div class="meal-emoji">🥤</div>
+          <div class="meal-mid">
+            <div class="meal-name">Protein Shake & Almonds</div>
+            <div class="meal-sub">Snack · 4 PM</div>
+          </div>
+          <div class="meal-kcal">260 <span>kcal</span></div>
+        </div>
+        <div class="meal-detail">
+          <div class="meal-div"></div>
+          <div class="meal-desc">Whey protein with banana, oat milk, and roasted almonds.</div>
+          <div class="meal-macro-row">37g protein · 18g carbs · 14g fat</div>
+          <div class="meal-actions">
+            <span class="ma cook">🍳 Cook</span>
+            <span class="ma recipe">Recipe</span>
+            <span class="ma swap">Swap</span>
+            <span class="ma nah">Nah</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="meal" onclick="toggle(this)">
+        <div class="meal-row">
+          <div class="meal-emoji">🐟</div>
+          <div class="meal-mid">
+            <div class="meal-name">Salmon & Sweet Potato</div>
+            <div class="meal-sub">Dinner · 7 PM</div>
+          </div>
+          <div class="meal-kcal">720 <span>kcal</span></div>
+        </div>
+        <div class="meal-detail">
+          <div class="meal-div"></div>
+          <div class="meal-desc">Pan-seared salmon with sweet potato wedges and asparagus.</div>
+          <div class="meal-macro-row">48g protein · 62g carbs · 22g fat</div>
+          <div class="meal-actions">
+            <span class="ma cook">🍳 Cook</span>
+            <span class="ma recipe">Recipe</span>
+            <span class="ma swap">Swap</span>
+            <span class="ma eatout">Eat Out</span>
+            <span class="ma nah">Nah</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grocery">
+      <div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div>
+      <span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span>
+    </div>
+
+  </div></div>
+</div>
+
+<script>
+function toggle(el) {
+  const was = el.classList.contains('open');
+  document.querySelectorAll('.meal').forEach(m => m.classList.remove('open'));
+  if (!was) el.classList.add('open');
+}
+</script>
+
+</body>
+</html>

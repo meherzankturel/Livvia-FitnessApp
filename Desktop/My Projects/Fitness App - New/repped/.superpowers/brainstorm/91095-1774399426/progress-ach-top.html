@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Achievement Placement Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 0; overflow: hidden; position: relative; height: 500px; overflow-y: auto; scrollbar-width: none; }
+  .block::-webkit-scrollbar { display: none; }
+
+  /* Shared hero elements — identical across all 3 */
+  .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center; padding: 20px 20px 0; }
+  .title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; text-align: center; margin-top: 2px; }
+
+  .rings-area { display: flex; justify-content: center; padding: 10px 0 4px; }
+  .rc { width: 120px; height: 120px; position: relative; }
+  .rc svg { position: absolute; inset: 0; }
+
+  .ro { width: 120px; height: 120px; animation: rp1 2.4s ease-in-out infinite; }
+  .rot { fill: none; stroke: var(--stone); stroke-width: 6; }
+  .rof { fill: none; stroke: var(--trail); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 332; stroke-dashoffset: 83; }
+  @keyframes rp1 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.03); } }
+
+  .rm { width: 90px; height: 90px; position: absolute; top: 15px; left: 15px; animation: rp2 2.4s ease-in-out infinite 0.4s; }
+  .rmt { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 6; }
+  .rmf { fill: none; stroke: var(--earth); stroke-width: 6; stroke-linecap: round; opacity: 0.25; stroke-dasharray: 240; stroke-dashoffset: 48; }
+  @keyframes rp2 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.025); } }
+
+  .ri { width: 60px; height: 60px; position: absolute; top: 30px; left: 30px; animation: rp3 2.4s ease-in-out infinite 0.8s; }
+  .rit { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 6; }
+  .rif { fill: none; stroke: #F59E0B; stroke-width: 6; stroke-linecap: round; opacity: 0.4; stroke-dasharray: 151; stroke-dashoffset: 53; }
+  @keyframes rp3 { 0%,100% { transform: rotate(-90deg) scale(1); } 50% { transform: rotate(-90deg) scale(1.02); } }
+
+  .bdot { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s ease-in-out infinite; }
+  @keyframes breathe { 0%,100% { opacity: 0.15; transform: translate(-50%,-50%) scale(1); } 50% { opacity: 0.45; transform: translate(-50%,-50%) scale(1.3); } }
+
+  .msg { text-align: center; padding: 0 24px; margin-top: 6px; }
+  .msg-text { font-size: 14px; font-weight: 600; color: var(--earth); letter-spacing: -0.3px; line-height: 1.4; }
+  .msg-hl { color: var(--trail); }
+
+  .legend { display: flex; justify-content: center; gap: 8px; margin-top: 10px; padding: 0 16px; }
+  .leg { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 8px; }
+  .leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .ld { width: 5px; height: 5px; border-radius: 50%; }
+  .leg:nth-child(1) .ld { background: var(--trail); }
+  .leg:nth-child(2) .ld { background: var(--earth); opacity: 0.25; }
+  .leg:nth-child(3) .ld { background: #F59E0B; opacity: 0.4; }
+  .lv { font-size: 12px; font-weight: 800; color: var(--earth); }
+  .ll { font-size: 6px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+  .rest-ph { margin: 14px 20px 20px; padding: 14px; border-radius: 16px; background: var(--stone); text-align: center; font-size: 9px; color: var(--rock); }
+
+
+  /* ============================================================
+     A1: HEADER ROW — Badge count sits in the header next to date.
+     Tiny, unobtrusive. Tap to go to achievements.
+     ============================================================ */
+  .a1-hdr { display: flex; justify-content: space-between; align-items: center; padding: 20px 20px 0; }
+  .a1-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .a1-ach { display: flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 100px; background: rgba(52,211,153,0.06); cursor: pointer; }
+  .a1-ach-badges { display: flex; }
+  .a1-ach-b { width: 18px; height: 18px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 8px; margin-left: -4px; border: 1.5px solid var(--sand); }
+  .a1-ach-b:first-child { margin-left: 0; }
+  .a1-ach-b:nth-child(1) { background: rgba(52,211,153,0.15); z-index: 3; }
+  .a1-ach-b:nth-child(2) { background: rgba(245,158,11,0.12); z-index: 2; }
+  .a1-ach-b:nth-child(3) { background: rgba(129,140,248,0.12); z-index: 1; }
+  .a1-ach-count { font-size: 10px; font-weight: 700; color: #047857; }
+
+
+  /* ============================================================
+     A2: BELOW LEGEND — A slim dark strip between legend and heatmap.
+     Overlapping badges + count + arrow. Clean transition.
+     ============================================================ */
+  .a2-ach {
+    margin: 12px 20px 0; padding: 12px 16px; border-radius: 16px; background: var(--earth);
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+    position: relative; overflow: hidden;
+  }
+  .a2-ach-badges { display: flex; position: relative; flex-shrink: 0; }
+  .a2-ach-b { width: 26px; height: 26px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; margin-left: -6px; border: 2px solid var(--earth); }
+  .a2-ach-b:first-child { margin-left: 0; }
+  .a2-ach-b:nth-child(1) { background: rgba(52,211,153,0.15); z-index: 3; }
+  .a2-ach-b:nth-child(2) { background: rgba(245,158,11,0.12); z-index: 2; }
+  .a2-ach-b:nth-child(3) { background: rgba(129,140,248,0.12); z-index: 1; }
+  .a2-ach-info { flex: 1; }
+  .a2-ach-title { font-size: 13px; font-weight: 600; color: var(--sand); }
+  .a2-ach-sub { font-size: 10px; color: rgba(246,245,240,0.3); margin-top: 1px; }
+  .a2-ach-arrow { font-size: 14px; color: rgba(246,245,240,0.15); }
+
+
+  /* ============================================================
+     A3: INSIDE THE RINGS — Achievement count inside the center
+     of the rings, replacing the breathing dot. The rings themselves
+     become the achievement visual. Dot becomes a number.
+     ============================================================ */
+  .a3-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .a3-center-num { font-size: 20px; font-weight: 900; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .a3-center-label { font-size: 6px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+  /* Achievements strip below rings — links to full page */
+  .a3-ach-strip { display: flex; justify-content: center; margin-top: 4px; }
+  .a3-ach-link { display: flex; align-items: center; gap: 6px; padding: 5px 14px; border-radius: 100px; background: rgba(52,211,153,0.06); cursor: pointer; }
+  .a3-ach-badges { display: flex; }
+  .a3-ach-b { width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; margin-left: -3px; border: 1.5px solid var(--sand); }
+  .a3-ach-b:first-child { margin-left: 0; }
+  .a3-ach-b:nth-child(1) { background: rgba(52,211,153,0.15); z-index: 3; }
+  .a3-ach-b:nth-child(2) { background: rgba(245,158,11,0.12); z-index: 2; }
+  .a3-ach-b:nth-child(3) { background: rgba(129,140,248,0.12); z-index: 1; }
+  .a3-ach-text { font-size: 10px; font-weight: 600; color: #047857; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- A1: Header row -->
+<div>
+  <div class="col-label">A1 — In the Header</div>
+  <div class="col-desc">Achievement badge count sits in the top-right header, next to the date. Tiny overlapping badges + "5" count. Tap to navigate. Doesn't touch the rings at all.</div>
+  <div class="block">
+    <div class="a1-hdr">
+      <div class="a1-ctx">Monday, Mar 24</div>
+      <div class="a1-ach">
+        <div class="a1-ach-badges"><div class="a1-ach-b">🏆</div><div class="a1-ach-b">⚡</div><div class="a1-ach-b">🔥</div></div>
+        <span class="a1-ach-count">5</span>
+      </div>
+    </div>
+    <div class="title">Your Journey</div>
+    <div class="rings-area"><div class="rc"><svg class="ro" viewBox="0 0 120 120"><circle class="rot" cx="60" cy="60" r="53"/><circle class="rof" cx="60" cy="60" r="53"/></svg><svg class="rm" viewBox="0 0 90 90"><circle class="rmt" cx="45" cy="45" r="38"/><circle class="rmf" cx="45" cy="45" r="38"/></svg><svg class="ri" viewBox="0 0 60 60"><circle class="rit" cx="30" cy="30" r="24"/><circle class="rif" cx="30" cy="30" r="24"/></svg><div class="bdot"></div></div></div>
+    <div class="msg"><div class="msg-text">You're <span class="msg-hl">1 session away</span> from your longest streak.</div></div>
+    <div class="legend"><div class="leg"><div class="ld"></div><div><div class="lv">75%</div><div class="ll">Complete</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">12d</div><div class="ll">Streak</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">2.4t</div><div class="ll">Volume</div></div></div></div>
+    <div class="rest-ph">↓ Heatmap + rest of screen below ↓</div>
+  </div>
+</div>
+
+<!-- A2: Below legend -->
+<div>
+  <div class="col-label">A2 — Dark Strip Below Legend</div>
+  <div class="col-desc">A slim dark card sits between the legend pills and the heatmap. Overlapping badge circles + title + count. Clean transition from light hero to dark achievement strip to heatmap.</div>
+  <div class="block">
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="rings-area"><div class="rc"><svg class="ro" viewBox="0 0 120 120"><circle class="rot" cx="60" cy="60" r="53"/><circle class="rof" cx="60" cy="60" r="53"/></svg><svg class="rm" viewBox="0 0 90 90"><circle class="rmt" cx="45" cy="45" r="38"/><circle class="rmf" cx="45" cy="45" r="38"/></svg><svg class="ri" viewBox="0 0 60 60"><circle class="rit" cx="30" cy="30" r="24"/><circle class="rif" cx="30" cy="30" r="24"/></svg><div class="bdot"></div></div></div>
+    <div class="msg"><div class="msg-text">You're <span class="msg-hl">1 session away</span> from your longest streak.</div></div>
+    <div class="legend"><div class="leg"><div class="ld"></div><div><div class="lv">75%</div><div class="ll">Complete</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">12d</div><div class="ll">Streak</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">2.4t</div><div class="ll">Volume</div></div></div></div>
+
+    <div class="a2-ach">
+      <div class="a2-ach-badges"><div class="a2-ach-b">🏆</div><div class="a2-ach-b">⚡</div><div class="a2-ach-b">🔥</div></div>
+      <div class="a2-ach-info"><div class="a2-ach-title">Achievements</div><div class="a2-ach-sub">5 of 37 earned · 2 new</div></div>
+      <div class="a2-ach-arrow">›</div>
+    </div>
+
+    <div class="rest-ph">↓ Heatmap + rest of screen below ↓</div>
+  </div>
+</div>
+
+<!-- A3: Inside rings -->
+<div>
+  <div class="col-label">A3 — Badge Link Below Rings</div>
+  <div class="col-desc">Tiny achievement pill sits right below the rings (before the message). Overlapping mini badges + "5 earned" text. Subtle, doesn't break the flow. Rings stay untouched.</div>
+  <div class="block">
+    <div class="ctx">Monday, Mar 24</div>
+    <div class="title">Your Journey</div>
+    <div class="rings-area"><div class="rc"><svg class="ro" viewBox="0 0 120 120"><circle class="rot" cx="60" cy="60" r="53"/><circle class="rof" cx="60" cy="60" r="53"/></svg><svg class="rm" viewBox="0 0 90 90"><circle class="rmt" cx="45" cy="45" r="38"/><circle class="rmf" cx="45" cy="45" r="38"/></svg><svg class="ri" viewBox="0 0 60 60"><circle class="rit" cx="30" cy="30" r="24"/><circle class="rif" cx="30" cy="30" r="24"/></svg><div class="bdot"></div></div></div>
+
+    <div class="a3-ach-strip">
+      <div class="a3-ach-link">
+        <div class="a3-ach-badges"><div class="a3-ach-b">🏆</div><div class="a3-ach-b">⚡</div><div class="a3-ach-b">🔥</div></div>
+        <span class="a3-ach-text">5 earned · View all ›</span>
+      </div>
+    </div>
+
+    <div class="msg"><div class="msg-text">You're <span class="msg-hl">1 session away</span> from your longest streak.</div></div>
+    <div class="legend"><div class="leg"><div class="ld"></div><div><div class="lv">75%</div><div class="ll">Complete</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">12d</div><div class="ll">Streak</div></div></div><div class="leg"><div class="ld"></div><div><div class="lv">2.4t</div><div class="ll">Volume</div></div></div></div>
+    <div class="rest-ph">↓ Heatmap + rest of screen below ↓</div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

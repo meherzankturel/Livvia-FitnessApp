@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Bottom Elements v3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .hero-ph { margin: 56px 24px 0; padding: 18px; border-radius: 20px; background: var(--stone); text-align: center; font-size: 10px; color: var(--rock); }
+  .links { display: flex; gap: 8px; padding: 18px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+
+
+  /* ============================================================
+     G: TWO HIGHLIGHT CARDS — Only 2 big beautiful cards.
+     Card 1: Body (weight + trend). Card 2: Strength (best lift).
+     Everything else accessible via "See all". Truly less is more.
+     ============================================================ */
+
+  .g-cards { padding: 16px 24px 0; }
+
+  /* Body highlight card */
+  .g-body {
+    padding: 22px; border-radius: 22px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .g-body-left {}
+  .g-body-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g-body-val { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; margin-top: 4px; line-height: 1; }
+  .g-body-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .g-body-trend { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+  .g-body-sub { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+  .g-body-right { width: 100px; height: 60px; }
+  .g-body-right svg { width: 100%; height: 100%; }
+  .g-chart-line { fill: none; stroke: var(--earth); stroke-width: 2; stroke-linecap: round; opacity: 0.15; }
+  .g-chart-area { opacity: 0.04; }
+  .g-body-btn { margin-top: 8px; font-size: 10px; color: var(--earth); font-weight: 600; text-align: right; opacity: 0.4; }
+
+  /* Strength highlight card */
+  .g-strength {
+    padding: 22px; border-radius: 22px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  .g-s-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .g-s-line { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g-s-line:nth-child(1) { width: 100px; top: 12px; right: -8px; transform: rotate(-35deg); }
+  .g-s-line:nth-child(2) { width: 80px; top: 24px; right: -8px; transform: rotate(-35deg); }
+
+  .g-s-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+
+  .g-s-lifts { display: flex; gap: 0; margin-top: 12px; position: relative; }
+  .g-s-lift { flex: 1; text-align: center; position: relative; }
+  .g-s-lift::after { content: ''; position: absolute; right: 0; top: 5%; height: 90%; width: 1px; background: rgba(246,245,240,0.04); }
+  .g-s-lift:last-child::after { display: none; }
+  .g-s-lift-val { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .g-s-lift-val span { font-size: 9px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .g-s-lift-name { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 3px; }
+  .g-s-lift-level { font-size: 8px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.5; }
+
+  /* PR highlight row */
+  .g-s-pr { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(246,245,240,0.04); display: flex; align-items: center; gap: 8px; position: relative; }
+  .g-s-pr-icon { font-size: 14px; }
+  .g-s-pr-text { font-size: 11px; color: rgba(246,245,240,0.4); flex: 1; }
+  .g-s-pr-text strong { color: var(--sand); font-weight: 700; }
+  .g-s-pr-more { font-size: 10px; color: rgba(246,245,240,0.2); }
+
+  /* Volume + measurements as a compact row */
+  .g-compact { display: flex; gap: 10px; margin-top: 12px; }
+  .g-compact-card { flex: 1; padding: 14px; border-radius: 16px; }
+  .g-compact-card.stone { background: var(--stone); }
+  .g-compact-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g-cc-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .g-cc-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .g-cc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .g-cc-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     H: BENTO MOSAIC — Asymmetric grid of different sized cards.
+     Weight big. Volume small. 1RM wide dark. PRs inline.
+     Visual interest through size variety.
+     ============================================================ */
+
+  .h-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .h-cell { border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+
+  /* Weight — tall left */
+  .h-weight {
+    grid-row: span 2; background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    display: flex; flex-direction: column;
+  }
+  .h-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h-w-val { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; margin-top: 6px; line-height: 1; }
+  .h-w-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .h-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+  .h-w-chart { flex: 1; min-height: 40px; margin-top: 8px; }
+  .h-w-chart svg { width: 100%; height: 100%; }
+  .h-wc-line { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; opacity: 0.12; }
+  .h-w-btn { padding: 8px; border-radius: 10px; background: var(--stone); text-align: center; font-size: 10px; font-weight: 600; color: var(--earth); margin-top: 8px; cursor: pointer; }
+
+  /* Volume — top right */
+  .h-volume { background: var(--earth); }
+  .h-v-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h-v-val { font-size: 24px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; }
+  .h-v-val span { font-size: 10px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .h-v-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  /* PRs — bottom right */
+  .h-prs { background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .h-pr-label { font-size: 9px; color: #047857; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h-pr-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+  .h-pr-name { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+  /* 1RM — full width dark */
+  .h-rm {
+    grid-column: span 2; background: var(--earth); display: flex; gap: 0;
+    position: relative; overflow: hidden;
+  }
+  .h-rm-accent { position: absolute; bottom: -12px; right: -12px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+  .h-rm-item { flex: 1; text-align: center; padding: 4px 0; position: relative; }
+  .h-rm-item::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(246,245,240,0.04); }
+  .h-rm-item:last-child::after { display: none; }
+  .h-rm-val { font-size: 18px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .h-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .h-rm-name { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  /* Measurements — full width row */
+  .h-meas { grid-column: span 2; background: var(--stone); display: flex; gap: 0; }
+  .h-meas-item { flex: 1; text-align: center; padding: 4px 0; }
+  .h-meas-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .h-meas-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     I: INFOGRAPHIC — Data presented as visual highlights.
+     Each metric has a distinctive visual treatment.
+     Reads like a personal stats infographic, not a dashboard.
+     ============================================================ */
+
+  .i-sections { padding: 16px 24px 0; }
+
+  /* Weight — big number + inline spark chart */
+  .i-weight { display: flex; align-items: center; gap: 16px; margin-bottom: 16px; }
+  .i-w-left {}
+  .i-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .i-w-val { font-size: 40px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; margin-top: 2px; }
+  .i-w-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .i-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .i-w-chart { flex: 1; height: 50px; }
+  .i-w-chart svg { width: 100%; height: 100%; }
+  .i-wc-area { opacity: 0.04; }
+  .i-wc-line { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; opacity: 0.15; }
+  .i-w-btn { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; margin-top: 4px; }
+
+  .i-divider { height: 1px; background: var(--stone); margin-bottom: 16px; }
+
+  /* 1RM — horizontal bar chart visual */
+  .i-rm-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; }
+  .i-rm { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .i-rm-name { font-size: 11px; color: var(--rock); font-weight: 500; width: 50px; flex-shrink: 0; }
+  .i-rm-bar-track { flex: 1; height: 8px; border-radius: 4px; background: var(--stone); overflow: hidden; }
+  .i-rm-bar-fill { height: 100%; border-radius: 4px; }
+  .i-rm:nth-child(2) .i-rm-bar-fill { background: var(--trail); width: 53%; }
+  .i-rm:nth-child(3) .i-rm-bar-fill { background: var(--earth); opacity: 0.3; width: 67%; }
+  .i-rm:nth-child(4) .i-rm-bar-fill { background: var(--earth); opacity: 0.3; width: 80%; }
+  .i-rm:nth-child(5) .i-rm-bar-fill { background: var(--earth); opacity: 0.15; width: 33%; }
+  .i-rm-val { font-size: 14px; font-weight: 800; color: var(--earth); width: 44px; text-align: right; flex-shrink: 0; }
+  .i-rm-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  /* Volume — inline with bars */
+  .i-vol { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; padding-top: 16px; border-top: 1px solid var(--stone); }
+  .i-vol-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .i-vol-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .i-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .i-vol-bars { display: flex; gap: 3px; align-items: flex-end; height: 32px; }
+  .i-vb { width: 8px; border-radius: 3px; background: var(--stone); }
+  .i-vb.a { background: var(--trail); opacity: 0.3; }
+
+  /* PRs — badge style */
+  .i-prs { margin-bottom: 16px; padding-top: 16px; border-top: 1px solid var(--stone); }
+  .i-pr-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .i-pr-row { display: flex; gap: 6px; }
+  .i-pr-badge { padding: 8px 14px; border-radius: 12px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); text-align: center; }
+  .i-pr-badge-name { font-size: 9px; color: #047857; font-weight: 600; }
+  .i-pr-badge-val { font-size: 16px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .i-pr-badge-val span { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+  /* Measurements — inline minimal */
+  .i-meas { padding-top: 16px; border-top: 1px solid var(--stone); }
+  .i-meas-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .i-meas-row { display: flex; gap: 8px; }
+  .i-m { flex: 1; text-align: center; }
+  .i-m-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .i-m-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== G: TWO HIGHLIGHT CARDS ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">G — Two Highlight Cards</div>
+  <div class="dsc">Only 2 main cards: Body (white, big weight + trend chart) and Strength (dark, all 4 lifts + latest PR). Volume + measurements as compact tiles below. Less is more taken literally.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="g-cards">
+      <div class="g-body">
+        <div class="g-body-left">
+          <div class="g-body-label">Weight</div>
+          <div class="g-body-val">74.2 <span>kg</span></div>
+          <div class="g-body-trend">▼ 0.8kg this month</div>
+          <div class="g-body-sub">7-day avg: 74.5kg</div>
+        </div>
+        <div class="g-body-right">
+          <svg viewBox="0 0 100 50"><path class="g-chart-area" fill="var(--earth)" d="M0,40 Q15,38 30,34 Q45,28 60,26 Q75,22 90,18 L100,16 L100,50 L0,50 Z"/><path class="g-chart-line" d="M0,40 Q15,38 30,34 Q45,28 60,26 Q75,22 90,18 L100,16"/></svg>
+          <div class="g-body-btn">+ Log weight</div>
+        </div>
+      </div>
+
+      <div class="g-strength">
+        <div class="g-s-accent"><div class="g-s-line"></div><div class="g-s-line"></div></div>
+        <div class="g-s-label">Estimated 1RM</div>
+        <div class="g-s-lifts">
+          <div class="g-s-lift"><div class="g-s-lift-val">80 <span>kg</span></div><div class="g-s-lift-name">Bench</div><div class="g-s-lift-level">Interm.</div></div>
+          <div class="g-s-lift"><div class="g-s-lift-val">100 <span>kg</span></div><div class="g-s-lift-name">Squat</div><div class="g-s-lift-level">Interm.</div></div>
+          <div class="g-s-lift"><div class="g-s-lift-val">120 <span>kg</span></div><div class="g-s-lift-name">Deadlift</div><div class="g-s-lift-level">Novice</div></div>
+          <div class="g-s-lift"><div class="g-s-lift-val">50 <span>kg</span></div><div class="g-s-lift-name">OHP</div><div class="g-s-lift-level">Novice</div></div>
+        </div>
+        <div class="g-s-pr"><span class="g-s-pr-icon">🏆</span><span class="g-s-pr-text">Latest: <strong>80kg Bench</strong> — Weight PR</span><span class="g-s-pr-more">See all ›</span></div>
+      </div>
+
+      <div class="g-compact">
+        <div class="g-compact-card stone"><div class="g-cc-val">2.4 <span>t</span></div><div class="g-cc-label">Volume</div><div class="g-cc-trend">▲ 12%</div></div>
+        <div class="g-compact-card white"><div class="g-cc-val">47</div><div class="g-cc-label">Workouts</div><div class="g-cc-trend">All time</div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== H: BENTO MOSAIC ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">H — Bento Mosaic</div>
+  <div class="dsc">Asymmetric grid. Weight is tall left (with SVG chart + log button). Volume dark top-right. PRs green-tinted bottom-right. 1RM as full-width dark bar. Measurements as full-width stone row.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="h-bento">
+      <div class="h-cell h-weight">
+        <div class="h-w-label">Weight</div>
+        <div class="h-w-val">74.2 <span>kg</span></div>
+        <div class="h-w-trend">▼ 0.8kg</div>
+        <div class="h-w-chart"><svg viewBox="0 0 120 40"><path class="h-wc-line" d="M0,32 Q20,30 40,26 Q60,20 80,18 Q100,14 120,10"/></svg></div>
+        <div class="h-w-btn">+ Log</div>
+      </div>
+
+      <div class="h-cell h-volume"><div class="h-v-label">Volume</div><div class="h-v-val">2.4 <span>t</span></div><div class="h-v-trend">▲ 12%</div></div>
+
+      <div class="h-cell h-prs"><div class="h-pr-label">Latest PR</div><div class="h-pr-val">80 <span style="font-size:10px;color:var(--rock);font-weight:500;">kg</span></div><div class="h-pr-name">Bench · Weight PR</div></div>
+
+      <div class="h-cell h-rm"><div class="h-rm-accent"></div>
+        <div class="h-rm-item"><div class="h-rm-val">80 <span>kg</span></div><div class="h-rm-name">Bench</div></div>
+        <div class="h-rm-item"><div class="h-rm-val">100 <span>kg</span></div><div class="h-rm-name">Squat</div></div>
+        <div class="h-rm-item"><div class="h-rm-val">120 <span>kg</span></div><div class="h-rm-name">Dead</div></div>
+        <div class="h-rm-item"><div class="h-rm-val">50 <span>kg</span></div><div class="h-rm-name">OHP</div></div>
+      </div>
+
+      <div class="h-cell h-meas">
+        <div class="h-meas-item"><div class="h-meas-val">102</div><div class="h-meas-label">Chest</div></div>
+        <div class="h-meas-item"><div class="h-meas-val">82</div><div class="h-meas-label">Waist</div></div>
+        <div class="h-meas-item"><div class="h-meas-val">96</div><div class="h-meas-label">Hips</div></div>
+        <div class="h-meas-item"><div class="h-meas-val">36</div><div class="h-meas-label">Bicep</div></div>
+        <div class="h-meas-item"><div class="h-meas-val">58</div><div class="h-meas-label">Thigh</div></div>
+        <div class="h-meas-item"><div class="h-meas-val">18%</div><div class="h-meas-label">Fat</div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== I: INFOGRAPHIC ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">I — Infographic</div>
+  <div class="dsc">Data as visual highlights. Big weight number + inline spark chart. 1RM as horizontal bar chart (longest bar = strongest lift). Volume with mini bars. PRs as green badges. Reads like a personal stats poster.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero rings + Heatmap above ↑</div>
+
+    <div class="i-sections">
+      <!-- Weight — big number + chart -->
+      <div class="i-weight">
+        <div class="i-w-left">
+          <div class="i-w-label">Weight</div>
+          <div class="i-w-val">74.2 <span>kg</span></div>
+          <div class="i-w-trend">▼ 0.8kg this month</div>
+          <div class="i-w-btn">+ Log weight</div>
+        </div>
+        <div class="i-w-chart">
+          <svg viewBox="0 0 120 50"><path class="i-wc-area" fill="var(--earth)" d="M0,42 Q20,40 40,34 Q60,26 80,24 Q100,18 120,14 L120,50 L0,50 Z"/><path class="i-wc-line" d="M0,42 Q20,40 40,34 Q60,26 80,24 Q100,18 120,14"/></svg>
+        </div>
+      </div>
+
+      <div class="i-divider"></div>
+
+      <!-- 1RM as bar chart -->
+      <div class="i-rm-label">Estimated 1RM</div>
+      <div class="i-rm"><span class="i-rm-name">Bench</span><div class="i-rm-bar-track"><div class="i-rm-bar-fill"></div></div><span class="i-rm-val">80 <span>kg</span></span></div>
+      <div class="i-rm"><span class="i-rm-name">Squat</span><div class="i-rm-bar-track"><div class="i-rm-bar-fill"></div></div><span class="i-rm-val">100 <span>kg</span></span></div>
+      <div class="i-rm"><span class="i-rm-name">Deadlift</span><div class="i-rm-bar-track"><div class="i-rm-bar-fill"></div></div><span class="i-rm-val">120 <span>kg</span></span></div>
+      <div class="i-rm"><span class="i-rm-name">OHP</span><div class="i-rm-bar-track"><div class="i-rm-bar-fill"></div></div><span class="i-rm-val">50 <span>kg</span></span></div>
+
+      <!-- Volume -->
+      <div class="i-vol">
+        <div><div class="i-vol-val">2.4 <span>tons</span></div><div class="i-vol-trend">▲ 12% vs last week</div></div>
+        <div class="i-vol-bars"><div class="i-vb" style="height:40%;"></div><div class="i-vb" style="height:55%;"></div><div class="i-vb" style="height:45%;"></div><div class="i-vb" style="height:70%;"></div><div class="i-vb" style="height:60%;"></div><div class="i-vb" style="height:85%;"></div><div class="i-vb a" style="height:100%;"></div></div>
+      </div>
+
+      <!-- PRs as badges -->
+      <div class="i-prs"><div class="i-pr-label">Recent PRs</div>
+        <div class="i-pr-row">
+          <div class="i-pr-badge"><div class="i-pr-badge-name">Bench</div><div class="i-pr-badge-val">80 <span>kg</span></div></div>
+          <div class="i-pr-badge"><div class="i-pr-badge-name">Squat</div><div class="i-pr-badge-val">105 <span>kg</span></div></div>
+          <div class="i-pr-badge"><div class="i-pr-badge-name">Deadlift</div><div class="i-pr-badge-val">120 <span>kg</span></div></div>
+        </div>
+      </div>
+
+      <!-- Measurements -->
+      <div class="i-meas"><div class="i-meas-label">Measurements</div>
+        <div class="i-meas-row"><div class="i-m"><div class="i-m-val">102</div><div class="i-m-label">Chest</div></div><div class="i-m"><div class="i-m-val">82</div><div class="i-m-label">Waist</div></div><div class="i-m"><div class="i-m-val">96</div><div class="i-m-label">Hips</div></div><div class="i-m"><div class="i-m-val">36</div><div class="i-m-label">Bicep</div></div><div class="i-m"><div class="i-m-val">58</div><div class="i-m-label">Thigh</div></div><div class="i-m"><div class="i-m-val">18%</div><div class="i-m-label">Fat</div></div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

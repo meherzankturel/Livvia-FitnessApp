@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — L1 Trail Timeline Spacing Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+
+  /* ============================================================
+     SHARED STYLES (all 3 variants share the base L1 look)
+     ============================================================ */
+  .l1 { background: var(--sand); }
+
+  .l1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .l1-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .l1-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .l1-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .l1-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .l1-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  .l1-header { padding: 20px 24px 0; }
+  .l1-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.7px; }
+  .l1-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+  .l1-muscle { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .l1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .l1-link { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .l1-link.swap { color: var(--trail); }
+  .l1-link.video { color: var(--rock); }
+
+  .l1-timeline { padding: 20px 24px 0; position: relative; }
+
+  .l1-line { position: absolute; left: 38px; top: 20px; bottom: 0; width: 2px; background: var(--stone); }
+  .l1-line-fill { width: 100%; background: var(--trail); border-radius: 1px; }
+
+  .l1-set { display: flex; gap: 16px; position: relative; }
+  .l1-dot-col { width: 30px; display: flex; justify-content: center; padding-top: 2px; flex-shrink: 0; }
+  .l1-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--stone); position: relative; z-index: 1; }
+  .l1-dot.done { background: var(--trail); }
+  .l1-dot.done::after { content: '✓'; position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 7px; color: #fff; font-weight: 700; }
+  .l1-dot.active { width: 14px; height: 14px; background: var(--earth); box-shadow: 0 0 0 4px rgba(52,211,153,0.12); margin-top: -1px; }
+  .l1-dot.future { background: var(--stone); opacity: 0.5; }
+
+  .l1-content { flex: 1; min-width: 0; }
+
+  .l1-done-content { display: flex; align-items: center; justify-content: space-between; padding: 4px 0 16px; }
+  .l1-done-label { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .l1-done-vals { font-size: 14px; font-weight: 700; color: var(--earth); }
+
+  .l1-active-content {
+    background: #fff; border-radius: 18px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    border: 1.5px solid rgba(52,211,153,0.08); margin-bottom: 12px;
+  }
+  .l1-active-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .l1-active-label { font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 0.5px; }
+  .l1-active-prev { font-size: 11px; color: var(--rock); }
+
+  .l1-active-inputs { display: flex; gap: 10px; margin-top: 10px; }
+  .l1-active-group { flex: 1; text-align: center; }
+  .l1-active-input {
+    width: 100%; padding: 14px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 30px; font-weight: 800;
+    color: var(--earth); outline: none;
+  }
+  .l1-active-input:focus { border-color: var(--trail); background: #fff; }
+  .l1-active-unit { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; margin-top: 4px; }
+
+  .l1-active-log { margin-top: 12px; padding: 14px; border-radius: 12px; background: var(--earth); text-align: center; cursor: pointer; }
+  .l1-active-log-text { font-size: 14px; font-weight: 700; color: var(--sand); }
+
+  .l1-future-content { padding: 4px 0 16px; }
+  .l1-future-label { font-size: 11px; color: var(--rock); opacity: 0.4; }
+  .l1-future-hint { font-size: 10px; color: var(--rock); opacity: 0.25; margin-top: 2px; }
+
+  /* Cue — shared */
+  .l1-cue-inline { margin-top: 10px; display: flex; align-items: center; gap: 5px; padding: 8px 12px; border-radius: 10px; background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.05); }
+  .l1-cue-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); flex-shrink: 0; animation: lp 2.4s infinite; }
+  @keyframes lp { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .l1-cue-text { font-size: 10px; color: var(--rock); }
+
+  .l1-cue-bottom { margin: 8px 24px 40px; display: flex; align-items: center; gap: 6px; }
+
+
+  /* ============================================================
+     V1-SPECIFIC: Dark hero card replaces plain header.
+     Fills top space with exercise identity in a card.
+     ============================================================ */
+  .v1-hero {
+    margin: 16px 20px 0; padding: 18px 20px; border-radius: 20px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .v1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v1-ha:nth-child(1) { width: 80px; top: 10px; right: -4px; transform: rotate(-35deg); }
+  .v1-ha:nth-child(2) { width: 55px; top: 20px; right: -4px; transform: rotate(-35deg); }
+  .v1-hero-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .v1-hero-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.15; }
+  .v1-hero-actions { display: flex; gap: 10px; flex-shrink: 0; margin-top: 2px; }
+  .v1-hero-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .v1-hero-link.swap { color: var(--trail); opacity: 0.7; }
+  .v1-hero-link.video { color: rgba(246,245,240,0.25); }
+  .v1-hero-sub { display: flex; align-items: center; gap: 6px; margin-top: 5px; position: relative; }
+  .v1-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+  .v1-hero-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .v1-hero-prev { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .v1-hero-prev strong { color: rgba(246,245,240,0.5); }
+
+
+  /* ============================================================
+     V3-SPECIFIC: Bigger inputs + done set shows more detail
+     ============================================================ */
+  .v3-done-content {
+    padding: 6px 0 14px;
+  }
+  .v3-done-row { display: flex; align-items: center; justify-content: space-between; }
+  .v3-done-label { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .v3-done-vals { font-size: 15px; font-weight: 700; color: var(--earth); }
+  .v3-done-bar { margin-top: 6px; height: 3px; border-radius: 2px; background: var(--stone); }
+  .v3-done-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); opacity: 0.4; }
+
+  .v3-active-input {
+    width: 100%; padding: 18px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 34px; font-weight: 800;
+    color: var(--earth); outline: none;
+  }
+  .v3-active-input:focus { border-color: var(--trail); background: #fff; }
+
+  /* Suggested weight reasoning */
+  .v3-suggest { margin-top: 8px; padding: 8px 12px; border-radius: 10px; background: var(--stone); }
+  .v3-suggest-text { font-size: 10px; color: var(--rock); line-height: 1.3; }
+  .v3-suggest-text strong { color: var(--earth); }
+
+
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
+  @keyframes fadeUp { from { transform: translateY(12px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  @keyframes expandIn { from { transform: scaleY(0.95); opacity: 0; } to { transform: scaleY(1); opacity: 1; } }
+  .l1-active-content { animation: expandIn 0.3s ease-out; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== V1: DARK HERO + TIMELINE =============== -->
+  <div>
+    <div class="col-label">V1 — DARK HERO + TRAIL</div>
+    <div class="col-desc">Dark hero card fills the top (consistent with other screens). Focus cue inside the active set card. Tighter spacing throughout.</div>
+    <div class="phone l1">
+      <div class="ps">
+
+        <div class="l1-top">
+          <span class="l1-timer">12:34</span>
+          <span class="l1-of">3 / 6</span>
+          <span class="l1-exit">End</span>
+        </div>
+        <div class="l1-bar"><div class="l1-bar-fill" style="width: 40%;"></div></div>
+
+        <!-- Dark hero instead of plain text -->
+        <div class="v1-hero">
+          <div class="v1-ha"></div>
+          <div class="v1-ha"></div>
+          <div class="v1-hero-row">
+            <div class="v1-hero-name">Barbell Bench Press</div>
+            <div class="v1-hero-actions">
+              <span class="v1-hero-link swap">Swap</span>
+              <span class="v1-hero-link video">▶ Video</span>
+            </div>
+          </div>
+          <div class="v1-hero-sub">
+            <span class="v1-muscle">Chest</span>
+            <span class="v1-hero-dot"></span>
+            <span class="v1-hero-prev">Last: <strong>70 × 10</strong></span>
+          </div>
+        </div>
+
+        <div class="l1-timeline" style="padding-top: 16px;">
+          <div class="l1-line" style="top: 16px;">
+            <div class="l1-line-fill" style="height: 22%;"></div>
+          </div>
+
+          <!-- Set 1 — Done -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot done"></div></div>
+            <div class="l1-content">
+              <div class="l1-done-content">
+                <span class="l1-done-label">Set 1</span>
+                <span class="l1-done-vals">70 kg × 10</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 2 — Active (cue inside card) -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot active"></div></div>
+            <div class="l1-content">
+              <div class="l1-active-content">
+                <div class="l1-active-top">
+                  <span class="l1-active-label">Set 2</span>
+                  <span class="l1-active-prev">Last: 70 × 10</span>
+                </div>
+                <div class="l1-active-inputs">
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="72.5" type="text" inputmode="decimal">
+                    <div class="l1-active-unit">kg</div>
+                  </div>
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="10" type="text" inputmode="numeric">
+                    <div class="l1-active-unit">reps</div>
+                  </div>
+                </div>
+                <!-- Focus cue inside card -->
+                <div class="l1-cue-inline">
+                  <div class="l1-cue-dot"></div>
+                  <span class="l1-cue-text">Drive feet into floor — create full-body tension</span>
+                </div>
+                <div class="l1-active-log">
+                  <div class="l1-active-log-text">Log Set</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 3 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 3</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 4 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 4</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V2: KEEP AS-IS (reference) =============== -->
+  <div>
+    <div class="col-label">V2 — ORIGINAL (KEEP AS-IS)</div>
+    <div class="col-desc">The original L1 for comparison. The whitespace is intentional — premium apps breathe. Less visual noise means faster gym usage.</div>
+    <div class="phone l1">
+      <div class="ps">
+
+        <div class="l1-top">
+          <span class="l1-timer">12:34</span>
+          <span class="l1-of">3 / 6</span>
+          <span class="l1-exit">End</span>
+        </div>
+        <div class="l1-bar"><div class="l1-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="l1-header">
+          <div class="l1-name">Barbell Bench Press</div>
+          <div class="l1-meta">
+            <span class="l1-muscle">Chest</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link swap">Swap</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <div class="l1-timeline">
+          <div class="l1-line">
+            <div class="l1-line-fill" style="height: 25%;"></div>
+          </div>
+
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot done"></div></div>
+            <div class="l1-content">
+              <div class="l1-done-content">
+                <span class="l1-done-label">Set 1</span>
+                <span class="l1-done-vals">70 kg × 10</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot active"></div></div>
+            <div class="l1-content">
+              <div class="l1-active-content">
+                <div class="l1-active-top">
+                  <span class="l1-active-label">Set 2</span>
+                  <span class="l1-active-prev">Last: 70 × 10</span>
+                </div>
+                <div class="l1-active-inputs">
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="72.5" type="text" inputmode="decimal">
+                    <div class="l1-active-unit">kg</div>
+                  </div>
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="10" type="text" inputmode="numeric">
+                    <div class="l1-active-unit">reps</div>
+                  </div>
+                </div>
+                <div class="l1-active-log">
+                  <div class="l1-active-log-text">Log Set</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 3</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 4</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="l1-cue-bottom">
+          <div class="l1-cue-dot"></div>
+          <span class="l1-cue-text" style="font-size: 11px; color: var(--rock);">Drive feet into floor — create full-body tension</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V3: RICHER CONTENT =============== -->
+  <div>
+    <div class="col-label">V3 — RICHER DETAIL</div>
+    <div class="col-desc">Bigger inputs. Done sets show a tiny progress bar. Active card includes weight suggestion reasoning. More content, same clean feel.</div>
+    <div class="phone l1">
+      <div class="ps">
+
+        <div class="l1-top">
+          <span class="l1-timer">12:34</span>
+          <span class="l1-of">3 / 6</span>
+          <span class="l1-exit">End</span>
+        </div>
+        <div class="l1-bar"><div class="l1-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="l1-header">
+          <div class="l1-name">Barbell Bench Press</div>
+          <div class="l1-meta">
+            <span class="l1-muscle">Chest</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link swap">Swap</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <div class="l1-timeline">
+          <div class="l1-line">
+            <div class="l1-line-fill" style="height: 28%;"></div>
+          </div>
+
+          <!-- Set 1 — Done with progress bar -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot done"></div></div>
+            <div class="l1-content">
+              <div class="v3-done-content">
+                <div class="v3-done-row">
+                  <span class="l1-done-label">Set 1</span>
+                  <span class="v3-done-vals">70 kg × 10</span>
+                </div>
+                <div class="v3-done-bar"><div class="v3-done-bar-fill" style="width: 100%;"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 2 — Active with bigger inputs + suggestion -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot active"></div></div>
+            <div class="l1-content">
+              <div class="l1-active-content">
+                <div class="l1-active-top">
+                  <span class="l1-active-label">Set 2</span>
+                  <span class="l1-active-prev">Last: 70 × 10</span>
+                </div>
+                <div class="l1-active-inputs">
+                  <div class="l1-active-group">
+                    <input class="v3-active-input" value="72.5" type="text" inputmode="decimal">
+                    <div class="l1-active-unit">kg</div>
+                  </div>
+                  <div class="l1-active-group">
+                    <input class="v3-active-input" value="10" type="text" inputmode="numeric">
+                    <div class="l1-active-unit">reps</div>
+                  </div>
+                </div>
+                <!-- Suggestion reasoning -->
+                <div class="v3-suggest">
+                  <div class="v3-suggest-text"><strong>+2.5 kg</strong> from last session — progressive overload</div>
+                </div>
+                <!-- Cue -->
+                <div class="l1-cue-inline">
+                  <div class="l1-cue-dot"></div>
+                  <span class="l1-cue-text">Drive feet into floor — create full-body tension</span>
+                </div>
+                <div class="l1-active-log">
+                  <div class="l1-active-log-text">Log Set</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 3 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 3</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 4 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 4</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

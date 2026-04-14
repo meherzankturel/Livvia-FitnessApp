@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Final Nutrition Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; }
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Shared elements */
+  .status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .adot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); display: inline-block; animation: p 2.4s ease-in-out infinite; }
+  @keyframes p { 0%,100% { opacity:.5; transform:scale(1); } 30% { opacity:1; transform:scale(1.35); } }
+
+  .grocery { margin: 12px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+  /* Filter bar — shared across all 3 */
+  .filter-bar { display: flex; gap: 6px; padding: 0 24px; margin-bottom: 6px; overflow-x: auto; scrollbar-width: none; }
+  .filter-bar::-webkit-scrollbar { display: none; }
+  .fbtn { padding: 6px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; white-space: nowrap; flex-shrink: 0; cursor: pointer; transition: all 0.2s; }
+  .fbtn.active { background: var(--earth); color: var(--sand); }
+  .fbtn.inactive { background: rgba(45,42,36,0.04); color: var(--rock); }
+  .fbtn.alert { background: rgba(239,68,68,0.06); color: #B91C1C; }
+
+
+  /* ============================================================
+     Y1: IMMERSIVE ACCORDION — Big number + expandable full cards
+     Giant hero calorie. Cuisine/allergy as scrollable pills.
+     Meals as accordion panels with ALL features inside.
+     ============================================================ */
+  .col-y1 .lbl { color: var(--trail); }
+
+  .y1-hero { padding: 14px 24px 0; }
+  .y1-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .y1-cal { padding: 0 24px; display: flex; align-items: baseline; gap: 5px; }
+  .y1-big { font-size: 64px; font-weight: 900; color: var(--earth); letter-spacing: -3px; line-height: 1; opacity: 0; animation: numIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
+  @keyframes numIn { 0% { opacity:0; transform:translateY(16px); } 100% { opacity:1; transform:translateY(0); } }
+  .y1-unit { font-size: 14px; color: var(--rock); }
+
+  .y1-macros { display: flex; gap: 14px; padding: 6px 24px 12px; }
+  .y1-mr { display: flex; align-items: baseline; gap: 3px; }
+  .y1-mr .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .y1-mr .l { font-size: 10px; color: var(--rock); }
+
+  /* Accordion meals */
+  .y1-meals { padding: 8px 24px; }
+
+  .y1-panel {
+    border-radius: 22px; overflow: hidden; margin-bottom: 10px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer;
+  }
+
+  .y1-header { padding: 16px 18px; display: flex; align-items: center; gap: 12px; }
+  .y1-emoji { font-size: 20px; flex-shrink: 0; }
+  .y1-info { flex: 1; }
+  .y1-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .y1-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 2px; }
+  .y1-hcal { font-size: 18px; font-weight: 800; color: var(--earth); flex-shrink: 0; }
+  .y1-hcal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .y1-chev { font-size: 12px; color: var(--stone); flex-shrink: 0; margin-left: 4px; transition: transform 0.3s; }
+
+  /* Expanded */
+  .y1-body { display: none; padding: 0 18px 18px; }
+  .y1-panel.open .y1-body { display: block; animation: y1Exp 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  .y1-panel.open .y1-chev { transform: rotate(180deg); }
+  @keyframes y1Exp { 0% { opacity:0; transform:translateY(-6px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .y1-div { height: 1px; background: var(--stone); margin-bottom: 14px; }
+  .y1-desc { font-size: 12px; color: var(--rock); line-height: 1.5; }
+
+  /* Stat chips */
+  .y1-stats { display: flex; gap: 6px; margin-top: 12px; }
+  .y1-st { flex: 1; padding: 10px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .y1-st .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .y1-st .l { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+  /* Cook / Eat Out toggle */
+  .y1-mode { display: flex; gap: 6px; margin-top: 12px; }
+  .y1-mp { padding: 7px 16px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .y1-mp.on { background: var(--earth); color: var(--sand); }
+  .y1-mp.off { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  /* Actions */
+  .y1-acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .y1-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .y1-btn.recipe { background: var(--earth); color: var(--sand); }
+  .y1-btn.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .y1-btn.eatout { background: rgba(245,158,11,0.06); color: #92400E; }
+  .y1-btn.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+  /* Alternatives strip when swapped */
+  .y1-alts { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: var(--stone); }
+  .y1-alts-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+  .y1-alt { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .y1-alt:not(:last-child) { border-bottom: 1px solid rgba(45,42,36,0.04); }
+  .y1-alt-name { font-size: 12px; color: var(--earth); font-weight: 500; flex: 1; }
+  .y1-alt-cal { font-size: 11px; color: var(--rock); font-weight: 600; }
+  .y1-alt-pick { font-size: 9px; color: var(--trail); font-weight: 700; }
+
+
+  /* ============================================================
+     Y2: MOSAIC + NUMBERS — 2x2 tiles with big numbers + detail sheet
+     Giant hero. Tiles are the overview. Tap = bottom sheet detail.
+     ============================================================ */
+  .col-y2 .lbl { color: #818CF8; }
+
+  .y2-hero { padding: 14px 24px 0; }
+  .y2-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .y2-cal { padding: 0 24px; display: flex; align-items: baseline; gap: 5px; }
+  .y2-big { font-size: 64px; font-weight: 900; color: var(--earth); letter-spacing: -3px; line-height: 1; opacity:0; animation: numIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
+  .y2-unit { font-size: 14px; color: var(--rock); }
+  .y2-macros { display: flex; gap: 14px; padding: 6px 24px 12px; }
+  .y2-mr { display: flex; align-items: baseline; gap: 3px; }
+  .y2-mr .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .y2-mr .l { font-size: 10px; color: var(--rock); }
+
+  /* Grid tiles */
+  .y2-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 8px 24px; }
+  .y2-tile {
+    border-radius: 22px; padding: 18px; position: relative; cursor: pointer;
+    transition: transform 0.2s; min-height: 140px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    opacity:0; animation: tIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .y2-tile:active { transform: scale(0.96); }
+  .y2-tile:nth-child(1) { animation-delay: 0.05s; background: var(--earth); }
+  .y2-tile:nth-child(2) { animation-delay: 0.1s; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .y2-tile:nth-child(3) { animation-delay: 0.15s; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .y2-tile:nth-child(4) { animation-delay: 0.2s; background: var(--stone); }
+  @keyframes tIn { 0% { opacity:0; transform:scale(0.92); } 100% { opacity:1; transform:scale(1); } }
+
+  .y2-tile .emoji { position: absolute; top: 14px; right: 14px; font-size: 24px; opacity: 0.15; }
+  .y2-tile:nth-child(1) .emoji { opacity: 0.1; }
+
+  .y2-tile .time { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .y2-tile:nth-child(1) .time { color: rgba(246,245,240,0.35); }
+  .y2-tile:nth-child(2) .time, .y2-tile:nth-child(3) .time { color: var(--rock); }
+  .y2-tile:nth-child(4) .time { color: var(--rock); }
+
+  .y2-tile .name { font-size: 14px; font-weight: 700; margin-top: 6px; line-height: 1.2; }
+  .y2-tile:nth-child(1) .name { color: var(--sand); }
+  .y2-tile:nth-child(2) .name, .y2-tile:nth-child(3) .name { color: var(--earth); }
+  .y2-tile:nth-child(4) .name { color: var(--earth); }
+
+  .y2-tile .cal { font-size: 28px; font-weight: 800; margin-top: 8px; letter-spacing: -1px; }
+  .y2-tile:nth-child(1) .cal { color: var(--sand); }
+  .y2-tile:nth-child(2) .cal, .y2-tile:nth-child(3) .cal { color: var(--earth); }
+  .y2-tile:nth-child(4) .cal { color: var(--earth); }
+  .y2-tile .cal span { font-size: 10px; font-weight: 500; }
+  .y2-tile:nth-child(1) .cal span { color: rgba(246,245,240,0.35); }
+  .y2-tile:nth-child(2) .cal span, .y2-tile:nth-child(3) .cal span, .y2-tile:nth-child(4) .cal span { color: var(--rock); }
+
+  /* Detail sheet — appears below tiles when one is tapped */
+  .y2-detail { margin: 6px 24px 0; padding: 20px; border-radius: 22px; background: #fff; border: 1px solid rgba(0,0,0,0.04); animation: y2Det 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes y2Det { 0% { opacity:0; transform:translateY(8px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .y2-det-top { display: flex; justify-content: space-between; align-items: center; }
+  .y2-det-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .y2-det-close { width: 24px; height: 24px; border-radius: 50%; background: var(--stone); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--rock); cursor: pointer; }
+
+  .y2-det-name { font-size: 20px; font-weight: 700; color: var(--earth); margin-top: 8px; letter-spacing: -0.3px; }
+  .y2-det-desc { font-size: 12px; color: var(--rock); margin-top: 6px; line-height: 1.5; }
+  .y2-det-macros { font-size: 12px; color: var(--rock); margin-top: 6px; }
+
+  .y2-det-stats { display: flex; gap: 6px; margin-top: 12px; }
+  .y2-ds { flex: 1; padding: 10px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .y2-ds .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .y2-ds .l { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+  .y2-det-mode { display: flex; gap: 6px; margin-top: 12px; }
+  .y2-dm { padding: 7px 16px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .y2-dm.on { background: var(--earth); color: var(--sand); }
+  .y2-dm.off { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  .y2-det-acts { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .y2-da { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .y2-da.recipe { background: var(--earth); color: var(--sand); }
+  .y2-da.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .y2-da.eatout { background: rgba(245,158,11,0.06); color: #92400E; }
+  .y2-da.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+  .y2-det-alts { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: var(--stone); }
+  .y2-det-alts-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+  .y2-alt-row { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .y2-alt-row:not(:last-child) { border-bottom: 1px solid rgba(45,42,36,0.04); }
+  .y2-alt-name { font-size: 12px; color: var(--earth); flex: 1; }
+  .y2-alt-cal { font-size: 11px; color: var(--rock); font-weight: 600; }
+  .y2-alt-btn { font-size: 9px; color: var(--trail); font-weight: 700; }
+
+
+  /* ============================================================
+     Y3: HORIZONTAL CARDS + NUMBER — Swipeable cards, big cal hero
+     ============================================================ */
+  .col-y3 .lbl { color: #F59E0B; }
+
+  .y3-hero { padding: 14px 24px 0; }
+  .y3-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .y3-cal { padding: 0 24px; display: flex; align-items: baseline; gap: 5px; }
+  .y3-big { font-size: 64px; font-weight: 900; color: var(--earth); letter-spacing: -3px; line-height: 1; opacity:0; animation: numIn 0.7s cubic-bezier(0.16,1,0.3,1) 0.2s forwards; }
+  .y3-unit { font-size: 14px; color: var(--rock); }
+  .y3-macros { display: flex; gap: 14px; padding: 6px 24px 12px; }
+  .y3-mr { display: flex; align-items: baseline; gap: 3px; }
+  .y3-mr .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .y3-mr .l { font-size: 10px; color: var(--rock); }
+
+  /* Horizontal tape */
+  .y3-tape { padding: 8px 0 8px 24px; overflow-x: auto; scrollbar-width: none; display: flex; gap: 12px; scroll-snap-type: x mandatory; }
+  .y3-tape::-webkit-scrollbar { display: none; }
+
+  .y3-card {
+    min-width: 310px; max-width: 310px; border-radius: 24px; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04); flex-shrink: 0;
+    scroll-snap-align: start;
+    opacity:0; animation: y3Slide 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .y3-card:nth-child(1) { animation-delay: 0.05s; }
+  .y3-card:nth-child(2) { animation-delay: 0.1s; }
+  .y3-card:nth-child(3) { animation-delay: 0.15s; }
+  .y3-card:nth-child(4) { animation-delay: 0.2s; margin-right: 24px; }
+  @keyframes y3Slide { 0% { opacity:0; transform:translateX(16px); } 100% { opacity:1; transform:translateX(0); } }
+
+  /* Card hero */
+  .y3-card-hero { height: 110px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .y3-card-hero .bg { position: absolute; inset: 0; opacity: 0.04; }
+  .y3-card-hero .emoji { font-size: 48px; position: relative; z-index: 1; animation: y3Float 5s ease-in-out infinite; }
+  @keyframes y3Float { 0%,100% { transform:translateY(0); } 50% { transform:translateY(-4px); } }
+  .y3-card-hero .badge { position: absolute; top: 12px; left: 12px; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.85); font-size: 9px; font-weight: 700; color: var(--earth); text-transform: uppercase; letter-spacing: 0.5px; z-index: 2; }
+  .y3-card-hero .hcal { position: absolute; top: 12px; right: 12px; font-size: 20px; font-weight: 800; color: var(--earth); z-index: 2; background: rgba(255,255,255,0.85); padding: 4px 10px; border-radius: 100px; }
+  .y3-card-hero .hcal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+  .y3-card-body { padding: 16px 18px; }
+  .y3-card-name { font-size: 17px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .y3-card-desc { font-size: 11px; color: var(--rock); margin-top: 4px; line-height: 1.45; }
+  .y3-card-macros { font-size: 11px; color: var(--rock); margin-top: 6px; }
+
+  /* Mode toggle */
+  .y3-card-mode { display: flex; gap: 5px; margin-top: 10px; }
+  .y3-cm { padding: 5px 12px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .y3-cm.on { background: var(--earth); color: var(--sand); }
+  .y3-cm.off { background: rgba(45,42,36,0.04); color: var(--rock); }
+
+  /* Actions */
+  .y3-card-acts { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+  .y3-cb { padding: 7px 14px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .y3-cb.recipe { background: var(--earth); color: var(--sand); }
+  .y3-cb.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .y3-cb.eatout { background: rgba(245,158,11,0.06); color: #92400E; }
+  .y3-cb.nah { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+  /* Alternatives */
+  .y3-card-alts { margin-top: 8px; padding: 8px 10px; border-radius: 12px; background: var(--stone); }
+  .y3-alts-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 4px; }
+  .y3-alt { display: flex; align-items: center; gap: 6px; padding: 4px 0; font-size: 11px; }
+  .y3-alt-name { color: var(--earth); flex: 1; }
+  .y3-alt-cal { color: var(--rock); font-weight: 600; }
+  .y3-alt-pick { color: var(--trail); font-weight: 700; font-size: 9px; }
+
+  /* Dots */
+  .y3-dots { display: flex; justify-content: center; gap: 6px; padding: 8px 0; }
+  .y3-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .y3-dot.on { background: var(--earth); width: 18px; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== Y1: IMMERSIVE ACCORDION ===== -->
+<div class="col col-y1">
+  <div class="lbl">Y1 — Immersive Accordion</div>
+  <div class="dsc">Giant 64px calorie hero. Inline macros. Filter pills for cuisine + allergies. Expandable accordion meals with ALL features inside. Click Breakfast to see expanded state.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="status"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div style="display:flex;align-items:center;gap:6px;"><div class="adot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="y1-hero"><div class="y1-ctx">Wednesday · Nutrition</div></div>
+    <div class="y1-cal"><div class="y1-big">2,180</div><div class="y1-unit">kcal</div></div>
+    <div class="y1-macros"><div class="y1-mr"><div class="v">165</div><div class="l">g protein</div></div><div class="y1-mr"><div class="v">245</div><div class="l">g carbs</div></div><div class="y1-mr"><div class="v">72</div><div class="l">g fat</div></div></div>
+
+    <!-- Filters -->
+    <div class="filter-bar">
+      <div class="fbtn active">🇮🇳 Indian</div>
+      <div class="fbtn inactive">🇮🇹 Italian</div>
+      <div class="fbtn inactive">🇲🇽 Mexican</div>
+      <div class="fbtn inactive">🇯🇵 Japanese</div>
+      <div class="fbtn alert">⚠️ Allergies</div>
+    </div>
+
+    <div class="y1-meals">
+      <!-- Breakfast — EXPANDED -->
+      <div class="y1-panel open" onclick="y1Toggle(this)">
+        <div class="y1-header"><span class="y1-emoji">🌅</span><div class="y1-info"><div class="y1-time">8 AM · Breakfast</div><div class="y1-name">Greek Yogurt Power Bowl</div></div><div class="y1-hcal">520 <span>kcal</span></div><div class="y1-chev">▾</div></div>
+        <div class="y1-body">
+          <div class="y1-div"></div>
+          <div class="y1-desc">Creamy yogurt with berries, granola crunch, chia seeds, and a honey drizzle.</div>
+          <div class="y1-stats"><div class="y1-st"><div class="v">35g</div><div class="l">Protein</div></div><div class="y1-st"><div class="v">42g</div><div class="l">Carbs</div></div><div class="y1-st"><div class="v">12g</div><div class="l">Fat</div></div></div>
+          <div class="y1-mode"><span class="y1-mp on">🍳 Cook</span><span class="y1-mp off">🍽️ Eat Out</span></div>
+          <div class="y1-acts"><span class="y1-btn recipe">Recipe</span><span class="y1-btn swap">Swap</span><span class="y1-btn eatout">Eat Out</span><span class="y1-btn nah">Nah</span></div>
+          <div class="y1-alts"><div class="y1-alts-label">Alternatives</div><div class="y1-alt"><span class="y1-alt-name">Oatmeal & Banana</span><span class="y1-alt-cal">480 kcal</span><span class="y1-alt-pick">Pick →</span></div><div class="y1-alt"><span class="y1-alt-name">Avocado Toast & Eggs</span><span class="y1-alt-cal">550 kcal</span><span class="y1-alt-pick">Pick →</span></div></div>
+        </div>
+      </div>
+
+      <div class="y1-panel" onclick="y1Toggle(this)"><div class="y1-header"><span class="y1-emoji">☀️</span><div class="y1-info"><div class="y1-time">12 PM · Lunch</div><div class="y1-name">Grilled Chicken & Rice</div></div><div class="y1-hcal">680 <span>kcal</span></div><div class="y1-chev">▾</div></div><div class="y1-body"><div class="y1-div"></div><div class="y1-desc">Herb chicken with brown rice, broccoli, lemon.</div><div class="y1-stats"><div class="y1-st"><div class="v">45g</div><div class="l">Protein</div></div><div class="y1-st"><div class="v">55g</div><div class="l">Carbs</div></div><div class="y1-st"><div class="v">14g</div><div class="l">Fat</div></div></div><div class="y1-mode"><span class="y1-mp on">🍳 Cook</span><span class="y1-mp off">🍽️ Eat Out</span></div><div class="y1-acts"><span class="y1-btn recipe">Recipe</span><span class="y1-btn swap">Swap</span><span class="y1-btn eatout">Eat Out</span><span class="y1-btn nah">Nah</span></div></div></div>
+
+      <div class="y1-panel" onclick="y1Toggle(this)"><div class="y1-header"><span class="y1-emoji">🌇</span><div class="y1-info"><div class="y1-time">4 PM · Snack</div><div class="y1-name">Protein Shake & Almonds</div></div><div class="y1-hcal">260 <span>kcal</span></div><div class="y1-chev">▾</div></div><div class="y1-body"><div class="y1-div"></div><div class="y1-desc">Whey protein with banana, oat milk, and roasted almonds.</div><div class="y1-stats"><div class="y1-st"><div class="v">37g</div><div class="l">Protein</div></div><div class="y1-st"><div class="v">18g</div><div class="l">Carbs</div></div><div class="y1-st"><div class="v">14g</div><div class="l">Fat</div></div></div><div class="y1-mode"><span class="y1-mp on">🍳 Cook</span><span class="y1-mp off">🍽️ Eat Out</span></div><div class="y1-acts"><span class="y1-btn recipe">Recipe</span><span class="y1-btn swap">Swap</span><span class="y1-btn nah">Nah</span></div></div></div>
+
+      <div class="y1-panel" onclick="y1Toggle(this)"><div class="y1-header"><span class="y1-emoji">🌙</span><div class="y1-info"><div class="y1-time">7 PM · Dinner</div><div class="y1-name">Salmon & Sweet Potato</div></div><div class="y1-hcal">720 <span>kcal</span></div><div class="y1-chev">▾</div></div><div class="y1-body"><div class="y1-div"></div><div class="y1-desc">Pan-seared salmon with sweet potato, asparagus, and garlic butter.</div><div class="y1-stats"><div class="y1-st"><div class="v">48g</div><div class="l">Protein</div></div><div class="y1-st"><div class="v">62g</div><div class="l">Carbs</div></div><div class="y1-st"><div class="v">22g</div><div class="l">Fat</div></div></div><div class="y1-mode"><span class="y1-mp on">🍳 Cook</span><span class="y1-mp off">🍽️ Eat Out</span></div><div class="y1-acts"><span class="y1-btn recipe">Recipe</span><span class="y1-btn swap">Swap</span><span class="y1-btn eatout">Eat Out</span><span class="y1-btn nah">Nah</span></div></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== Y2: MOSAIC + NUMBERS ===== -->
+<div class="col col-y2">
+  <div class="lbl">Y2 — Mosaic Grid</div>
+  <div class="dsc">Giant calorie hero. 2×2 tiles as overview (dark/white/white/stone). Tap any tile — full detail sheet appears below with all features. Filter bar for cuisines + allergies.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="status"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div style="display:flex;align-items:center;gap:6px;"><div class="adot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="y2-hero"><div class="y2-ctx">Wednesday · Nutrition</div></div>
+    <div class="y2-cal"><div class="y2-big">2,180</div><div class="y2-unit">kcal</div></div>
+    <div class="y2-macros"><div class="y2-mr"><div class="v">165</div><div class="l">g protein</div></div><div class="y2-mr"><div class="v">245</div><div class="l">g carbs</div></div><div class="y2-mr"><div class="v">72</div><div class="l">g fat</div></div></div>
+
+    <div class="filter-bar"><div class="fbtn active">🇮🇳 Indian</div><div class="fbtn inactive">🇮🇹 Italian</div><div class="fbtn inactive">🇲🇽 Mexican</div><div class="fbtn alert">⚠️ Allergies</div></div>
+
+    <div class="y2-grid">
+      <div class="y2-tile"><div class="emoji">🌅</div><div class="time">8 AM · Breakfast</div><div class="name">Greek Yogurt Power Bowl</div><div class="cal">520 <span>kcal</span></div></div>
+      <div class="y2-tile"><div class="emoji">☀️</div><div class="time">12 PM · Lunch</div><div class="name">Grilled Chicken & Rice</div><div class="cal">680 <span>kcal</span></div></div>
+      <div class="y2-tile"><div class="emoji">🌇</div><div class="time">4 PM · Snack</div><div class="name">Protein Shake</div><div class="cal">260 <span>kcal</span></div></div>
+      <div class="y2-tile"><div class="emoji">🌙</div><div class="time">7 PM · Dinner</div><div class="name">Salmon & Sweet Potato</div><div class="cal">720 <span>kcal</span></div></div>
+    </div>
+
+    <!-- Detail sheet for tapped tile -->
+    <div class="y2-detail">
+      <div class="y2-det-top"><div class="y2-det-time"><span>🌅</span> 8 AM · Breakfast</div><div class="y2-det-close">✕</div></div>
+      <div class="y2-det-name">Greek Yogurt Power Bowl</div>
+      <div class="y2-det-desc">Creamy yogurt with berries, granola, chia seeds, honey.</div>
+      <div class="y2-det-stats"><div class="y2-ds"><div class="v">35g</div><div class="l">Protein</div></div><div class="y2-ds"><div class="v">42g</div><div class="l">Carbs</div></div><div class="y2-ds"><div class="v">12g</div><div class="l">Fat</div></div></div>
+      <div class="y2-det-mode"><span class="y2-dm on">🍳 Cook</span><span class="y2-dm off">🍽️ Eat Out</span></div>
+      <div class="y2-det-acts"><span class="y2-da recipe">Recipe</span><span class="y2-da swap">Swap</span><span class="y2-da eatout">Eat Out</span><span class="y2-da nah">Nah</span></div>
+      <div class="y2-det-alts"><div class="y2-det-alts-label">Alternatives</div><div class="y2-alt-row"><span class="y2-alt-name">Oatmeal & Banana</span><span class="y2-alt-cal">480</span><span class="y2-alt-btn">Pick →</span></div><div class="y2-alt-row"><span class="y2-alt-name">Avocado Toast & Eggs</span><span class="y2-alt-cal">550</span><span class="y2-alt-btn">Pick →</span></div></div>
+    </div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+<!-- ===== Y3: HORIZONTAL CARDS ===== -->
+<div class="col col-y3">
+  <div class="lbl">Y3 — Swipe Cards</div>
+  <div class="dsc">Giant calorie hero. Horizontal swipeable cards with hero zones, floating emoji, ALL features per card (mode toggle, recipe, swap, eat out, nah, alternatives). Dot indicator.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="status"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span><div style="display:flex;align-items:center;gap:6px;"><div class="adot"></div><span style="font-size:11px;color:var(--trail);font-weight:600;">Fresh</span></div></div>
+
+    <div class="y3-hero"><div class="y3-ctx">Wednesday · Nutrition</div></div>
+    <div class="y3-cal"><div class="y3-big">2,180</div><div class="y3-unit">kcal</div></div>
+    <div class="y3-macros"><div class="y3-mr"><div class="v">165</div><div class="l">g protein</div></div><div class="y3-mr"><div class="v">245</div><div class="l">g carbs</div></div><div class="y3-mr"><div class="v">72</div><div class="l">g fat</div></div></div>
+
+    <div class="filter-bar"><div class="fbtn active">🇮🇳 Indian</div><div class="fbtn inactive">🇮🇹 Italian</div><div class="fbtn inactive">🇲🇽 Mexican</div><div class="fbtn inactive">🇯🇵 Japanese</div><div class="fbtn alert">⚠️ Allergies</div></div>
+
+    <div class="y3-tape">
+      <div class="y3-card">
+        <div class="y3-card-hero" style="background:rgba(245,158,11,0.03);"><div class="bg" style="background:#F59E0B;"></div><span class="badge">🌅 Breakfast</span><span class="hcal">520 <span>kcal</span></span><div class="emoji">🥣</div></div>
+        <div class="y3-card-body">
+          <div class="y3-card-name">Greek Yogurt Power Bowl</div>
+          <div class="y3-card-desc">Creamy yogurt with berries, granola, chia, and honey.</div>
+          <div class="y3-card-macros">35g P · 42g C · 12g F</div>
+          <div class="y3-card-mode"><span class="y3-cm on">🍳 Cook</span><span class="y3-cm off">🍽️ Eat Out</span></div>
+          <div class="y3-card-acts"><span class="y3-cb recipe">Recipe</span><span class="y3-cb swap">Swap</span><span class="y3-cb eatout">Eat Out</span><span class="y3-cb nah">Nah</span></div>
+          <div class="y3-card-alts"><div class="y3-alts-label">Alternatives</div><div class="y3-alt"><span class="y3-alt-name">Oatmeal & Banana</span><span class="y3-alt-cal">480</span><span class="y3-alt-pick">Pick →</span></div><div class="y3-alt"><span class="y3-alt-name">Avocado Toast</span><span class="y3-alt-cal">550</span><span class="y3-alt-pick">Pick →</span></div></div>
+        </div>
+      </div>
+
+      <div class="y3-card">
+        <div class="y3-card-hero" style="background:rgba(52,211,153,0.03);"><div class="bg" style="background:#34D399;"></div><span class="badge">☀️ Lunch</span><span class="hcal">680 <span>kcal</span></span><div class="emoji">🍗</div></div>
+        <div class="y3-card-body">
+          <div class="y3-card-name">Grilled Chicken & Rice</div>
+          <div class="y3-card-desc">Herb chicken, brown rice, broccoli, lemon.</div>
+          <div class="y3-card-macros">45g P · 55g C · 14g F</div>
+          <div class="y3-card-mode"><span class="y3-cm on">🍳 Cook</span><span class="y3-cm off">🍽️ Eat Out</span></div>
+          <div class="y3-card-acts"><span class="y3-cb recipe">Recipe</span><span class="y3-cb swap">Swap</span><span class="y3-cb eatout">Eat Out</span><span class="y3-cb nah">Nah</span></div>
+        </div>
+      </div>
+
+      <div class="y3-card">
+        <div class="y3-card-hero" style="background:rgba(249,115,22,0.03);"><div class="bg" style="background:#F97316;"></div><span class="badge">🌇 Snack</span><span class="hcal">260 <span>kcal</span></span><div class="emoji">🥤</div></div>
+        <div class="y3-card-body">
+          <div class="y3-card-name">Protein Shake & Almonds</div>
+          <div class="y3-card-desc">Whey protein, banana, oat milk, roasted almonds.</div>
+          <div class="y3-card-macros">37g P · 18g C · 14g F</div>
+          <div class="y3-card-mode"><span class="y3-cm on">🍳 Cook</span><span class="y3-cm off">🍽️ Eat Out</span></div>
+          <div class="y3-card-acts"><span class="y3-cb recipe">Recipe</span><span class="y3-cb swap">Swap</span><span class="y3-cb nah">Nah</span></div>
+        </div>
+      </div>
+
+      <div class="y3-card">
+        <div class="y3-card-hero" style="background:rgba(129,140,248,0.03);"><div class="bg" style="background:#818CF8;"></div><span class="badge">🌙 Dinner</span><span class="hcal">720 <span>kcal</span></span><div class="emoji">🐟</div></div>
+        <div class="y3-card-body">
+          <div class="y3-card-name">Salmon & Sweet Potato</div>
+          <div class="y3-card-desc">Pan-seared salmon, sweet potato wedges, asparagus.</div>
+          <div class="y3-card-macros">48g P · 62g C · 22g F</div>
+          <div class="y3-card-mode"><span class="y3-cm on">🍳 Cook</span><span class="y3-cm off">🍽️ Eat Out</span></div>
+          <div class="y3-card-acts"><span class="y3-cb recipe">Recipe</span><span class="y3-cb swap">Swap</span><span class="y3-cb eatout">Eat Out</span><span class="y3-cb nah">Nah</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="y3-dots"><div class="y3-dot on"></div><div class="y3-dot"></div><div class="y3-dot"></div><div class="y3-dot"></div></div>
+
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function y1Toggle(panel) {
+  const wasOpen = panel.classList.contains('open');
+  document.querySelectorAll('.y1-panel').forEach(p => p.classList.remove('open'));
+  if (!wasOpen) panel.classList.add('open');
+}
+</script>
+
+</body>
+</html>

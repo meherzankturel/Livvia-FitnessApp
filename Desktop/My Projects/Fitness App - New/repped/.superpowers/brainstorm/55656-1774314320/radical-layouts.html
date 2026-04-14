@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Radical Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #040406; color: #fff; }
+
+  .page-head { text-align: center; padding: 32px 24px 4px; }
+  .page-head h1 { font-size: 22px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 13px; color: #444; margin-top: 4px; }
+
+  .layouts { display: flex; gap: 28px; padding: 20px 24px 40px; justify-content: center; flex-wrap: wrap; }
+
+  .layout-col { width: 400px; }
+  .layout-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0; }
+  .layout-desc { text-align: center; font-size: 11px; color: #555; padding: 0 20px 12px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .phone-inner { width: 100%; height: 100%; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; }
+  .phone-inner::-webkit-scrollbar { display: none; }
+
+
+  /* =====================================================================
+     LAYOUT 1: THE ORBIT — Radial Command Center
+     ===================================================================== */
+  .layout-label.orbit { color: #818CF8; }
+  .phone-orbit { background: #FAFAF9; }
+
+  .o-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .o-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .o-day { font-size: 12px; color: #AEAEB2; font-weight: 500; }
+
+  /* Central energy core */
+  .o-core-area { position: relative; height: 340px; display: flex; align-items: center; justify-content: center; margin-top: 8px; }
+
+  .o-core {
+    width: 120px; height: 120px; border-radius: 50%;
+    background: #1C1C1E;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    position: relative; z-index: 10;
+    box-shadow: 0 0 40px rgba(99,102,241,0.08), 0 0 80px rgba(99,102,241,0.04);
+  }
+  .o-core .pct { font-size: 32px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+  .o-core .label { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  /* Breathing rings around core */
+  .o-ring {
+    position: absolute; border-radius: 50%; border: 1px solid rgba(99,102,241,0.08);
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    animation: ringExpand 4s ease-in-out infinite;
+  }
+  .o-ring:nth-child(1) { width: 160px; height: 160px; animation-delay: 0s; }
+  .o-ring:nth-child(2) { width: 220px; height: 220px; animation-delay: 0.5s; border-color: rgba(52,211,153,0.06); }
+  .o-ring:nth-child(3) { width: 290px; height: 290px; animation-delay: 1s; border-color: rgba(245,158,11,0.05); }
+  @keyframes ringExpand {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    50% { transform: translate(-50%, -50%) scale(1.04); opacity: 1; }
+  }
+
+  /* Orbiting stat satellites */
+  .o-satellite {
+    position: absolute; width: 68px; height: 68px; border-radius: 20px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    z-index: 11;
+  }
+  .o-satellite .s-num { font-size: 16px; font-weight: 700; color: #1C1C1E; }
+  .o-satellite .s-lbl { font-size: 8px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
+
+  .o-sat-1 { top: 30px; left: 50%; transform: translateX(-50%); animation: satFloat1 6s ease-in-out infinite; }
+  .o-sat-2 { top: 50%; right: 24px; transform: translateY(-50%); animation: satFloat2 7s ease-in-out infinite; }
+  .o-sat-3 { bottom: 30px; left: 50%; transform: translateX(-50%); animation: satFloat3 5s ease-in-out infinite; }
+  .o-sat-4 { top: 50%; left: 24px; transform: translateY(-50%); animation: satFloat4 8s ease-in-out infinite; }
+
+  @keyframes satFloat1 { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-6px); } }
+  @keyframes satFloat2 { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(6px); } }
+  @keyframes satFloat3 { 0%, 100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(6px); } }
+  @keyframes satFloat4 { 0%, 100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(-6px); } }
+
+  /* Connection lines from core to satellites */
+  .o-connection {
+    position: absolute; top: 50%; left: 50%; z-index: 5;
+    height: 1px; background: rgba(99,102,241,0.08);
+    transform-origin: left center;
+  }
+  .o-conn-pulse {
+    position: absolute; width: 4px; height: 4px; border-radius: 50%;
+    background: #6366F1; top: -1.5px;
+    animation: connPulse 3s ease-in-out infinite;
+  }
+  @keyframes connPulse { 0% { left: 0; opacity: 0; } 50% { opacity: 0.6; } 100% { left: 100%; opacity: 0; } }
+
+  .o-conn-up { width: 1px; height: 100px; top: calc(50% - 130px); left: 50%; transform: none; }
+  .o-conn-up .o-conn-pulse { width: 4px; height: 4px; left: -1.5px; top: auto; animation: connPulseV 3s ease-in-out infinite; }
+  @keyframes connPulseV { 0% { bottom: 0; opacity: 0; } 50% { opacity: 0.6; } 100% { bottom: 100%; opacity: 0; } }
+
+  /* Exercise arc — curved list below the orbit */
+  .o-exercises { padding: 0 20px; margin-top: 0; }
+  .o-section-label { font-size: 11px; font-weight: 700; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; padding-left: 4px; }
+
+  .o-ex-arc { display: flex; flex-direction: column; gap: 8px; }
+  .o-ex {
+    display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px; border-radius: 22px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.03);
+    position: relative; overflow: hidden;
+    opacity: 0; animation: oExIn 0.5s ease-out forwards;
+  }
+  .o-ex:nth-child(1) { animation-delay: 0.1s; border-left: 3px solid #6366F1; }
+  .o-ex:nth-child(2) { animation-delay: 0.2s; margin-left: 12px; border-left: 3px solid #F59E0B; }
+  .o-ex:nth-child(3) { animation-delay: 0.3s; margin-left: 24px; border-left: 3px solid #EF4444; }
+  .o-ex:nth-child(4) { animation-delay: 0.4s; margin-left: 12px; border-left: 3px solid #34D399; }
+  .o-ex:nth-child(5) { animation-delay: 0.5s; border-left: 3px solid #818CF8; }
+  @keyframes oExIn { to { opacity: 1; } }
+
+  .o-ex-num { font-size: 11px; font-weight: 800; color: #AEAEB2; width: 20px; }
+  .o-ex-info .name { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .o-ex-info .meta { font-size: 11px; color: #AEAEB2; margin-top: 2px; }
+  .o-ex-weight { margin-left: auto; font-size: 18px; font-weight: 700; color: #1C1C1E; }
+  .o-ex-weight span { font-size: 10px; color: #AEAEB2; font-weight: 500; }
+
+  /* Orbit CTA */
+  .o-cta { margin: 20px 20px 40px; }
+  .o-cta button {
+    width: 100%; padding: 20px; border: none; border-radius: 22px;
+    background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer; position: relative; overflow: hidden;
+  }
+
+
+  /* =====================================================================
+     LAYOUT 2: THE TERRAIN — Topographic Journey
+     ===================================================================== */
+  .layout-label.terrain { color: #34D399; }
+  .phone-terrain { background: #F6F5F0; }
+
+  .t-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .t-time { font-size: 15px; font-weight: 600; color: #2D2A24; }
+
+  /* Topo contour background */
+  .t-topo { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0.03; }
+  .t-contour {
+    position: absolute; border: 1px solid #2D2A24; border-radius: 50%;
+    animation: contourShift 20s ease-in-out infinite alternate;
+  }
+  .t-contour:nth-child(1) { width: 500px; height: 400px; top: -100px; left: -100px; }
+  .t-contour:nth-child(2) { width: 450px; height: 350px; top: -70px; left: -70px; animation-delay: -3s; }
+  .t-contour:nth-child(3) { width: 400px; height: 300px; top: -40px; left: -40px; animation-delay: -6s; }
+  .t-contour:nth-child(4) { width: 600px; height: 500px; bottom: -150px; right: -150px; animation-delay: -10s; }
+  .t-contour:nth-child(5) { width: 500px; height: 420px; bottom: -100px; right: -100px; animation-delay: -13s; }
+  @keyframes contourShift { 0% { transform: rotate(0deg) scale(1); } 100% { transform: rotate(3deg) scale(1.02); } }
+
+  .t-content { position: relative; z-index: 1; }
+
+  /* Elevation header */
+  .t-header { padding: 16px 24px 0; }
+  .t-header .sub { font-size: 11px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .t-header .title { font-size: 28px; font-weight: 800; color: #2D2A24; letter-spacing: -1px; margin-top: 4px; }
+
+  /* Elevation profile — the week as a mountain range */
+  .t-elevation { padding: 20px 24px; height: 200px; position: relative; }
+
+  .t-mountain { position: absolute; bottom: 20px; left: 24px; right: 24px; height: 160px; }
+
+  .t-mountain svg { width: 100%; height: 100%; }
+  .t-path-bg { fill: none; stroke: #DDD9CE; stroke-width: 1.5; }
+  .t-path-fg { fill: none; stroke: #2D2A24; stroke-width: 2.5; stroke-linecap: round;
+    stroke-dasharray: 600; stroke-dashoffset: 600;
+    animation: trailDraw 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards; }
+  @keyframes trailDraw { to { stroke-dashoffset: 180; } }
+
+  .t-path-fill { fill: url(#terrainGrad); opacity: 0; animation: fillFade 1s ease 2s forwards; }
+  @keyframes fillFade { to { opacity: 0.15; } }
+
+  /* Day markers on the trail */
+  .t-marker {
+    position: absolute; bottom: 20px; display: flex; flex-direction: column; align-items: center;
+  }
+  .t-marker-dot { width: 10px; height: 10px; border-radius: 50%; border: 2px solid #2D2A24; background: #F6F5F0; }
+  .t-marker-dot.done { background: #2D2A24; }
+  .t-marker-dot.now { background: #34D399; border-color: #34D399; box-shadow: 0 0 8px rgba(52,211,153,0.4); animation: nowPulse 2s ease-in-out infinite; }
+  @keyframes nowPulse { 0%, 100% { box-shadow: 0 0 8px rgba(52,211,153,0.4); } 50% { box-shadow: 0 0 16px rgba(52,211,153,0.6); } }
+  .t-marker-label { font-size: 9px; font-weight: 600; color: #8E8E7A; margin-top: 6px; text-transform: uppercase; }
+
+  .t-m1 { left: 5%; bottom: 62px; }
+  .t-m2 { left: 18%; bottom: 95px; }
+  .t-m3 { left: 35%; bottom: 125px; }
+  .t-m4 { left: 52%; bottom: 108px; }
+  .t-m5 { left: 68%; bottom: 80px; }
+  .t-m6 { left: 82%; bottom: 55px; }
+  .t-m7 { left: 95%; bottom: 42px; }
+
+  /* Current altitude card */
+  .t-altitude { margin: 0 24px; padding: 20px; background: #2D2A24; border-radius: 20px; color: #F6F5F0; display: flex; align-items: center; justify-content: space-between; }
+  .t-alt-left .a-label { font-size: 10px; color: rgba(246,245,240,0.4); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .t-alt-left .a-val { font-size: 28px; font-weight: 800; margin-top: 2px; letter-spacing: -1px; }
+  .t-alt-left .a-sub { font-size: 11px; color: rgba(246,245,240,0.4); margin-top: 2px; }
+  .t-alt-right { text-align: right; }
+  .t-alt-right .elev { font-size: 36px; font-weight: 800; letter-spacing: -2px; }
+  .t-alt-right .unit { font-size: 11px; color: rgba(246,245,240,0.4); }
+
+  /* Waypoint exercises — trail style */
+  .t-trail { padding: 20px 24px; position: relative; }
+  .t-trail-line { position: absolute; left: 43px; top: 46px; bottom: 20px; width: 2px; background: #DDD9CE; }
+  /* Animated pulse traveling down the trail line */
+  .t-trail-pulse { position: absolute; left: 42px; top: 46px; width: 4px; height: 20px; border-radius: 2px; background: #34D399; animation: trailPulseDown 3s ease-in-out infinite; opacity: 0.6; }
+  @keyframes trailPulseDown { 0% { top: 46px; opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { top: calc(100% - 40px); opacity: 0; } }
+
+  .t-trail-label { font-size: 10px; font-weight: 700; color: #8E8E7A; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; margin-left: 52px; }
+
+  .t-waypoint {
+    display: flex; gap: 16px; margin-bottom: 16px; position: relative; align-items: flex-start;
+    opacity: 0; animation: wpIn 0.5s ease-out forwards;
+  }
+  .t-waypoint:nth-child(2) { animation-delay: 0.15s; }
+  .t-waypoint:nth-child(3) { animation-delay: 0.3s; }
+  .t-waypoint:nth-child(4) { animation-delay: 0.45s; }
+  .t-waypoint:nth-child(5) { animation-delay: 0.6s; }
+  @keyframes wpIn { to { opacity: 1; } }
+
+  .t-wp-marker { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #DDD9CE; background: #F6F5F0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #8E8E7A; flex-shrink: 0; z-index: 2; margin-top: 12px; }
+  .t-wp-card { flex: 1; padding: 14px 16px; border-radius: 16px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .t-wp-card .name { font-size: 14px; font-weight: 600; color: #2D2A24; }
+  .t-wp-card .meta { font-size: 11px; color: #8E8E7A; margin-top: 3px; }
+  .t-wp-card .sets-row { display: flex; gap: 4px; margin-top: 8px; }
+  .t-set-pip { width: 24px; height: 5px; border-radius: 3px; background: #E8E4D9; }
+  .t-set-pip.filled { background: #2D2A24; }
+
+  /* Summit CTA */
+  .t-cta { margin: 12px 24px 40px; }
+  .t-cta button {
+    width: 100%; padding: 20px; border: none; border-radius: 20px;
+    background: #2D2A24; color: #F6F5F0; font-size: 16px; font-weight: 700;
+    cursor: pointer; letter-spacing: 0.3px;
+  }
+
+
+  /* =====================================================================
+     LAYOUT 3: THE BENTO — Asymmetric Magazine Grid
+     ===================================================================== */
+  .layout-label.bento { color: #F59E0B; }
+  .phone-bento { background: #FFFFFF; }
+
+  .b-content { padding: 54px 16px 0; }
+
+  /* Top row: day badge + greeting — asymmetric */
+  .b-top { display: flex; gap: 10px; margin-bottom: 10px; }
+  .b-day-badge {
+    width: 72px; height: 72px; border-radius: 22px; background: #1C1C1E;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .b-day-badge .dow { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .b-day-badge .num { font-size: 28px; font-weight: 800; color: #fff; margin-top: -2px; }
+
+  .b-greeting-card { flex: 1; background: #F5F5F2; border-radius: 22px; padding: 16px 18px; display: flex; flex-direction: column; justify-content: center; }
+  .b-greeting-card .hi { font-size: 13px; color: #8E8E93; }
+  .b-greeting-card .title { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; margin-top: 2px; }
+
+  /* Bento grid — the star of the show */
+  .b-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .b-cell {
+    border-radius: 22px; padding: 18px; position: relative; overflow: hidden;
+    opacity: 0; animation: bCellIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+  .b-cell:nth-child(1) { animation-delay: 0.05s; }
+  .b-cell:nth-child(2) { animation-delay: 0.1s; }
+  .b-cell:nth-child(3) { animation-delay: 0.15s; }
+  .b-cell:nth-child(4) { animation-delay: 0.2s; }
+  .b-cell:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes bCellIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+
+  /* Cell 1: Weekly ring — tall left */
+  .b-weekly {
+    grid-row: span 2; background: #1C1C1E; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; min-height: 200px;
+  }
+  .b-ring-wrap { position: relative; width: 100px; height: 100px; }
+  .b-ring-wrap svg { width: 100px; height: 100px; transform: rotate(-90deg); }
+  .b-ring-track { fill: none; stroke: rgba(255,255,255,0.08); stroke-width: 6; }
+  .b-ring-fill { fill: none; stroke: #6366F1; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 264; stroke-dashoffset: 264; animation: bRingFill 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes bRingFill { to { stroke-dashoffset: 66; } }
+  .b-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 28px; font-weight: 800; color: #fff; }
+  .b-ring-label { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  /* Cell 2: Volume — top right */
+  .b-volume { background: #F5F5F2; }
+  .b-volume .lbl { font-size: 10px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .b-volume .val { font-size: 28px; font-weight: 800; color: #1C1C1E; margin-top: 4px; letter-spacing: -1px; }
+  .b-volume .trend { font-size: 11px; color: #34D399; font-weight: 600; margin-top: 2px; }
+  /* Mini spark bars */
+  .b-sparks { display: flex; gap: 3px; align-items: flex-end; margin-top: 12px; height: 30px; }
+  .b-spark { width: 8px; border-radius: 4px; background: #1C1C1E; animation: sparkGrow 0.8s ease-out forwards; transform-origin: bottom; }
+  @keyframes sparkGrow { from { transform: scaleY(0); } }
+  .b-spark:nth-child(1) { height: 40%; animation-delay: 0.3s; }
+  .b-spark:nth-child(2) { height: 65%; animation-delay: 0.35s; }
+  .b-spark:nth-child(3) { height: 45%; animation-delay: 0.4s; }
+  .b-spark:nth-child(4) { height: 80%; animation-delay: 0.45s; }
+  .b-spark:nth-child(5) { height: 55%; animation-delay: 0.5s; }
+  .b-spark:nth-child(6) { height: 90%; animation-delay: 0.55s; }
+  .b-spark:nth-child(7) { height: 100%; animation-delay: 0.6s; background: #6366F1; }
+
+  /* Cell 3: Streak — bottom right */
+  .b-streak { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+  .b-streak .emoji { font-size: 28px; }
+  .b-streak .val { font-size: 22px; font-weight: 800; color: #92400E; margin-top: 6px; }
+  .b-streak .lbl { font-size: 11px; color: #B45309; margin-top: 2px; }
+
+  /* Cell 4: Focus area — full width */
+  .b-focus {
+    grid-column: span 2; background: #6366F1; padding: 20px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .b-focus-left .label { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .b-focus-left .muscle { font-size: 22px; font-weight: 800; color: #fff; margin-top: 4px; letter-spacing: -0.5px; }
+  .b-focus-left .count { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .b-focus-icon { font-size: 40px; opacity: 0.3; }
+
+  /* Cell 5: Readiness — wide */
+  .b-ready {
+    grid-column: span 2; background: #F0FDF4; display: flex; align-items: center; gap: 14px;
+    padding: 16px 18px;
+  }
+  .b-ready-dot { width: 10px; height: 10px; border-radius: 50%; background: #34D399; animation: rdyPulse 2s ease-in-out infinite; flex-shrink: 0; }
+  @keyframes rdyPulse { 0%, 100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.3); opacity: 1; } }
+  .b-ready-text .status { font-size: 14px; font-weight: 600; color: #166534; }
+  .b-ready-text .detail { font-size: 11px; color: #4ADE80; margin-top: 1px; }
+
+  /* Exercise stack — overlapping cards */
+  .b-stack { position: relative; height: 240px; margin: 0 0 10px; }
+
+  .b-ex-card {
+    position: absolute; left: 0; right: 0; padding: 16px 18px;
+    border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex; align-items: center; gap: 14px;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+  }
+  .b-ex-card:nth-child(1) { top: 0; z-index: 3; }
+  .b-ex-card:nth-child(2) { top: 12px; z-index: 2; transform: scale(0.96) translateY(52px); opacity: 0.7; }
+  .b-ex-card:nth-child(3) { top: 24px; z-index: 1; transform: scale(0.92) translateY(96px); opacity: 0.4; }
+
+  .b-ex-num { font-size: 24px; font-weight: 800; color: #E8E8ED; }
+  .b-ex-info .name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .b-ex-info .meta { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+  .b-ex-arrow { margin-left: auto; font-size: 18px; color: #AEAEB2; }
+
+  /* Swipe hint */
+  .b-swipe-hint { text-align: center; margin: 4px 0 10px; }
+  .b-swipe-hint span { font-size: 10px; color: #AEAEB2; background: #F5F5F2; padding: 4px 12px; border-radius: 100px; }
+
+  /* Bento CTA */
+  .b-cta { margin: 0 0 40px; }
+  .b-cta button {
+    width: 100%; padding: 20px; border: none; border-radius: 22px;
+    background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ===== VOTE ===== */
+  .vote-section { display: flex; gap: 12px; justify-content: center; padding: 20px 24px 60px; flex-wrap: wrap; }
+  .vote-btn { padding: 14px 28px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.06); background: transparent; color: rgba(255,255,255,0.5); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+  .vote-btn:hover { border-color: rgba(255,255,255,0.15); color: #fff; }
+  .vote-btn.v1:hover { border-color: #818CF8; color: #818CF8; }
+  .vote-btn.v2:hover { border-color: #34D399; color: #34D399; }
+  .vote-btn.v3:hover { border-color: #F59E0B; color: #F59E0B; }
+  .vote-btn.vmix:hover { border-color: #F472B6; color: #F472B6; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>3 Radical Layouts — No More Card Lists</h1>
+  <p>Same data, completely different spatial structures. All scrollable.</p>
+</div>
+
+<div class="layouts">
+
+  <!-- ===== LAYOUT 1: THE ORBIT ===== -->
+  <div class="layout-col">
+    <div class="layout-label orbit">Layout 1 — The Orbit</div>
+    <div class="layout-desc">A radial command center. Stats orbit a central core. Exercises arc outward. Nothing is a flat list.</div>
+    <div class="phone phone-orbit">
+      <div class="phone-inner">
+        <div class="o-status">
+          <div class="o-time">9:41</div>
+          <div class="o-day">Wednesday</div>
+        </div>
+
+        <div class="o-core-area">
+          <!-- Connection lines -->
+          <div class="o-conn-up">
+            <div class="o-conn-pulse"></div>
+          </div>
+
+          <!-- Breathing rings -->
+          <div class="o-ring"></div>
+          <div class="o-ring"></div>
+          <div class="o-ring"></div>
+
+          <!-- Central core -->
+          <div class="o-core">
+            <div class="pct">75%</div>
+            <div class="label">Weekly</div>
+          </div>
+
+          <!-- Orbiting satellites -->
+          <div class="o-satellite o-sat-1">
+            <div class="s-num">3/4</div>
+            <div class="s-lbl">Days</div>
+          </div>
+          <div class="o-satellite o-sat-2">
+            <div class="s-num">12.4k</div>
+            <div class="s-lbl">Volume</div>
+          </div>
+          <div class="o-satellite o-sat-3">
+            <div class="s-num">80kg</div>
+            <div class="s-lbl">Top lift</div>
+          </div>
+          <div class="o-satellite o-sat-4">
+            <div class="s-num">12</div>
+            <div class="s-lbl">Streak</div>
+          </div>
+        </div>
+
+        <div class="o-exercises">
+          <div class="o-section-label">Today's Route</div>
+          <div class="o-ex-arc">
+            <div class="o-ex">
+              <div class="o-ex-num">01</div>
+              <div class="o-ex-info">
+                <div class="name">Bench Press</div>
+                <div class="meta">Chest &middot; 4&times;8-10</div>
+              </div>
+              <div class="o-ex-weight">70<span>kg</span></div>
+            </div>
+            <div class="o-ex">
+              <div class="o-ex-num">02</div>
+              <div class="o-ex-info">
+                <div class="name">Overhead Press</div>
+                <div class="meta">Shoulders &middot; 3&times;10-12</div>
+              </div>
+              <div class="o-ex-weight">40<span>kg</span></div>
+            </div>
+            <div class="o-ex">
+              <div class="o-ex-num">03</div>
+              <div class="o-ex-info">
+                <div class="name">Incline DB Press</div>
+                <div class="meta">Upper Chest &middot; 3&times;10</div>
+              </div>
+              <div class="o-ex-weight">24<span>kg</span></div>
+            </div>
+            <div class="o-ex">
+              <div class="o-ex-num">04</div>
+              <div class="o-ex-info">
+                <div class="name">Cable Flyes</div>
+                <div class="meta">Chest &middot; 3&times;12-15</div>
+              </div>
+              <div class="o-ex-weight">15<span>kg</span></div>
+            </div>
+            <div class="o-ex">
+              <div class="o-ex-num">05</div>
+              <div class="o-ex-info">
+                <div class="name">Lateral Raises</div>
+                <div class="meta">Delts &middot; 3&times;15</div>
+              </div>
+              <div class="o-ex-weight">10<span>kg</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="o-cta">
+          <button>Launch Workout &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LAYOUT 2: THE TERRAIN ===== -->
+  <div class="layout-col">
+    <div class="layout-label terrain">Layout 2 — The Terrain</div>
+    <div class="layout-desc">Your week is a mountain range. You climb it. Exercises are waypoints on a trail. Topo contour lines as texture.</div>
+    <div class="phone phone-terrain">
+      <div class="t-topo">
+        <div class="t-contour"></div>
+        <div class="t-contour"></div>
+        <div class="t-contour"></div>
+        <div class="t-contour"></div>
+        <div class="t-contour"></div>
+      </div>
+      <div class="t-content phone-inner">
+        <div class="t-status">
+          <div class="t-time">9:41</div>
+        </div>
+
+        <div class="t-header">
+          <div class="sub">Expedition &middot; Week 3</div>
+          <div class="title">Push Day<br>Summit</div>
+        </div>
+
+        <!-- Elevation profile -->
+        <div class="t-elevation">
+          <div class="t-mountain">
+            <svg viewBox="0 0 345 140" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="terrainGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2D2A24"/>
+                  <stop offset="100%" stop-color="#F6F5F0"/>
+                </linearGradient>
+              </defs>
+              <path class="t-path-fill" d="M0,120 Q40,110 60,80 Q90,30 120,20 Q150,10 175,40 Q200,70 230,50 Q260,30 290,65 Q320,95 345,110 L345,140 L0,140 Z"/>
+              <path class="t-path-bg" d="M0,120 Q40,110 60,80 Q90,30 120,20 Q150,10 175,40 Q200,70 230,50 Q260,30 290,65 Q320,95 345,110"/>
+              <path class="t-path-fg" d="M0,120 Q40,110 60,80 Q90,30 120,20 Q150,10 175,40 Q200,70 230,50 Q260,30 290,65 Q320,95 345,110"/>
+            </svg>
+          </div>
+          <div class="t-marker t-m1"><div class="t-marker-dot done"></div><div class="t-marker-label">Mon</div></div>
+          <div class="t-marker t-m2"><div class="t-marker-dot done"></div><div class="t-marker-label">Tue</div></div>
+          <div class="t-marker t-m3"><div class="t-marker-dot now"></div><div class="t-marker-label">Wed</div></div>
+          <div class="t-marker t-m4"><div class="t-marker-dot"></div><div class="t-marker-label">Thu</div></div>
+          <div class="t-marker t-m5"><div class="t-marker-dot"></div><div class="t-marker-label">Fri</div></div>
+          <div class="t-marker t-m6"><div class="t-marker-dot"></div><div class="t-marker-label">Sat</div></div>
+          <div class="t-marker t-m7"><div class="t-marker-dot"></div><div class="t-marker-label">Sun</div></div>
+        </div>
+
+        <!-- Altitude card -->
+        <div class="t-altitude">
+          <div class="t-alt-left">
+            <div class="a-label">Current Altitude</div>
+            <div class="a-val">Day 3 of 7</div>
+            <div class="a-sub">12,400 kg total volume</div>
+          </div>
+          <div class="t-alt-right">
+            <div class="elev">3/4</div>
+            <div class="unit">days this week</div>
+          </div>
+        </div>
+
+        <!-- Trail waypoints -->
+        <div class="t-trail">
+          <div class="t-trail-line"></div>
+          <div class="t-trail-pulse"></div>
+          <div class="t-trail-label">Waypoints</div>
+
+          <div class="t-waypoint">
+            <div class="t-wp-marker">1</div>
+            <div class="t-wp-card">
+              <div class="name">Bench Press</div>
+              <div class="meta">Chest &middot; Compound &middot; 70kg</div>
+              <div class="sets-row">
+                <div class="t-set-pip"></div><div class="t-set-pip"></div><div class="t-set-pip"></div><div class="t-set-pip"></div>
+              </div>
+            </div>
+          </div>
+          <div class="t-waypoint">
+            <div class="t-wp-marker">2</div>
+            <div class="t-wp-card">
+              <div class="name">Overhead Press</div>
+              <div class="meta">Shoulders &middot; Compound &middot; 40kg</div>
+              <div class="sets-row">
+                <div class="t-set-pip"></div><div class="t-set-pip"></div><div class="t-set-pip"></div>
+              </div>
+            </div>
+          </div>
+          <div class="t-waypoint">
+            <div class="t-wp-marker">3</div>
+            <div class="t-wp-card">
+              <div class="name">Incline DB Press</div>
+              <div class="meta">Upper Chest &middot; Compound &middot; 24kg</div>
+              <div class="sets-row">
+                <div class="t-set-pip"></div><div class="t-set-pip"></div><div class="t-set-pip"></div>
+              </div>
+            </div>
+          </div>
+          <div class="t-waypoint">
+            <div class="t-wp-marker">4</div>
+            <div class="t-wp-card">
+              <div class="name">Cable Flyes</div>
+              <div class="meta">Chest &middot; Isolation &middot; 15kg</div>
+              <div class="sets-row">
+                <div class="t-set-pip"></div><div class="t-set-pip"></div><div class="t-set-pip"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="t-cta">
+          <button>Begin Ascent &rarr;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LAYOUT 3: THE BENTO ===== -->
+  <div class="layout-col">
+    <div class="layout-label bento">Layout 3 — The Bento</div>
+    <div class="layout-desc">Asymmetric magazine grid. Every cell is a different size. Exercises stack with depth. No two things look the same.</div>
+    <div class="phone phone-bento">
+      <div class="phone-inner">
+        <div class="b-content">
+
+          <!-- Top: Day + Greeting -->
+          <div class="b-top">
+            <div class="b-day-badge">
+              <div class="dow">Wed</div>
+              <div class="num">19</div>
+            </div>
+            <div class="b-greeting-card">
+              <div class="hi">Good morning</div>
+              <div class="title">Push Day</div>
+            </div>
+          </div>
+
+          <!-- Bento Grid -->
+          <div class="b-grid">
+            <!-- Tall left: Weekly ring -->
+            <div class="b-cell b-weekly">
+              <div class="b-ring-wrap">
+                <svg viewBox="0 0 100 100">
+                  <circle class="b-ring-track" cx="50" cy="50" r="42"/>
+                  <circle class="b-ring-fill" cx="50" cy="50" r="42"/>
+                </svg>
+                <div class="b-ring-pct">75%</div>
+              </div>
+              <div class="b-ring-label">This Week</div>
+            </div>
+
+            <!-- Top right: Volume -->
+            <div class="b-cell b-volume">
+              <div class="lbl">Volume</div>
+              <div class="val">12.4k</div>
+              <div class="trend">&#9650; 12% vs last week</div>
+              <div class="b-sparks">
+                <div class="b-spark"></div><div class="b-spark"></div><div class="b-spark"></div>
+                <div class="b-spark"></div><div class="b-spark"></div><div class="b-spark"></div><div class="b-spark"></div>
+              </div>
+            </div>
+
+            <!-- Bottom right: Streak -->
+            <div class="b-cell b-streak">
+              <div class="emoji">&#128293;</div>
+              <div class="val">12 days</div>
+              <div class="lbl">Best streak yet</div>
+            </div>
+          </div>
+
+          <!-- Focus area: full-width accent -->
+          <div class="b-cell b-focus" style="margin-bottom: 10px;">
+            <div class="b-focus-left">
+              <div class="label">Focus Area</div>
+              <div class="muscle">Chest & Shoulders</div>
+              <div class="count">5 exercises &middot; ~45 min</div>
+            </div>
+            <div class="b-focus-icon">&#128170;</div>
+          </div>
+
+          <!-- Readiness -->
+          <div class="b-cell b-ready" style="margin-bottom: 10px;">
+            <div class="b-ready-dot"></div>
+            <div class="b-ready-text">
+              <div class="status">Body is fresh &middot; Ready to push</div>
+              <div class="detail">7.5h sleep &middot; Low soreness &middot; 2 rest days</div>
+            </div>
+          </div>
+
+          <!-- Exercise stack -->
+          <div class="b-stack">
+            <div class="b-ex-card" style="z-index:3; top:0;">
+              <div class="b-ex-num">01</div>
+              <div class="b-ex-info">
+                <div class="name">Bench Press</div>
+                <div class="meta">4&times;8-10 &middot; 70kg &middot; Chest</div>
+              </div>
+              <div class="b-ex-arrow">&rsaquo;</div>
+            </div>
+            <div class="b-ex-card">
+              <div class="b-ex-num">02</div>
+              <div class="b-ex-info">
+                <div class="name">Overhead Press</div>
+                <div class="meta">3&times;10-12 &middot; 40kg &middot; Shoulders</div>
+              </div>
+              <div class="b-ex-arrow">&rsaquo;</div>
+            </div>
+            <div class="b-ex-card">
+              <div class="b-ex-num">03</div>
+              <div class="b-ex-info">
+                <div class="name">Cable Flyes</div>
+                <div class="meta">3&times;12-15 &middot; 15kg &middot; Chest</div>
+              </div>
+              <div class="b-ex-arrow">&rsaquo;</div>
+            </div>
+          </div>
+
+          <div class="b-swipe-hint"><span>Swipe up to see all exercises</span></div>
+
+          <div class="b-cta">
+            <button>Start Workout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="vote-section">
+  <button class="vote-btn v1" onclick="pick('Orbit')">The Orbit</button>
+  <button class="vote-btn v2" onclick="pick('Terrain')">The Terrain</button>
+  <button class="vote-btn v3" onclick="pick('Bento')">The Bento</button>
+  <button class="vote-btn vmix" onclick="pick('Mix')">Mix Elements</button>
+</div>
+
+<script>
+function pick(c) {
+  document.querySelectorAll('.vote-btn').forEach(b => { b.style.opacity='0.3'; b.style.borderColor='rgba(255,255,255,0.06)'; b.style.color='rgba(255,255,255,0.3)'; });
+  const b = event.target; b.style.opacity='1';
+  const colors = { Orbit:'#818CF8', Terrain:'#34D399', Bento:'#F59E0B', Mix:'#F472B6' };
+  b.style.borderColor = colors[c]; b.style.color = colors[c];
+  if (window.__recordEvent) window.__recordEvent('vote', c);
+}
+</script>
+
+</body>
+</html>

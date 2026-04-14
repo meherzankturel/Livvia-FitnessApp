@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Shopping List Creative</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.hero-ph{margin:56px 18px 0;height:100px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5,#E8E4DB,#F2EFE8,#DDD8CE);display:flex;align-items:center;justify-content:center;opacity:0.4}
+.hero-ph-text{font-size:9px;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px}
+
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(100px);opacity:0}}
+@keyframes checkPop{0%{transform:scale(0.5)}60%{transform:scale(1.15)}100%{transform:scale(1)}}
+
+
+/* ============================================================
+   S1: SWIPE CARDS — Items as swipeable cards. Swipe right
+   reveals green check + flies off. Stacked with depth peek.
+   Remaining count shown. Most interactive.
+   ============================================================ */
+.s1{padding:18px 20px 40px}
+.s1-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.s1-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s1-count{display:flex;align-items:center;gap:4px}
+.s1-count-num{font-size:18px;font-weight:800;color:var(--earth)}
+.s1-count-label{font-size:9px;color:var(--rock)}
+
+/* Card stack */
+.s1-stack{position:relative;height:240px}
+.s1-card{position:absolute;left:0;right:0;border-radius:18px;padding:18px;cursor:grab}
+.s1-card.c3{top:16px;background:#fff;opacity:0.3;transform:scale(0.92);box-shadow:0 1px 4px rgba(0,0,0,0.02)}
+.s1-card.c2{top:8px;background:#fff;opacity:0.6;transform:scale(0.96);box-shadow:0 2px 8px rgba(0,0,0,0.03)}
+.s1-card.c1{top:0;background:#fff;box-shadow:0 4px 16px rgba(0,0,0,0.06);z-index:3}
+
+.s1-card-cat{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.s1-card-cat-dot{width:8px;height:8px;border-radius:4px}
+.s1-card-cat-name{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+
+.s1-card-main{display:flex;align-items:center;justify-content:space-between}
+.s1-card-name{font-size:20px;font-weight:700;color:var(--earth);letter-spacing:-0.5px}
+.s1-card-price{font-size:18px;font-weight:800;color:var(--earth)}
+
+.s1-card-detail{display:flex;align-items:center;gap:10px;margin-top:8px}
+.s1-card-qty{font-size:12px;color:var(--rock)}
+.s1-card-hint{font-size:10px;color:var(--rock);opacity:0.4;margin-left:auto;font-style:italic}
+
+/* Swipe indicator */
+.s1-swipe{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:14px}
+.s1-swipe-arrow{font-size:16px;color:var(--trail);opacity:0.4}
+.s1-swipe-text{font-size:9px;color:var(--rock);opacity:0.5}
+
+/* Done section */
+.s1-done{margin-top:16px}
+.s1-done-head{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;opacity:0.5}
+.s1-done-row{display:flex;align-items:center;gap:8px;padding:6px 0;opacity:0.3}
+.s1-done-check{width:16px;height:16px;border-radius:8px;background:var(--trail);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700}
+.s1-done-name{font-size:12px;color:var(--earth);text-decoration:line-through}
+.s1-done-price{font-size:11px;color:var(--rock);margin-left:auto}
+
+
+/* ============================================================
+   S2: SPLIT VIEW — "To Get" on top (unchecked), "Got It" on
+   bottom (checked). Items auto-move between sections.
+   Clean two-zone layout.
+   ============================================================ */
+.s2{padding:18px 24px 40px}
+
+/* To Get section */
+.s2-section{margin-bottom:16px}
+.s2-section-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.s2-section-icon{width:24px;height:24px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.s2-section-icon.todo{background:rgba(0,0,0,0.04)}
+.s2-section-icon.done{background:rgba(52,211,153,0.08)}
+.s2-section-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:1.5px}
+.s2-section-count{font-size:10px;color:var(--rock);margin-left:auto}
+
+.s2-item{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:14px;margin-bottom:5px;cursor:pointer;transition:all 0.2s}
+.s2-item:active{transform:scale(0.98)}
+.s2-cb{width:22px;height:22px;border-radius:8px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.s2-cb.on{background:var(--trail);border-color:var(--trail)}
+.s2-ck{font-size:11px;color:#fff;font-weight:700}
+.s2-info{flex:1}
+.s2-name{font-size:14px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.s2-qty{font-size:10px;color:var(--rock);margin-top:1px}
+.s2-price{font-size:13px;font-weight:700;color:var(--earth)}
+
+/* Done items — more muted */
+.s2-item.checked{background:var(--stone);opacity:0.5}
+.s2-item.checked .s2-name{text-decoration:line-through}
+
+/* Divider between sections */
+.s2-divider{height:1px;background:rgba(0,0,0,0.04);margin:6px 0 12px}
+
+
+/* ============================================================
+   S3: AISLE ROUTE — Items organized as a store route.
+   Vertical trail line with waypoint dots per aisle/section.
+   Like walking through the store. Terrain language.
+   ============================================================ */
+.s3{padding:18px 24px 40px}
+.s3-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.s3-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s3-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s3-meta{font-size:10px;color:var(--rock)}
+
+.s3-route{position:relative;padding-left:34px}
+.s3-route-line{position:absolute;left:9px;top:0;bottom:0;width:2px;background:var(--stone)}
+.s3-route-line-fill{width:100%;background:var(--trail);border-radius:1px}
+
+/* Aisle node */
+.s3-aisle{position:relative;margin-bottom:4px}
+.s3-aisle-dot{position:absolute;left:-34px;top:4px;width:20px;height:20px;border-radius:10px;z-index:1;display:flex;align-items:center;justify-content:center}
+.s3-aisle-dot.active{background:var(--earth)}
+.s3-aisle-dot.done{background:var(--trail)}
+.s3-aisle-dot.upcoming{background:var(--stone)}
+.s3-aisle-dot-icon{font-size:10px}
+.s3-aisle-dot.active .s3-aisle-dot-icon,.s3-aisle-dot.done .s3-aisle-dot-icon{color:#fff}
+.s3-aisle-dot.upcoming .s3-aisle-dot-icon{color:var(--rock)}
+
+.s3-aisle-name{font-size:10px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:0.8px;padding:6px 0 6px}
+
+.s3-aisle-items{padding-bottom:8px}
+.s3-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#fff;border-radius:12px;margin-bottom:4px;cursor:pointer}
+.s3-item-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.s3-item-cb.on{background:var(--trail);border-color:var(--trail)}
+.s3-item-ck{font-size:9px;color:#fff;font-weight:700}
+.s3-item-name{font-size:13px;font-weight:500;color:var(--earth);flex:1}
+.s3-item-price{font-size:11px;font-weight:600;color:var(--rock)}
+.s3-item.done{opacity:0.3}
+.s3-item.done .s3-item-name{text-decoration:line-through}
+
+/* Finish marker */
+.s3-finish{display:flex;align-items:center;gap:8px;padding-top:4px;margin-left:-34px}
+.s3-finish-dot{width:16px;height:16px;border-radius:8px;background:var(--trail);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff}
+.s3-finish-text{font-size:10px;font-weight:600;color:var(--trail)}
+
+
+/* ============================================================
+   S4: MINIMAL TILES — Items as compact rounded tiles in a
+   flex-wrap grid. Tap to check (turns green). No prices.
+   Visual, scannable, fast.
+   ============================================================ */
+.s4{padding:18px 20px 40px}
+.s4-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 4px}
+.s4-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s4-meta{font-size:10px;color:var(--rock)}
+
+.s4-cat{display:flex;align-items:center;gap:5px;padding:10px 4px 6px}
+.s4-cat:first-child{padding-top:0}
+.s4-cat-dot{width:5px;height:5px;border-radius:50%}
+.s4-cat-name{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+
+.s4-tiles{display:flex;flex-wrap:wrap;gap:6px}
+.s4-tile{padding:10px 16px;border-radius:12px;background:#fff;border:1px solid rgba(0,0,0,0.04);cursor:pointer;transition:all 0.15s}
+.s4-tile:active{transform:scale(0.95)}
+.s4-tile-name{font-size:12px;font-weight:600;color:var(--earth)}
+.s4-tile-qty{font-size:9px;color:var(--rock);margin-top:1px}
+
+.s4-tile.done{background:var(--trail);border-color:var(--trail)}
+.s4-tile.done .s4-tile-name{color:#fff;text-decoration:line-through}
+.s4-tile.done .s4-tile-qty{color:rgba(255,255,255,0.5)}
+
+
+/* ============================================================
+   S5: TIMELINE CHECKLIST — Vertical timeline with items as
+   nodes. Completed nodes turn green. Line fills as you go.
+   Feels like a journey through your shopping trip.
+   ============================================================ */
+.s5{padding:18px 24px 40px}
+.s5-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.s5-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s5-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s5-meta{font-size:10px;color:var(--rock)}
+
+.s5-timeline{position:relative;padding-left:28px}
+.s5-line{position:absolute;left:5px;top:0;bottom:0;width:2px;background:var(--stone)}
+
+.s5-item{display:flex;align-items:center;gap:10px;padding:10px 0;position:relative;cursor:pointer}
+.s5-dot{position:absolute;left:-28px;top:50%;margin-top:-6px;width:12px;height:12px;border-radius:6px;z-index:1;border:2px solid var(--stone);background:var(--sand)}
+.s5-dot.on{background:var(--trail);border-color:var(--trail)}
+.s5-dot.on::after{content:'✓';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:7px;color:#fff;font-weight:700}
+.s5-name{font-size:14px;font-weight:500;color:var(--earth);flex:1}
+.s5-price{font-size:12px;font-weight:600;color:var(--rock)}
+.s5-item.done .s5-name{text-decoration:line-through;opacity:0.3}
+.s5-item.done .s5-price{opacity:0.3}
+
+
+/* ============================================================
+   S6: KANBAN — Two columns: "Need" and "Got". Items move
+   between columns when tapped. Trello for groceries.
+   ============================================================ */
+.s6{padding:18px 16px 40px}
+.s6-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 4px}
+.s6-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s6-meta{font-size:10px;color:var(--rock)}
+
+.s6-cols{display:flex;gap:8px}
+.s6-col{flex:1;border-radius:16px;padding:12px;min-height:300px}
+.s6-col.need{background:rgba(0,0,0,0.02)}
+.s6-col.got{background:rgba(52,211,153,0.04)}
+.s6-col-head{display:flex;align-items:center;gap:6px;margin-bottom:10px}
+.s6-col-icon{font-size:12px}
+.s6-col-title{font-size:9px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:1px}
+.s6-col-count{font-size:9px;color:var(--rock);margin-left:auto}
+
+.s6-item{padding:8px 10px;background:#fff;border-radius:10px;margin-bottom:4px;cursor:pointer;transition:all 0.15s}
+.s6-item:active{transform:scale(0.97)}
+.s6-item-name{font-size:11px;font-weight:600;color:var(--earth)}
+.s6-item-price{font-size:9px;color:var(--rock);margin-top:1px}
+
+.s6-col.got .s6-item{opacity:0.4}
+.s6-col.got .s6-item-name{text-decoration:line-through}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- S1: SWIPE CARDS -->
+  <div>
+    <div class="col-label">S1 — SWIPE CARDS</div>
+    <div class="col-desc">Items as stacked cards. Top card shows current item BIG. Swipe right to check off — flies away. Depth peek behind.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s1"><div class="s1-head"><span class="s1-title">Shopping List</span><div class="s1-count"><span class="s1-count-num">13</span><span class="s1-count-label">items<br>left</span></div></div>
+        <div class="s1-stack">
+          <div class="s1-card c3"></div>
+          <div class="s1-card c2"></div>
+          <div class="s1-card c1">
+            <div class="s1-card-cat"><div class="s1-card-cat-dot" style="background:#34D399"></div><span class="s1-card-cat-name">Produce</span></div>
+            <div class="s1-card-main"><span class="s1-card-name">Spinach</span><span class="s1-card-price">$3.49</span></div>
+            <div class="s1-card-detail"><span class="s1-card-qty">200g bag</span><span class="s1-card-hint">swipe right to check →</span></div>
+          </div>
+        </div>
+        <div class="s1-swipe"><span class="s1-swipe-arrow">→</span><span class="s1-swipe-text">swipe to check off</span><span class="s1-swipe-arrow">→</span></div>
+        <div class="s1-done"><div class="s1-done-head">Checked (5)</div>
+          <div class="s1-done-row"><div class="s1-done-check">✓</div><span class="s1-done-name">Avocado</span><span class="s1-done-price">$1.99</span></div>
+          <div class="s1-done-row"><div class="s1-done-check">✓</div><span class="s1-done-name">Chicken breast</span><span class="s1-done-price">$8.99</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- S2: SPLIT VIEW -->
+  <div>
+    <div class="col-label">S2 — SPLIT: TO GET / GOT IT</div>
+    <div class="col-desc">Two sections: unchecked on top, checked on bottom. Items auto-move when tapped. Satisfying reorganization.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s2">
+        <div class="s2-section">
+          <div class="s2-section-head"><div class="s2-section-icon todo">📋</div><span class="s2-section-title">To Get</span><span class="s2-section-count">13 items</span></div>
+          <div class="s2-item"><div class="s2-cb"></div><div class="s2-info"><div class="s2-name">Spinach</div><div class="s2-qty">200g bag</div></div><span class="s2-price">$3.49</span></div>
+          <div class="s2-item"><div class="s2-cb"></div><div class="s2-info"><div class="s2-name">Banana</div><div class="s2-qty">6 pieces</div></div><span class="s2-price">$4.14</span></div>
+          <div class="s2-item"><div class="s2-cb"></div><div class="s2-info"><div class="s2-name">Eggs</div><div class="s2-qty">12 pack</div></div><span class="s2-price">$4.99</span></div>
+          <div class="s2-item"><div class="s2-cb"></div><div class="s2-info"><div class="s2-name">Salmon</div><div class="s2-qty">300g fillet</div></div><span class="s2-price">$12.99</span></div>
+          <div class="s2-item"><div class="s2-cb"></div><div class="s2-info"><div class="s2-name">Greek yogurt</div><div class="s2-qty">500g</div></div><span class="s2-price">$5.99</span></div>
+        </div>
+        <div class="s2-divider"></div>
+        <div class="s2-section">
+          <div class="s2-section-head"><div class="s2-section-icon done">✓</div><span class="s2-section-title">Got It</span><span class="s2-section-count">5 items</span></div>
+          <div class="s2-item checked"><div class="s2-cb on"><span class="s2-ck">✓</span></div><div class="s2-info"><div class="s2-name">Avocado</div><div class="s2-qty">3 pieces</div></div><span class="s2-price">$5.97</span></div>
+          <div class="s2-item checked"><div class="s2-cb on"><span class="s2-ck">✓</span></div><div class="s2-info"><div class="s2-name">Chicken breast</div><div class="s2-qty">500g</div></div><span class="s2-price">$8.99</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- S3: AISLE ROUTE -->
+  <div>
+    <div class="col-label">S3 — AISLE ROUTE</div>
+    <div class="col-desc">Store route — walk through Produce → Dairy → Meat → Pantry. Trail line fills as you go. Finish marker at end.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s3"><div class="s3-head"><div><span class="s3-title">Store Route</span><div class="s3-accent"></div></div><span class="s3-meta">18 items · 4 aisles</span></div>
+        <div class="s3-route">
+          <div class="s3-route-line"><div class="s3-route-line-fill" style="height:20%"></div></div>
+          <div class="s3-aisle"><div class="s3-aisle-dot done"><span class="s3-aisle-dot-icon">🥦</span></div><div class="s3-aisle-name">Produce</div><div class="s3-aisle-items">
+            <div class="s3-item done"><div class="s3-item-cb on"><span class="s3-item-ck">✓</span></div><span class="s3-item-name">Avocado</span><span class="s3-item-price">$1.99</span></div>
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Spinach</span><span class="s3-item-price">$3.49</span></div>
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Banana</span><span class="s3-item-price">$0.69</span></div>
+          </div></div>
+          <div class="s3-aisle"><div class="s3-aisle-dot active"><span class="s3-aisle-dot-icon">🥛</span></div><div class="s3-aisle-name">Dairy</div><div class="s3-aisle-items">
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Greek yogurt</span><span class="s3-item-price">$5.99</span></div>
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Butter</span><span class="s3-item-price">$4.49</span></div>
+          </div></div>
+          <div class="s3-aisle"><div class="s3-aisle-dot upcoming"><span class="s3-aisle-dot-icon">🥩</span></div><div class="s3-aisle-name">Protein</div><div class="s3-aisle-items">
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Chicken breast</span><span class="s3-item-price">$8.99</span></div>
+            <div class="s3-item"><div class="s3-item-cb"></div><span class="s3-item-name">Salmon</span><span class="s3-item-price">$12.99</span></div>
+          </div></div>
+          <div class="s3-finish"><div class="s3-finish-dot">🏁</div><span class="s3-finish-text">Checkout</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- S4: MINIMAL TILES -->
+  <div>
+    <div class="col-label">S4 — TAP TILES</div>
+    <div class="col-desc">Items as compact rounded tiles in a flex grid. Tap to check — turns green. Fast, visual, scannable. No prices.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s4"><div class="s4-head"><span class="s4-title">Shopping List</span><span class="s4-meta">18 items</span></div>
+        <div class="s4-cat"><div class="s4-cat-dot" style="background:#34D399"></div><span class="s4-cat-name">Produce</span></div>
+        <div class="s4-tiles">
+          <div class="s4-tile done"><div class="s4-tile-name">✓ Avocado</div><div class="s4-tile-qty">3 pcs</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Spinach</div><div class="s4-tile-qty">200g</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Banana</div><div class="s4-tile-qty">6 pcs</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Tomato</div><div class="s4-tile-qty">4 pcs</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Onion</div><div class="s4-tile-qty">2 pcs</div></div>
+        </div>
+        <div class="s4-cat"><div class="s4-cat-dot" style="background:#EF4444"></div><span class="s4-cat-name">Protein</span></div>
+        <div class="s4-tiles">
+          <div class="s4-tile done"><div class="s4-tile-name">✓ Chicken</div><div class="s4-tile-qty">500g</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Eggs</div><div class="s4-tile-qty">12 pk</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Salmon</div><div class="s4-tile-qty">300g</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Tofu</div><div class="s4-tile-qty">400g</div></div>
+        </div>
+        <div class="s4-cat"><div class="s4-cat-dot" style="background:#F59E0B"></div><span class="s4-cat-name">Dairy</span></div>
+        <div class="s4-tiles">
+          <div class="s4-tile"><div class="s4-tile-name">Yogurt</div><div class="s4-tile-qty">500g</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Butter</div><div class="s4-tile-qty">250g</div></div>
+          <div class="s4-tile"><div class="s4-tile-name">Cheese</div><div class="s4-tile-qty">200g</div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- S5: TIMELINE -->
+  <div>
+    <div class="col-label">S5 — TIMELINE JOURNEY</div>
+    <div class="col-desc">Vertical timeline — each item is a waypoint. Completed dots turn green. Trail line. Shopping as a journey.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s5"><div class="s5-head"><div><span class="s5-title">Shopping List</span><div class="s5-accent"></div></div><span class="s5-meta">18 items</span></div>
+        <div class="s5-timeline">
+          <div class="s5-line"></div>
+          <div class="s5-item done"><div class="s5-dot on"></div><span class="s5-name">Avocado</span><span class="s5-price">$1.99</span></div>
+          <div class="s5-item done"><div class="s5-dot on"></div><span class="s5-name">Chicken breast</span><span class="s5-price">$8.99</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Spinach</span><span class="s5-price">$3.49</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Banana</span><span class="s5-price">$0.69</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Eggs</span><span class="s5-price">$4.99</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Salmon</span><span class="s5-price">$12.99</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Greek yogurt</span><span class="s5-price">$5.99</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Butter</span><span class="s5-price">$4.49</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Brown rice</span><span class="s5-price">$4.99</span></div>
+          <div class="s5-item"><div class="s5-dot"></div><span class="s5-name">Olive oil</span><span class="s5-price">$6.99</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- S6: KANBAN -->
+  <div>
+    <div class="col-label">S6 — KANBAN COLUMNS</div>
+    <div class="col-desc">Two columns: "Need" left, "Got" right. Tap to move between. Trello for groceries. Visual progress.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="s6"><div class="s6-head"><span class="s6-title">Shopping List</span><span class="s6-meta">18 items</span></div>
+        <div class="s6-cols">
+          <div class="s6-col need">
+            <div class="s6-col-head"><span class="s6-col-icon">📋</span><span class="s6-col-title">Need</span><span class="s6-col-count">13</span></div>
+            <div class="s6-item"><div class="s6-item-name">Spinach</div><div class="s6-item-price">$3.49</div></div>
+            <div class="s6-item"><div class="s6-item-name">Banana</div><div class="s6-item-price">$0.69</div></div>
+            <div class="s6-item"><div class="s6-item-name">Eggs</div><div class="s6-item-price">$4.99</div></div>
+            <div class="s6-item"><div class="s6-item-name">Salmon</div><div class="s6-item-price">$12.99</div></div>
+            <div class="s6-item"><div class="s6-item-name">Greek yogurt</div><div class="s6-item-price">$5.99</div></div>
+            <div class="s6-item"><div class="s6-item-name">Butter</div><div class="s6-item-price">$4.49</div></div>
+            <div class="s6-item"><div class="s6-item-name">Brown rice</div><div class="s6-item-price">$4.99</div></div>
+          </div>
+          <div class="s6-col got">
+            <div class="s6-col-head"><span class="s6-col-icon">✅</span><span class="s6-col-title">Got</span><span class="s6-col-count">5</span></div>
+            <div class="s6-item"><div class="s6-item-name">Avocado</div><div class="s6-item-price">$1.99</div></div>
+            <div class="s6-item"><div class="s6-item-name">Chicken</div><div class="s6-item-price">$8.99</div></div>
+            <div class="s6-item"><div class="s6-item-name">Tomato</div><div class="s6-item-price">$1.49</div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

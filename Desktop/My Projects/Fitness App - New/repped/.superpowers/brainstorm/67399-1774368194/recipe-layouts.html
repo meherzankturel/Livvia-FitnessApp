@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Screen Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 10px; color: #555; padding: 0 10px 8px; line-height: 1.5; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Shared back button */
+  .back { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; transition: transform 0.15s; }
+  .back:active { transform: scale(0.9); }
+
+
+  /* ============================================================
+     R1: IMMERSIVE HERO — Big dark hero card at top with name,
+     times, video. Below: ingredients as chips, steps as timeline.
+     ============================================================ */
+
+  .r1-header { padding: 54px 24px 0; }
+  .r1-back { background: rgba(45,42,36,0.04); color: var(--earth); }
+
+  /* Dark hero card with recipe info */
+  .r1-hero {
+    margin: 12px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(12px);
+    animation: r1In 0.6s cubic-bezier(0.16,1,0.3,1) 0.1s forwards;
+  }
+  @keyframes r1In { to { opacity: 1; transform: translateY(0); } }
+
+  .r1-hero-ring { position: absolute; top: -40px; right: -40px; width: 140px; height: 140px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); }
+
+  .r1-meal-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .r1-name { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; line-height: 1.1; margin-top: 6px; }
+
+  .r1-times { display: flex; gap: 8px; margin-top: 16px; }
+  .r1-time-pill { padding: 8px 16px; border-radius: 12px; background: rgba(246,245,240,0.06); }
+  .r1-time-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .r1-time-val { font-size: 18px; font-weight: 800; color: var(--sand); margin-top: 2px; }
+
+  .r1-video {
+    margin-top: 16px; padding: 12px; border-radius: 14px; background: rgba(246,245,240,0.06);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .r1-video:active { background: rgba(246,245,240,0.1); }
+  .r1-video-icon { width: 28px; height: 28px; border-radius: 50%; background: rgba(246,245,240,0.1); display: flex; align-items: center; justify-content: center; }
+  .r1-video-icon svg { width: 12px; height: 12px; fill: var(--sand); }
+  .r1-video-text { font-size: 12px; font-weight: 600; color: rgba(246,245,240,0.6); }
+
+  /* Ingredients as horizontal scrollable chips */
+  .r1-section { padding: 20px 24px 0; }
+  .r1-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .r1-section-title { font-size: 15px; font-weight: 700; color: var(--earth); }
+  .r1-section-count { font-size: 11px; color: var(--rock); }
+
+  .r1-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .r1-chip {
+    padding: 10px 16px; border-radius: 14px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column;
+    opacity: 0; animation: r1ChipIn 0.35s ease-out forwards;
+  }
+  .r1-chip:nth-child(1) { animation-delay: 0.2s; }
+  .r1-chip:nth-child(2) { animation-delay: 0.24s; }
+  .r1-chip:nth-child(3) { animation-delay: 0.28s; }
+  .r1-chip:nth-child(4) { animation-delay: 0.32s; }
+  .r1-chip:nth-child(5) { animation-delay: 0.36s; }
+  .r1-chip:nth-child(6) { animation-delay: 0.40s; }
+  .r1-chip:nth-child(7) { animation-delay: 0.44s; }
+  .r1-chip:nth-child(8) { animation-delay: 0.48s; }
+  @keyframes r1ChipIn { to { opacity: 1; } }
+  .r1-chip-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .r1-chip-amount { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+  /* Steps as timeline */
+  .r1-steps { padding: 0 24px; position: relative; }
+  .r1-step-line { position: absolute; left: 35px; top: 0; bottom: 0; width: 2px; background: var(--stone); }
+
+  .r1-step {
+    display: flex; gap: 14px; margin-bottom: 16px; position: relative;
+    opacity: 0; animation: r1StepIn 0.4s ease-out forwards;
+  }
+  .r1-step:nth-child(2) { animation-delay: 0.3s; }
+  .r1-step:nth-child(3) { animation-delay: 0.4s; }
+  .r1-step:nth-child(4) { animation-delay: 0.5s; }
+  .r1-step:nth-child(5) { animation-delay: 0.6s; }
+  @keyframes r1StepIn { to { opacity: 1; } }
+
+  .r1-step-num {
+    width: 24px; height: 24px; border-radius: 50%; background: var(--earth);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: var(--sand); flex-shrink: 0;
+    z-index: 1; margin-top: 2px;
+  }
+  .r1-step-text { font-size: 14px; color: var(--earth); line-height: 1.5; flex: 1; }
+
+
+  /* ============================================================
+     R2: SPLIT VIEW — Left column for metadata, right scrolls steps.
+     Top: name + times. Middle: ingredient cards. Bottom: step-by-step.
+     ============================================================ */
+
+  .r2-header { padding: 54px 24px 0; display: flex; align-items: center; gap: 12px; }
+  .r2-back { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .r2-meal-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .r2-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; padding: 8px 24px 0; }
+
+  /* Horizontal scrollable time + difficulty + video cards */
+  .r2-meta-scroll { display: flex; gap: 10px; padding: 16px 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .r2-meta-scroll::-webkit-scrollbar { display: none; }
+
+  .r2-meta-card {
+    min-width: 100px; padding: 14px 18px; border-radius: 18px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+    opacity: 0; animation: r2MetaIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .r2-meta-card:nth-child(1) { animation-delay: 0.1s; background: var(--earth); }
+  .r2-meta-card:nth-child(2) { animation-delay: 0.15s; background: var(--stone); }
+  .r2-meta-card:nth-child(3) { animation-delay: 0.2s; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .r2-meta-card:last-child { margin-right: 24px; }
+  @keyframes r2MetaIn { to { opacity: 1; } }
+
+  .r2-meta-icon { font-size: 20px; margin-bottom: 6px; }
+  .r2-meta-val { font-size: 18px; font-weight: 800; }
+  .r2-meta-card:nth-child(1) .r2-meta-val { color: var(--sand); }
+  .r2-meta-card:nth-child(2) .r2-meta-val, .r2-meta-card:nth-child(3) .r2-meta-val { color: var(--earth); }
+  .r2-meta-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .r2-meta-card:nth-child(1) .r2-meta-label { color: rgba(246,245,240,0.35); }
+  .r2-meta-card:nth-child(2) .r2-meta-label, .r2-meta-card:nth-child(3) .r2-meta-label { color: var(--rock); }
+
+  /* Ingredients as a 2-column grid */
+  .r2-section { padding: 20px 24px 0; }
+  .r2-section-title { font-size: 15px; font-weight: 700; color: var(--earth); margin-bottom: 12px; }
+
+  .r2-ing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .r2-ing {
+    padding: 12px 14px; border-radius: 14px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .r2-ing-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .r2-ing-amount { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  /* Step-by-step mode — single card with nav */
+  .r2-step-card {
+    margin: 0 24px; padding: 24px; border-radius: 22px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); text-align: center;
+    animation: r2StepIn 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes r2StepIn { 0% { opacity:0; transform:scale(0.97); } 100% { opacity:1; transform:scale(1); } }
+
+  .r2-step-counter { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .r2-step-num-big { font-size: 48px; font-weight: 900; color: var(--stone); letter-spacing: -2px; margin-top: 4px; }
+  .r2-step-text { font-size: 16px; color: var(--earth); line-height: 1.6; margin-top: 12px; text-align: left; }
+
+  .r2-step-nav { display: flex; gap: 10px; margin-top: 18px; }
+  .r2-step-btn { flex: 1; padding: 14px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .r2-step-btn:active { transform: scale(0.96); }
+  .r2-step-btn.prev { background: var(--stone); color: var(--earth); }
+  .r2-step-btn.next { background: var(--earth); color: var(--sand); }
+
+  /* Progress dots for steps */
+  .r2-step-dots { display: flex; justify-content: center; gap: 4px; margin-top: 14px; }
+  .r2-sd { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); transition: all 0.3s; }
+  .r2-sd.active { background: var(--earth); width: 18px; border-radius: 3px; }
+  .r2-sd.done { background: var(--trail); }
+
+
+  /* ============================================================
+     R3: EDITORIAL SCROLL — Magazine-style. Big number steps.
+     Ingredients in a dark card. Steps are full-width editorial sections.
+     ============================================================ */
+
+  .r3-header { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .r3-back { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .r3-video-btn {
+    padding: 8px 16px; border-radius: 100px; background: var(--earth);
+    font-size: 10px; font-weight: 600; color: var(--sand); cursor: pointer;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .r3-name { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; padding: 12px 24px 0; }
+
+  .r3-times-row { display: flex; gap: 16px; padding: 12px 24px 0; }
+  .r3-time { display: flex; align-items: baseline; gap: 4px; }
+  .r3-time-val { font-size: 20px; font-weight: 800; color: var(--earth); }
+  .r3-time-label { font-size: 10px; color: var(--rock); }
+
+  /* Ingredients in a dark card */
+  .r3-ing-card {
+    margin: 20px 24px 0; padding: 22px; border-radius: 22px; background: var(--earth);
+    position: relative; overflow: hidden;
+  }
+  .r3-ing-ring { position: absolute; bottom: -30px; right: -30px; width: 100px; height: 100px; border-radius: 50%; border: 8px solid rgba(246,245,240,0.03); }
+  .r3-ing-title { font-size: 13px; font-weight: 700; color: rgba(246,245,240,0.4); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; position: relative; }
+
+  .r3-ing-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .r3-ing-row:last-child { border-bottom: none; }
+  .r3-ing-name { font-size: 14px; color: var(--sand); font-weight: 500; }
+  .r3-ing-amount { font-size: 13px; color: rgba(246,245,240,0.4); }
+
+  /* Steps — big editorial sections */
+  .r3-steps { padding: 24px 24px 0; }
+  .r3-steps-title { font-size: 15px; font-weight: 700; color: var(--earth); margin-bottom: 16px; }
+
+  .r3-step {
+    display: flex; gap: 16px; margin-bottom: 24px;
+    opacity: 0; animation: r3StepIn 0.4s ease-out forwards;
+  }
+  .r3-step:nth-child(2) { animation-delay: 0.1s; }
+  .r3-step:nth-child(3) { animation-delay: 0.2s; }
+  .r3-step:nth-child(4) { animation-delay: 0.3s; }
+  .r3-step:nth-child(5) { animation-delay: 0.4s; }
+  @keyframes r3StepIn { to { opacity: 1; } }
+
+  .r3-step-num { font-size: 42px; font-weight: 900; color: var(--stone); letter-spacing: -2px; line-height: 1; width: 48px; flex-shrink: 0; }
+  .r3-step-content { flex: 1; padding-top: 6px; }
+  .r3-step-text { font-size: 15px; color: var(--earth); line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== R1: IMMERSIVE HERO ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">R1 — Immersive Hero</div>
+  <div class="dsc">Dark hero card with name, times, video button. Ingredients as wrapped chips. Steps as a connected timeline with dots and line.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r1-header"><div class="back r1-back">←</div></div>
+
+    <div class="r1-hero">
+      <div class="r1-hero-ring"></div>
+      <div class="r1-meal-label">Breakfast Recipe</div>
+      <div class="r1-name">Veggie Stir Fry<br>with Tofu</div>
+      <div class="r1-times">
+        <div class="r1-time-pill"><div class="r1-time-label">Prep</div><div class="r1-time-val">10 min</div></div>
+        <div class="r1-time-pill"><div class="r1-time-label">Cook</div><div class="r1-time-val">12 min</div></div>
+      </div>
+      <div class="r1-video">
+        <div class="r1-video-icon"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div>
+        <span class="r1-video-text">Watch Recipe Video</span>
+      </div>
+    </div>
+
+    <div class="r1-section">
+      <div class="r1-section-head"><span class="r1-section-title">Ingredients</span><span class="r1-section-count">8 items</span></div>
+      <div class="r1-chips">
+        <div class="r1-chip"><span class="r1-chip-name">Firm tofu</span><span class="r1-chip-amount">½ block cubed</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Broccoli</span><span class="r1-chip-amount">1 cup florets</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Bell pepper</span><span class="r1-chip-amount">1 sliced</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Snap peas</span><span class="r1-chip-amount">½ cup</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Teriyaki sauce</span><span class="r1-chip-amount">2 tbsp</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">White rice</span><span class="r1-chip-amount">1 cup cooked</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Sesame oil</span><span class="r1-chip-amount">1 tbsp</span></div>
+        <div class="r1-chip"><span class="r1-chip-name">Garlic</span><span class="r1-chip-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <div class="r1-section">
+      <div class="r1-section-head"><span class="r1-section-title">Steps</span></div>
+      <div class="r1-steps">
+        <div class="r1-step-line"></div>
+        <div class="r1-step"><div class="r1-step-num">1</div><div class="r1-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+        <div class="r1-step"><div class="r1-step-num">2</div><div class="r1-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div>
+        <div class="r1-step"><div class="r1-step-num">3</div><div class="r1-step-text">Return tofu to pan. Pour teriyaki sauce over everything. Toss to coat evenly.</div></div>
+        <div class="r1-step"><div class="r1-step-num">4</div><div class="r1-step-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div></div>
+      </div>
+    </div>
+
+    <div style="height:120px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== R2: STEP-BY-STEP FOCUS ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">R2 — Step-by-Step Focus</div>
+  <div class="dsc">Horizontal meta cards (prep/cook/video). 2-column ingredient grid. Interactive step-by-step card with big ghost number, progress dots, and prev/next navigation.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r2-header"><div class="back r2-back">←</div><span class="r2-meal-label">Breakfast Recipe</span></div>
+
+    <div class="r2-name">Veggie Stir Fry<br>with Tofu</div>
+
+    <!-- Horizontal meta cards -->
+    <div class="r2-meta-scroll">
+      <div class="r2-meta-card"><div class="r2-meta-icon">⏱</div><div class="r2-meta-val">10</div><div class="r2-meta-label">min prep</div></div>
+      <div class="r2-meta-card"><div class="r2-meta-icon">🍳</div><div class="r2-meta-val">12</div><div class="r2-meta-label">min cook</div></div>
+      <div class="r2-meta-card"><div class="r2-meta-icon">▶</div><div class="r2-meta-val">Video</div><div class="r2-meta-label">YouTube</div></div>
+    </div>
+
+    <!-- 2-column ingredients -->
+    <div class="r2-section">
+      <div class="r2-section-title">Ingredients</div>
+      <div class="r2-ing-grid">
+        <div class="r2-ing"><div class="r2-ing-name">Firm tofu</div><div class="r2-ing-amount">½ block cubed</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Broccoli</div><div class="r2-ing-amount">1 cup florets</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Bell pepper</div><div class="r2-ing-amount">1 sliced</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Snap peas</div><div class="r2-ing-amount">½ cup</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Teriyaki sauce</div><div class="r2-ing-amount">2 tbsp</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">White rice</div><div class="r2-ing-amount">1 cup cooked</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Sesame oil</div><div class="r2-ing-amount">1 tbsp</div></div>
+        <div class="r2-ing"><div class="r2-ing-name">Garlic</div><div class="r2-ing-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <!-- Step-by-step interactive card -->
+    <div class="r2-section">
+      <div class="r2-section-title">Steps</div>
+      <div class="r2-step-card" id="r2StepCard">
+        <div class="r2-step-counter">Step <span id="r2Cur">1</span> of 4</div>
+        <div class="r2-step-num-big" id="r2Num">01</div>
+        <div class="r2-step-text" id="r2Text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+        <div class="r2-step-nav">
+          <div class="r2-step-btn prev" id="r2Prev" onclick="r2Nav(-1)">Previous</div>
+          <div class="r2-step-btn next" id="r2Next" onclick="r2Nav(1)">Next</div>
+        </div>
+        <div class="r2-step-dots">
+          <div class="r2-sd active" id="r2d0"></div>
+          <div class="r2-sd" id="r2d1"></div>
+          <div class="r2-sd" id="r2d2"></div>
+          <div class="r2-sd" id="r2d3"></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:120px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== R3: EDITORIAL MAGAZINE ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">R3 — Editorial Magazine</div>
+  <div class="dsc">Big 32px name. Inline time values. Dark ingredient card (inverted). Giant ghost step numbers (42px) in the gutter with step text right. Reads like a premium cookbook.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="r3-header">
+      <div class="back r3-back">←</div>
+      <div class="r3-video-btn"><svg viewBox="0 0 24 24" width="12" height="12" fill="var(--sand)"><polygon points="10,8 16,12 10,16"/></svg> Video</div>
+    </div>
+
+    <div class="r3-name">Veggie Stir Fry<br>with Tofu</div>
+
+    <div class="r3-times-row">
+      <div class="r3-time"><span class="r3-time-val">10</span><span class="r3-time-label">min prep</span></div>
+      <div class="r3-time"><span class="r3-time-val">12</span><span class="r3-time-label">min cook</span></div>
+      <div class="r3-time"><span class="r3-time-val">Easy</span><span class="r3-time-label">difficulty</span></div>
+    </div>
+
+    <!-- Dark ingredient card -->
+    <div class="r3-ing-card">
+      <div class="r3-ing-ring"></div>
+      <div class="r3-ing-title">Ingredients · 8 Items</div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Firm tofu</span><span class="r3-ing-amount">½ block cubed</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Broccoli</span><span class="r3-ing-amount">1 cup florets</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Bell pepper</span><span class="r3-ing-amount">1 sliced</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Snap peas</span><span class="r3-ing-amount">½ cup</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Teriyaki sauce</span><span class="r3-ing-amount">2 tbsp</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">White rice</span><span class="r3-ing-amount">1 cup cooked</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Sesame oil</span><span class="r3-ing-amount">1 tbsp</span></div>
+      <div class="r3-ing-row"><span class="r3-ing-name">Garlic</span><span class="r3-ing-amount">2 cloves</span></div>
+    </div>
+
+    <!-- Editorial steps -->
+    <div class="r3-steps">
+      <div class="r3-steps-title">Steps</div>
+      <div class="r3-step"><div class="r3-step-num">01</div><div class="r3-step-content"><div class="r3-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div></div>
+      <div class="r3-step"><div class="r3-step-num">02</div><div class="r3-step-content"><div class="r3-step-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes until crisp-tender.</div></div></div>
+      <div class="r3-step"><div class="r3-step-num">03</div><div class="r3-step-content"><div class="r3-step-text">Return tofu to pan. Pour teriyaki sauce over everything and toss to coat evenly.</div></div></div>
+      <div class="r3-step"><div class="r3-step-num">04</div><div class="r3-step-content"><div class="r3-step-text">Serve over fluffy white rice. Garnish with sesame seeds if desired.</div></div></div>
+    </div>
+
+    <div style="height:120px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+// R2 step navigation
+const r2Steps = [
+  'Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.',
+  'Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.',
+  'Return tofu to pan. Pour teriyaki sauce over everything. Toss to coat evenly.',
+  'Serve over fluffy white rice. Garnish with sesame seeds if desired.',
+];
+let r2Idx = 0;
+
+function r2Nav(dir) {
+  r2Idx = Math.max(0, Math.min(r2Steps.length - 1, r2Idx + dir));
+  document.getElementById('r2Cur').textContent = r2Idx + 1;
+  document.getElementById('r2Num').textContent = String(r2Idx + 1).padStart(2, '0');
+  document.getElementById('r2Text').textContent = r2Steps[r2Idx];
+  document.getElementById('r2Prev').style.opacity = r2Idx === 0 ? '0.3' : '1';
+  document.getElementById('r2Next').textContent = r2Idx === r2Steps.length - 1 ? 'Done!' : 'Next';
+
+  // Update dots
+  for (let i = 0; i < 4; i++) {
+    const dot = document.getElementById('r2d' + i);
+    dot.className = 'r2-sd';
+    if (i < r2Idx) dot.classList.add('done');
+    if (i === r2Idx) dot.classList.add('active');
+  }
+
+  // Re-animate card
+  const card = document.getElementById('r2StepCard');
+  card.style.animation = 'none';
+  card.offsetHeight;
+  card.style.animation = 'r2StepIn 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero V2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes countPop { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes fillRight { from { width: 0%; } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  /* Placeholder items for context */
+  .ph-items { padding: 24px 24px 0; }
+  .ph-item { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-line { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.4; }
+  .ph-price { width: 40px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.3; }
+
+
+  /* ============================================================
+     A1: "THE COUNTDOWN"
+     Giant "13" — items remaining. Not items total. Progress
+     REVERSES the mindset: you're emptying the list. When 0,
+     celebration. Thin progress bar fills as you check items.
+     ============================================================ */
+
+  .a1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a1-top-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .a1-hero { display: flex; align-items: flex-end; justify-content: space-between; padding: 20px 24px 0; }
+  .a1-left {}
+  .a1-remaining { font-size: 96px; font-weight: 800; color: var(--earth); letter-spacing: -5px; line-height: 0.85; animation: countPop 0.5s ease-out; }
+  .a1-remaining-label { font-size: 13px; font-weight: 600; color: var(--rock); margin-top: 4px; }
+
+  .a1-right { text-align: right; padding-bottom: 8px; }
+  .a1-total { font-size: 24px; font-weight: 800; color: var(--trail); letter-spacing: -1px; }
+  .a1-total-label { font-size: 9px; color: var(--rock); margin-top: 2px; }
+  .a1-checked { font-size: 11px; color: var(--rock); margin-top: 6px; }
+
+  .a1-bar { margin: 16px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .a1-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+  .a1-cats { display: flex; gap: 4px; padding: 10px 24px 0; }
+  .a1-cat-seg { height: 3px; border-radius: 2px; }
+
+
+  /* ============================================================
+     A2: "THE FULL BLEED"
+     Entire top 40% is dark earth. Giant white remaining count.
+     Contour lines in bg. Stats as inline text. Dramatic.
+     Feels like opening a map before an expedition.
+     ============================================================ */
+
+  .a2-dark {
+    background: var(--earth); padding: 56px 24px 28px;
+    border-radius: 0 0 32px 32px; position: relative; overflow: hidden;
+    min-height: 300px; display: flex; flex-direction: column;
+  }
+  /* Contour circles */
+  .a2-contour { position: absolute; border: 1px solid rgba(246,245,240,0.025); border-radius: 50%; }
+  .a2-c1 { width: 400px; height: 300px; top: -80px; right: -100px; }
+  .a2-c2 { width: 300px; height: 250px; bottom: -60px; left: -80px; }
+
+  .a2-top { display: flex; align-items: center; position: relative; z-index: 1; }
+  .a2-back { width: 32px; height: 32px; border-radius: 16px; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a2-label { font-size: 10px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .a2-center { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative; z-index: 1; padding: 20px 0; }
+  .a2-big { font-size: 110px; font-weight: 800; color: var(--sand); letter-spacing: -6px; line-height: 0.85; animation: countPop 0.5s ease-out; }
+  .a2-big-label { font-size: 14px; font-weight: 600; color: rgba(246,245,240,0.3); margin-top: 4px; letter-spacing: 0.5px; }
+
+  .a2-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1; }
+  .a2-stat { }
+  .a2-stat-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .a2-stat-val.green { color: var(--trail); }
+  .a2-stat-label { font-size: 9px; color: rgba(246,245,240,0.2); margin-top: 1px; }
+
+  .a2-bar { margin: 0 24px; height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); position: relative; z-index: 1; margin-top: auto; }
+  .a2-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+
+  /* ============================================================
+     A3: "THE STACKED DEPTH"
+     Layered cards with depth — back card (categories count),
+     middle card (items), front card (total). Creates a 3D
+     stack effect. Tap to shuffle? Visually rich.
+     ============================================================ */
+
+  .a3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a3-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-left: 12px; }
+
+  .a3-stack { position: relative; height: 200px; margin: 20px 20px 0; }
+
+  /* Back card (deepest) */
+  .a3-card-back {
+    position: absolute; left: 16px; right: 16px; top: 0;
+    height: 160px; border-radius: 20px; background: var(--stone);
+    transform: scale(0.9) translateY(-10px);
+    opacity: 0.5; z-index: 1;
+  }
+
+  /* Middle card */
+  .a3-card-mid {
+    position: absolute; left: 8px; right: 8px; top: 6px;
+    height: 160px; border-radius: 22px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04);
+    transform: scale(0.95) translateY(-5px);
+    opacity: 0.7; z-index: 2;
+  }
+
+  /* Front card */
+  .a3-card-front {
+    position: absolute; left: 0; right: 0; top: 12px;
+    border-radius: 24px; background: var(--earth);
+    padding: 22px; z-index: 3; overflow: hidden;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    animation: fadeUp 0.4s ease-out;
+  }
+  .a3-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+
+  .a3-front-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .a3-front-left {}
+  .a3-front-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .a3-front-total { font-size: 38px; font-weight: 800; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .a3-front-sub { font-size: 10px; color: rgba(246,245,240,0.2); margin-top: 4px; }
+
+  .a3-front-right { text-align: right; }
+  .a3-front-items { font-size: 28px; font-weight: 800; color: var(--trail); letter-spacing: -1px; }
+  .a3-front-items-label { font-size: 9px; color: rgba(246,245,240,0.2); }
+
+  .a3-front-bar { height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); margin-top: 16px; position: relative; }
+  .a3-front-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  .a3-cats { display: flex; gap: 6px; padding: 24px 24px 0; justify-content: center; }
+  .a3-cat-pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); display: flex; align-items: center; gap: 4px; }
+  .a3-cat-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .a3-cat-text { font-size: 10px; font-weight: 600; color: var(--rock); }
+
+
+  /* ============================================================
+     A4: "THE BASKET"
+     Visual shopping basket shape (rounded trapezoid from Views).
+     Items "inside" the basket represented as colored dots.
+     Total below basket. Fun, physical metaphor.
+     ============================================================ */
+
+  .a4-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a4-title { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .a4-basket-wrap { display: flex; justify-content: center; padding: 24px 0 0; animation: float 3s ease-in-out infinite; }
+
+  .a4-basket {
+    width: 180px; height: 130px; position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  }
+  /* Basket body — rounded trapezoid via border trick */
+  .a4-basket-body {
+    width: 160px; height: 90px; background: var(--earth);
+    border-radius: 0 0 30px 30px; position: relative;
+    display: flex; flex-wrap: wrap; gap: 5px; padding: 14px 14px 18px;
+    align-content: flex-start; justify-content: center;
+  }
+  /* Handle */
+  .a4-handle {
+    width: 80px; height: 30px; border: 4px solid var(--earth);
+    border-bottom: none; border-radius: 40px 40px 0 0; margin-bottom: -2px;
+  }
+  /* Items inside as colored dots */
+  .a4-dot { width: 12px; height: 12px; border-radius: 6px; opacity: 0.7; }
+  .a4-dot.checked { opacity: 0.2; }
+
+  .a4-total { text-align: center; padding: 16px 0 0; }
+  .a4-total-amount { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; }
+  .a4-total-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  .a4-progress { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 0 0; }
+  .a4-progress-text { font-size: 12px; font-weight: 600; color: var(--trail); }
+  .a4-progress-bar { width: 120px; height: 4px; border-radius: 2px; background: var(--stone); }
+  .a4-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+
+  /* ============================================================
+     A5: "THE MINIMAL LINE"
+     Almost no hero. Just one elegant line of info + a thin
+     progress bar. Then straight to the list. Anti-hero approach.
+     Lets the content breathe. Most Apple-like.
+     ============================================================ */
+
+  .a5-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a5-title { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-left: 12px; flex: 1; }
+  .a5-total { font-size: 16px; font-weight: 700; color: var(--trail); }
+
+  .a5-meta { display: flex; align-items: center; gap: 6px; padding: 6px 24px 0; padding-left: 68px; }
+  .a5-meta-text { font-size: 11px; color: var(--rock); }
+  .a5-meta-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+
+  .a5-bar { margin: 12px 24px 0; height: 2px; border-radius: 1px; background: var(--stone); }
+  .a5-bar-fill { height: 100%; border-radius: 1px; background: var(--trail); }
+
+
+  /* ============================================================
+     A6: "THE PERSONAL NOTE"
+     Warm, personal. "Your weekly shop" with the user's context.
+     Handwritten-style emphasis. Warm stone card with soft
+     shadow. Items + total inside. Feels like a note to yourself.
+     ============================================================ */
+
+  .a6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .a6-hero {
+    margin: 16px 20px 0; padding: 24px; border-radius: 24px;
+    background: #fff; position: relative;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+    animation: fadeUp 0.4s ease-out;
+  }
+
+  .a6-greeting { font-size: 13px; color: var(--rock); margin-bottom: 4px; }
+  .a6-title { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; }
+  .a6-title em { font-style: italic; color: var(--trail); font-weight: 800; }
+
+  .a6-divider { height: 1px; background: rgba(0,0,0,0.04); margin: 16px 0; }
+
+  .a6-stats { display: flex; justify-content: space-between; }
+  .a6-stat {}
+  .a6-stat-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .a6-stat-label { font-size: 9px; color: var(--rock); margin-top: 1px; }
+
+  .a6-bar { height: 6px; border-radius: 3px; background: var(--stone); margin-top: 16px; overflow: hidden; }
+  .a6-bar-fill { height: 100%; border-radius: 3px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+  .a6-bar-labels { display: flex; justify-content: space-between; margin-top: 6px; }
+  .a6-bar-label { font-size: 9px; color: var(--rock); }
+
+  /* Category dots row */
+  .a6-cats { display: flex; gap: 4px; margin-top: 14px; }
+  .a6-cat { height: 4px; border-radius: 2px; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== A1: THE COUNTDOWN =============== -->
+  <div>
+    <div class="col-label">A1 — THE COUNTDOWN</div>
+    <div class="col-desc">Giant "13" items REMAINING (not total). Reverses the mindset — you're emptying the list. Total as secondary. Progress bar fills as you shop.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a1-top">
+          <div class="a1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+          <span class="a1-top-label">Grocery List</span>
+        </div>
+
+        <div class="a1-hero">
+          <div class="a1-left">
+            <div class="a1-remaining">13</div>
+            <div class="a1-remaining-label">items to go</div>
+          </div>
+          <div class="a1-right">
+            <div class="a1-total">$47.82</div>
+            <div class="a1-total-label">est. total</div>
+            <div class="a1-checked">5 checked</div>
+          </div>
+        </div>
+
+        <div class="a1-bar"><div class="a1-bar-fill" style="width: 28%;"></div></div>
+
+        <div class="a1-cats">
+          <div class="a1-cat-seg" style="background:#34D399; flex: 5;"></div>
+          <div class="a1-cat-seg" style="background:#EF4444; flex: 4;"></div>
+          <div class="a1-cat-seg" style="background:#F59E0B; flex: 3;"></div>
+          <div class="a1-cat-seg" style="background:#6366F1; flex: 3;"></div>
+          <div class="a1-cat-seg" style="background:#8E8E7A; flex: 3;"></div>
+        </div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:55%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:80%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:65%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== A2: THE FULL BLEED =============== -->
+  <div>
+    <div class="col-label">A2 — THE FULL BLEED</div>
+    <div class="col-desc">Entire top 40% dark earth with contour circles. Giant white "13" centered. Stats at bottom of dark zone. Dramatic expedition feel.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a2-dark">
+          <div class="a2-contour a2-c1"></div>
+          <div class="a2-contour a2-c2"></div>
+
+          <div class="a2-top">
+            <div class="a2-back"><span style="font-size:18px;color:var(--sand);margin-top:-1px;">‹</span></div>
+            <span class="a2-label">Grocery List</span>
+          </div>
+
+          <div class="a2-center">
+            <div class="a2-big">13</div>
+            <div class="a2-big-label">items to go</div>
+          </div>
+
+          <div class="a2-bottom">
+            <div class="a2-stat"><div class="a2-stat-val">18</div><div class="a2-stat-label">total items</div></div>
+            <div class="a2-stat"><div class="a2-stat-val green">5</div><div class="a2-stat-label">checked</div></div>
+            <div class="a2-stat"><div class="a2-stat-val green">$47</div><div class="a2-stat-label">est. total</div></div>
+          </div>
+
+          <div class="a2-bar"><div class="a2-bar-fill" style="width: 28%;"></div></div>
+        </div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:55%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== A3: THE STACKED DEPTH =============== -->
+  <div>
+    <div class="col-label">A3 — THE STACKED DEPTH</div>
+    <div class="col-desc">3 layered cards with depth. Front card (dark) shows total + items. Middle + back peek behind. Category pills below. Premium depth effect.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a3-top">
+          <div class="a3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+          <span class="a3-title">Grocery List</span>
+        </div>
+
+        <div class="a3-stack">
+          <div class="a3-card-back"></div>
+          <div class="a3-card-mid"></div>
+          <div class="a3-card-front">
+            <div class="a3-diag" style="width:80px;top:12px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="a3-diag" style="width:55px;top:22px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="a3-front-row">
+              <div class="a3-front-left">
+                <div class="a3-front-label">Estimated total</div>
+                <div class="a3-front-total">$47.82</div>
+                <div class="a3-front-sub">Week of Mar 26</div>
+              </div>
+              <div class="a3-front-right">
+                <div class="a3-front-items">13</div>
+                <div class="a3-front-items-label">remaining</div>
+              </div>
+            </div>
+            <div class="a3-front-bar"><div class="a3-front-bar-fill" style="width:28%;"></div></div>
+          </div>
+        </div>
+
+        <div class="a3-cats">
+          <div class="a3-cat-pill"><span class="a3-cat-dot" style="background:#34D399;"></span><span class="a3-cat-text">Produce</span></div>
+          <div class="a3-cat-pill"><span class="a3-cat-dot" style="background:#EF4444;"></span><span class="a3-cat-text">Protein</span></div>
+          <div class="a3-cat-pill"><span class="a3-cat-dot" style="background:#F59E0B;"></span><span class="a3-cat-text">Dairy</span></div>
+          <div class="a3-cat-pill"><span class="a3-cat-dot" style="background:#6366F1;"></span><span class="a3-cat-text">Grains</span></div>
+        </div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== A4: THE BASKET =============== -->
+  <div>
+    <div class="col-label">A4 — THE BASKET</div>
+    <div class="col-desc">Visual shopping basket (View-based). Colored dots represent items inside. Checked items fade. Basket gently floats. Physical, fun, unique.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a4-top">
+          <div class="a4-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+          <span class="a4-title">Grocery List</span>
+        </div>
+
+        <div class="a4-basket-wrap">
+          <div class="a4-basket">
+            <div class="a4-handle"></div>
+            <div class="a4-basket-body">
+              <div class="a4-dot" style="background:#34D399;"></div>
+              <div class="a4-dot" style="background:#34D399;"></div>
+              <div class="a4-dot checked" style="background:#34D399;"></div>
+              <div class="a4-dot" style="background:#EF4444;"></div>
+              <div class="a4-dot" style="background:#EF4444;"></div>
+              <div class="a4-dot checked" style="background:#EF4444;"></div>
+              <div class="a4-dot" style="background:#F59E0B;"></div>
+              <div class="a4-dot" style="background:#F59E0B;"></div>
+              <div class="a4-dot" style="background:#6366F1;"></div>
+              <div class="a4-dot" style="background:#6366F1;"></div>
+              <div class="a4-dot checked" style="background:#8E8E7A;"></div>
+              <div class="a4-dot" style="background:#8E8E7A;"></div>
+              <div class="a4-dot checked" style="background:#34D399;"></div>
+              <div class="a4-dot" style="background:#EF4444;"></div>
+              <div class="a4-dot checked" style="background:#F59E0B;"></div>
+              <div class="a4-dot" style="background:#6366F1;"></div>
+              <div class="a4-dot" style="background:#34D399;"></div>
+              <div class="a4-dot" style="background:#8E8E7A;"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="a4-total">
+          <div class="a4-total-amount">$47.82</div>
+          <div class="a4-total-sub">18 items · 5 checked</div>
+        </div>
+
+        <div class="a4-progress">
+          <span class="a4-progress-text">28%</span>
+          <div class="a4-progress-bar"><div class="a4-progress-fill" style="width: 28%;"></div></div>
+        </div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:55%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== A5: THE MINIMAL LINE =============== -->
+  <div>
+    <div class="col-label">A5 — THE MINIMAL LINE</div>
+    <div class="col-desc">Almost no hero. Title + total inline. One line of meta. Hair-thin progress bar. Then straight to list. Anti-hero. Most Apple-like.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a5-top">
+          <div class="a5-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+          <span class="a5-title">Groceries</span>
+          <span class="a5-total">$47.82</span>
+        </div>
+
+        <div class="a5-meta">
+          <span class="a5-meta-text">5 of 18 checked</span>
+          <span class="a5-meta-sep"></span>
+          <span class="a5-meta-text">Week of Mar 26</span>
+        </div>
+
+        <div class="a5-bar"><div class="a5-bar-fill" style="width: 28%;"></div></div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:55%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:80%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:65%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:70%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:50%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:85%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== A6: THE PERSONAL NOTE =============== -->
+  <div>
+    <div class="col-label">A6 — THE PERSONAL NOTE</div>
+    <div class="col-desc">White card like a note. "Your weekly shop is ready." Stats inside with divider. Thick progress bar. Category strip. Warm, personal, inviting.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a6-top">
+          <div class="a6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+        </div>
+
+        <div class="a6-hero">
+          <div class="a6-greeting">Week of March 26</div>
+          <div class="a6-title">Your weekly<br>shop is <em>ready</em></div>
+
+          <div class="a6-divider"></div>
+
+          <div class="a6-stats">
+            <div class="a6-stat"><div class="a6-stat-val">18</div><div class="a6-stat-label">Items</div></div>
+            <div class="a6-stat"><div class="a6-stat-val" style="color:var(--trail);">$47</div><div class="a6-stat-label">Estimated</div></div>
+            <div class="a6-stat"><div class="a6-stat-val">5</div><div class="a6-stat-label">Checked</div></div>
+            <div class="a6-stat"><div class="a6-stat-val">13</div><div class="a6-stat-label">Remaining</div></div>
+          </div>
+
+          <div class="a6-bar"><div class="a6-bar-fill" style="width: 28%;"></div></div>
+          <div class="a6-bar-labels">
+            <span class="a6-bar-label">28% complete</span>
+            <span class="a6-bar-label">13 to go</span>
+          </div>
+
+          <div class="a6-cats">
+            <div class="a6-cat" style="background:#34D399; flex: 5;"></div>
+            <div class="a6-cat" style="background:#EF4444; flex: 4;"></div>
+            <div class="a6-cat" style="background:#F59E0B; flex: 3;"></div>
+            <div class="a6-cat" style="background:#6366F1; flex: 3;"></div>
+            <div class="a6-cat" style="background:#8E8E7A; flex: 3;"></div>
+          </div>
+        </div>
+
+        <div class="ph-items">
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:60%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:75%;"></div><div class="ph-price"></div></div>
+          <div class="ph-item"><div class="ph-cb"></div><div class="ph-line" style="width:55%;"></div><div class="ph-price"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player v4</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     SHARED TOP BAR
+     ============================================================ */
+  .top-bar { padding: 54px 24px 0; display: flex; align-items: center; }
+  .timer-pill { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .ex-counter { font-size: 13px; color: var(--rock); margin-left: 10px; }
+  .exit-btn { font-size: 13px; color: var(--rock); margin-left: auto; cursor: pointer; }
+
+  .progress { margin: 10px 24px 0; height: 5px; border-radius: 3px; background: var(--stone); overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; background: var(--trail); }
+
+
+  /* ============================================================
+     G1: REFINED CARD LAYOUT — Exercise in a polished card.
+     Below: Set cards with clear visual hierarchy. Current set
+     is the HERO. Done sets collapse. Upcoming are subtle.
+     ============================================================ */
+
+  /* Exercise card */
+  .g1-ex { margin: 14px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .g1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g1-ha:nth-child(1) { width: 80px; top: 12px; right: -6px; transform: rotate(-35deg); }
+  .g1-ha:nth-child(2) { width: 60px; top: 22px; right: -6px; transform: rotate(-35deg); }
+
+  .g1-ex-row1 { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .g1-ex-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; flex: 1; }
+  .g1-ex-actions { display: flex; gap: 10px; align-items: center; flex-shrink: 0; margin-top: 4px; }
+  .g1-action { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .g1-action.swap { color: var(--trail); opacity: 0.7; }
+  .g1-action.video { color: rgba(246,245,240,0.3); display: flex; align-items: center; gap: 3px; }
+
+  .g1-ex-row2 { display: flex; align-items: center; gap: 8px; margin-top: 8px; position: relative; }
+  .g1-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .g1-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .g1-suggested { font-size: 11px; color: rgba(246,245,240,0.2); }
+  .g1-prev { font-size: 11px; color: rgba(246,245,240,0.2); }
+  .g1-prev strong { color: rgba(246,245,240,0.4); font-weight: 700; }
+
+  /* Focus cue */
+  .g1-cue { margin: 10px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.05); cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+  .g1-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .g1-cue-chev { font-size: 10px; color: var(--trail); opacity: 0.3; }
+
+  /* Set section */
+  .g1-sets { padding: 14px 24px 0; }
+  .g1-sets-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; }
+
+  /* Current set — prominent card */
+  .g1-current {
+    padding: 18px; border-radius: 18px; background: #fff;
+    border: 1.5px solid rgba(52,211,153,0.12);
+    box-shadow: 0 4px 16px rgba(52,211,153,0.04);
+    margin-bottom: 10px;
+  }
+  .g1-cur-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .g1-cur-label { font-size: 11px; font-weight: 700; color: var(--trail); }
+  .g1-cur-prev { font-size: 10px; color: var(--rock); }
+
+  .g1-cur-inputs { display: flex; gap: 12px; }
+  .g1-cur-group { flex: 1; }
+  .g1-cur-input {
+    width: 100%; padding: 14px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid var(--stone);
+    text-align: center; font-size: 22px; font-weight: 800;
+    color: var(--earth); outline: none; letter-spacing: -0.5px;
+  }
+  .g1-cur-input:focus { border-color: var(--trail); }
+  .g1-cur-label-text { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; text-align: center; margin-top: 4px; }
+
+  /* Other sets — compact rows */
+  .g1-other { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .g1-other:last-child { border-bottom: none; }
+  .g1-other.upcoming { opacity: 0.3; }
+
+  .g1-o-num { font-size: 15px; font-weight: 700; color: var(--earth); width: 20px; }
+  .g1-o-prev { font-size: 11px; color: var(--rock); flex: 1; }
+  .g1-o-vals { display: flex; gap: 6px; }
+  .g1-o-pill { padding: 6px 14px; border-radius: 10px; background: var(--stone); font-size: 13px; color: var(--rock); text-align: center; min-width: 50px; }
+  .g1-o-pill.done { background: rgba(52,211,153,0.06); color: var(--earth); font-weight: 600; }
+  .g1-o-check { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+  .g1-o-check.done { background: var(--trail); color: #fff; }
+  .g1-o-check.empty { background: var(--stone); }
+
+  /* Log button */
+  .g1-log { margin: 16px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; cursor: pointer; }
+  .g1-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     G2: EVERYTHING ON SAND — No dark card. Exercise name big
+     on sand. Inputs in white bordered fields. Cleanest possible.
+     Video as a subtle icon. Previous as inline text.
+     ============================================================ */
+
+  .g2-ex { padding: 16px 24px 0; }
+  .g2-ex-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .g2-ex-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -1px; }
+  .g2-ex-actions { display: flex; gap: 12px; align-items: center; margin-top: 6px; }
+  .g2-action { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .g2-action.swap { color: var(--trail); }
+  .g2-action.video { color: var(--rock); display: flex; align-items: center; gap: 3px; }
+
+  .g2-ex-info { display: flex; align-items: center; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+  .g2-muscle { padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .g2-info-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .g2-info-text { font-size: 12px; color: var(--rock); }
+
+  /* Focus cue */
+  .g2-cue { margin: 12px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.05); display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+  .g2-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Clean 3-column table */
+  .g2-table { margin: 16px 24px 0; }
+  .g2-head { display: flex; margin-bottom: 8px; }
+  .g2-th { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .g2-th.set { width: 36px; }
+  .g2-th.kg { flex: 1; text-align: center; }
+  .g2-th.reps { flex: 1; text-align: center; }
+  .g2-th.ck { width: 30px; }
+
+  .g2-row { display: flex; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .g2-row:last-child { border-bottom: none; }
+  .g2-row.current { background: rgba(52,211,153,0.02); margin: 0 -24px; padding: 10px 24px; border-radius: 14px; border-bottom: none; border-left: 3px solid var(--trail); padding-left: 21px; }
+  .g2-row.upcoming { opacity: 0.25; }
+
+  .g2-td { font-size: 16px; color: var(--earth); }
+  .g2-td.set { width: 36px; font-weight: 800; }
+  .g2-row.current .g2-td.set { color: var(--trail); }
+  .g2-td.kg { flex: 1; padding: 0 4px; }
+  .g2-td.reps { flex: 1; padding: 0 4px; }
+  .g2-td.ck { width: 30px; display: flex; justify-content: center; }
+
+  .g2-input {
+    width: 100%; padding: 12px 8px; border-radius: 14px;
+    background: #fff; border: 1.5px solid var(--stone);
+    text-align: center; font-size: 18px; font-weight: 700;
+    color: var(--earth); outline: none;
+  }
+  .g2-input:focus { border-color: var(--trail); }
+  .g2-dash { text-align: center; font-size: 15px; color: var(--rock); opacity: 0.2; }
+  .g2-check { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+  .g2-check.done { background: var(--trail); color: #fff; }
+  .g2-check.empty { background: var(--stone); }
+
+  .g2-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .g2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     G3: SPLIT LAYOUT — Dark header zone (exercise info).
+     White card zone (set inputs). Clear visual separation.
+     Current set has big inputs, others are compact.
+     ============================================================ */
+
+  .g3-dark {
+    background: var(--earth); padding: 54px 24px 20px;
+    border-radius: 0 0 24px 24px; position: relative; overflow: hidden;
+  }
+  .g3-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g3-ha:nth-child(1) { width: 100px; top: 54px; right: -8px; transform: rotate(-35deg); }
+  .g3-ha:nth-child(2) { width: 80px; top: 66px; right: -8px; transform: rotate(-35deg); }
+
+  .g3-top-bar { display: flex; align-items: center; position: relative; }
+  .g3-timer { padding: 5px 12px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 13px; font-weight: 700; color: var(--sand); }
+  .g3-of { font-size: 12px; color: rgba(246,245,240,0.25); margin-left: 8px; }
+  .g3-exit { font-size: 12px; color: rgba(246,245,240,0.2); margin-left: auto; }
+
+  .g3-progress { margin: 10px 0 0; height: 4px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; position: relative; }
+  .g3-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  .g3-ex-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.7px; margin-top: 14px; position: relative; }
+  .g3-ex-info { display: flex; align-items: center; gap: 8px; margin-top: 6px; position: relative; }
+  .g3-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.35); }
+  .g3-suggested { font-size: 11px; color: rgba(246,245,240,0.2); }
+
+  .g3-ex-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; position: relative; }
+  .g3-prev { font-size: 10px; color: rgba(246,245,240,0.2); }
+  .g3-prev strong { color: rgba(246,245,240,0.35); }
+  .g3-links { display: flex; gap: 10px; }
+  .g3-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .g3-link.swap { color: var(--trail); opacity: 0.6; }
+  .g3-link.video { color: rgba(246,245,240,0.25); display: flex; align-items: center; gap: 3px; }
+
+  /* White zone */
+  .g3-white { padding: 16px 24px 0; }
+  .g3-cue { padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.05); display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; cursor: pointer; }
+  .g3-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Current set — featured */
+  .g3-current { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 10px; }
+  .g3-cur-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .g3-cur-set { font-size: 12px; font-weight: 700; color: var(--trail); }
+  .g3-cur-prev { font-size: 10px; color: var(--rock); }
+
+  .g3-cur-inputs { display: flex; gap: 10px; }
+  .g3-cur-group { flex: 1; }
+  .g3-cur-input {
+    width: 100%; padding: 14px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid var(--stone);
+    text-align: center; font-size: 22px; font-weight: 800;
+    color: var(--earth); outline: none;
+  }
+  .g3-cur-input:focus { border-color: var(--trail); }
+  .g3-cur-input-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; text-align: center; margin-top: 3px; }
+
+  /* Other sets — compact */
+  .g3-other { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .g3-other:last-child { border-bottom: none; }
+  .g3-other.upcoming { opacity: 0.25; }
+  .g3-o-num { font-size: 14px; font-weight: 700; color: var(--earth); width: 18px; }
+  .g3-o-dash { flex: 1; font-size: 12px; color: var(--rock); opacity: 0.3; }
+  .g3-o-check { width: 20px; height: 20px; border-radius: 50%; background: var(--stone); flex-shrink: 0; }
+
+  .g3-log { margin: 16px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .g3-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- G1: Refined Card Layout -->
+<div>
+  <div class="col-label">G1 — Card + Hero Set</div>
+  <div class="col-desc">Dark exercise card (name, muscle, suggested, previous best, swap + video). Current set as a big white card with green border + large inputs. Other sets as compact rows.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top-bar"><div class="timer-pill">0:05</div><span class="ex-counter">1 of 8</span><span class="exit-btn">Exit</span></div>
+    <div class="progress"><div class="progress-fill" style="width:12%;"></div></div>
+
+    <div class="g1-ex"><div class="g1-ha"></div><div class="g1-ha"></div>
+      <div class="g1-ex-row1"><div class="g1-ex-name">Goblet Squat</div><div class="g1-ex-actions"><span class="g1-action swap">Swap</span><span class="g1-action video">▶ Video</span></div></div>
+      <div class="g1-ex-row2"><span class="g1-muscle">quads</span><span class="g1-dot"></span><span class="g1-suggested">32.5 kg suggested</span><span class="g1-dot"></span><span class="g1-prev">Last: <strong>30 × 8</strong></span></div>
+    </div>
+
+    <div class="g1-cue"><span class="g1-cue-label">Focus Cue</span><span class="g1-cue-chev">▾</span></div>
+
+    <div class="g1-sets"><div class="g1-sets-label">Set 1 of 4</div>
+      <div class="g1-current">
+        <div class="g1-cur-top"><span class="g1-cur-label">Current Set</span><span class="g1-cur-prev">Prev: —</span></div>
+        <div class="g1-cur-inputs">
+          <div class="g1-cur-group"><input class="g1-cur-input" value="32.5"><div class="g1-cur-label-text">Weight (kg)</div></div>
+          <div class="g1-cur-group"><input class="g1-cur-input" value="6"><div class="g1-cur-label-text">Reps</div></div>
+        </div>
+      </div>
+      <div class="g1-other upcoming"><span class="g1-o-num">2</span><span class="g1-o-prev">—</span><div class="g1-o-vals"><span class="g1-o-pill">—</span><span class="g1-o-pill">—</span></div><div class="g1-o-check empty"></div></div>
+      <div class="g1-other upcoming"><span class="g1-o-num">3</span><span class="g1-o-prev">—</span><div class="g1-o-vals"><span class="g1-o-pill">—</span><span class="g1-o-pill">—</span></div><div class="g1-o-check empty"></div></div>
+      <div class="g1-other upcoming"><span class="g1-o-num">4</span><span class="g1-o-prev">—</span><div class="g1-o-vals"><span class="g1-o-pill">—</span><span class="g1-o-pill">—</span></div><div class="g1-o-check empty"></div></div>
+    </div>
+
+    <div class="g1-log"><span class="g1-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- G2: Clean Sand -->
+<div>
+  <div class="col-label">G2 — Clean Sand</div>
+  <div class="col-desc">No dark card. Big 28px exercise name on sand. Info inline (muscle, suggested, previous). Simple 3-column table (set, kg, reps). Big bordered inputs. Most open and airy.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="top-bar"><div class="timer-pill">0:05</div><span class="ex-counter">1 of 8</span><span class="exit-btn">Exit</span></div>
+    <div class="progress"><div class="progress-fill" style="width:12%;"></div></div>
+
+    <div class="g2-ex">
+      <div class="g2-ex-row"><div class="g2-ex-name">Goblet Squat</div><div class="g2-ex-actions"><span class="g2-action swap">Swap</span><span class="g2-action video">▶ Video</span></div></div>
+      <div class="g2-ex-info"><span class="g2-muscle">quads</span><span class="g2-info-dot"></span><span class="g2-info-text">32.5 kg suggested</span><span class="g2-info-dot"></span><span class="g2-info-text">Last: 30 × 8</span></div>
+    </div>
+
+    <div class="g2-cue"><span class="g2-cue-label">Focus Cue</span><span style="font-size:10px;color:var(--trail);opacity:0.3;">▾</span></div>
+
+    <div class="g2-table">
+      <div class="g2-head"><span class="g2-th set">SET</span><span class="g2-th kg">KG</span><span class="g2-th reps">REPS</span><span class="g2-th ck"></span></div>
+      <div class="g2-row current"><span class="g2-td set">1</span><div class="g2-td kg"><input class="g2-input" value="32.5"></div><div class="g2-td reps"><input class="g2-input" value="6"></div><span class="g2-td ck"><div class="g2-check empty"></div></span></div>
+      <div class="g2-row upcoming"><span class="g2-td set">2</span><span class="g2-td kg"><span class="g2-dash">—</span></span><span class="g2-td reps"><span class="g2-dash">—</span></span><span class="g2-td ck"><div class="g2-check empty"></div></span></div>
+      <div class="g2-row upcoming"><span class="g2-td set">3</span><span class="g2-td kg"><span class="g2-dash">—</span></span><span class="g2-td reps"><span class="g2-dash">—</span></span><span class="g2-td ck"><div class="g2-check empty"></div></span></div>
+      <div class="g2-row upcoming"><span class="g2-td set">4</span><span class="g2-td kg"><span class="g2-dash">—</span></span><span class="g2-td reps"><span class="g2-dash">—</span></span><span class="g2-td ck"><div class="g2-check empty"></div></span></div>
+    </div>
+
+    <div class="g2-log"><span class="g2-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- G3: Split Layout -->
+<div>
+  <div class="col-label">G3 — Dark/Light Split</div>
+  <div class="col-desc">Full dark zone at top (timer, exercise, muscle, previous, swap, video — all on dark). White zone below (focus cue + featured current set card + compact other sets). Sharp split.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="g3-dark"><div class="g3-ha"></div><div class="g3-ha"></div>
+      <div class="g3-top-bar"><div class="g3-timer">0:05</div><span class="g3-of">1 of 8</span><span class="g3-exit">Exit</span></div>
+      <div class="g3-progress"><div class="g3-pfill" style="width:12%;"></div></div>
+      <div class="g3-ex-name">Goblet Squat</div>
+      <div class="g3-ex-info"><span class="g3-muscle">quads</span><span class="g3-suggested">32.5 kg suggested</span></div>
+      <div class="g3-ex-bottom"><span class="g3-prev">Last: <strong>30 × 8</strong></span><div class="g3-links"><span class="g3-link swap">Swap</span><span class="g3-link video">▶ Video</span></div></div>
+    </div>
+
+    <div class="g3-white">
+      <div class="g3-cue"><span class="g3-cue-label">Focus Cue</span><span style="font-size:10px;color:var(--trail);opacity:0.3;">▾</span></div>
+
+      <div class="g3-current">
+        <div class="g3-cur-top"><span class="g3-cur-set">Set 1 of 4</span><span class="g3-cur-prev">Prev: —</span></div>
+        <div class="g3-cur-inputs">
+          <div class="g3-cur-group"><input class="g3-cur-input" value="32.5"><div class="g3-cur-input-label">Weight (kg)</div></div>
+          <div class="g3-cur-group"><input class="g3-cur-input" value="6"><div class="g3-cur-input-label">Reps</div></div>
+        </div>
+      </div>
+
+      <div class="g3-other upcoming"><span class="g3-o-num">2</span><span class="g3-o-dash">—</span><div class="g3-o-check"></div></div>
+      <div class="g3-other upcoming"><span class="g3-o-num">3</span><span class="g3-o-dash">—</span><div class="g3-o-check"></div></div>
+      <div class="g3-other upcoming"><span class="g3-o-num">4</span><span class="g3-o-dash">—</span><div class="g3-o-check"></div></div>
+
+      <div class="g3-log"><span class="g3-log-text">Log Set 1</span></div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

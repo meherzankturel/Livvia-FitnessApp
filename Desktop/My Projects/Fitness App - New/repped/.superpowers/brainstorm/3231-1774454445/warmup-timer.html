@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Warmup Timer Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .inner { width: 100%; height: 100%; display: flex; flex-direction: column; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+
+  /* ============================================================
+     T1: CENTERED FOCUS — Big timer in the center. Exercise name
+     above. Tag + instructions below. Progress at top. Buttons
+     at bottom. Maximum focus on the countdown.
+     ============================================================ */
+
+  .t1 { background: var(--sand); }
+  .t1-inner { display: flex; flex-direction: column; height: 100%; padding: 56px 24px 40px; position: relative; z-index: 1; }
+
+  .t1-top {}
+  .t1-progress-text { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .t1-track { height: 6px; border-radius: 3px; background: var(--stone); margin-top: 6px; overflow: hidden; }
+  .t1-fill { height: 100%; border-radius: 3px; background: var(--trail); width: 16.6%; }
+
+  .t1-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .t1-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; text-align: center; }
+  .t1-tag { padding: 4px 14px; border-radius: 100px; margin-top: 8px; font-size: 11px; font-weight: 600; }
+  .t1-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .t1-timer { font-size: 96px; font-weight: 900; color: var(--earth); letter-spacing: -5px; margin-top: 12px; line-height: 1; }
+  .t1-desc { font-size: 14px; color: var(--rock); text-align: center; margin-top: 14px; line-height: 1.5; padding: 0 16px; }
+  .t1-demo { margin-top: 12px; padding: 8px 18px; border-radius: 12px; background: rgba(52,211,153,0.06); border: 1px solid rgba(52,211,153,0.1); }
+  .t1-demo-text { font-size: 12px; color: var(--trail); font-weight: 600; }
+
+  .t1-btns { padding-top: 16px; }
+  .t1-skip { padding: 16px; border-radius: 16px; background: var(--stone); text-align: center; }
+  .t1-skip-text { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .t1-skip-warmup { padding: 12px; text-align: center; }
+  .t1-skip-warmup-text { font-size: 12px; color: var(--rock); }
+
+
+  /* ============================================================
+     T2: DARK TIMER — Full dark screen. Timer is huge white.
+     Exercise info in sand. Maximum contrast for readability
+     while exercising. Gym-friendly — visible from a distance.
+     ============================================================ */
+
+  .t2 { background: var(--earth); }
+  .t2-inner { display: flex; flex-direction: column; height: 100%; padding: 56px 24px 40px; position: relative; z-index: 1; }
+
+  .t2-top {}
+  .t2-progress-text { font-size: 12px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .t2-track { height: 6px; border-radius: 3px; background: rgba(246,245,240,0.06); margin-top: 6px; overflow: hidden; }
+  .t2-fill { height: 100%; border-radius: 3px; background: var(--trail); width: 16.6%; }
+
+  .t2-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .t2-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; text-align: center; }
+  .t2-tag { padding: 4px 14px; border-radius: 100px; margin-top: 8px; font-size: 11px; font-weight: 600; }
+  .t2-tag.general { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .t2-timer { font-size: 110px; font-weight: 900; color: var(--sand); letter-spacing: -6px; margin-top: 8px; line-height: 1; }
+  .t2-desc { font-size: 14px; color: rgba(246,245,240,0.35); text-align: center; margin-top: 14px; line-height: 1.5; padding: 0 16px; }
+  .t2-demo { margin-top: 12px; padding: 8px 18px; border-radius: 12px; background: rgba(52,211,153,0.06); }
+  .t2-demo-text { font-size: 12px; color: var(--trail); font-weight: 600; opacity: 0.7; }
+
+  .t2-btns { padding-top: 16px; }
+  .t2-skip { padding: 16px; border-radius: 16px; background: rgba(246,245,240,0.06); text-align: center; }
+  .t2-skip-text { font-size: 15px; font-weight: 600; color: var(--sand); }
+  .t2-skip-warmup { padding: 12px; text-align: center; }
+  .t2-skip-warmup-text { font-size: 12px; color: rgba(246,245,240,0.2); }
+
+
+  /* ============================================================
+     T3: RING TIMER — Timer inside a large ring that depletes.
+     Ring shows remaining time visually. Exercise name above.
+     Clean, focused, Apple Watch-like.
+     ============================================================ */
+
+  .t3 { background: var(--sand); }
+  .t3-inner { display: flex; flex-direction: column; height: 100%; padding: 56px 24px 40px; position: relative; z-index: 1; }
+
+  .t3-top {}
+  .t3-progress-text { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .t3-track { height: 6px; border-radius: 3px; background: var(--stone); margin-top: 6px; overflow: hidden; }
+  .t3-fill { height: 100%; border-radius: 3px; background: var(--trail); width: 16.6%; }
+
+  .t3-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .t3-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .t3-tag { padding: 3px 12px; border-radius: 100px; margin-top: 6px; font-size: 10px; font-weight: 600; }
+  .t3-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+
+  /* Ring */
+  .t3-ring-area { margin-top: 16px; }
+  .t3-ring { width: 180px; height: 180px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .t3-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 10px solid var(--stone); }
+  .t3-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 10px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .t3-ring-inner { text-align: center; position: relative; z-index: 1; }
+  .t3-ring-timer { font-size: 52px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .t3-ring-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .t3-desc { font-size: 13px; color: var(--rock); text-align: center; margin-top: 16px; line-height: 1.5; padding: 0 20px; }
+  .t3-demo { margin-top: 10px; font-size: 11px; color: var(--trail); font-weight: 600; text-align: center; }
+
+  .t3-btns { padding-top: 16px; }
+  .t3-skip { padding: 16px; border-radius: 16px; background: var(--stone); text-align: center; }
+  .t3-skip-text { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .t3-skip-warmup { padding: 12px; text-align: center; }
+  .t3-skip-warmup-text { font-size: 12px; color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- T1: Centered Focus -->
+<div>
+  <div class="col-label">T1 — Centered Focus</div>
+  <div class="col-desc">Big 96px timer centered. Exercise name above, tag + description below. Progress bar at top. Skip at bottom. Maximum focus on the countdown.</div>
+  <div class="phone t1"><div class="topo"><div class="tc"></div><div class="tc"></div></div>
+    <div class="t1-inner">
+      <div class="t1-top"><div class="t1-progress-text">Exercise 1 of 6</div><div class="t1-track"><div class="t1-fill"></div></div></div>
+      <div class="t1-center">
+        <div class="t1-name">High Knees</div>
+        <div class="t1-tag general">General</div>
+        <div class="t1-timer">59</div>
+        <div class="t1-desc">March in place, driving knees up to hip height. Pump your arms.</div>
+        <div class="t1-demo"><span class="t1-demo-text">▶ Watch Demo</span></div>
+      </div>
+      <div class="t1-btns"><div class="t1-skip"><span class="t1-skip-text">Skip Exercise</span></div><div class="t1-skip-warmup"><span class="t1-skip-warmup-text">Skip Warm-up</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- T2: Dark Timer -->
+<div>
+  <div class="col-label">T2 — Dark Timer</div>
+  <div class="col-desc">Full dark screen. HUGE 110px sand-colored timer. Maximum contrast. Visible from across the gym. Green progress bar. Subtle skip buttons.</div>
+  <div class="phone t2"><div class="topo"><div class="tc" style="border-color:var(--sand);"></div><div class="tc" style="border-color:var(--sand);"></div></div>
+    <div class="t2-inner">
+      <div class="t2-top"><div class="t2-progress-text">Exercise 1 of 6</div><div class="t2-track"><div class="t2-fill"></div></div></div>
+      <div class="t2-center">
+        <div class="t2-name">High Knees</div>
+        <div class="t2-tag general">General</div>
+        <div class="t2-timer">59</div>
+        <div class="t2-desc">March in place, driving knees up to hip height. Pump your arms.</div>
+        <div class="t2-demo"><span class="t2-demo-text">▶ Watch Demo</span></div>
+      </div>
+      <div class="t2-btns"><div class="t2-skip"><span class="t2-skip-text">Skip Exercise</span></div><div class="t2-skip-warmup"><span class="t2-skip-warmup-text">Skip Warm-up</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- T3: Ring Timer -->
+<div>
+  <div class="col-label">T3 — Ring Timer</div>
+  <div class="col-desc">Timer inside a 180px depleting ring. Ring shows remaining time visually. Exercise name above. Clean, focused, Apple Watch-like.</div>
+  <div class="phone t3"><div class="topo"><div class="tc"></div><div class="tc"></div></div>
+    <div class="t3-inner">
+      <div class="t3-top"><div class="t3-progress-text">Exercise 1 of 6</div><div class="t3-track"><div class="t3-fill"></div></div></div>
+      <div class="t3-center">
+        <div class="t3-name">High Knees</div>
+        <div class="t3-tag general">General</div>
+        <div class="t3-ring-area"><div class="t3-ring"><div class="t3-ring-track"></div><div class="t3-ring-fill"></div><div class="t3-ring-inner"><div class="t3-ring-timer">59</div><div class="t3-ring-label">seconds</div></div></div></div>
+        <div class="t3-desc">March in place, driving knees up to hip height. Pump your arms.</div>
+        <div class="t3-demo">▶ Watch Demo</div>
+      </div>
+      <div class="t3-btns"><div class="t3-skip"><span class="t3-skip-text">Skip Exercise</span></div><div class="t3-skip-warmup"><span class="t3-skip-warmup-text">Skip Warm-up</span></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Mockup Options</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Shared */
+.back{position:absolute;top:52px;left:24px;width:34px;height:34px;border-radius:17px;background:rgba(255,255,255,0.2);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;z-index:3;cursor:pointer}
+.back-icon{font-size:18px;color:#fff;margin-top:-1px}
+.meal-label{text-align:center;font-size:11px;font-weight:600;color:#fff;text-transform:uppercase;letter-spacing:1.5px;position:absolute;top:58px;left:0;right:0;z-index:3;text-shadow:0 1px 6px rgba(0,0,0,0.3)}
+
+
+/* ============================================================
+   V1: FLOATING CARD
+   Card has all 4 rounded corners, overlaps image.
+   Macros as 4 tiles. Dotted ingredient rows. Big step numbers.
+   ============================================================ */
+.v1-hero{position:relative}
+.v1-img{width:100%;height:280px;object-fit:cover;object-position:center;display:block}
+.v1-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.02) 40%,rgba(0,0,0,0.3) 100%)}
+.v1-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,var(--sand),transparent)}
+
+.v1-card{margin:-36px 20px 0;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 35%,#F2EFE8 70%,#DDD8CE 100%);border-radius:20px;padding:20px;position:relative;z-index:2;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}
+.v1-card::before{content:'';position:absolute;top:-30px;right:-10px;width:160px;height:160px;border-radius:50%;background:rgba(52,211,153,0.06)}
+.v1-card::after{content:'';position:absolute;bottom:-20px;left:-10px;width:120px;height:120px;border-radius:50%;background:rgba(45,42,36,0.03)}
+.v1-name{font-size:22px;font-weight:800;color:var(--earth);letter-spacing:-0.8px;line-height:1.15;text-align:center}
+.v1-macros{display:flex;gap:8px;margin-top:14px}
+.v1-macro{flex:1;text-align:center;padding:10px 4px;border-radius:14px;background:linear-gradient(150deg,#FFFFFF 0%,#F0EDE6 50%,#E6E2D8 100%);box-shadow:0 1px 4px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.04)}
+.v1-macro-val{font-size:17px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.v1-macro-label{font-size:8px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+
+.v1-section{padding:24px 24px 0}
+.v1-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.v1-section-title{font-size:12px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:1.5px}
+.v1-section-meta{font-size:10px;color:var(--rock)}
+
+.v1-ing{display:flex;align-items:center;padding:12px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v1-ing:last-child{border-bottom:none}
+.v1-ing-name{font-size:15px;font-weight:500;color:var(--earth);flex-shrink:0}
+.v1-ing-dots{flex:1;margin:0 10px;height:1px;position:relative;overflow:hidden}
+.v1-ing-dots::after{content:'';position:absolute;top:0;left:0;right:0;border-bottom:1.5px dotted rgba(0,0,0,0.12)}
+.v1-ing-qty{font-size:14px;font-weight:600;color:var(--earth);flex-shrink:0}
+
+.v1-step{display:flex;gap:16px;align-items:flex-start;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v1-step:last-child{border-bottom:none}
+.v1-step-num{font-size:30px;font-weight:800;color:var(--stone);letter-spacing:-1.5px;line-height:1;width:38px;flex-shrink:0;padding-top:2px}
+.v1-step-text{font-size:14px;color:var(--earth);line-height:1.6;flex:1}
+.v1-step-time{font-size:10px;color:var(--rock);margin-top:4px}
+
+
+/* ============================================================
+   V2: COMPACT CARD + EARTH STEP NUMBERS
+   Tighter card. Macros as inline text row (not tiles).
+   Step numbers in earth color, bolder. More editorial.
+   ============================================================ */
+.v2-hero{position:relative}
+.v2-img{width:100%;height:260px;object-fit:cover;object-position:center;display:block}
+.v2-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.02) 40%,rgba(0,0,0,0.35) 100%)}
+.v2-fade{position:absolute;bottom:0;left:0;right:0;height:70px;background:linear-gradient(to top,var(--sand),transparent)}
+
+.v2-card{margin:-32px 20px 0;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 35%,#F2EFE8 70%,#DDD8CE 100%);border-radius:18px;padding:18px 20px;position:relative;z-index:2;box-shadow:0 4px 20px rgba(0,0,0,0.08);overflow:hidden}
+.v2-card::before{content:'';position:absolute;top:-25px;left:50%;width:180px;height:80px;border-radius:50%;background:rgba(52,211,153,0.06);transform:translateX(-50%)}
+.v2-name{font-size:20px;font-weight:800;color:var(--earth);letter-spacing:-0.7px;line-height:1.15}
+.v2-macro-inline{display:flex;align-items:center;gap:6px;margin-top:10px;flex-wrap:wrap}
+.v2-macro-pill{padding:5px 10px;border-radius:10px;background:linear-gradient(150deg,#FFFFFF 0%,#F0EDE6 50%,#E6E2D8 100%);font-size:11px;font-weight:600;color:var(--earth);box-shadow:0 1px 4px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.04)}
+.v2-macro-pill span{font-weight:400;color:var(--rock);margin-left:2px;font-size:10px}
+
+.v2-section{padding:22px 24px 0}
+.v2-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.v2-section-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.v2-section-meta{font-size:10px;color:var(--rock)}
+
+.v2-ing{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v2-ing:last-child{border-bottom:none}
+.v2-ing-name{font-size:14px;font-weight:500;color:var(--earth);flex-shrink:0}
+.v2-ing-dots{flex:1;margin:0 10px;height:1px;position:relative;overflow:hidden}
+.v2-ing-dots::after{content:'';position:absolute;top:0;left:0;right:0;border-bottom:1.5px dotted rgba(0,0,0,0.1)}
+.v2-ing-qty{font-size:13px;font-weight:600;color:var(--earth);flex-shrink:0}
+
+.v2-step{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v2-step:last-child{border-bottom:none}
+.v2-step-num{font-size:26px;font-weight:800;color:var(--earth);opacity:0.15;letter-spacing:-1px;line-height:1;width:34px;flex-shrink:0;padding-top:2px}
+.v2-step-text{font-size:14px;color:var(--earth);line-height:1.6;flex:1}
+.v2-step-time{font-size:10px;color:var(--rock);margin-top:4px}
+
+
+/* ============================================================
+   V3: DARK CARD MACROS + TRAIL ACCENT STEPS
+   Card macros in a dark sub-card inside white card.
+   Step numbers with trail green left accent bar.
+   Most polished, layered depth.
+   ============================================================ */
+.v3-hero{position:relative}
+.v3-img{width:100%;height:270px;object-fit:cover;object-position:center;display:block}
+.v3-img-overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,0.1) 0%,rgba(0,0,0,0.02) 40%,rgba(0,0,0,0.3) 100%)}
+.v3-fade{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(to top,var(--sand),transparent)}
+
+.v3-card{margin:-36px 20px 0;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 35%,#F2EFE8 70%,#DDD8CE 100%);border-radius:20px;padding:20px;position:relative;z-index:2;box-shadow:0 4px 24px rgba(0,0,0,0.08);overflow:hidden}
+.v3-card::before{content:'';position:absolute;top:-30px;right:-10px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.06)}
+.v3-card::after{content:'';position:absolute;bottom:-25px;left:20%;width:120px;height:120px;border-radius:50%;background:rgba(45,42,36,0.03)}
+.v3-name{font-size:22px;font-weight:800;color:var(--earth);letter-spacing:-0.8px;line-height:1.15;text-align:center}
+
+/* Macro tiles inside card */
+.v3-macro-card{display:flex;gap:8px;margin-top:14px}
+.v3-mc{flex:1;text-align:center;padding:10px 4px;border-radius:14px;background:linear-gradient(150deg,#FFFFFF 0%,#F0EDE6 50%,#E6E2D8 100%);box-shadow:0 1px 4px rgba(0,0,0,0.04);border:1px solid rgba(0,0,0,0.04)}
+.v3-mc-val{font-size:16px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.v3-mc-label{font-size:7px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+.v3-mc-div{display:none}
+
+.v3-section{padding:22px 24px 0}
+.v3-section-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.v3-section-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.v3-section-meta{font-size:10px;color:var(--rock)}
+
+.v3-ing{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v3-ing:last-child{border-bottom:none}
+.v3-ing-name{font-size:15px;font-weight:500;color:var(--earth);flex-shrink:0}
+.v3-ing-dots{flex:1;margin:0 10px;height:1px;position:relative;overflow:hidden}
+.v3-ing-dots::after{content:'';position:absolute;top:0;left:0;right:0;border-bottom:1.5px dotted rgba(0,0,0,0.1)}
+.v3-ing-qty{font-size:14px;font-weight:600;color:var(--earth);flex-shrink:0}
+
+/* Steps with green accent bar */
+.v3-step{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.v3-step:last-child{border-bottom:none}
+.v3-step-left{display:flex;align-items:flex-start;gap:10px;flex-shrink:0}
+.v3-step-bar{width:3px;height:100%;min-height:40px;border-radius:2px;background:var(--trail);opacity:0.25}
+.v3-step-num{font-size:28px;font-weight:800;color:var(--stone);letter-spacing:-1.5px;line-height:1;width:34px;padding-top:2px}
+.v3-step-text{font-size:14px;color:var(--earth);line-height:1.6;flex:1}
+.v3-step-time{font-size:10px;color:var(--rock);margin-top:4px}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- V1: FLOATING CARD -->
+  <div>
+    <div class="col-label">V1 — FLOATING CARD</div>
+    <div class="col-desc">All 4 corners rounded. Macro tiles. Dotted ingredients. Big stone step numbers. Clean.</div>
+    <div class="phone"><div class="ps">
+      <div class="v1-hero">
+        <div class="back"><span class="back-icon">‹</span></div>
+                <img class="v1-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt="Burrito Bowl">
+        <div class="v1-img-overlay"></div>
+        <div class="v1-fade"></div>
+      </div>
+      <div class="v1-card">
+        <div class="v1-name">Black Bean Burrito Bowl</div>
+        <div class="v1-macros">
+          <div class="v1-macro"><div class="v1-macro-val">420</div><div class="v1-macro-label">Calories</div></div>
+          <div class="v1-macro"><div class="v1-macro-val">28g</div><div class="v1-macro-label">Protein</div></div>
+          <div class="v1-macro"><div class="v1-macro-val">52g</div><div class="v1-macro-label">Carbs</div></div>
+          <div class="v1-macro"><div class="v1-macro-val">14g</div><div class="v1-macro-label">Fat</div></div>
+        </div>
+      </div>
+      <div class="v1-section"><div class="v1-section-head"><span class="v1-section-title">Ingredients</span><span class="v1-section-meta">6 items</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">Black beans</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">1/2 can</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">White rice</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">1 cup</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">Corn</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">1/4 cup</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">Avocado</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">1/2</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">Salsa</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">3 tbsp</span></div>
+        <div class="v1-ing"><span class="v1-ing-name">Sour cream</span><span class="v1-ing-dots"></span><span class="v1-ing-qty">1 tbsp</span></div>
+      </div>
+      <div class="v1-section" style="padding-bottom:50px"><div class="v1-section-head"><span class="v1-section-title">Steps</span><span class="v1-section-meta">4 steps</span></div>
+        <div class="v1-step"><span class="v1-step-num">01</span><div><div class="v1-step-text">Cook rice according to package directions.</div><div class="v1-step-time">~2 min</div></div></div>
+        <div class="v1-step"><span class="v1-step-num">02</span><div><div class="v1-step-text">Heat black beans. Season with cumin and salt.</div><div class="v1-step-time">~3 min</div></div></div>
+        <div class="v1-step"><span class="v1-step-num">03</span><div><div class="v1-step-text">Slice avocado and prep toppings.</div><div class="v1-step-time">~2 min</div></div></div>
+        <div class="v1-step"><span class="v1-step-num">04</span><div><div class="v1-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><div class="v1-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- V2: COMPACT + EDITORIAL -->
+  <div>
+    <div class="col-label">V2 — COMPACT EDITORIAL</div>
+    <div class="col-desc">Name left-aligned. Macros as inline pills. Faded earth step numbers. Tighter, magazine feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="v2-hero">
+        <div class="back"><span class="back-icon">‹</span></div>
+                <img class="v2-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt="Burrito Bowl">
+        <div class="v2-img-overlay"></div>
+        <div class="v2-fade"></div>
+      </div>
+      <div class="v2-card">
+        <div class="v2-name">Black Bean Burrito Bowl</div>
+        <div class="v2-macro-inline">
+          <span class="v2-macro-pill">420 <span>cal</span></span>
+          <span class="v2-macro-pill">28g <span>protein</span></span>
+          <span class="v2-macro-pill">52g <span>carbs</span></span>
+          <span class="v2-macro-pill">14g <span>fat</span></span>
+        </div>
+      </div>
+      <div class="v2-section"><div class="v2-section-head"><span class="v2-section-title">Ingredients</span><span class="v2-section-meta">6 items</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">Black beans</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">1/2 can</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">White rice</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">1 cup</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">Corn</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">1/4 cup</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">Avocado</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">1/2</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">Salsa</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">3 tbsp</span></div>
+        <div class="v2-ing"><span class="v2-ing-name">Sour cream</span><span class="v2-ing-dots"></span><span class="v2-ing-qty">1 tbsp</span></div>
+      </div>
+      <div class="v2-section" style="padding-bottom:50px"><div class="v2-section-head"><span class="v2-section-title">Steps</span><span class="v2-section-meta">4 steps</span></div>
+        <div class="v2-step"><span class="v2-step-num">01</span><div><div class="v2-step-text">Cook rice according to package directions.</div><div class="v2-step-time">~2 min</div></div></div>
+        <div class="v2-step"><span class="v2-step-num">02</span><div><div class="v2-step-text">Heat black beans. Season with cumin and salt.</div><div class="v2-step-time">~3 min</div></div></div>
+        <div class="v2-step"><span class="v2-step-num">03</span><div><div class="v2-step-text">Slice avocado and prep toppings.</div><div class="v2-step-time">~2 min</div></div></div>
+        <div class="v2-step"><span class="v2-step-num">04</span><div><div class="v2-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><div class="v2-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- V3: DARK MACRO CARD + ACCENT STEPS -->
+  <div>
+    <div class="col-label">V3 — LAYERED PREMIUM</div>
+    <div class="col-desc">Dark macro sub-card inside white card. Green accent bars on steps. Most premium, most depth.</div>
+    <div class="phone"><div class="ps">
+      <div class="v3-hero">
+        <div class="back"><span class="back-icon">‹</span></div>
+                <img class="v3-img" src="https://images.unsplash.com/photo-1626700051175-6818013e1d4f?w=800&h=600&fit=crop&crop=center" alt="Burrito Bowl">
+        <div class="v3-img-overlay"></div>
+        <div class="v3-fade"></div>
+      </div>
+      <div class="v3-card">
+        <div class="v3-name">Black Bean Burrito Bowl</div>
+        <div class="v3-macro-card">
+          <div class="v3-mc"><div class="v3-mc-val">420</div><div class="v3-mc-label">Calories</div></div>
+          <div class="v3-mc-div"></div>
+          <div class="v3-mc"><div class="v3-mc-val">28g</div><div class="v3-mc-label">Protein</div></div>
+          <div class="v3-mc-div"></div>
+          <div class="v3-mc"><div class="v3-mc-val">52g</div><div class="v3-mc-label">Carbs</div></div>
+          <div class="v3-mc-div"></div>
+          <div class="v3-mc"><div class="v3-mc-val">14g</div><div class="v3-mc-label">Fat</div></div>
+        </div>
+      </div>
+      <div class="v3-section"><div class="v3-section-head"><span class="v3-section-title">Ingredients</span><span class="v3-section-meta">6 items</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">Black beans</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">1/2 can</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">White rice</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">1 cup</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">Corn</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">1/4 cup</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">Avocado</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">1/2</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">Salsa</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">3 tbsp</span></div>
+        <div class="v3-ing"><span class="v3-ing-name">Sour cream</span><span class="v3-ing-dots"></span><span class="v3-ing-qty">1 tbsp</span></div>
+      </div>
+      <div class="v3-section" style="padding-bottom:50px"><div class="v3-section-head"><span class="v3-section-title">Steps</span><span class="v3-section-meta">4 steps</span></div>
+        <div class="v3-step"><div class="v3-step-left"><div class="v3-step-bar"></div><span class="v3-step-num">01</span></div><div><div class="v3-step-text">Cook rice according to package directions.</div><div class="v3-step-time">~2 min</div></div></div>
+        <div class="v3-step"><div class="v3-step-left"><div class="v3-step-bar"></div><span class="v3-step-num">02</span></div><div><div class="v3-step-text">Heat black beans. Season with cumin and salt.</div><div class="v3-step-time">~3 min</div></div></div>
+        <div class="v3-step"><div class="v3-step-left"><div class="v3-step-bar"></div><span class="v3-step-num">03</span></div><div><div class="v3-step-text">Slice avocado and prep toppings.</div><div class="v3-step-time">~2 min</div></div></div>
+        <div class="v3-step"><div class="v3-step-left"><div class="v3-step-bar"></div><span class="v3-step-num">04</span></div><div><div class="v3-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><div class="v3-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Ingredients V2</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Compact locked hero */
+.top{padding:56px 24px 0;display:flex;align-items:center;position:relative}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:24px;z-index:2}
+.type{font-size:12px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;text-align:center;width:100%}
+.anim-wrap{display:flex;justify-content:center;margin-top:-4px}
+.anim-box{width:200px;height:175px}
+.hero-name{padding:0 20px;font-size:26px;font-weight:800;color:var(--earth);letter-spacing:-1.2px;line-height:1;text-align:center;margin-top:-10px}
+.hero-sub{text-align:center;padding:4px 24px 0;font-size:11px;color:var(--rock)}
+.hero-sub strong{color:var(--earth);font-weight:700}
+.hero-video{display:flex;justify-content:center;padding:6px 0 0}
+.video-pill{padding:4px 12px;border-radius:100px;background:var(--earth);font-size:10px;font-weight:600;color:var(--trail);cursor:pointer}
+
+/* Steps placeholder */
+.sph{padding:14px 24px 0}
+.sph-head{display:flex;justify-content:space-between;margin-bottom:6px}
+.sph-title{font-size:12px;font-weight:700;color:var(--earth)}
+.sph-sub{font-size:10px;color:var(--rock)}
+.sph-row{height:50px;border-radius:12px;background:var(--stone);opacity:0.15;margin-bottom:6px}
+
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.s-title{font-size:13px;font-weight:700;color:var(--earth)}
+.s-sub{font-size:10px;color:var(--rock)}
+.s-count{font-size:10px;color:var(--trail);font-weight:600}
+
+
+/* ============================================================
+   J1: DARK CARD GRID
+   2-column grid inside a dark card. Each cell has name + amt.
+   Green dot accent. Diagonal lines. Premium dark.
+   ============================================================ */
+.j1-wrap{padding:14px 20px 0}
+.j1-card{background:var(--earth);border-radius:20px;padding:16px;position:relative;overflow:hidden}
+.j1-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.j1-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative}
+.j1-title{font-size:12px;font-weight:700;color:var(--sand)}
+.j1-badge{padding:3px 8px;border-radius:100px;background:rgba(52,211,153,0.1);font-size:9px;font-weight:700;color:var(--trail)}
+.j1-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;position:relative}
+.j1-cell{padding:10px 12px;border-radius:12px;background:rgba(246,245,240,0.04)}
+.j1-cell-name{font-size:12px;font-weight:600;color:var(--sand)}
+.j1-cell-amt{font-size:10px;color:rgba(246,245,240,0.3);margin-top:2px}
+
+
+/* ============================================================
+   J2: HORIZONTAL SCROLL TILES
+   Swipeable ingredient tiles. Each is a vertical card with
+   big first letter, name, amount. White/stone alternating.
+   ============================================================ */
+.j2-section{padding:14px 0 0}
+.j2-head{display:flex;justify-content:space-between;align-items:center;padding:0 24px;margin-bottom:8px}
+.j2-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 24px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.j2-scroll::-webkit-scrollbar{display:none}
+.j2-tile{flex-shrink:0;width:100px;padding:14px 10px;border-radius:16px;scroll-snap-align:start;text-align:center}
+.j2-tile.white{background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.j2-tile.stone{background:var(--stone)}
+.j2-tile-letter{font-size:24px;font-weight:800;color:var(--trail);opacity:0.3;line-height:1;margin-bottom:4px}
+.j2-tile-name{font-size:11px;font-weight:700;color:var(--earth);line-height:1.2}
+.j2-tile-amt{font-size:9px;color:var(--rock);margin-top:4px}
+
+
+/* ============================================================
+   J3: MINIMAL INLINE
+   Just text. No cards, no borders. Name · amount on each line.
+   Bullet dots. Maximum simplicity. Apple Notes feel.
+   ============================================================ */
+.j3{padding:14px 24px 0}
+.j3-item{display:flex;align-items:baseline;gap:8px;padding:8px 0}
+.j3-bullet{width:4px;height:4px;border-radius:2px;background:var(--earth);opacity:0.2;flex-shrink:0;margin-top:6px}
+.j3-text{font-size:14px;color:var(--earth);line-height:1.4}
+.j3-text span{color:var(--rock);font-size:12px}
+
+
+/* ============================================================
+   J4: ICON CARDS
+   Each ingredient has an emoji/icon circle + name + amount.
+   Horizontal 2-column layout. Friendly, visual, fun.
+   ============================================================ */
+.j4{padding:14px 24px 0}
+.j4-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.j4-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.j4-icon{width:34px;height:34px;border-radius:10px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.j4-info{flex:1;min-width:0}
+.j4-name{font-size:12px;font-weight:600;color:var(--earth);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.j4-amt{font-size:10px;color:var(--rock);margin-top:1px}
+
+
+/* ============================================================
+   J5: PROGRESS CHECKLIST
+   Each item has a thin horizontal progress bar showing how
+   much of total recipe this ingredient represents. Checked
+   items fill their bar green. Data-visual + interactive.
+   ============================================================ */
+.j5{padding:14px 24px 0}
+.j5-item{padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.03);cursor:pointer}
+.j5-item:last-child{border-bottom:none}
+.j5-item-top{display:flex;align-items:center;gap:10px}
+.j5-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.j5-cb.on{background:var(--trail);border-color:var(--trail)}
+.j5-ck{font-size:9px;color:#fff;font-weight:700}
+.j5-name{flex:1;font-size:13px;font-weight:600;color:var(--earth)}
+.j5-item.done .j5-name{opacity:0.35;text-decoration:line-through}
+.j5-amt{font-size:11px;color:var(--rock)}
+.j5-item.done .j5-amt{opacity:0.3}
+.j5-bar{height:2px;border-radius:1px;background:var(--stone);margin-top:6px;margin-left:28px}
+.j5-bar-fill{height:100%;border-radius:1px;background:var(--trail);opacity:0.3}
+.j5-item.done .j5-bar-fill{opacity:1}
+
+
+/* ============================================================
+   J6: TABBED CATEGORIES
+   Ingredient tabs (if grouped by type). Tabs: All / Produce /
+   Protein / Pantry. Content below changes. For varied recipes.
+   ============================================================ */
+.j6{padding:14px 24px 0}
+.j6-tabs{display:flex;gap:6px;margin-bottom:10px;overflow-x:auto;scrollbar-width:none}
+.j6-tabs::-webkit-scrollbar{display:none}
+.j6-tab{padding:6px 14px;border-radius:100px;font-size:10px;font-weight:600;white-space:nowrap;cursor:pointer}
+.j6-tab.active{background:var(--earth);color:var(--sand)}
+.j6-tab.inactive{background:var(--stone);color:var(--rock)}
+.j6-list{}
+.j6-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.03)}
+.j6-row:last-child{border-bottom:none}
+.j6-dot{width:6px;height:6px;border-radius:3px;flex-shrink:0}
+.j6-name{flex:1;font-size:13px;font-weight:500;color:var(--earth)}
+.j6-amt{font-size:11px;color:var(--rock)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- J1 -->
+  <div>
+    <div class="col-label">J1 — DARK CARD GRID</div>
+    <div class="col-desc">2-column grid inside dark card. Diagonal accents. Green badge. Premium dark contained.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l1" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j1-wrap"><div class="j1-card">
+        <div class="j1-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+        <div class="j1-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg)"></div>
+        <div class="j1-head"><span class="j1-title">Ingredients</span><span class="j1-badge">6 items</span></div>
+        <div class="j1-grid">
+          <div class="j1-cell"><div class="j1-cell-name">Black beans</div><div class="j1-cell-amt">1/2 can drained</div></div>
+          <div class="j1-cell"><div class="j1-cell-name">White rice</div><div class="j1-cell-amt">1 cup cooked</div></div>
+          <div class="j1-cell"><div class="j1-cell-name">Corn</div><div class="j1-cell-amt">1/4 cup</div></div>
+          <div class="j1-cell"><div class="j1-cell-name">Avocado</div><div class="j1-cell-amt">1/2 sliced</div></div>
+          <div class="j1-cell"><div class="j1-cell-name">Salsa</div><div class="j1-cell-amt">3 tbsp</div></div>
+          <div class="j1-cell"><div class="j1-cell-name">Sour cream</div><div class="j1-cell-amt">1 tbsp</div></div>
+        </div>
+      </div></div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- J2 -->
+  <div>
+    <div class="col-label">J2 — HORIZONTAL TILES</div>
+    <div class="col-desc">Swipeable vertical tiles. Big faded first letter. Name + amount. White/stone alternating.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l2" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j2-section"><div class="j2-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="j2-scroll">
+          <div class="j2-tile white"><div class="j2-tile-letter">B</div><div class="j2-tile-name">Black beans</div><div class="j2-tile-amt">1/2 can</div></div>
+          <div class="j2-tile stone"><div class="j2-tile-letter">W</div><div class="j2-tile-name">White rice</div><div class="j2-tile-amt">1 cup</div></div>
+          <div class="j2-tile white"><div class="j2-tile-letter">C</div><div class="j2-tile-name">Corn</div><div class="j2-tile-amt">1/4 cup</div></div>
+          <div class="j2-tile stone"><div class="j2-tile-letter">A</div><div class="j2-tile-name">Avocado</div><div class="j2-tile-amt">1/2</div></div>
+          <div class="j2-tile white"><div class="j2-tile-letter">S</div><div class="j2-tile-name">Salsa</div><div class="j2-tile-amt">3 tbsp</div></div>
+          <div class="j2-tile stone"><div class="j2-tile-letter">S</div><div class="j2-tile-name">Sour cream</div><div class="j2-tile-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- J3 -->
+  <div>
+    <div class="col-label">J3 — MINIMAL INLINE</div>
+    <div class="col-desc">No cards, no borders. Just text: name · amount per line. Tiny bullet dots. Maximum simplicity.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l3" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j3"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">Black beans <span>· 1/2 can drained</span></span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">White rice <span>· 1 cup cooked</span></span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">Corn <span>· 1/4 cup</span></span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">Avocado <span>· 1/2 sliced</span></span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">Salsa <span>· 3 tbsp</span></span></div>
+        <div class="j3-item"><span class="j3-bullet"></span><span class="j3-text">Sour cream <span>· 1 tbsp</span></span></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- J4 -->
+  <div>
+    <div class="col-label">J4 — ICON CARDS</div>
+    <div class="col-desc">Emoji icon circles + name + amount. 2-column grid. Friendly, visual, fun.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l4" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j4"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="j4-grid">
+          <div class="j4-card"><div class="j4-icon">🫘</div><div class="j4-info"><div class="j4-name">Black beans</div><div class="j4-amt">1/2 can</div></div></div>
+          <div class="j4-card"><div class="j4-icon">🍚</div><div class="j4-info"><div class="j4-name">White rice</div><div class="j4-amt">1 cup</div></div></div>
+          <div class="j4-card"><div class="j4-icon">🌽</div><div class="j4-info"><div class="j4-name">Corn</div><div class="j4-amt">1/4 cup</div></div></div>
+          <div class="j4-card"><div class="j4-icon">🥑</div><div class="j4-info"><div class="j4-name">Avocado</div><div class="j4-amt">1/2</div></div></div>
+          <div class="j4-card"><div class="j4-icon">🫙</div><div class="j4-info"><div class="j4-name">Salsa</div><div class="j4-amt">3 tbsp</div></div></div>
+          <div class="j4-card"><div class="j4-icon">🥄</div><div class="j4-info"><div class="j4-name">Sour cream</div><div class="j4-amt">1 tbsp</div></div></div>
+        </div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- J5 -->
+  <div>
+    <div class="col-label">J5 — PROGRESS CHECKLIST</div>
+    <div class="col-desc">Checklist with micro progress bars per item. Checked items fill green. Data-visual + interactive.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l5" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j5"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-count">2 / 6</span></div>
+        <div class="j5-item done"><div class="j5-item-top"><div class="j5-cb on"><span class="j5-ck">✓</span></div><span class="j5-name">Black beans</span><span class="j5-amt">1/2 can</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:100%"></div></div></div>
+        <div class="j5-item done"><div class="j5-item-top"><div class="j5-cb on"><span class="j5-ck">✓</span></div><span class="j5-name">White rice</span><span class="j5-amt">1 cup</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:100%"></div></div></div>
+        <div class="j5-item"><div class="j5-item-top"><div class="j5-cb"></div><span class="j5-name">Corn</span><span class="j5-amt">1/4 cup</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:60%"></div></div></div>
+        <div class="j5-item"><div class="j5-item-top"><div class="j5-cb"></div><span class="j5-name">Avocado</span><span class="j5-amt">1/2</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:45%"></div></div></div>
+        <div class="j5-item"><div class="j5-item-top"><div class="j5-cb"></div><span class="j5-name">Salsa</span><span class="j5-amt">3 tbsp</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:30%"></div></div></div>
+        <div class="j5-item"><div class="j5-item-top"><div class="j5-cb"></div><span class="j5-name">Sour cream</span><span class="j5-amt">1 tbsp</span></div><div class="j5-bar"><div class="j5-bar-fill" style="width:20%"></div></div></div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- J6 -->
+  <div>
+    <div class="col-label">J6 — TABBED CATEGORIES</div>
+    <div class="col-desc">Filter tabs (All / Produce / Protein / Pantry). Content changes per tab. Color-coded dots. Smart grouping.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="anim-wrap"><div id="l6" class="anim-box"></div></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="j6"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="j6-tabs"><span class="j6-tab active">All</span><span class="j6-tab inactive">Produce</span><span class="j6-tab inactive">Protein</span><span class="j6-tab inactive">Dairy</span><span class="j6-tab inactive">Pantry</span></div>
+        <div class="j6-list">
+          <div class="j6-row"><span class="j6-dot" style="background:#34D399"></span><span class="j6-name">Black beans</span><span class="j6-amt">1/2 can</span></div>
+          <div class="j6-row"><span class="j6-dot" style="background:#6366F1"></span><span class="j6-name">White rice</span><span class="j6-amt">1 cup</span></div>
+          <div class="j6-row"><span class="j6-dot" style="background:#34D399"></span><span class="j6-name">Corn</span><span class="j6-amt">1/4 cup</span></div>
+          <div class="j6-row"><span class="j6-dot" style="background:#34D399"></span><span class="j6-name">Avocado</span><span class="j6-amt">1/2</span></div>
+          <div class="j6-row"><span class="j6-dot" style="background:#8E8E7A"></span><span class="j6-name">Salsa</span><span class="j6-amt">3 tbsp</span></div>
+          <div class="j6-row"><span class="j6-dot" style="background:#F59E0B"></span><span class="j6-name">Sour cream</span><span class="j6-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="sph"><div class="sph-head"><span class="sph-title">Steps</span><span class="sph-sub">↓</span></div><div class="sph-row"></div><div class="sph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+['l1','l2','l3','l4','l5','l6'].forEach(function(id){
+  lottie.loadAnimation({container:document.getElementById(id),renderer:'svg',loop:true,autoplay:true,path:'/cooking-pan.json'});
+});
+</script>
+</body>
+</html>

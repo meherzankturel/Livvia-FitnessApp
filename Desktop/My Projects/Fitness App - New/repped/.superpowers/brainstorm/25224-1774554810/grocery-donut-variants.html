@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Donut Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes popIn { 0% { transform: scale(0.6); opacity: 0; } 60% { transform: scale(1.03); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes fillRight { from { width: 0%; } }
+  @keyframes spinIn { from { transform: rotate(-90deg); opacity: 0; } to { transform: rotate(0deg); opacity: 1; } }
+
+  /* Placeholder list */
+  .ph { padding: 20px 24px 0; }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 36px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+
+  /* ============================================================
+     D1: DONUT CENTERED — CLEAN
+     Donut centered with total inside. Title above. Legend as
+     horizontal compact pills below. Progress bar. Most minimal.
+     ============================================================ */
+  .d1-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .d1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .d1-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .d1-week { font-size: 10px; color: var(--rock); }
+
+  .d1-center { display: flex; justify-content: center; padding: 22px 0 0; animation: popIn 0.5s ease-out; }
+  .d1-donut {
+    width: 150px; height: 150px; border-radius: 50%;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+  }
+  .d1-hole { width: 100px; height: 100px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d1-hole-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .d1-hole-sub { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  .d1-pills { display: flex; gap: 5px; justify-content: center; flex-wrap: wrap; padding: 14px 24px 0; animation: fadeUp 0.4s ease-out 0.15s backwards; }
+  .d1-pill { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 100px; background: var(--stone); }
+  .d1-pill-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .d1-pill-text { font-size: 9px; font-weight: 600; color: var(--earth); }
+
+  .d1-progress { display: flex; align-items: center; gap: 8px; padding: 14px 24px 0; animation: fadeUp 0.4s ease-out 0.25s backwards; }
+  .d1-p-text { font-size: 11px; font-weight: 600; color: var(--trail); white-space: nowrap; }
+  .d1-p-track { flex: 1; height: 4px; border-radius: 2px; background: var(--stone); }
+  .d1-p-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .d1-p-total { font-size: 11px; font-weight: 700; color: var(--earth); white-space: nowrap; }
+
+
+  /* ============================================================
+     D2: DONUT IN DARK CARD
+     Dark hero card with donut on the left, stats on right.
+     Diagonal accents. Legend as tiny dots inside the card.
+     Premium, consistent with other screen heroes.
+     ============================================================ */
+  .d2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .d2-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .d2-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .d2-hero {
+    margin: 14px 20px 0; padding: 20px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease-out;
+  }
+  .d2-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+
+  .d2-row { display: flex; align-items: center; gap: 18px; position: relative; }
+
+  .d2-donut {
+    width: 110px; height: 110px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, rgba(246,245,240,0.15) 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out 0.2s backwards;
+  }
+  .d2-hole { width: 72px; height: 72px; border-radius: 50%; background: var(--earth); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d2-hole-val { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -1px; line-height: 1; }
+  .d2-hole-sub { font-size: 8px; color: rgba(246,245,240,0.25); margin-top: 2px; }
+
+  .d2-info { flex: 1; }
+  .d2-info-title { font-size: 18px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-bottom: 10px; }
+  .d2-stat-row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .d2-stat-name { font-size: 10px; color: rgba(246,245,240,0.25); }
+  .d2-stat-val { font-size: 12px; font-weight: 700; color: var(--sand); }
+  .d2-stat-val.green { color: var(--trail); }
+
+  .d2-legend { display: flex; gap: 8px; margin-top: 14px; position: relative; }
+  .d2-leg { display: flex; align-items: center; gap: 3px; }
+  .d2-leg-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .d2-leg-text { font-size: 8px; color: rgba(246,245,240,0.2); }
+
+  .d2-bar { margin: 0 0; height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); margin-top: 14px; position: relative; }
+  .d2-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+
+  /* ============================================================
+     D3: DONUT + PERSONAL TITLE
+     Giant editorial title + smaller donut beside it.
+     Legend below as pills. Most editorial + graphical combo.
+     ============================================================ */
+  .d3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .d3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .d3-hero { display: flex; align-items: center; gap: 16px; padding: 20px 24px 0; animation: fadeUp 0.4s ease-out; }
+
+  .d3-text { flex: 1; }
+  .d3-greet { font-size: 11px; color: var(--rock); margin-bottom: 4px; }
+  .d3-title { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; }
+  .d3-title em { font-style: italic; color: var(--trail); }
+  .d3-meta { font-size: 11px; color: var(--rock); margin-top: 6px; }
+
+  .d3-donut {
+    width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out 0.15s backwards;
+  }
+  .d3-hole { width: 64px; height: 64px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d3-hole-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .d3-hole-sub { font-size: 7px; color: var(--rock); margin-top: 1px; }
+
+  .d3-pills { display: flex; gap: 5px; flex-wrap: wrap; padding: 14px 24px 0; animation: fadeUp 0.4s ease-out 0.15s backwards; }
+  .d3-pill { display: flex; align-items: center; gap: 4px; padding: 5px 10px; border-radius: 100px; background: var(--stone); }
+  .d3-pill-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .d3-pill-text { font-size: 9px; font-weight: 600; color: var(--earth); }
+
+  .d3-bar { margin: 12px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); }
+  .d3-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .d3-bar-row { display: flex; justify-content: space-between; padding: 4px 24px 0; }
+  .d3-bar-text { font-size: 9px; color: var(--rock); }
+
+
+  /* ============================================================
+     D4: DONUT LARGE + BENTO STATS
+     Big donut centered. Below: 3 compact bento stat tiles
+     in a row (items, checked, total). Legend as colored strip.
+     ============================================================ */
+  .d4-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .d4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .d4-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+
+  .d4-center { display: flex; justify-content: center; padding: 20px 0 0; }
+  .d4-donut {
+    width: 140px; height: 140px; border-radius: 50%;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out;
+  }
+  .d4-hole { width: 92px; height: 92px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d4-hole-val { font-size: 12px; font-weight: 600; color: var(--rock); }
+  .d4-hole-pct { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .d4-hole-sub { font-size: 9px; color: var(--trail); margin-top: 2px; font-weight: 600; }
+
+  .d4-tiles { display: flex; gap: 8px; padding: 16px 20px 0; animation: fadeUp 0.4s ease-out 0.15s backwards; }
+  .d4-tile { flex: 1; padding: 12px; border-radius: 16px; text-align: center; }
+  .d4-tile.stone { background: var(--stone); }
+  .d4-tile.dark { background: var(--earth); }
+  .d4-tile-val { font-size: 18px; font-weight: 800; letter-spacing: -0.5px; }
+  .d4-tile.stone .d4-tile-val { color: var(--earth); }
+  .d4-tile.dark .d4-tile-val { color: var(--trail); }
+  .d4-tile-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 2px; }
+  .d4-tile.dark .d4-tile-label { color: rgba(246,245,240,0.25); }
+
+  .d4-strip { display: flex; height: 4px; margin: 12px 20px 0; border-radius: 2px; overflow: hidden; animation: fadeUp 0.4s ease-out 0.25s backwards; }
+  .d4-seg { height: 100%; }
+
+
+  /* ============================================================
+     D5: DONUT SPLIT — LEFT DONUT, RIGHT LEGEND LIST
+     Slightly bigger donut. Right side has a proper legend list
+     with colored dots + category name + count + price.
+     More data-rich but well organized.
+     ============================================================ */
+  .d5-top { padding: 56px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .d5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .d5-title { flex: 1; font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .d5-week { font-size: 10px; color: var(--rock); }
+
+  .d5-hero { display: flex; align-items: center; gap: 20px; padding: 20px 24px 0; animation: fadeUp 0.4s ease-out; }
+
+  .d5-donut {
+    width: 130px; height: 130px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out 0.1s backwards;
+  }
+  .d5-hole { width: 86px; height: 86px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d5-hole-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .d5-hole-sub { font-size: 8px; color: var(--rock); margin-top: 2px; }
+
+  .d5-legend { flex: 1; }
+  .d5-leg-item { display: flex; align-items: center; gap: 6px; padding: 5px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .d5-leg-item:last-child { border-bottom: none; }
+  .d5-leg-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+  .d5-leg-name { font-size: 12px; color: var(--earth); flex: 1; }
+  .d5-leg-count { font-size: 11px; font-weight: 700; color: var(--earth); }
+
+  .d5-bar { display: flex; align-items: center; gap: 8px; padding: 16px 24px 0; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .d5-bar-label { font-size: 11px; font-weight: 600; color: var(--trail); white-space: nowrap; }
+  .d5-bar-track { flex: 1; height: 4px; border-radius: 2px; background: var(--stone); }
+  .d5-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .d5-bar-total { font-size: 12px; font-weight: 800; color: var(--earth); white-space: nowrap; }
+
+
+  /* ============================================================
+     D6: DONUT WHITE CARD — CONTAINED
+     Everything inside a white card. Donut left, info right.
+     Category pills below inside the card. Progress bar at
+     bottom of card. Self-contained, clean, premium.
+     ============================================================ */
+  .d6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .d6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .d6-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .d6-card {
+    margin: 14px 20px 0; padding: 22px; border-radius: 24px; background: #fff;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out;
+  }
+
+  .d6-row { display: flex; align-items: center; gap: 18px; }
+
+  .d6-donut {
+    width: 110px; height: 110px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%, #EF4444 28% 50%, #F59E0B 50% 67%, #6366F1 67% 83%, #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out 0.15s backwards;
+  }
+  .d6-hole { width: 72px; height: 72px; border-radius: 50%; background: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .d6-hole-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .d6-hole-sub { font-size: 7px; color: var(--rock); margin-top: 1px; }
+
+  .d6-info { flex: 1; }
+  .d6-info-title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; line-height: 1.15; }
+  .d6-info-meta { font-size: 11px; color: var(--rock); margin-top: 6px; }
+  .d6-info-total { font-size: 22px; font-weight: 800; color: var(--trail); letter-spacing: -1px; margin-top: 6px; }
+
+  .d6-divider { height: 1px; background: rgba(0,0,0,0.04); margin: 16px 0; }
+
+  .d6-pills { display: flex; gap: 5px; flex-wrap: wrap; }
+  .d6-pill { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; background: var(--sand); }
+  .d6-pill-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .d6-pill-text { font-size: 9px; font-weight: 600; color: var(--earth); }
+
+  .d6-bar { height: 4px; border-radius: 2px; background: var(--stone); margin-top: 14px; overflow: hidden; }
+  .d6-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .d6-bar-row { display: flex; justify-content: space-between; margin-top: 5px; }
+  .d6-bar-text { font-size: 9px; color: var(--rock); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== D1: DONUT CENTERED =============== -->
+  <div>
+    <div class="col-label">D1 — DONUT CENTERED</div>
+    <div class="col-desc">Donut centered, total inside. Category pills below. Progress bar with checked/total. Most minimal donut approach.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d1-top"><div class="d1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="d1-title">Grocery List</span><span class="d1-week">Mar 26</span></div>
+        <div class="d1-center"><div class="d1-donut"><div class="d1-hole"><div class="d1-hole-val">$47</div><div class="d1-hole-sub">estimated</div></div></div></div>
+        <div class="d1-pills">
+          <div class="d1-pill"><span class="d1-pill-dot" style="background:#34D399;"></span><span class="d1-pill-text">Produce 5</span></div>
+          <div class="d1-pill"><span class="d1-pill-dot" style="background:#EF4444;"></span><span class="d1-pill-text">Protein 4</span></div>
+          <div class="d1-pill"><span class="d1-pill-dot" style="background:#F59E0B;"></span><span class="d1-pill-text">Dairy 3</span></div>
+          <div class="d1-pill"><span class="d1-pill-dot" style="background:#6366F1;"></span><span class="d1-pill-text">Grains 3</span></div>
+          <div class="d1-pill"><span class="d1-pill-dot" style="background:#8E8E7A;"></span><span class="d1-pill-text">Pantry 3</span></div>
+        </div>
+        <div class="d1-progress"><span class="d1-p-text">5 / 18</span><div class="d1-p-track"><div class="d1-p-fill" style="width:28%;"></div></div><span class="d1-p-total">$47.82</span></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:80%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== D2: DONUT IN DARK CARD =============== -->
+  <div>
+    <div class="col-label">D2 — DONUT DARK CARD</div>
+    <div class="col-desc">Dark hero card. Donut left, stats right. Legend dots at bottom. Progress bar inside card. Premium, consistent with terrain.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d2-top"><div class="d2-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="d2-lbl">Grocery List</span></div>
+        <div class="d2-hero">
+          <div class="d2-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg);"></div>
+          <div class="d2-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg);"></div>
+          <div class="d2-row">
+            <div class="d2-donut"><div class="d2-hole"><div class="d2-hole-val">$47</div><div class="d2-hole-sub">est. total</div></div></div>
+            <div class="d2-info">
+              <div class="d2-info-title">Weekly Shop</div>
+              <div class="d2-stat-row"><span class="d2-stat-name">Items</span><span class="d2-stat-val">18</span></div>
+              <div class="d2-stat-row"><span class="d2-stat-name">Checked</span><span class="d2-stat-val green">5</span></div>
+              <div class="d2-stat-row"><span class="d2-stat-name">Remaining</span><span class="d2-stat-val">13</span></div>
+            </div>
+          </div>
+          <div class="d2-legend">
+            <div class="d2-leg"><span class="d2-leg-dot" style="background:#34D399;"></span><span class="d2-leg-text">Produce</span></div>
+            <div class="d2-leg"><span class="d2-leg-dot" style="background:#EF4444;"></span><span class="d2-leg-text">Protein</span></div>
+            <div class="d2-leg"><span class="d2-leg-dot" style="background:#F59E0B;"></span><span class="d2-leg-text">Dairy</span></div>
+            <div class="d2-leg"><span class="d2-leg-dot" style="background:#6366F1;"></span><span class="d2-leg-text">Grains</span></div>
+            <div class="d2-leg"><span class="d2-leg-dot" style="background:#8E8E7A;"></span><span class="d2-leg-text">Pantry</span></div>
+          </div>
+          <div class="d2-bar"><div class="d2-bar-fill" style="width:28%;"></div></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== D3: DONUT + PERSONAL TITLE =============== -->
+  <div>
+    <div class="col-label">D3 — DONUT + EDITORIAL</div>
+    <div class="col-desc">Personal title left ("Your weekly shop is ready"), small donut right. Category pills. Progress bar. Editorial + graphical.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d3-top"><div class="d3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div></div>
+        <div class="d3-hero">
+          <div class="d3-text">
+            <div class="d3-greet">Week of March 26</div>
+            <div class="d3-title">Your weekly<br>shop is <em>ready</em></div>
+            <div class="d3-meta">18 items · 5 checked</div>
+          </div>
+          <div class="d3-donut"><div class="d3-hole"><div class="d3-hole-val">$47</div><div class="d3-hole-sub">est.</div></div></div>
+        </div>
+        <div class="d3-pills">
+          <div class="d3-pill"><span class="d3-pill-dot" style="background:#34D399;"></span><span class="d3-pill-text">Produce 5</span></div>
+          <div class="d3-pill"><span class="d3-pill-dot" style="background:#EF4444;"></span><span class="d3-pill-text">Protein 4</span></div>
+          <div class="d3-pill"><span class="d3-pill-dot" style="background:#F59E0B;"></span><span class="d3-pill-text">Dairy 3</span></div>
+          <div class="d3-pill"><span class="d3-pill-dot" style="background:#6366F1;"></span><span class="d3-pill-text">Grains 3</span></div>
+          <div class="d3-pill"><span class="d3-pill-dot" style="background:#8E8E7A;"></span><span class="d3-pill-text">Pantry 3</span></div>
+        </div>
+        <div class="d3-bar"><div class="d3-bar-fill" style="width:28%;"></div></div>
+        <div class="d3-bar-row"><span class="d3-bar-text">28% complete</span><span class="d3-bar-text">13 remaining</span></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== D4: DONUT + BENTO TILES =============== -->
+  <div>
+    <div class="col-label">D4 — DONUT + BENTO TILES</div>
+    <div class="col-desc">Big donut centered with % inside. 3 bento stat tiles below (items, checked, total). Category strip. Gamified + structured.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d4-top"><div class="d4-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="d4-title">Grocery List</span></div>
+        <div class="d4-center"><div class="d4-donut"><div class="d4-hole"><div class="d4-hole-val">5 of 18</div><div class="d4-hole-pct">28%</div><div class="d4-hole-sub">checked</div></div></div></div>
+        <div class="d4-tiles">
+          <div class="d4-tile stone"><div class="d4-tile-val">18</div><div class="d4-tile-label">Items</div></div>
+          <div class="d4-tile stone"><div class="d4-tile-val">5</div><div class="d4-tile-label">Checked</div></div>
+          <div class="d4-tile dark"><div class="d4-tile-val">$47</div><div class="d4-tile-label">Est. total</div></div>
+        </div>
+        <div class="d4-strip">
+          <div class="d4-seg" style="background:#34D399;flex:5;"></div>
+          <div class="d4-seg" style="background:#EF4444;flex:4;"></div>
+          <div class="d4-seg" style="background:#F59E0B;flex:3;"></div>
+          <div class="d4-seg" style="background:#6366F1;flex:3;"></div>
+          <div class="d4-seg" style="background:#8E8E7A;flex:3;"></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== D5: DONUT SPLIT LIST =============== -->
+  <div>
+    <div class="col-label">D5 — DONUT + LEGEND LIST</div>
+    <div class="col-desc">Bigger donut left with total inside. Right: clean legend list (dot + name + item count) with dividers. Progress bar below. Data-rich, organized.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d5-top"><div class="d5-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="d5-title">Grocery List</span><span class="d5-week">Mar 26</span></div>
+        <div class="d5-hero">
+          <div class="d5-donut"><div class="d5-hole"><div class="d5-hole-val">$47</div><div class="d5-hole-sub">est. total</div></div></div>
+          <div class="d5-legend">
+            <div class="d5-leg-item"><span class="d5-leg-dot" style="background:#34D399;"></span><span class="d5-leg-name">Produce</span><span class="d5-leg-count">5</span></div>
+            <div class="d5-leg-item"><span class="d5-leg-dot" style="background:#EF4444;"></span><span class="d5-leg-name">Protein</span><span class="d5-leg-count">4</span></div>
+            <div class="d5-leg-item"><span class="d5-leg-dot" style="background:#F59E0B;"></span><span class="d5-leg-name">Dairy</span><span class="d5-leg-count">3</span></div>
+            <div class="d5-leg-item"><span class="d5-leg-dot" style="background:#6366F1;"></span><span class="d5-leg-name">Grains</span><span class="d5-leg-count">3</span></div>
+            <div class="d5-leg-item"><span class="d5-leg-dot" style="background:#8E8E7A;"></span><span class="d5-leg-name">Pantry</span><span class="d5-leg-count">3</span></div>
+          </div>
+        </div>
+        <div class="d5-bar"><span class="d5-bar-label">5 / 18</span><div class="d5-bar-track"><div class="d5-bar-fill" style="width:28%;"></div></div><span class="d5-bar-total">$47.82</span></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== D6: DONUT WHITE CARD =============== -->
+  <div>
+    <div class="col-label">D6 — DONUT WHITE CARD</div>
+    <div class="col-desc">Everything in a white card. Donut left, title + total right. Category pills below divider. Progress bar at bottom. Self-contained, premium.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="d6-top"><div class="d6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="d6-lbl">Grocery List</span></div>
+        <div class="d6-card">
+          <div class="d6-row">
+            <div class="d6-donut"><div class="d6-hole"><div class="d6-hole-val">$47</div><div class="d6-hole-sub">est.</div></div></div>
+            <div class="d6-info">
+              <div class="d6-info-title">Weekly<br>Groceries</div>
+              <div class="d6-info-meta">18 items · 5 checked</div>
+              <div class="d6-info-total">$47.82</div>
+            </div>
+          </div>
+          <div class="d6-divider"></div>
+          <div class="d6-pills">
+            <div class="d6-pill"><span class="d6-pill-dot" style="background:#34D399;"></span><span class="d6-pill-text">Produce 5</span></div>
+            <div class="d6-pill"><span class="d6-pill-dot" style="background:#EF4444;"></span><span class="d6-pill-text">Protein 4</span></div>
+            <div class="d6-pill"><span class="d6-pill-dot" style="background:#F59E0B;"></span><span class="d6-pill-text">Dairy 3</span></div>
+            <div class="d6-pill"><span class="d6-pill-dot" style="background:#6366F1;"></span><span class="d6-pill-text">Grains 3</span></div>
+            <div class="d6-pill"><span class="d6-pill-dot" style="background:#8E8E7A;"></span><span class="d6-pill-text">Pantry 3</span></div>
+          </div>
+          <div class="d6-bar"><div class="d6-bar-fill" style="width:28%;"></div></div>
+          <div class="d6-bar-row"><span class="d6-bar-text">28% complete</span><span class="d6-bar-text">13 remaining</span></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

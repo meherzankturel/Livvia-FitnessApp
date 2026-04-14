@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — 3 Design Directions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif; background: #0a0a0f; color: #fff; overflow-x: hidden; }
+
+  .header { text-align: center; padding: 48px 24px 24px; }
+  .header h1 { font-size: 32px; font-weight: 700; letter-spacing: -0.5px; }
+  .header p { color: #8E8E93; font-size: 15px; margin-top: 8px; }
+
+  .directions { display: flex; gap: 24px; padding: 24px; max-width: 1400px; margin: 0 auto; }
+  @media (max-width: 1200px) { .directions { flex-direction: column; align-items: center; } }
+
+  .direction { flex: 1; max-width: 420px; border-radius: 24px; overflow: hidden; position: relative; }
+  .direction-label { text-align: center; padding: 20px 16px 12px; font-size: 13px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+  /* ===== PHONE FRAME ===== */
+  .phone { width: 375px; height: 720px; border-radius: 40px; overflow: hidden; position: relative; margin: 0 auto 20px; border: 3px solid rgba(255,255,255,0.1); }
+
+  /* ===== DIRECTION A: REFINED ===== */
+  .dir-a { background: #111118; border: 1px solid rgba(255,255,255,0.06); }
+  .dir-a .direction-label { color: #818CF8; }
+  .dir-a .phone { background: #FFFFFF; }
+
+  .a-status { height: 44px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 12px; color: #8E8E93; font-weight: 500; }
+  .a-greeting { padding: 20px 24px 0; }
+  .a-greeting .sub { font-size: 14px; color: #8E8E93; margin-bottom: 2px; }
+  .a-greeting .title { font-size: 28px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+
+  .a-week-bar { display: flex; gap: 6px; padding: 16px 24px; }
+  .a-day { flex: 1; text-align: center; }
+  .a-day .label { font-size: 10px; color: #AEAEB2; margin-bottom: 4px; }
+  .a-day .dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+  .a-day .dot.done { background: #6366F1; color: #fff; }
+  .a-day .dot.today { background: rgba(99,102,241,0.1); color: #6366F1; border: 2px solid #6366F1; }
+  .a-day .dot.empty { background: #F2F2F7; color: #AEAEB2; }
+
+  /* Animated counter */
+  .a-stats { display: flex; gap: 12px; padding: 0 24px; margin-bottom: 16px; }
+  .a-stat-card { flex: 1; background: #F2F2F7; border-radius: 16px; padding: 14px; }
+  .a-stat-card .num { font-size: 24px; font-weight: 700; color: #1C1C1E; font-variant-numeric: tabular-nums; }
+  .a-stat-card .lbl { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+
+  /* Staggered cards */
+  .a-cards { padding: 0 24px; }
+  .a-card { background: #F5F5F8; border-radius: 16px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+    opacity: 0; transform: translateY(20px); animation: aCardIn 0.5s ease-out forwards; }
+  .a-card:nth-child(1) { animation-delay: 0.1s; }
+  .a-card:nth-child(2) { animation-delay: 0.3s; }
+  .a-card:nth-child(3) { animation-delay: 0.5s; }
+  @keyframes aCardIn { to { opacity: 1; transform: translateY(0); } }
+
+  .a-card-img { width: 52px; height: 52px; border-radius: 12px; background: rgba(99,102,241,0.08); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .a-card-info .name { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .a-card-info .detail { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+
+  /* Skeleton shimmer */
+  .a-skeleton { height: 52px; border-radius: 12px; margin-bottom: 10px; background: linear-gradient(90deg, #F2F2F7 25%, #E8E8ED 50%, #F2F2F7 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+  .a-progress-ring { width: 80px; height: 80px; position: relative; margin: 0 auto; }
+  .a-ring-svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .a-ring-bg { fill: none; stroke: #E8E8ED; stroke-width: 6; }
+  .a-ring-fg { fill: none; stroke: #6366F1; stroke-width: 6; stroke-linecap: round; stroke-dasharray: 226; stroke-dashoffset: 226; animation: ringFill 1.2s ease-out 0.5s forwards; }
+  @keyframes ringFill { to { stroke-dashoffset: 56; } }
+  .a-ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; color: #1C1C1E; }
+
+  /* Counting number */
+  .counting-num { font-variant-numeric: tabular-nums; }
+  .a-stat-card .num { animation: countUp 1s ease-out forwards; }
+  @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .a-btn { margin: 16px 24px; background: #6366F1; color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.15s ease, opacity 0.15s ease; }
+  .a-btn:active { transform: scale(0.97); opacity: 0.9; }
+
+  /* ===== DIRECTION B: BOLD ===== */
+  .dir-b { background: #111118; border: 1px solid rgba(255,255,255,0.06); }
+  .dir-b .direction-label { color: #60A5FA; }
+  .dir-b .phone { background: #FFFFFF; overflow: hidden; }
+
+  .b-header { height: 140px; position: relative; overflow: hidden; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px 24px; }
+  .b-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.2) 0%, transparent 50%); }
+  .b-header .sub { font-size: 13px; color: rgba(255,255,255,0.7); position: relative; }
+  .b-header .title { font-size: 26px; font-weight: 700; color: #fff; position: relative; letter-spacing: -0.5px; }
+
+  /* Spotlight card */
+  .b-cards { padding: 16px 24px; }
+  .b-card { background: #F5F5F8; border-radius: 20px; padding: 18px; margin-bottom: 12px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+  .b-card:hover { transform: perspective(800px) rotateY(-2deg) rotateX(1deg) scale(1.02); }
+  .b-card::before { content: ''; position: absolute; width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%); top: -60px; right: -60px; animation: spotlightDrift 4s ease-in-out infinite alternate; }
+  @keyframes spotlightDrift { 0% { transform: translate(0, 0); } 100% { transform: translate(-40px, 30px); } }
+
+  .b-card-row { display: flex; align-items: center; gap: 14px; position: relative; z-index: 1; }
+  .b-card-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05)); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .b-card-text .name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .b-card-text .detail { font-size: 12px; color: #8E8E93; margin-top: 3px; }
+
+  /* Glow badge */
+  .b-badges { display: flex; gap: 10px; padding: 0 24px; margin-top: 12px; }
+  .b-badge { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; position: relative; }
+  .b-badge.earned { background: linear-gradient(135deg, #6366F1, #818CF8); box-shadow: 0 0 20px rgba(99,102,241,0.4), 0 0 40px rgba(99,102,241,0.15); animation: badgePulse 2s ease-in-out infinite; }
+  .b-badge.locked { background: #E8E8ED; opacity: 0.5; }
+  @keyframes badgePulse { 0%, 100% { box-shadow: 0 0 20px rgba(99,102,241,0.4), 0 0 40px rgba(99,102,241,0.15); } 50% { box-shadow: 0 0 30px rgba(99,102,241,0.6), 0 0 60px rgba(99,102,241,0.25); } }
+
+  /* Parallax layers */
+  .b-parallax { position: relative; height: 100px; margin: 16px 24px; border-radius: 16px; overflow: hidden; background: linear-gradient(180deg, #F2F2F7, #fff); }
+  .b-parallax-layer { position: absolute; width: 100%; animation: parallaxFloat 6s ease-in-out infinite alternate; }
+  .b-parallax-layer:nth-child(1) { top: 10px; animation-duration: 6s; }
+  .b-parallax-layer:nth-child(2) { top: 30px; animation-duration: 8s; animation-delay: -2s; }
+  @keyframes parallaxFloat { 0% { transform: translateY(0); } 100% { transform: translateY(-10px); } }
+
+  .b-stat-row { display: flex; gap: 10px; padding: 0 24px; }
+  .b-stat { flex: 1; background: #F5F5F8; border-radius: 16px; padding: 14px; text-align: center; position: relative; overflow: hidden; }
+  .b-stat::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366F1, #818CF8); transform: scaleX(0); animation: statBarIn 0.8s ease-out 0.6s forwards; }
+  @keyframes statBarIn { to { transform: scaleX(1); } }
+  .b-stat .num { font-size: 22px; font-weight: 700; color: #1C1C1E; }
+  .b-stat .lbl { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+
+  .b-btn { margin: 16px 24px; background: linear-gradient(135deg, #6366F1, #818CF8); color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; cursor: pointer; position: relative; overflow: hidden; transition: transform 0.2s ease; }
+  .b-btn:active { transform: scale(0.96); }
+  .b-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: btnShine 3s ease-in-out infinite; }
+  @keyframes btnShine { 0% { left: -100%; } 50%, 100% { left: 100%; } }
+
+  /* ===== DIRECTION C: PLAYFUL ===== */
+  .dir-c { background: #111118; border: 1px solid rgba(255,255,255,0.06); }
+  .dir-c .direction-label { color: #F59E0B; }
+  .dir-c .phone { background: #FFFFFF; }
+
+  .c-header { padding: 48px 24px 16px; }
+  .c-header .sub { font-size: 13px; color: #8E8E93; }
+  .c-header .title { font-size: 26px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+
+  /* Streak flames */
+  .c-streak { display: flex; align-items: center; gap: 8px; padding: 0 24px; margin-bottom: 12px; }
+  .c-streak .flame { font-size: 28px; animation: flameBounce 0.6s ease-in-out infinite alternate; }
+  @keyframes flameBounce { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.15) rotate(3deg); } }
+  .c-streak .text { font-size: 16px; font-weight: 700; color: #F59E0B; }
+  .c-streak .days { font-size: 13px; color: #8E8E93; }
+
+  /* Bouncy cards */
+  .c-cards { padding: 0 24px; }
+  .c-card { background: #F5F5F8; border-radius: 20px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px;
+    opacity: 0; animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  .c-card:nth-child(1) { animation-delay: 0.05s; }
+  .c-card:nth-child(2) { animation-delay: 0.15s; }
+  .c-card:nth-child(3) { animation-delay: 0.25s; }
+  @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.6) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+  .c-card-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .c-card-icon.chest { background: rgba(239,68,68,0.1); }
+  .c-card-icon.legs { background: rgba(34,197,94,0.1); }
+  .c-card-icon.core { background: rgba(245,158,11,0.1); }
+  .c-card-text .name { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .c-card-text .detail { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+
+  /* Rolling number */
+  .c-stats { display: flex; gap: 10px; padding: 0 24px; margin: 12px 0; }
+  .c-stat { flex: 1; background: #F5F5F8; border-radius: 16px; padding: 14px; text-align: center; }
+  .c-stat .num-container { height: 30px; overflow: hidden; position: relative; }
+  .c-stat .num-roll { animation: rollNum 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; font-size: 24px; font-weight: 700; color: #1C1C1E; }
+  @keyframes rollNum { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .c-stat:nth-child(2) .num-roll { animation-delay: 0.1s; }
+  .c-stat:nth-child(3) .num-roll { animation-delay: 0.2s; }
+  .c-stat .lbl { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+
+  /* Heatmap pop */
+  .c-heatmap { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; padding: 0 24px; margin: 12px 0; }
+  .c-heat-cell { aspect-ratio: 1; border-radius: 4px; opacity: 0; animation: heatPop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  .c-heat-cell.l0 { background: #F2F2F7; }
+  .c-heat-cell.l1 { background: rgba(99,102,241,0.2); }
+  .c-heat-cell.l2 { background: rgba(99,102,241,0.5); }
+  .c-heat-cell.l3 { background: #6366F1; }
+  @keyframes heatPop { 0% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
+
+  /* Confetti celebration */
+  .c-celebration { position: relative; height: 120px; margin: 8px 24px; background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(245,158,11,0.05)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+  .c-celebration .trophy { font-size: 36px; animation: trophyBounce 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+  @keyframes trophyBounce { 0% { transform: scale(0) rotate(-20deg); } 60% { transform: scale(1.2) rotate(5deg); } 100% { transform: scale(1) rotate(0deg); } }
+  .c-celebration .msg { font-size: 15px; font-weight: 600; color: #1C1C1E; margin-top: 6px; }
+
+  .confetti-piece { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confettiFall 2s ease-out forwards; }
+  @keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(120px) rotate(720deg); opacity: 0; } }
+
+  /* Ripple button */
+  .c-btn { margin: 12px 24px; background: #6366F1; color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; cursor: pointer; position: relative; overflow: hidden; animation: btnPulse 2s ease-in-out infinite; }
+  @keyframes btnPulse { 0%, 100% { box-shadow: 0 4px 20px rgba(99,102,241,0.3); } 50% { box-shadow: 0 4px 30px rgba(99,102,241,0.5); } }
+  .c-btn:active { transform: scale(0.95); }
+
+  /* ===== SHARED ===== */
+  .tag { display: inline-block; font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; }
+  .section-label { padding: 12px 24px 6px; font-size: 11px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #AEAEB2; }
+
+  /* Vote bar */
+  .vote-bar { display: flex; gap: 12px; justify-content: center; padding: 32px 24px 48px; max-width: 1400px; margin: 0 auto; }
+  .vote-btn { padding: 14px 32px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
+  .vote-btn:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.06); }
+  .vote-btn.va:hover { border-color: #818CF8; color: #818CF8; }
+  .vote-btn.vb:hover { border-color: #60A5FA; color: #60A5FA; }
+  .vote-btn.vc:hover { border-color: #F59E0B; color: #F59E0B; }
+  .vote-btn.vmix:hover { border-color: #34D399; color: #34D399; }
+
+  .footer-note { text-align: center; padding: 0 24px 40px; font-size: 13px; color: #555; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Repped — 3 Design Directions</h1>
+  <p>Each phone shows the same Home Screen reimagined in a different style. All animations are live.</p>
+</div>
+
+<div class="directions">
+
+  <!-- ===== A: REFINED & MINIMAL ===== -->
+  <div class="direction dir-a">
+    <div class="direction-label">A &mdash; Refined & Minimal</div>
+    <div class="phone">
+      <div class="a-status">9:41</div>
+      <div class="a-greeting">
+        <div class="sub">Good morning</div>
+        <div class="title">Today's Push Day</div>
+      </div>
+
+      <div class="a-week-bar">
+        <div class="a-day"><div class="label">M</div><div class="dot done">&#10003;</div></div>
+        <div class="a-day"><div class="label">T</div><div class="dot done">&#10003;</div></div>
+        <div class="a-day"><div class="label">W</div><div class="dot today">W</div></div>
+        <div class="a-day"><div class="label">T</div><div class="dot empty">T</div></div>
+        <div class="a-day"><div class="label">F</div><div class="dot empty">F</div></div>
+        <div class="a-day"><div class="label">S</div><div class="dot empty">S</div></div>
+        <div class="a-day"><div class="label">S</div><div class="dot empty">S</div></div>
+      </div>
+
+      <div class="a-stats">
+        <div class="a-stat-card">
+          <div class="num counting-num" style="animation-delay:0.3s">75%</div>
+          <div class="lbl">Weekly Goal</div>
+        </div>
+        <div class="a-stat-card">
+          <div style="display:flex;align-items:center;justify-content:center;padding:4px 0;">
+            <svg class="a-ring-svg" viewBox="0 0 80 80" width="56" height="56">
+              <circle class="a-ring-bg" cx="40" cy="40" r="36"/>
+              <circle class="a-ring-fg" cx="40" cy="40" r="36"/>
+            </svg>
+          </div>
+          <div class="lbl" style="text-align:center">3 / 4 days</div>
+        </div>
+        <div class="a-stat-card">
+          <div class="num counting-num" style="animation-delay:0.5s">12.4k</div>
+          <div class="lbl">Volume (kg)</div>
+        </div>
+      </div>
+
+      <div class="section-label">Today's Exercises</div>
+      <div class="a-cards">
+        <div class="a-card">
+          <div class="a-card-img">&#128170;</div>
+          <div class="a-card-info">
+            <div class="name">Bench Press</div>
+            <div class="detail">4 sets &middot; 8-10 reps &middot; 70kg</div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-img">&#127947;</div>
+          <div class="a-card-info">
+            <div class="name">Overhead Press</div>
+            <div class="detail">3 sets &middot; 10-12 reps &middot; 40kg</div>
+          </div>
+        </div>
+        <div class="a-card">
+          <div class="a-card-img">&#9889;</div>
+          <div class="a-card-info">
+            <div class="name">Cable Flyes</div>
+            <div class="detail">3 sets &middot; 12-15 reps &middot; 15kg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Loading state preview</div>
+      <div style="padding: 0 24px;">
+        <div class="a-skeleton"></div>
+        <div class="a-skeleton" style="animation-delay: 0.15s;"></div>
+      </div>
+
+      <button class="a-btn">Start Workout</button>
+    </div>
+    <p style="text-align:center;padding:0 20px 20px;font-size:12px;color:#666;">Smooth ease-out entrances &bull; Counting numbers &bull; Animated progress ring &bull; Shimmer loading &bull; Subtle press feedback</p>
+  </div>
+
+  <!-- ===== B: BOLD & EXPRESSIVE ===== -->
+  <div class="direction dir-b">
+    <div class="direction-label">B &mdash; Bold & Expressive</div>
+    <div class="phone">
+      <div class="b-header">
+        <div class="sub">Wednesday &middot; Push Day</div>
+        <div class="title">Let's go, Meherzan</div>
+      </div>
+
+      <div class="b-stat-row" style="margin-top: 16px;">
+        <div class="b-stat">
+          <div class="num">75%</div>
+          <div class="lbl">Weekly Goal</div>
+        </div>
+        <div class="b-stat">
+          <div class="num">3/4</div>
+          <div class="lbl">Days</div>
+        </div>
+        <div class="b-stat">
+          <div class="num">12.4k</div>
+          <div class="lbl">Volume</div>
+        </div>
+      </div>
+
+      <div class="section-label">Today's Exercises</div>
+      <div class="b-cards">
+        <div class="b-card">
+          <div class="b-card-row">
+            <div class="b-card-icon">&#128170;</div>
+            <div class="b-card-text">
+              <div class="name">Bench Press</div>
+              <div class="detail">4 sets &middot; 8-10 reps &middot; 70kg</div>
+            </div>
+          </div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-row">
+            <div class="b-card-icon">&#127947;</div>
+            <div class="b-card-text">
+              <div class="name">Overhead Press</div>
+              <div class="detail">3 sets &middot; 10-12 reps &middot; 40kg</div>
+            </div>
+          </div>
+        </div>
+        <div class="b-card">
+          <div class="b-card-row">
+            <div class="b-card-icon">&#9889;</div>
+            <div class="b-card-text">
+              <div class="name">Cable Flyes</div>
+              <div class="detail">3 sets &middot; 12-15 reps &middot; 15kg</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-label">Achievements</div>
+      <div class="b-badges">
+        <div class="b-badge earned">&#127942;</div>
+        <div class="b-badge earned">&#128293;</div>
+        <div class="b-badge earned">&#9889;</div>
+        <div class="b-badge locked">&#128274;</div>
+        <div class="b-badge locked">&#128274;</div>
+      </div>
+
+      <button class="b-btn">Start Workout</button>
+    </div>
+    <p style="text-align:center;padding:0 20px 20px;font-size:12px;color:#666;">Gradient header &bull; Spotlight cards &bull; Glowing badges &bull; Shine sweep CTA &bull; Stat bar animations</p>
+  </div>
+
+  <!-- ===== C: PLAYFUL & ENERGETIC ===== -->
+  <div class="direction dir-c">
+    <div class="direction-label">C &mdash; Playful & Energetic</div>
+    <div class="phone">
+      <div class="c-header">
+        <div class="sub">Push Day &middot; Week 3</div>
+        <div class="title">Let's crush it! &#128170;</div>
+      </div>
+
+      <div class="c-streak">
+        <div class="flame">&#128293;</div>
+        <div>
+          <div class="text">12-day streak!</div>
+          <div class="days">Your longest yet</div>
+        </div>
+      </div>
+
+      <div class="c-stats">
+        <div class="c-stat">
+          <div class="num-container"><div class="num-roll">75%</div></div>
+          <div class="lbl">Weekly</div>
+        </div>
+        <div class="c-stat">
+          <div class="num-container"><div class="num-roll" style="animation-delay:0.1s">3/4</div></div>
+          <div class="lbl">Days</div>
+        </div>
+        <div class="c-stat">
+          <div class="num-container"><div class="num-roll" style="animation-delay:0.2s">12.4k</div></div>
+          <div class="lbl">Volume</div>
+        </div>
+      </div>
+
+      <div class="c-heatmap" id="heatmap"></div>
+
+      <div class="section-label">Today's Exercises</div>
+      <div class="c-cards">
+        <div class="c-card">
+          <div class="c-card-icon chest">&#128170;</div>
+          <div class="c-card-text">
+            <div class="name">Bench Press</div>
+            <div class="detail">4 sets &middot; 8-10 reps &middot; 70kg</div>
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-icon legs">&#127947;</div>
+          <div class="c-card-text">
+            <div class="name">Overhead Press</div>
+            <div class="detail">3 sets &middot; 10-12 reps &middot; 40kg</div>
+          </div>
+        </div>
+        <div class="c-card">
+          <div class="c-card-icon core">&#9889;</div>
+          <div class="c-card-text">
+            <div class="name">Cable Flyes</div>
+            <div class="detail">3 sets &middot; 12-15 reps &middot; 15kg</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="c-celebration">
+        <div class="confetti-piece" style="left:15%;top:-5%;background:#6366F1;animation-delay:0.1s;animation-duration:1.8s;"></div>
+        <div class="confetti-piece" style="left:30%;top:-8%;background:#F59E0B;animation-delay:0.3s;animation-duration:2.1s;"></div>
+        <div class="confetti-piece" style="left:50%;top:-3%;background:#EF4444;animation-delay:0s;animation-duration:1.6s;"></div>
+        <div class="confetti-piece" style="left:65%;top:-6%;background:#34D399;animation-delay:0.2s;animation-duration:2s;"></div>
+        <div class="confetti-piece" style="left:80%;top:-4%;background:#818CF8;animation-delay:0.15s;animation-duration:1.9s;"></div>
+        <div class="confetti-piece" style="left:20%;top:-7%;background:#F472B6;animation-delay:0.4s;animation-duration:2.2s;"></div>
+        <div class="confetti-piece" style="left:70%;top:-2%;background:#FBBF24;animation-delay:0.05s;animation-duration:1.7s;"></div>
+        <div class="trophy">&#127942;</div>
+        <div class="msg">New PR: Bench Press 80kg!</div>
+      </div>
+
+      <button class="c-btn">Start Workout</button>
+    </div>
+    <p style="text-align:center;padding:0 20px 20px;font-size:12px;color:#666;">Bouncy spring entrances &bull; Streak flames &bull; Rolling numbers &bull; Heatmap pop-in &bull; Confetti celebrations &bull; Pulsing CTA</p>
+  </div>
+
+</div>
+
+<div class="vote-bar">
+  <button class="vote-btn va" onclick="pick('A')">Pick A — Refined</button>
+  <button class="vote-btn vb" onclick="pick('B')">Pick B — Bold</button>
+  <button class="vote-btn vc" onclick="pick('C')">Pick C — Playful</button>
+  <button class="vote-btn vmix" onclick="pick('Mix')">Mix Elements</button>
+</div>
+
+<div class="footer-note">All animations run with React Native's built-in Animated API &mdash; no Reanimated, no SVG, no LinearGradient needed.</div>
+
+<script>
+// Populate heatmap with staggered delays
+const heatmap = document.getElementById('heatmap');
+const levels = ['l0','l1','l2','l3'];
+for (let i = 0; i < 28; i++) {
+  const cell = document.createElement('div');
+  const lvl = Math.random() > 0.3 ? levels[Math.floor(Math.random() * 4)] : 'l0';
+  cell.className = `c-heat-cell ${lvl}`;
+  cell.style.animationDelay = `${i * 0.04}s`;
+  heatmap.appendChild(cell);
+}
+
+function pick(choice) {
+  document.querySelectorAll('.vote-btn').forEach(b => {
+    b.style.opacity = '0.4';
+    b.style.borderColor = 'rgba(255,255,255,0.1)';
+    b.style.color = '#fff';
+  });
+  const btn = event.target;
+  btn.style.opacity = '1';
+  if (choice === 'A') { btn.style.borderColor = '#818CF8'; btn.style.color = '#818CF8'; }
+  else if (choice === 'B') { btn.style.borderColor = '#60A5FA'; btn.style.color = '#60A5FA'; }
+  else if (choice === 'C') { btn.style.borderColor = '#F59E0B'; btn.style.color = '#F59E0B'; }
+  else { btn.style.borderColor = '#34D399'; btn.style.color = '#34D399'; }
+
+  // Record event
+  if (window.__recordEvent) window.__recordEvent('vote', choice);
+}
+</script>
+
+</body>
+</html>

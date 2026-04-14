@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Ingredient Focus</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  /* Ingredient block — sand background, isolated */
+  .block { background: var(--sand); border-radius: 20px; padding: 16px 0; overflow: hidden; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 400px; height: 320px; top: -80px; left: -80px; }
+
+
+  /* ============================================================
+     I1: FLOATING PILLS — Rounded capsules, name bold, amount muted.
+     Wrapped flow. Each pill is its own unit. Feels like tags.
+     ============================================================ */
+
+  .i1-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .i1-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .i1-count { font-size: 10px; color: var(--rock); }
+
+  .i1-pills { display: flex; flex-wrap: wrap; gap: 8px; padding: 0 20px; }
+  .i1-pill {
+    padding: 10px 18px; border-radius: 100px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .i1-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .i1-sep { width: 1px; height: 14px; background: var(--stone); }
+  .i1-amount { font-size: 12px; color: var(--rock); }
+
+
+  /* ============================================================
+     I2: INGREDIENT CARDS — Each ingredient is a small card
+     with name on top, amount below. 3-column grid. Compact.
+     ============================================================ */
+
+  .i2-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .i2-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .i2-count { font-size: 10px; color: var(--rock); }
+
+  .i2-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 0 20px; }
+  .i2-card {
+    padding: 14px 12px; border-radius: 16px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    text-align: center;
+  }
+  .i2-name { font-size: 13px; font-weight: 600; color: var(--earth); line-height: 1.2; }
+  .i2-amount { font-size: 10px; color: var(--rock); margin-top: 4px; }
+
+
+  /* ============================================================
+     I3: SINGLE ROW SCROLL — One continuous horizontal line.
+     Each ingredient: amount in a circle badge + name below.
+     Like avatar bubbles but for ingredients.
+     ============================================================ */
+
+  .i3-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .i3-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .i3-count { font-size: 10px; color: var(--rock); }
+
+  .i3-scroll { display: flex; gap: 14px; padding: 0 0 0 20px; overflow-x: auto; scrollbar-width: none; }
+  .i3-scroll::-webkit-scrollbar { display: none; }
+
+  .i3-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; min-width: 56px; }
+  .i3-item:last-child { padding-right: 20px; }
+
+  .i3-badge {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 700; color: var(--earth);
+    text-align: center; line-height: 1.2;
+  }
+  .i3-item:nth-child(odd) .i3-badge { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .i3-item:nth-child(even) .i3-badge { background: var(--stone); }
+
+  .i3-name { font-size: 10px; font-weight: 600; color: var(--earth); text-align: center; max-width: 60px; line-height: 1.2; }
+
+
+  /* ============================================================
+     I4: NUMBERED LIST — Clean numbered items. Number as a
+     small earth badge. Name + amount in a single line.
+     Feels like a checklist without the checkbox.
+     ============================================================ */
+
+  .i4-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 8px; }
+  .i4-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .i4-count { font-size: 10px; color: var(--rock); }
+
+  .i4-list { padding: 0 20px; }
+  .i4-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 0; border-bottom: 1px solid rgba(0,0,0,0.03);
+  }
+  .i4-row:last-child { border-bottom: none; }
+
+  .i4-num {
+    width: 22px; height: 22px; border-radius: 7px; background: var(--earth);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 700; color: var(--sand); flex-shrink: 0;
+  }
+  .i4-name { font-size: 14px; color: var(--earth); font-weight: 500; flex: 1; }
+  .i4-amount { font-size: 12px; color: var(--rock); flex-shrink: 0; }
+
+
+  /* ============================================================
+     I5: TWO-TONE SPLIT — Left half dark, right half white.
+     Names on dark side, amounts on white side.
+     Visual divider creates two distinct zones.
+     ============================================================ */
+
+  .i5-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .i5-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .i5-count { font-size: 10px; color: var(--rock); }
+
+  .i5-card { margin: 0 20px; border-radius: 20px; overflow: hidden; display: flex; }
+  .i5-left { flex: 1; background: var(--earth); padding: 16px 18px; }
+  .i5-right { flex: 1; background: #fff; padding: 16px 18px; border: 1px solid rgba(0,0,0,0.04); border-left: none; }
+
+  .i5-ln { font-size: 13px; color: var(--sand); padding: 6px 0; font-weight: 500; border-bottom: 1px solid rgba(246,245,240,0.04); }
+  .i5-ln:last-child { border-bottom: none; }
+  .i5-rn { font-size: 12px; color: var(--rock); padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .i5-rn:last-child { border-bottom: none; }
+
+
+  /* ============================================================
+     I6: MINIMAL INLINE — No section header. Ingredients flow
+     as a single line of text: "½ block tofu · 1 cup broccoli · ..."
+     Ultra minimal. One continuous sentence.
+     ============================================================ */
+
+  .i6-head { padding: 0 20px; margin-bottom: 8px; }
+  .i6-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .i6-text {
+    padding: 0 20px;
+    font-size: 15px; color: var(--earth); line-height: 1.8;
+    font-weight: 400;
+  }
+  .i6-amount { font-weight: 700; color: var(--earth); }
+  .i6-name { color: var(--rock); }
+  .i6-dot { color: var(--trail); margin: 0 4px; opacity: 0.4; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- I1 -->
+<div>
+  <div class="col-label">I1 — Floating Pills</div>
+  <div class="col-desc">Rounded capsules with name | amount separated by a thin line. Wrapped flow. Feels like tags.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i1-head"><span class="i1-title">Ingredients</span><span class="i1-count">8 items</span></div>
+    <div class="i1-pills">
+      <div class="i1-pill"><span class="i1-name">Firm tofu</span><span class="i1-sep"></span><span class="i1-amount">½ block</span></div>
+      <div class="i1-pill"><span class="i1-name">Broccoli</span><span class="i1-sep"></span><span class="i1-amount">1 cup</span></div>
+      <div class="i1-pill"><span class="i1-name">Bell pepper</span><span class="i1-sep"></span><span class="i1-amount">1 sliced</span></div>
+      <div class="i1-pill"><span class="i1-name">Snap peas</span><span class="i1-sep"></span><span class="i1-amount">½ cup</span></div>
+      <div class="i1-pill"><span class="i1-name">Teriyaki</span><span class="i1-sep"></span><span class="i1-amount">2 tbsp</span></div>
+      <div class="i1-pill"><span class="i1-name">White rice</span><span class="i1-sep"></span><span class="i1-amount">1 cup</span></div>
+      <div class="i1-pill"><span class="i1-name">Sesame oil</span><span class="i1-sep"></span><span class="i1-amount">1 tbsp</span></div>
+      <div class="i1-pill"><span class="i1-name">Garlic</span><span class="i1-sep"></span><span class="i1-amount">2 cloves</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- I2 -->
+<div>
+  <div class="col-label">I2 — 3-Column Cards</div>
+  <div class="col-desc">Small centered cards in a 3-column grid. Name + amount stacked. Compact, tidy, visual rhythm.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i2-head"><span class="i2-title">Ingredients</span><span class="i2-count">8 items</span></div>
+    <div class="i2-grid">
+      <div class="i2-card"><div class="i2-name">Firm tofu</div><div class="i2-amount">½ block</div></div>
+      <div class="i2-card"><div class="i2-name">Broccoli</div><div class="i2-amount">1 cup</div></div>
+      <div class="i2-card"><div class="i2-name">Bell pepper</div><div class="i2-amount">1 sliced</div></div>
+      <div class="i2-card"><div class="i2-name">Snap peas</div><div class="i2-amount">½ cup</div></div>
+      <div class="i2-card"><div class="i2-name">Teriyaki</div><div class="i2-amount">2 tbsp</div></div>
+      <div class="i2-card"><div class="i2-name">White rice</div><div class="i2-amount">1 cup</div></div>
+      <div class="i2-card"><div class="i2-name">Sesame oil</div><div class="i2-amount">1 tbsp</div></div>
+      <div class="i2-card"><div class="i2-name">Garlic</div><div class="i2-amount">2 cloves</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- I3 -->
+<div>
+  <div class="col-label">I3 — Bubble Scroll</div>
+  <div class="col-desc">Horizontal scroll of circular badges. Amount inside the circle, name below. Like avatar bubbles for ingredients. Swipe sideways.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i3-head"><span class="i3-title">Ingredients</span><span class="i3-count">8 items</span></div>
+    <div class="i3-scroll">
+      <div class="i3-item"><div class="i3-badge">½ block</div><div class="i3-name">Firm tofu</div></div>
+      <div class="i3-item"><div class="i3-badge">1 cup</div><div class="i3-name">Broccoli</div></div>
+      <div class="i3-item"><div class="i3-badge">1</div><div class="i3-name">Bell pepper</div></div>
+      <div class="i3-item"><div class="i3-badge">½ cup</div><div class="i3-name">Snap peas</div></div>
+      <div class="i3-item"><div class="i3-badge">2 tbsp</div><div class="i3-name">Teriyaki</div></div>
+      <div class="i3-item"><div class="i3-badge">1 cup</div><div class="i3-name">Rice</div></div>
+      <div class="i3-item"><div class="i3-badge">1 tbsp</div><div class="i3-name">Sesame oil</div></div>
+      <div class="i3-item"><div class="i3-badge">2</div><div class="i3-name">Garlic</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- I4 -->
+<div>
+  <div class="col-label">I4 — Numbered List</div>
+  <div class="col-desc">Clean rows with small dark numbered badges. Name + amount on one line. Like a prep checklist. No card wrapper.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i4-head"><span class="i4-title">Ingredients</span><span class="i4-count">8 items</span></div>
+    <div class="i4-list">
+      <div class="i4-row"><div class="i4-num">1</div><span class="i4-name">Firm tofu</span><span class="i4-amount">½ block cubed</span></div>
+      <div class="i4-row"><div class="i4-num">2</div><span class="i4-name">Broccoli</span><span class="i4-amount">1 cup florets</span></div>
+      <div class="i4-row"><div class="i4-num">3</div><span class="i4-name">Bell pepper</span><span class="i4-amount">1 sliced</span></div>
+      <div class="i4-row"><div class="i4-num">4</div><span class="i4-name">Snap peas</span><span class="i4-amount">½ cup</span></div>
+      <div class="i4-row"><div class="i4-num">5</div><span class="i4-name">Teriyaki sauce</span><span class="i4-amount">2 tbsp</span></div>
+      <div class="i4-row"><div class="i4-num">6</div><span class="i4-name">White rice</span><span class="i4-amount">1 cup cooked</span></div>
+      <div class="i4-row"><div class="i4-num">7</div><span class="i4-name">Sesame oil</span><span class="i4-amount">1 tbsp</span></div>
+      <div class="i4-row"><div class="i4-num">8</div><span class="i4-name">Garlic</span><span class="i4-amount">2 cloves</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- I5 -->
+<div>
+  <div class="col-label">I5 — Two-Tone Split</div>
+  <div class="col-desc">Single card split in half. Left side dark with ingredient names. Right side white with amounts. Two visual zones, one container.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i5-head"><span class="i5-title">Ingredients</span><span class="i5-count">8 items</span></div>
+    <div class="i5-card">
+      <div class="i5-left">
+        <div class="i5-ln">Firm tofu</div><div class="i5-ln">Broccoli</div><div class="i5-ln">Bell pepper</div><div class="i5-ln">Snap peas</div><div class="i5-ln">Teriyaki sauce</div><div class="i5-ln">White rice</div><div class="i5-ln">Sesame oil</div><div class="i5-ln">Garlic</div>
+      </div>
+      <div class="i5-right">
+        <div class="i5-rn">½ block cubed</div><div class="i5-rn">1 cup florets</div><div class="i5-rn">1 sliced</div><div class="i5-rn">½ cup</div><div class="i5-rn">2 tbsp</div><div class="i5-rn">1 cup cooked</div><div class="i5-rn">1 tbsp</div><div class="i5-rn">2 cloves</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- I6 -->
+<div>
+  <div class="col-label">I6 — Inline Sentence</div>
+  <div class="col-desc">All ingredients flow as a single paragraph of text. Amounts bold, names muted, separated by green dots. Ultra minimal. Like reading a sentence.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="i6-head"><div class="i6-title">Ingredients</div></div>
+    <div class="i6-text">
+      <span class="i6-amount">½ block</span> <span class="i6-name">firm tofu</span><span class="i6-dot">·</span><span class="i6-amount">1 cup</span> <span class="i6-name">broccoli</span><span class="i6-dot">·</span><span class="i6-amount">1</span> <span class="i6-name">bell pepper sliced</span><span class="i6-dot">·</span><span class="i6-amount">½ cup</span> <span class="i6-name">snap peas</span><span class="i6-dot">·</span><span class="i6-amount">2 tbsp</span> <span class="i6-name">teriyaki sauce</span><span class="i6-dot">·</span><span class="i6-amount">1 cup</span> <span class="i6-name">white rice cooked</span><span class="i6-dot">·</span><span class="i6-amount">1 tbsp</span> <span class="i6-name">sesame oil</span><span class="i6-dot">·</span><span class="i6-amount">2</span> <span class="i6-name">garlic cloves</span>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

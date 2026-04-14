@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress Screen Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0c;padding:30px 20px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--amber:#F59E0B}
+
+/* Page layout */
+.page-title{text-align:center;font-family:'Playfair Display',serif;font-size:24px;color:rgba(255,255,255,0.7);margin-bottom:30px}
+.phones{display:flex;justify-content:center;gap:50px;flex-wrap:wrap}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:14px}
+.phone-label{font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.phone-desc{font-size:11px;color:rgba(255,255,255,0.25);max-width:393px;text-align:center}
+
+/* Phone frame */
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand);flex-shrink:0}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Shared section headers */
+.sh{display:flex;justify-content:space-between;align-items:center;padding:20px 22px 10px}
+.sh-l{}.sh-t{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--earth);letter-spacing:-0.2px}
+.sh-bar{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:3px}
+.sh-r{font-size:10px;color:var(--trail);font-weight:600;cursor:pointer}
+.sh-m{font-size:10px;color:var(--rock)}
+
+/* Shared glass card */
+.glass{background:linear-gradient(155deg,rgba(255,255,255,0.6),rgba(237,235,229,0.45),rgba(246,245,240,0.5));border:1px solid rgba(255,255,255,0.4);border-radius:18px;position:relative;overflow:hidden}
+.glass::before{content:'';position:absolute;top:-15px;right:-15px;width:50px;height:50px;border-radius:50%;background:rgba(52,211,153,0.04)}
+
+/* Spinning ring animation */
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{0%,100%{opacity:0.15}50%{opacity:0.45}}
+
+
+/* ============================================================
+   P1 — WARM TERRAIN
+   Warm gradient hero with glass stat capsules,
+   centered rings, editorial measurements
+   ============================================================ */
+
+/* Hero gradient zone */
+.p1-hero{padding:52px 22px 20px;background:linear-gradient(170deg,#D4CFC5 0%,#E8E4DB 40%,#F2EFE8 70%,var(--sand) 100%);position:relative}
+.p1-hero::before{content:'';position:absolute;top:15px;right:-25px;width:160px;height:160px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.p1-date{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--rock);text-transform:uppercase}
+.p1-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--earth);letter-spacing:-0.5px;margin-top:2px}
+
+/* Glass stat capsules inside hero */
+.p1-stats{display:flex;gap:8px;margin-top:18px}
+.p1-stat{flex:1;padding:12px 10px;border-radius:14px;background:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.6);position:relative;overflow:hidden}
+.p1-stat::before{content:'';position:absolute;top:-8px;right:-8px;width:24px;height:24px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.p1-stat.hl{background:rgba(52,211,153,0.07);border-color:rgba(52,211,153,0.12)}
+.p1-stat.hl .p1-sn{color:var(--trail)}
+.p1-sn{font-family:'DM Serif Display',serif;font-size:24px;color:var(--earth);line-height:1}
+.p1-sl{font-size:7px;font-weight:700;letter-spacing:1.2px;color:var(--rock);text-transform:uppercase;margin-top:4px}
+.p1-st{font-size:8px;font-weight:700;margin-top:2px}
+
+/* Message */
+.p1-msg{padding:14px 22px;font-size:12px;color:var(--earth);line-height:1.5}
+.p1-msg b{color:var(--trail);font-weight:700}
+
+/* Rings centered */
+.p1-rings-wrap{display:flex;flex-direction:column;align-items:center;padding:6px 0 14px}
+.p1-rings{position:relative;width:110px;height:110px}
+.p1-r{position:absolute;border-radius:50%;border:3.5px solid transparent}
+.p1-ro{inset:0;border-color:var(--trail);border-right-color:transparent;border-bottom-color:transparent;animation:spin 3s linear infinite}
+.p1-rm{inset:11px;border-color:rgba(45,42,36,0.22);border-top-color:transparent;border-left-color:transparent;animation:spin 4s linear infinite reverse}
+.p1-ri{inset:22px;border-color:var(--amber);border-bottom-color:transparent;border-right-color:transparent;animation:spin 5s linear infinite}
+.p1-rc{position:absolute;inset:30px;border-radius:50%;background:rgba(52,211,153,0.06);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.p1-rn{font-family:'DM Serif Display',serif;font-size:22px;color:var(--trail);line-height:1}
+.p1-rs{font-size:6px;font-weight:700;color:var(--rock);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.p1-legend{display:flex;gap:14px;margin-top:12px}
+.p1-li{display:flex;align-items:center;gap:4px}
+.p1-ld{width:6px;height:6px;border-radius:3px}
+.p1-ll{font-size:9px;color:var(--rock)}
+.p1-lv{font-size:9px;font-weight:700;color:var(--earth)}
+
+/* 1RM capsule bars */
+.p1-rm-section{padding:0 22px}
+.p1-rm-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.p1-rm-name{width:80px;font-size:11px;font-weight:600;color:var(--earth)}
+.p1-rm-track{flex:1;height:8px;border-radius:4px;background:var(--stone);overflow:hidden}
+.p1-rm-fill{height:100%;border-radius:4px}
+.p1-rm-val{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth);width:36px;text-align:right}
+
+/* Achievements horizontal scroll */
+.p1-ach-scroll{display:flex;gap:10px;padding:4px 22px 4px;overflow-x:auto;scrollbar-width:none}
+.p1-ach-scroll::-webkit-scrollbar{display:none}
+.p1-ach{min-width:90px;padding:14px 10px;border-radius:16px;text-align:center;flex-shrink:0}
+.p1-ach.on{opacity:1}.p1-ach.off{opacity:0.3}
+.p1-ach-e{font-size:20px;margin-bottom:5px}
+.p1-ach-n{font-size:9px;font-weight:600;color:var(--earth);line-height:1.3}
+.p1-ach-d{display:flex;gap:3px;justify-content:center;margin-top:5px}
+.p1-ach-dd{width:4px;height:4px;border-radius:2px}
+
+/* Measurements — clean rows */
+.p1-meas{padding:0 22px}
+.p1-mr{display:flex;align-items:center;padding:11px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.p1-mr:last-child{border-bottom:none}
+.p1-mr-l{flex:1;font-size:13px;font-weight:500;color:var(--rock)}
+.p1-mr-v{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth)}
+.p1-mr-u{font-size:10px;color:var(--rock);margin-left:2px;margin-right:6px}
+.p1-mr-t{font-size:12px;font-weight:700}
+
+/* Heatmap */
+.p1-heat{padding:0 22px}
+.p1-hm{display:flex;gap:2px}
+.p1-hm-days{display:flex;flex-direction:column;gap:2px;margin-right:3px}
+.p1-hm-dl{font-size:7px;color:var(--rock);height:11px;display:flex;align-items:center;width:14px}
+.p1-hm-col{display:flex;flex-direction:column;gap:2px}
+.p1-hm-c{width:11px;height:11px;border-radius:2.5px;background:var(--stone)}
+.p1-hm-c.a{background:rgba(45,42,36,0.12)}.p1-hm-c.b{background:rgba(45,42,36,0.25)}.p1-hm-c.c{background:var(--earth)}.p1-hm-c.t{background:var(--trail)}
+
+/* Weight section */
+.p1-weight{display:flex;align-items:center;padding:0 22px;gap:14px}
+.p1-wl{flex:1}
+.p1-wn{font-family:'DM Serif Display',serif;font-size:36px;color:var(--earth);line-height:1}
+.p1-wu{font-size:11px;color:var(--rock)}
+.p1-wt{font-size:10px;font-weight:700;margin-top:3px}
+.p1-wr{display:flex;align-items:flex-end;gap:3px;height:44px}
+.p1-wb{width:6px;border-radius:3px;background:rgba(45,42,36,0.08)}
+.p1-wb.act{background:var(--trail)}
+
+/* PR cards */
+.p1-pr{padding:0 18px}
+.p1-prc{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:8px;border-radius:14px;background:linear-gradient(155deg,rgba(52,211,153,0.05),rgba(255,255,255,0.45),rgba(237,235,229,0.35));border:1px solid rgba(52,211,153,0.08)}
+.p1-prm{font-size:18px;flex-shrink:0}
+.p1-pri{flex:1}
+.p1-prn{font-size:12px;font-weight:600;color:var(--earth)}
+.p1-prd{font-size:9px;color:var(--rock);margin-top:1px}
+.p1-prv{font-family:'DM Serif Display',serif;font-size:20px;color:var(--trail);flex-shrink:0}
+
+/* Quick links */
+.p1-quick{display:flex;gap:8px;padding:20px 18px 50px}
+.p1-qp{flex:1;padding:13px;border-radius:14px;background:var(--earth);text-align:center;cursor:pointer}
+.p1-qt{font-size:11px;font-weight:600;color:var(--sand)}
+
+
+/* ============================================================
+   P2 — DARK SUMMIT
+   Dark hero card with rings inside, bento grid,
+   glass lift leaderboard, trail PR timeline
+   ============================================================ */
+
+.p2-hero{margin:52px 16px 0;border-radius:22px;background:linear-gradient(155deg,#3B3730,#2D2A24,#24221D);padding:20px 18px 18px;position:relative;overflow:hidden;box-shadow:0 6px 24px rgba(0,0,0,0.12)}
+.p2-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.p2-hero::after{content:'';position:absolute;bottom:-20px;left:-20px;width:100px;height:100px;border-radius:50%;background:rgba(245,158,11,0.03)}
+.p2-date{font-size:8px;font-weight:700;letter-spacing:2px;color:rgba(237,235,229,0.35);text-transform:uppercase}
+.p2-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:#EDEBE5;letter-spacing:-0.3px;margin-top:2px}
+
+.p2-hero-mid{display:flex;align-items:center;gap:16px;margin-top:14px}
+.p2-rings{position:relative;width:80px;height:80px;flex-shrink:0}
+.p2-r{position:absolute;border-radius:50%;border:3px solid transparent}
+.p2-ro{inset:0;border-color:var(--trail);border-right-color:transparent;animation:spin 3s linear infinite}
+.p2-rm{inset:9px;border-color:rgba(237,235,229,0.2);border-top-color:transparent;animation:spin 4s linear infinite reverse}
+.p2-ri{inset:18px;border-color:var(--amber);border-bottom-color:transparent;animation:spin 5s linear infinite}
+.p2-rc{position:absolute;inset:24px;border-radius:50%;background:rgba(52,211,153,0.06);display:flex;align-items:center;justify-content:center}
+.p2-rn{font-family:'DM Serif Display',serif;font-size:16px;color:var(--trail);line-height:1}
+
+.p2-hero-info{flex:1}
+.p2-hero-msg{font-size:11px;color:rgba(237,235,229,0.55);line-height:1.5}
+.p2-hero-msg b{color:var(--trail);font-weight:700}
+.p2-pills{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap}
+.p2-pill{display:flex;align-items:center;gap:3px;padding:4px 8px;border-radius:8px;background:rgba(255,255,255,0.06)}
+.p2-pd{width:5px;height:5px;border-radius:50%}
+.p2-pl{font-size:8px;color:rgba(237,235,229,0.4)}
+.p2-pv{font-size:8px;font-weight:700;color:#EDEBE5}
+
+/* Bento grid */
+.p2-bento{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:14px 16px 0}
+.p2-bc{border-radius:16px;padding:14px;position:relative;overflow:hidden}
+.p2-bc::before{content:'';position:absolute;top:-10px;right:-10px;width:35px;height:35px;border-radius:50%}
+.p2-bc-tall{grid-row:span 2;display:flex;flex-direction:column}
+.p2-bc-label{font-size:8px;font-weight:700;letter-spacing:1.2px;color:var(--rock);text-transform:uppercase}
+.p2-bc-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--earth);line-height:1;margin-top:6px}
+.p2-bc-unit{font-size:10px;color:var(--rock);margin-top:1px}
+.p2-bc-trend{font-size:9px;font-weight:700;margin-top:3px}
+.p2-bc-spark{display:flex;align-items:flex-end;gap:3px;height:36px;margin-top:auto;padding-top:8px}
+.p2-bc-sb{width:5px;border-radius:2.5px;background:rgba(45,42,36,0.08)}
+.p2-bc-sb.act{background:var(--trail)}
+
+.p2-bc-w{background:linear-gradient(155deg,rgba(255,255,255,0.65),rgba(237,235,229,0.5),rgba(246,245,240,0.55))}
+.p2-bc-w::before{background:rgba(52,211,153,0.04)}
+.p2-bc-v{background:linear-gradient(155deg,rgba(245,158,11,0.05),rgba(255,255,255,0.5),rgba(237,235,229,0.4))}
+.p2-bc-v::before{background:rgba(245,158,11,0.04)}
+.p2-bc-v .p2-bc-num{font-size:24px}
+.p2-bc-s{background:linear-gradient(155deg,rgba(52,211,153,0.05),rgba(255,255,255,0.5),rgba(237,235,229,0.4))}
+.p2-bc-s::before{background:rgba(52,211,153,0.04)}
+.p2-bc-s .p2-bc-num{font-size:24px;color:var(--trail)}
+
+/* Lift leaderboard cards */
+.p2-lifts{padding:0 16px}
+.p2-lc{display:flex;align-items:center;gap:12px;padding:12px 14px;margin-bottom:6px;border-radius:14px;background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4),rgba(246,245,240,0.45));border:1px solid rgba(255,255,255,0.35)}
+.p2-lc:first-child{border-color:rgba(52,211,153,0.12);background:linear-gradient(155deg,rgba(52,211,153,0.06),rgba(255,255,255,0.5),rgba(237,235,229,0.4))}
+.p2-lc-rank{width:24px;height:24px;border-radius:12px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--earth);flex-shrink:0}
+.p2-lc:first-child .p2-lc-rank{background:rgba(52,211,153,0.12);color:var(--trail)}
+.p2-lc-info{flex:1}
+.p2-lc-name{font-size:12px;font-weight:600;color:var(--earth)}
+.p2-lc-bar{height:3px;border-radius:1.5px;background:var(--stone);margin-top:4px;overflow:hidden}
+.p2-lc-fill{height:100%;border-radius:1.5px}
+.p2-lc-val{font-family:'DM Serif Display',serif;font-size:20px;color:var(--earth);flex-shrink:0}
+.p2-lc:first-child .p2-lc-val{color:var(--trail)}
+.p2-lc-u{font-size:9px;color:var(--rock)}
+
+/* PR trail */
+.p2-prt{padding:0 22px 0 46px;position:relative}
+.p2-prt-line{position:absolute;left:33px;top:0;bottom:0;width:2px;background:var(--stone);border-radius:1px}
+.p2-pri{position:relative;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.03)}
+.p2-pri:last-child{border-bottom:none}
+.p2-prd{position:absolute;left:-22px;top:12px;width:16px;height:16px;border-radius:8px;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center}
+.p2-prdi{width:6px;height:6px;border-radius:3px;background:var(--trail)}
+.p2-prr{display:flex;justify-content:space-between;align-items:baseline}
+.p2-prn{font-size:12px;font-weight:600;color:var(--earth)}
+.p2-prv{font-family:'DM Serif Display',serif;font-size:16px;color:var(--trail)}
+.p2-prm{font-size:9px;color:var(--rock);margin-top:1px}
+
+/* Heatmap in glass card */
+.p2-heat-card{margin:0 16px;padding:14px;border-radius:16px;background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4));border:1px solid rgba(255,255,255,0.35)}
+
+/* Measurements 3-col grid */
+.p2-meas{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 16px}
+.p2-mc{padding:10px 8px;border-radius:12px;background:linear-gradient(155deg,rgba(255,255,255,0.5),rgba(237,235,229,0.35));text-align:center}
+.p2-mc-l{font-size:7px;font-weight:700;letter-spacing:1px;color:var(--rock);text-transform:uppercase}
+.p2-mc-v{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth);margin-top:2px}
+.p2-mc-u{font-size:8px;color:var(--rock)}
+.p2-mc-t{font-size:9px;font-weight:700;margin-top:1px}
+
+
+/* ============================================================
+   P3 — CLEAN EDITORIAL
+   No heavy hero, stat ticker, large centered rings,
+   editorial measurement rows, 4-col achievement grid
+   ============================================================ */
+
+.p3-top{padding:52px 22px 0}
+.p3-date{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--rock);text-transform:uppercase}
+.p3-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--earth);letter-spacing:-0.5px;margin-top:2px}
+
+/* Stat ticker */
+.p3-ticker{display:flex;margin:18px 0 0;border-top:1px solid var(--stone);border-bottom:1px solid var(--stone)}
+.p3-tick{flex:1;padding:14px 0;text-align:center;position:relative}
+.p3-tick::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--stone)}
+.p3-tick:last-child::after{display:none}
+.p3-tk-n{font-family:'DM Serif Display',serif;font-size:26px;color:var(--earth);line-height:1}
+.p3-tk-l{font-size:7px;font-weight:700;letter-spacing:1.5px;color:var(--rock);text-transform:uppercase;margin-top:5px}
+.p3-tk-t{font-size:8px;font-weight:700;margin-top:2px}
+
+/* Message */
+.p3-msg{padding:14px 22px;font-size:12px;color:var(--earth);line-height:1.5;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.p3-msg b{color:var(--trail);font-weight:700}
+
+/* Large centered rings */
+.p3-rings-wrap{display:flex;flex-direction:column;align-items:center;padding:18px 0 8px}
+.p3-rings{position:relative;width:120px;height:120px}
+.p3-r{position:absolute;border-radius:50%;border:4px solid transparent}
+.p3-ro{inset:0;border-color:var(--trail);border-right-color:transparent;border-bottom-color:transparent;animation:spin 3s linear infinite}
+.p3-rmi{inset:13px;border-color:rgba(45,42,36,0.22);border-top-color:transparent;border-left-color:transparent;animation:spin 4s linear infinite reverse}
+.p3-rin{inset:26px;border-color:var(--amber);border-bottom-color:transparent;border-right-color:transparent;animation:spin 5s linear infinite}
+.p3-rc{position:absolute;inset:34px;border-radius:50%;background:rgba(52,211,153,0.06);display:flex;align-items:center;justify-content:center;flex-direction:column}
+.p3-rn{font-family:'DM Serif Display',serif;font-size:24px;color:var(--trail);line-height:1}
+.p3-rsu{font-size:6px;font-weight:700;color:var(--rock);letter-spacing:1px;text-transform:uppercase;margin-top:2px}
+.p3-legend{display:flex;gap:16px;margin-top:12px}
+.p3-le{display:flex;align-items:center;gap:4px}
+.p3-led{width:6px;height:6px;border-radius:3px}
+.p3-lel{font-size:9px;color:var(--rock)}
+.p3-lev{font-size:9px;font-weight:700;color:var(--earth)}
+
+/* Weight + Volume side by side */
+.p3-duo{display:flex;gap:8px;padding:0 16px}
+.p3-duo-card{flex:1;padding:14px;border-radius:16px}
+.p3-duo-card.wt{background:linear-gradient(155deg,rgba(255,255,255,0.6),rgba(237,235,229,0.45))}
+.p3-duo-card.vol{background:linear-gradient(155deg,rgba(245,158,11,0.05),rgba(255,255,255,0.5))}
+.p3-dc-label{font-size:8px;font-weight:700;letter-spacing:1.2px;color:var(--rock);text-transform:uppercase}
+.p3-dc-row{display:flex;align-items:flex-end;gap:6px;margin-top:4px}
+.p3-dc-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--earth);line-height:1}
+.p3-dc-unit{font-size:10px;color:var(--rock);margin-bottom:3px}
+.p3-dc-trend{font-size:9px;font-weight:700;margin-top:3px}
+.p3-dc-spark{display:flex;align-items:flex-end;gap:2px;height:30px;margin-top:8px}
+.p3-dc-sb{width:5px;border-radius:2px;background:rgba(45,42,36,0.08)}
+.p3-dc-sb.act{background:var(--trail)}
+
+/* 1RM bars */
+.p3-rm{padding:0 22px}
+.p3-rmr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.p3-rmn{width:78px;font-size:11px;font-weight:600;color:var(--earth)}
+.p3-rmt{flex:1;height:8px;border-radius:4px;background:var(--stone);overflow:hidden}
+.p3-rmf{height:100%;border-radius:4px}
+.p3-rmv{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth);width:34px;text-align:right}
+
+/* Achievement 4-col grid */
+.p3-ach{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:0 16px}
+.p3-ag{padding:10px 4px;border-radius:12px;text-align:center}
+.p3-ag.on{opacity:1}.p3-ag.off{opacity:0.25}
+.p3-age{font-size:18px}
+.p3-agn{font-size:7px;font-weight:600;color:var(--earth);margin-top:3px;line-height:1.2}
+.p3-agd{display:flex;gap:2px;justify-content:center;margin-top:4px}
+.p3-agdd{width:4px;height:4px;border-radius:2px}
+
+/* Measurements rows */
+.p3-meas{padding:0 22px}
+.p3-mrow{display:flex;align-items:center;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.p3-mrow:last-child{border-bottom:none}
+.p3-ml{flex:1;font-size:12px;color:var(--rock)}
+.p3-mv{font-family:'DM Serif Display',serif;font-size:17px;color:var(--earth)}
+.p3-mu{font-size:9px;color:var(--rock);margin-left:2px;margin-right:6px}
+.p3-mt{font-size:11px;font-weight:700}
+
+</style>
+</head>
+<body>
+
+<div class="page-title">Progress Screen — 3 Layouts</div>
+
+<div class="phones">
+
+<!-- ═══════════════════════════════════════════════════════════
+     P1 — WARM TERRAIN
+     ═══════════════════════════════════════════════════════════ -->
+<div class="phone-col">
+  <span class="phone-label">P1 — Warm Terrain</span>
+  <span class="phone-desc">Glass capsules in warm gradient hero, centered rings, editorial measurements</span>
+  <div class="phone"><div class="ps">
+
+    <!-- Hero -->
+    <div class="p1-hero">
+      <div class="p1-date">Sunday, Mar 30</div>
+      <div class="p1-title">Your Journey</div>
+      <div class="p1-stats">
+        <div class="p1-stat hl"><div class="p1-sn">5</div><div class="p1-sl">Day Streak</div><div class="p1-st" style="color:var(--amber)">Best: 9</div></div>
+        <div class="p1-stat"><div class="p1-sn">72.4</div><div class="p1-sl">Weight</div><div class="p1-st" style="color:var(--trail)">-0.8 kg</div></div>
+        <div class="p1-stat"><div class="p1-sn">3.2<span style="font-size:12px;font-family:Inter">t</span></div><div class="p1-sl">Volume</div><div class="p1-st" style="color:var(--trail)">+12%</div></div>
+      </div>
+    </div>
+
+    <div class="p1-msg">You're on a <b>5-day streak</b> — keep the momentum! Volume is <b>+12%</b> this week.</div>
+
+    <!-- Rings -->
+    <div class="p1-rings-wrap">
+      <div class="p1-rings">
+        <div class="p1-r p1-ro"></div><div class="p1-r p1-rm"></div><div class="p1-r p1-ri"></div>
+        <div class="p1-rc"><span class="p1-rn">12</span><span class="p1-rs">Workouts</span></div>
+      </div>
+      <div class="p1-legend">
+        <div class="p1-li"><div class="p1-ld" style="background:var(--trail)"></div><span class="p1-ll">Complete</span><span class="p1-lv">87%</span></div>
+        <div class="p1-li"><div class="p1-ld" style="background:var(--earth)"></div><span class="p1-ll">Streak</span><span class="p1-lv">5d</span></div>
+        <div class="p1-li"><div class="p1-ld" style="background:var(--amber)"></div><span class="p1-ll">Volume</span><span class="p1-lv">3.2t</span></div>
+      </div>
+    </div>
+
+    <!-- 1RM -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Estimated 1RM</div><div class="sh-bar"></div></div></div>
+    <div class="p1-rm-section">
+      <div class="p1-rm-row"><span class="p1-rm-name">Squat</span><div class="p1-rm-track"><div class="p1-rm-fill" style="width:100%;background:var(--trail)"></div></div><span class="p1-rm-val">115</span></div>
+      <div class="p1-rm-row"><span class="p1-rm-name">Deadlift</span><div class="p1-rm-track"><div class="p1-rm-fill" style="width:92%;background:rgba(45,42,36,0.28)"></div></div><span class="p1-rm-val">110</span></div>
+      <div class="p1-rm-row"><span class="p1-rm-name">Bench Press</span><div class="p1-rm-track"><div class="p1-rm-fill" style="width:82%;background:rgba(45,42,36,0.20)"></div></div><span class="p1-rm-val">95</span></div>
+      <div class="p1-rm-row"><span class="p1-rm-name">OHP</span><div class="p1-rm-track"><div class="p1-rm-fill" style="width:54%;background:rgba(45,42,36,0.12)"></div></div><span class="p1-rm-val">62</span></div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Achievements</div><div class="sh-bar"></div></div><span class="sh-r">4 of 24 ›</span></div>
+    <div class="p1-ach-scroll">
+      <div class="p1-ach on" style="background:rgba(52,211,153,0.08)"><div class="p1-ach-e">🎯</div><div class="p1-ach-n">First Workout</div><div class="p1-ach-d"><div class="p1-ach-dd" style="background:var(--trail)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p1-ach on" style="background:rgba(245,158,11,0.08)"><div class="p1-ach-e">🔥</div><div class="p1-ach-n">3-Day Streak</div><div class="p1-ach-d"><div class="p1-ach-dd" style="background:var(--amber)"></div><div class="p1-ach-dd" style="background:var(--amber)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p1-ach on" style="background:rgba(99,102,241,0.08)"><div class="p1-ach-e">📈</div><div class="p1-ach-n">First PR</div><div class="p1-ach-d"><div class="p1-ach-dd" style="background:#6366F1"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p1-ach off" style="background:var(--stone)"><div class="p1-ach-e">🏆</div><div class="p1-ach-n">10 Workouts</div><div class="p1-ach-d"><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p1-ach off" style="background:var(--stone)"><div class="p1-ach-e">👑</div><div class="p1-ach-n">Century Club</div><div class="p1-ach-d"><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div><div class="p1-ach-dd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+    </div>
+
+    <!-- Measurements -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Measurements</div><div class="sh-bar"></div></div><span class="sh-r">Update</span></div>
+    <div class="p1-meas">
+      <div class="p1-mr"><span class="p1-mr-l">Weight</span><span class="p1-mr-v">72.4</span><span class="p1-mr-u">kg</span><span class="p1-mr-t" style="color:var(--trail)">↓</span></div>
+      <div class="p1-mr"><span class="p1-mr-l">Body Fat</span><span class="p1-mr-v">16.2</span><span class="p1-mr-u">%</span><span class="p1-mr-t" style="color:var(--trail)">↓</span></div>
+      <div class="p1-mr"><span class="p1-mr-l">Chest</span><span class="p1-mr-v">98</span><span class="p1-mr-u">cm</span><span class="p1-mr-t" style="color:var(--trail)">↑</span></div>
+      <div class="p1-mr"><span class="p1-mr-l">Waist</span><span class="p1-mr-v">82</span><span class="p1-mr-u">cm</span><span class="p1-mr-t" style="color:var(--trail)">↓</span></div>
+      <div class="p1-mr"><span class="p1-mr-l">Arms</span><span class="p1-mr-v">35</span><span class="p1-mr-u">cm</span><span class="p1-mr-t" style="color:var(--trail)">↑</span></div>
+      <div class="p1-mr"><span class="p1-mr-l">Thighs</span><span class="p1-mr-v">58</span><span class="p1-mr-u">cm</span></div>
+    </div>
+
+    <!-- Activity -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Activity</div><div class="sh-bar"></div></div><span class="sh-m">12 weeks</span></div>
+    <div class="p1-heat">
+      <div class="p1-hm">
+        <div class="p1-hm-days"><div class="p1-hm-dl">M</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">W</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">F</div><div class="p1-hm-dl">S</div><div class="p1-hm-dl">S</div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c t"></div></div>
+      </div>
+    </div>
+
+    <!-- Recent PRs -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Recent PRs</div><div class="sh-bar"></div></div><span class="sh-m">Last 30 days</span></div>
+    <div class="p1-pr">
+      <div class="p1-prc"><span class="p1-prm">🏆</span><div class="p1-pri"><div class="p1-prn">Bench Press</div><div class="p1-prd">1RM · Mar 28</div></div><span class="p1-prv">95</span></div>
+      <div class="p1-prc"><span class="p1-prm">🏆</span><div class="p1-pri"><div class="p1-prn">Squat</div><div class="p1-prd">1RM · Mar 25</div></div><span class="p1-prv">115</span></div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="p1-quick">
+      <div class="p1-qp"><span class="p1-qt">Weekly Summary</span></div>
+      <div class="p1-qp"><span class="p1-qt">Wellness</span></div>
+    </div>
+
+  </div></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     P2 — DARK SUMMIT
+     ═══════════════════════════════════════════════════════════ -->
+<div class="phone-col">
+  <span class="phone-label">P2 — Dark Summit</span>
+  <span class="phone-desc">Dark hero with rings + pills, bento stat grid, glass lift leaderboard, PR trail</span>
+  <div class="phone"><div class="ps">
+
+    <!-- Dark Hero -->
+    <div class="p2-hero">
+      <div class="p2-date">Sunday, Mar 30</div>
+      <div class="p2-title">Your Journey</div>
+      <div class="p2-hero-mid">
+        <div class="p2-rings">
+          <div class="p2-r p2-ro"></div><div class="p2-r p2-rm"></div><div class="p2-r p2-ri"></div>
+          <div class="p2-rc"><span class="p2-rn">12</span></div>
+        </div>
+        <div class="p2-hero-info">
+          <div class="p2-hero-msg">You're on a <b>5-day streak</b> — keep the momentum going!</div>
+          <div class="p2-pills">
+            <div class="p2-pill"><div class="p2-pd" style="background:var(--trail)"></div><span class="p2-pl">Complete</span><span class="p2-pv">87%</span></div>
+            <div class="p2-pill"><div class="p2-pd" style="background:#EDEBE5"></div><span class="p2-pl">Streak</span><span class="p2-pv">5d</span></div>
+            <div class="p2-pill"><div class="p2-pd" style="background:var(--amber)"></div><span class="p2-pl">Vol</span><span class="p2-pv">3.2t</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bento Grid -->
+    <div class="p2-bento">
+      <div class="p2-bc p2-bc-tall p2-bc-w">
+        <div class="p2-bc-label">Weight</div>
+        <div class="p2-bc-num">72.4</div>
+        <div class="p2-bc-unit">kg</div>
+        <div class="p2-bc-trend" style="color:var(--trail)">-0.8 kg</div>
+        <div class="p2-bc-spark">
+          <div class="p2-bc-sb" style="height:55%"></div><div class="p2-bc-sb" style="height:70%"></div><div class="p2-bc-sb" style="height:50%"></div><div class="p2-bc-sb" style="height:78%"></div><div class="p2-bc-sb" style="height:62%"></div><div class="p2-bc-sb" style="height:85%"></div><div class="p2-bc-sb act" style="height:68%"></div>
+        </div>
+      </div>
+      <div class="p2-bc p2-bc-v">
+        <div class="p2-bc-label">Volume</div>
+        <div class="p2-bc-num">3.2<span style="font-size:12px;font-family:Inter;color:var(--rock)"> t</span></div>
+        <div class="p2-bc-trend" style="color:var(--trail)">+12% vs last wk</div>
+      </div>
+      <div class="p2-bc p2-bc-s">
+        <div class="p2-bc-label">Streak</div>
+        <div class="p2-bc-num">5<span style="font-size:12px;font-family:Inter;color:var(--rock)"> days</span></div>
+        <div class="p2-bc-trend" style="color:var(--amber)">Best: 9d</div>
+      </div>
+    </div>
+
+    <!-- Lift Leaderboard -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Estimated 1RM</div><div class="sh-bar"></div></div></div>
+    <div class="p2-lifts">
+      <div class="p2-lc"><div class="p2-lc-rank">1</div><div class="p2-lc-info"><div class="p2-lc-name">Squat</div><div class="p2-lc-bar"><div class="p2-lc-fill" style="width:100%;background:var(--trail)"></div></div></div><div><div class="p2-lc-val">115</div><div class="p2-lc-u">kg</div></div></div>
+      <div class="p2-lc"><div class="p2-lc-rank">2</div><div class="p2-lc-info"><div class="p2-lc-name">Deadlift</div><div class="p2-lc-bar"><div class="p2-lc-fill" style="width:92%;background:rgba(45,42,36,0.25)"></div></div></div><div><div class="p2-lc-val">110</div><div class="p2-lc-u">kg</div></div></div>
+      <div class="p2-lc"><div class="p2-lc-rank">3</div><div class="p2-lc-info"><div class="p2-lc-name">Bench Press</div><div class="p2-lc-bar"><div class="p2-lc-fill" style="width:82%;background:rgba(45,42,36,0.18)"></div></div></div><div><div class="p2-lc-val">95</div><div class="p2-lc-u">kg</div></div></div>
+      <div class="p2-lc"><div class="p2-lc-rank">4</div><div class="p2-lc-info"><div class="p2-lc-name">OHP</div><div class="p2-lc-bar"><div class="p2-lc-fill" style="width:54%;background:rgba(45,42,36,0.12)"></div></div></div><div><div class="p2-lc-val">62</div><div class="p2-lc-u">kg</div></div></div>
+    </div>
+
+    <!-- PR Trail -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Recent PRs</div><div class="sh-bar"></div></div><span class="sh-m">Last 30 days</span></div>
+    <div class="p2-prt">
+      <div class="p2-prt-line"></div>
+      <div class="p2-pri"><div class="p2-prd"><div class="p2-prdi"></div></div><div class="p2-prr"><span class="p2-prn">Bench Press</span><span class="p2-prv">95 kg</span></div><div class="p2-prm">1RM · Mar 28</div></div>
+      <div class="p2-pri"><div class="p2-prd"><div class="p2-prdi"></div></div><div class="p2-prr"><span class="p2-prn">Squat</span><span class="p2-prv">115 kg</span></div><div class="p2-prm">1RM · Mar 25</div></div>
+      <div class="p2-pri"><div class="p2-prd"><div class="p2-prdi"></div></div><div class="p2-prr"><span class="p2-prn">Deadlift</span><span class="p2-prv">3,200 kg</span></div><div class="p2-prm">Volume · Mar 22</div></div>
+    </div>
+
+    <!-- Measurements -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Measurements</div><div class="sh-bar"></div></div><span class="sh-r">Update</span></div>
+    <div class="p2-meas">
+      <div class="p2-mc"><div class="p2-mc-l">Weight</div><div class="p2-mc-v">72.4</div><div class="p2-mc-u">kg</div><div class="p2-mc-t" style="color:var(--trail)">↓</div></div>
+      <div class="p2-mc"><div class="p2-mc-l">Body Fat</div><div class="p2-mc-v">16.2</div><div class="p2-mc-u">%</div><div class="p2-mc-t" style="color:var(--trail)">↓</div></div>
+      <div class="p2-mc"><div class="p2-mc-l">Chest</div><div class="p2-mc-v">98</div><div class="p2-mc-u">cm</div><div class="p2-mc-t" style="color:var(--trail)">↑</div></div>
+      <div class="p2-mc"><div class="p2-mc-l">Waist</div><div class="p2-mc-v">82</div><div class="p2-mc-u">cm</div><div class="p2-mc-t" style="color:var(--trail)">↓</div></div>
+      <div class="p2-mc"><div class="p2-mc-l">Arms</div><div class="p2-mc-v">35</div><div class="p2-mc-u">cm</div><div class="p2-mc-t" style="color:var(--trail)">↑</div></div>
+      <div class="p2-mc"><div class="p2-mc-l">Thighs</div><div class="p2-mc-v">58</div><div class="p2-mc-u">cm</div></div>
+    </div>
+
+    <!-- Activity Heatmap in glass card -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Activity</div><div class="sh-bar"></div></div><span class="sh-m">12 weeks</span></div>
+    <div class="p2-heat-card">
+      <div class="p1-hm">
+        <div class="p1-hm-days"><div class="p1-hm-dl">M</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">W</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">F</div><div class="p1-hm-dl">S</div><div class="p1-hm-dl">S</div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c t"></div></div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="p1-quick">
+      <div class="p1-qp"><span class="p1-qt">Weekly Summary</span></div>
+      <div class="p1-qp"><span class="p1-qt">Wellness</span></div>
+    </div>
+
+  </div></div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════
+     P3 — CLEAN EDITORIAL
+     ═══════════════════════════════════════════════════════════ -->
+<div class="phone-col">
+  <span class="phone-label">P3 — Clean Editorial</span>
+  <span class="phone-desc">Stat ticker, large centered rings, weight+volume duo cards, 4-col achievements</span>
+  <div class="phone"><div class="ps">
+
+    <div class="p3-top">
+      <div class="p3-date">Sunday, Mar 30</div>
+      <div class="p3-title">Your Journey</div>
+    </div>
+
+    <!-- Stat ticker -->
+    <div class="p3-ticker">
+      <div class="p3-tick"><div class="p3-tk-n">12</div><div class="p3-tk-l">Workouts</div></div>
+      <div class="p3-tick"><div class="p3-tk-n">5</div><div class="p3-tk-l">Streak</div><div class="p3-tk-t" style="color:var(--trail)">Best: 9</div></div>
+      <div class="p3-tick"><div class="p3-tk-n">87<span style="font-size:14px">%</span></div><div class="p3-tk-l">Complete</div></div>
+      <div class="p3-tick"><div class="p3-tk-n">3.2<span style="font-size:14px">t</span></div><div class="p3-tk-l">Volume</div><div class="p3-tk-t" style="color:var(--trail)">+12%</div></div>
+    </div>
+
+    <div class="p3-msg">You're on a <b>5-day streak</b> — keep the momentum! Volume up <b>+12%</b> this week.</div>
+
+    <!-- Rings -->
+    <div class="p3-rings-wrap">
+      <div class="p3-rings">
+        <div class="p3-r p3-ro"></div><div class="p3-r p3-rmi"></div><div class="p3-r p3-rin"></div>
+        <div class="p3-rc"><span class="p3-rn">12</span><span class="p3-rsu">Workouts</span></div>
+      </div>
+      <div class="p3-legend">
+        <div class="p3-le"><div class="p3-led" style="background:var(--trail)"></div><span class="p3-lel">Complete</span><span class="p3-lev">87%</span></div>
+        <div class="p3-le"><div class="p3-led" style="background:var(--earth)"></div><span class="p3-lel">Streak</span><span class="p3-lev">5d</span></div>
+        <div class="p3-le"><div class="p3-led" style="background:var(--amber)"></div><span class="p3-lel">Volume</span><span class="p3-lev">3.2t</span></div>
+      </div>
+    </div>
+
+    <!-- Weight + Volume duo -->
+    <div class="p3-duo">
+      <div class="p3-duo-card wt">
+        <div class="p3-dc-label">Weight</div>
+        <div class="p3-dc-row"><span class="p3-dc-num">72.4</span><span class="p3-dc-unit">kg</span></div>
+        <div class="p3-dc-trend" style="color:var(--trail)">-0.8 kg</div>
+        <div class="p3-dc-spark"><div class="p3-dc-sb" style="height:55%"></div><div class="p3-dc-sb" style="height:72%"></div><div class="p3-dc-sb" style="height:48%"></div><div class="p3-dc-sb" style="height:80%"></div><div class="p3-dc-sb" style="height:60%"></div><div class="p3-dc-sb" style="height:88%"></div><div class="p3-dc-sb act" style="height:65%"></div></div>
+      </div>
+      <div class="p3-duo-card vol">
+        <div class="p3-dc-label">Volume</div>
+        <div class="p3-dc-row"><span class="p3-dc-num">3.2</span><span class="p3-dc-unit">tons</span></div>
+        <div class="p3-dc-trend" style="color:var(--trail)">+12% vs last wk</div>
+        <div class="p3-dc-spark"><div class="p3-dc-sb" style="height:30%"></div><div class="p3-dc-sb" style="height:50%"></div><div class="p3-dc-sb" style="height:68%"></div><div class="p3-dc-sb" style="height:40%"></div><div class="p3-dc-sb" style="height:78%"></div><div class="p3-dc-sb" style="height:58%"></div><div class="p3-dc-sb act" style="height:100%"></div></div>
+      </div>
+    </div>
+
+    <!-- 1RM -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Estimated 1RM</div><div class="sh-bar"></div></div></div>
+    <div class="p3-rm">
+      <div class="p3-rmr"><span class="p3-rmn">Squat</span><div class="p3-rmt"><div class="p3-rmf" style="width:100%;background:var(--trail)"></div></div><span class="p3-rmv">115</span></div>
+      <div class="p3-rmr"><span class="p3-rmn">Deadlift</span><div class="p3-rmt"><div class="p3-rmf" style="width:92%;background:rgba(45,42,36,0.28)"></div></div><span class="p3-rmv">110</span></div>
+      <div class="p3-rmr"><span class="p3-rmn">Bench Press</span><div class="p3-rmt"><div class="p3-rmf" style="width:82%;background:rgba(45,42,36,0.20)"></div></div><span class="p3-rmv">95</span></div>
+      <div class="p3-rmr"><span class="p3-rmn">OHP</span><div class="p3-rmt"><div class="p3-rmf" style="width:54%;background:rgba(45,42,36,0.12)"></div></div><span class="p3-rmv">62</span></div>
+    </div>
+
+    <!-- Achievements 4-col grid -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Achievements</div><div class="sh-bar"></div></div><span class="sh-r">4 of 24 ›</span></div>
+    <div class="p3-ach">
+      <div class="p3-ag on" style="background:rgba(52,211,153,0.08)"><div class="p3-age">🎯</div><div class="p3-agn">First Workout</div><div class="p3-agd"><div class="p3-agdd" style="background:var(--trail)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag on" style="background:rgba(245,158,11,0.08)"><div class="p3-age">🔥</div><div class="p3-agn">3-Day Streak</div><div class="p3-agd"><div class="p3-agdd" style="background:var(--amber)"></div><div class="p3-agdd" style="background:var(--amber)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag on" style="background:rgba(99,102,241,0.08)"><div class="p3-age">📈</div><div class="p3-agn">First PR</div><div class="p3-agd"><div class="p3-agdd" style="background:#6366F1"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag on" style="background:rgba(239,68,68,0.08)"><div class="p3-age">🏆</div><div class="p3-agn">Volume King</div><div class="p3-agd"><div class="p3-agdd" style="background:#EF4444"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag off" style="background:var(--stone)"><div class="p3-age">👑</div><div class="p3-agn">Century Club</div><div class="p3-agd"><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag off" style="background:var(--stone)"><div class="p3-age">⭐</div><div class="p3-agn">Consistency</div><div class="p3-agd"><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag off" style="background:var(--stone)"><div class="p3-age">🛡️</div><div class="p3-agn">Iron Will</div><div class="p3-agd"><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+      <div class="p3-ag off" style="background:var(--stone)"><div class="p3-age">📅</div><div class="p3-agn">Month Strong</div><div class="p3-agd"><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div><div class="p3-agdd" style="background:rgba(0,0,0,0.06)"></div></div></div>
+    </div>
+
+    <!-- Measurements -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Measurements</div><div class="sh-bar"></div></div><span class="sh-r">Update</span></div>
+    <div class="p3-meas">
+      <div class="p3-mrow"><span class="p3-ml">Weight</span><span class="p3-mv">72.4</span><span class="p3-mu">kg</span><span class="p3-mt" style="color:var(--trail)">↓</span></div>
+      <div class="p3-mrow"><span class="p3-ml">Body Fat</span><span class="p3-mv">16.2</span><span class="p3-mu">%</span><span class="p3-mt" style="color:var(--trail)">↓</span></div>
+      <div class="p3-mrow"><span class="p3-ml">Chest</span><span class="p3-mv">98</span><span class="p3-mu">cm</span><span class="p3-mt" style="color:var(--trail)">↑</span></div>
+      <div class="p3-mrow"><span class="p3-ml">Waist</span><span class="p3-mv">82</span><span class="p3-mu">cm</span><span class="p3-mt" style="color:var(--trail)">↓</span></div>
+      <div class="p3-mrow"><span class="p3-ml">Arms</span><span class="p3-mv">35</span><span class="p3-mu">cm</span><span class="p3-mt" style="color:var(--trail)">↑</span></div>
+      <div class="p3-mrow"><span class="p3-ml">Thighs</span><span class="p3-mv">58</span><span class="p3-mu">cm</span></div>
+    </div>
+
+    <!-- Activity -->
+    <div class="sh"><div class="sh-l"><div class="sh-t">Activity</div><div class="sh-bar"></div></div><span class="sh-m">12 weeks</span></div>
+    <div class="p1-heat" style="padding:0 22px">
+      <div class="p1-hm">
+        <div class="p1-hm-days"><div class="p1-hm-dl">M</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">W</div><div class="p1-hm-dl">T</div><div class="p1-hm-dl">F</div><div class="p1-hm-dl">S</div><div class="p1-hm-dl">S</div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c"></div><div class="p1-hm-c a"></div><div class="p1-hm-c"></div><div class="p1-hm-c c"></div></div>
+        <div class="p1-hm-col"><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c b"></div><div class="p1-hm-c c"></div><div class="p1-hm-c"></div><div class="p1-hm-c t"></div></div>
+      </div>
+    </div>
+
+    <!-- Quick links -->
+    <div class="p1-quick">
+      <div class="p1-qp"><span class="p1-qt">Weekly Summary</span></div>
+      <div class="p1-qp"><span class="p1-qt">Wellness</span></div>
+    </div>
+
+  </div></div>
+</div>
+
+</div><!-- end .phones -->
+
+</body>
+</html>

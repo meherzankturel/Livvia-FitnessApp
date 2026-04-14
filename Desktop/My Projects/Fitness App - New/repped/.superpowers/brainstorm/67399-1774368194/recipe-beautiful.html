@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Beautiful Recipe</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; gap: 24px; justify-content: center; padding: 24px; flex-wrap: wrap; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .lbl { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 8px 6px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     Z1: THE POEM
+     A recipe as a single, beautiful, flowing page.
+     Massive name. Generous whitespace. Everything breathes.
+     A thin trail-green accent line connects sections.
+     Nothing is in a card. Nothing is in a box. Just type + space.
+     ============================================================ */
+
+  .z1-hdr { padding: 54px 28px 0; display: flex; justify-content: space-between; align-items: center; }
+  .z1-video { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; letter-spacing: 0.3px; }
+
+  .z1-name {
+    font-size: 38px; font-weight: 800; color: var(--earth); letter-spacing: -1.8px;
+    line-height: 1.02; padding: 28px 28px 0; max-width: 320px;
+  }
+
+  .z1-meta { padding: 20px 28px 0; display: flex; gap: 20px; }
+  .z1-mv { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .z1-mu { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  /* The accent line */
+  .z1-accent { width: 2px; height: 40px; background: var(--trail); margin: 28px 28px; border-radius: 1px; opacity: 0.4; }
+
+  /* Ingredients — just text, generous spacing */
+  .z1-section-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; padding: 0 28px; margin-bottom: 16px; }
+
+  .z1-ing { padding: 0 28px; margin-bottom: 28px; }
+  .z1-ing-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; }
+  .z1-ing-name { font-size: 16px; color: var(--earth); font-weight: 400; }
+  .z1-ing-amount { font-size: 14px; color: var(--rock); font-weight: 400; }
+
+  .z1-accent2 { width: 2px; height: 40px; background: var(--trail); margin: 0 28px 28px; border-radius: 1px; opacity: 0.4; }
+
+  /* Steps — numbered, spacious, readable */
+  .z1-steps { padding: 0 28px 40px; }
+  .z1-step { margin-bottom: 28px; }
+  .z1-step-head { display: flex; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+  .z1-step-num { font-size: 12px; font-weight: 700; color: var(--trail); }
+  .z1-step-time { font-size: 10px; color: var(--rock); }
+  .z1-step-text { font-size: 17px; color: var(--earth); line-height: 1.7; font-weight: 400; letter-spacing: -0.1px; }
+
+
+  /* ============================================================
+     Z2: THE DARK PAGE
+     Entire screen is dark. Recipe name in huge sand.
+     Ingredients float as light text. Steps are large, airy.
+     Feels like a premium menu in a Michelin restaurant.
+     ============================================================ */
+
+  .z2-phone { background: var(--earth); }
+
+  .z2-hdr { padding: 54px 28px 0; display: flex; justify-content: space-between; align-items: center; }
+  .z2-back { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .z2-video { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .z2-name {
+    font-size: 36px; font-weight: 800; color: var(--sand); letter-spacing: -1.5px;
+    line-height: 1.02; padding: 28px 28px 0; max-width: 300px;
+  }
+
+  .z2-meta { padding: 20px 28px 0; display: flex; gap: 20px; }
+  .z2-mv { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .z2-mu { font-size: 10px; color: rgba(246,245,240,0.3); margin-top: 2px; }
+
+  .z2-line { height: 1px; background: rgba(246,245,240,0.06); margin: 28px 28px; }
+
+  .z2-section-label { font-size: 10px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; padding: 0 28px; margin-bottom: 14px; }
+
+  .z2-ing { padding: 0 28px; margin-bottom: 28px; }
+  .z2-ing-row { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px solid rgba(246,245,240,0.04); }
+  .z2-ing-row:last-child { border-bottom: none; }
+  .z2-ing-name { font-size: 15px; color: var(--sand); font-weight: 400; }
+  .z2-ing-amount { font-size: 14px; color: rgba(246,245,240,0.3); }
+
+  .z2-line2 { height: 1px; background: rgba(246,245,240,0.06); margin: 0 28px 28px; }
+
+  .z2-steps { padding: 0 28px 40px; }
+  .z2-step { margin-bottom: 24px; }
+  .z2-step-num { font-size: 11px; font-weight: 700; color: var(--trail); opacity: 0.6; margin-bottom: 4px; }
+  .z2-step-text { font-size: 17px; color: var(--sand); line-height: 1.7; font-weight: 400; }
+
+
+  /* ============================================================
+     Z3: THE SPLIT
+     Clean light screen. Name + times compact at top.
+     Below: a thin green accent bar separates ingredients
+     from steps. Ingredients on white, steps on stone.
+     Two distinct zones with different backgrounds.
+     ============================================================ */
+
+  .z3-hdr { padding: 54px 28px 0; display: flex; justify-content: space-between; align-items: center; }
+  .z3-video { font-size: 11px; color: var(--trail); font-weight: 600; cursor: pointer; }
+
+  .z3-name { font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; padding: 16px 28px 0; }
+  .z3-meta { font-size: 12px; color: var(--rock); padding: 8px 28px 0; }
+
+  /* Ingredients zone — white */
+  .z3-ing-zone { padding: 24px 28px; }
+  .z3-section-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 12px; }
+
+  .z3-ing-row { display: flex; justify-content: space-between; padding: 8px 0; }
+  .z3-ing-name { font-size: 15px; color: var(--earth); font-weight: 400; }
+  .z3-ing-amount { font-size: 14px; color: var(--rock); }
+
+  /* Green accent separator */
+  .z3-separator { height: 3px; background: var(--trail); opacity: 0.2; }
+
+  /* Steps zone — stone background */
+  .z3-step-zone { background: var(--stone); padding: 24px 28px 40px; }
+
+  .z3-step { margin-bottom: 22px; display: flex; gap: 14px; }
+  .z3-step-num {
+    font-size: 32px; font-weight: 900; color: rgba(45,42,36,0.06);
+    letter-spacing: -1.5px; line-height: 1; width: 36px; flex-shrink: 0; padding-top: 4px;
+  }
+  .z3-step-text { font-size: 16px; color: var(--earth); line-height: 1.65; font-weight: 400; }
+</style>
+</head>
+<body>
+
+<!-- ===== Z1: THE POEM ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">Z1 — The Poem</div>
+  <div class="dsc">Nothing is in a card or box. Just type, whitespace, and a thin green accent line. Reads like a page from a beautiful cookbook. Scroll down slowly.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="z1-hdr"><div class="back">←</div><span class="z1-video">▶ Watch Video</span></div>
+
+    <div class="z1-name">Veggie<br>Stir Fry<br>with Tofu</div>
+
+    <div class="z1-meta">
+      <div><div class="z1-mv">10</div><div class="z1-mu">min prep</div></div>
+      <div><div class="z1-mv">12</div><div class="z1-mu">min cook</div></div>
+    </div>
+
+    <div class="z1-accent"></div>
+
+    <div class="z1-section-label">Ingredients</div>
+    <div class="z1-ing">
+      <div class="z1-ing-row"><span class="z1-ing-name">Firm tofu</span><span class="z1-ing-amount">½ block cubed</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Broccoli</span><span class="z1-ing-amount">1 cup florets</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Bell pepper</span><span class="z1-ing-amount">1 sliced</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Snap peas</span><span class="z1-ing-amount">½ cup</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Teriyaki sauce</span><span class="z1-ing-amount">2 tbsp</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">White rice</span><span class="z1-ing-amount">1 cup cooked</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Sesame oil</span><span class="z1-ing-amount">1 tbsp</span></div>
+      <div class="z1-ing-row"><span class="z1-ing-name">Garlic</span><span class="z1-ing-amount">2 cloves</span></div>
+    </div>
+
+    <div class="z1-accent2"></div>
+
+    <div class="z1-section-label">Steps</div>
+    <div class="z1-steps">
+      <div class="z1-step"><div class="z1-step-head"><span class="z1-step-num">01</span><span class="z1-step-time">~4 min</span></div><div class="z1-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="z1-step"><div class="z1-step-head"><span class="z1-step-num">02</span><span class="z1-step-time">~3 min</span></div><div class="z1-step-text">Remove tofu. Add broccoli, bell pepper, snap peas and garlic. Stir-fry for three to four minutes until crisp-tender.</div></div>
+      <div class="z1-step"><div class="z1-step-head"><span class="z1-step-num">03</span><span class="z1-step-time">~2 min</span></div><div class="z1-step-text">Return tofu to the pan. Pour teriyaki sauce over everything and toss gently to coat all pieces evenly.</div></div>
+      <div class="z1-step"><div class="z1-step-head"><span class="z1-step-num">04</span><span class="z1-step-time">~1 min</span></div><div class="z1-step-text">Serve immediately over fluffy white rice. Garnish with a sprinkle of sesame seeds.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ===== Z2: THE DARK PAGE ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">Z2 — The Dark Page</div>
+  <div class="dsc">Entire screen is dark earth. Sand-colored type. Feels like a Michelin restaurant menu. Thin divider lines. Green step numbers. Maximum elegance.</div>
+  <div class="phone z2-phone"><div class="topo"><div class="tc" style="border-color:var(--sand);"></div><div class="tc" style="border-color:var(--sand);"></div></div><div class="ps"><div class="cnt">
+    <div class="z2-hdr"><div class="back z2-back">←</div><span class="z2-video">▶ Watch Video</span></div>
+
+    <div class="z2-name">Veggie<br>Stir Fry<br>with Tofu</div>
+
+    <div class="z2-meta">
+      <div><div class="z2-mv">10</div><div class="z2-mu">min prep</div></div>
+      <div><div class="z2-mv">12</div><div class="z2-mu">min cook</div></div>
+    </div>
+
+    <div class="z2-line"></div>
+
+    <div class="z2-section-label">Ingredients</div>
+    <div class="z2-ing">
+      <div class="z2-ing-row"><span class="z2-ing-name">Firm tofu</span><span class="z2-ing-amount">½ block cubed</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Broccoli</span><span class="z2-ing-amount">1 cup florets</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Bell pepper</span><span class="z2-ing-amount">1 sliced</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Snap peas</span><span class="z2-ing-amount">½ cup</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Teriyaki sauce</span><span class="z2-ing-amount">2 tbsp</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">White rice</span><span class="z2-ing-amount">1 cup cooked</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Sesame oil</span><span class="z2-ing-amount">1 tbsp</span></div>
+      <div class="z2-ing-row"><span class="z2-ing-name">Garlic</span><span class="z2-ing-amount">2 cloves</span></div>
+    </div>
+
+    <div class="z2-line2"></div>
+
+    <div class="z2-section-label">Steps</div>
+    <div class="z2-steps">
+      <div class="z2-step"><div class="z2-step-num">01</div><div class="z2-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="z2-step"><div class="z2-step-num">02</div><div class="z2-step-text">Remove tofu. Add broccoli, bell pepper, snap peas and garlic. Stir-fry for three to four minutes until crisp-tender.</div></div>
+      <div class="z2-step"><div class="z2-step-num">03</div><div class="z2-step-text">Return tofu to the pan. Pour teriyaki sauce over everything and toss gently to coat.</div></div>
+      <div class="z2-step"><div class="z2-step-num">04</div><div class="z2-step-text">Serve immediately over fluffy white rice. Garnish with sesame seeds.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- ===== Z3: THE SPLIT ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">Z3 — The Split</div>
+  <div class="dsc">Compact name + times. Ingredients on sand background. A thin green separator. Steps on stone background with ghost drop-cap numbers. Two visual zones.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="z3-hdr"><div class="back">←</div><span class="z3-video">▶ Watch Video</span></div>
+
+    <div class="z3-name">Veggie Stir Fry<br>with Tofu</div>
+    <div class="z3-meta">10 min prep · 12 min cook · Easy</div>
+
+    <div class="z3-ing-zone">
+      <div class="z3-section-label">Ingredients</div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Firm tofu</span><span class="z3-ing-amount">½ block cubed</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Broccoli</span><span class="z3-ing-amount">1 cup florets</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Bell pepper</span><span class="z3-ing-amount">1 sliced</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Snap peas</span><span class="z3-ing-amount">½ cup</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Teriyaki sauce</span><span class="z3-ing-amount">2 tbsp</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">White rice</span><span class="z3-ing-amount">1 cup cooked</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Sesame oil</span><span class="z3-ing-amount">1 tbsp</span></div>
+      <div class="z3-ing-row"><span class="z3-ing-name">Garlic</span><span class="z3-ing-amount">2 cloves</span></div>
+    </div>
+
+    <div class="z3-separator"></div>
+
+    <div class="z3-step-zone">
+      <div class="z3-section-label">Steps</div>
+      <div class="z3-step"><div class="z3-step-num">1</div><div class="z3-step-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="z3-step"><div class="z3-step-num">2</div><div class="z3-step-text">Remove tofu. Add broccoli, bell pepper, snap peas and garlic. Stir-fry for three to four minutes until crisp-tender.</div></div>
+      <div class="z3-step"><div class="z3-step-num">3</div><div class="z3-step-text">Return tofu to the pan. Pour teriyaki sauce over everything and toss gently to coat.</div></div>
+      <div class="z3-step"><div class="z3-step-num">4</div><div class="z3-step-text">Serve immediately over fluffy white rice. Garnish with sesame seeds.</div></div>
+    </div>
+  </div></div></div>
+</div>
+
+</body>
+</html>

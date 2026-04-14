@@ -1,6 +1,6 @@
 import { ViewStyle, TextStyle } from "react-native";
 
-// ─── Repped Design System v5 — Terrain × Magnetic ───
+// ─── Livvia Design System v5 — Terrain × Magnetic ───
 // Earthy expedition palette: sand backgrounds, trail green accents,
 // earth-tone cards, and stone surfaces.
 

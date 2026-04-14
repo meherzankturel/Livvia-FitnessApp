@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Hero WOW</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     W1: GREEN GRADIENT HERO — Trail green gradient background.
+     White text. Volume big. Stats inside. Fresh, energetic.
+     ============================================================ */
+
+  .w1-card {
+    padding: 24px; border-radius: 24px; position: relative; overflow: hidden;
+    background: linear-gradient(145deg, #2D6B56 0%, #1A4D3B 50%, var(--earth) 100%);
+  }
+  /* Subtle pattern */
+  .w1-pattern { position: absolute; inset: 0; opacity: 0.03; background: repeating-linear-gradient(45deg, transparent, transparent 20px, rgba(255,255,255,0.1) 20px, rgba(255,255,255,0.1) 21px); }
+
+  .w1-date { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .w1-title { font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.6px; margin-top: 4px; position: relative; }
+  .w1-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  .w1-vol { margin-top: 18px; position: relative; }
+  .w1-vol-val { font-size: 48px; font-weight: 900; color: #fff; letter-spacing: -2.5px; line-height: 1; }
+  .w1-vol-unit { font-size: 14px; color: rgba(255,255,255,0.4); font-weight: 500; }
+  .w1-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  .w1-stats { display: flex; gap: 0; margin-top: 16px; position: relative; }
+  .w1-st { flex: 1; text-align: center; position: relative; }
+  .w1-st::after { content: ''; position: absolute; right: 0; top: 10%; height: 80%; width: 1px; background: rgba(255,255,255,0.06); }
+  .w1-st:last-child::after { display: none; }
+  .w1-stv { font-size: 22px; font-weight: 800; color: #fff; }
+  .w1-stl { font-size: 7px; color: rgba(255,255,255,0.25); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     W2: EARTH WITH GREEN ACCENT BAR — Dark earth card with
+     a bold green accent strip at top. Clean inside.
+     ============================================================ */
+
+  .w2-card { border-radius: 24px; overflow: hidden; background: var(--earth); position: relative; }
+  .w2-accent-bar { height: 4px; background: linear-gradient(90deg, var(--trail), rgba(52,211,153,0.3)); }
+  .w2-inner { padding: 22px; }
+
+  .w2-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .w2-left {}
+  .w2-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .w2-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; }
+  .w2-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  .w2-right { text-align: right; }
+  .w2-vol-val { font-size: 36px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; line-height: 1; }
+  .w2-vol-unit { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .w2-vol-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .w2-pills { display: flex; gap: 6px; margin-top: 16px; }
+  .w2-p { padding: 7px 14px; border-radius: 10px; background: rgba(246,245,240,0.04); display: flex; align-items: baseline; gap: 4px; }
+  .w2-pv { font-size: 15px; font-weight: 800; color: var(--sand); }
+  .w2-pv.green { color: var(--trail); }
+  .w2-pv.amber { color: #F59E0B; }
+  .w2-pl { font-size: 8px; color: rgba(246,245,240,0.2); }
+
+
+  /* ============================================================
+     W3: GLASS CARD — Semi-transparent white glass card on sand.
+     Green tinted glow behind. Volume big. Light, airy, premium.
+     ============================================================ */
+
+  .w3-wrap { position: relative; }
+  /* Green glow behind */
+  .w3-glow { position: absolute; top: 20px; left: 30px; width: 200px; height: 200px; border-radius: 50%; background: var(--trail); filter: blur(80px); opacity: 0.06; }
+
+  .w3-card {
+    padding: 24px; border-radius: 24px; position: relative;
+    background: rgba(255,255,255,0.55); border: 1px solid rgba(255,255,255,0.4);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+  }
+
+  .w3-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .w3-title { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.6px; margin-top: 4px; }
+  .w3-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .w3-vol { margin-top: 16px; display: flex; align-items: baseline; gap: 6px; }
+  .w3-vol-val { font-size: 44px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .w3-vol-unit { font-size: 14px; color: var(--rock); }
+  .w3-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .w3-stats { display: flex; gap: 8px; margin-top: 14px; }
+  .w3-st { flex: 1; padding: 10px; border-radius: 12px; background: rgba(255,255,255,0.5); text-align: center; }
+  .w3-stv { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .w3-stv.green { color: #047857; }
+  .w3-stv.amber { color: #92400E; }
+  .w3-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     W4: TWO-TONE — Top half dark, bottom half green-tinted.
+     Title on dark. Stats on green. Sharp visual split.
+     ============================================================ */
+
+  .w4-card { border-radius: 24px; overflow: hidden; }
+  .w4-dark { background: var(--earth); padding: 22px 22px 16px; position: relative; }
+  .w4-accent { position: absolute; top: 0; right: 0; width: 70px; height: 70px; }
+  .w4-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .w4-al:nth-child(1) { width: 90px; top: 12px; right: -6px; transform: rotate(-35deg); }
+  .w4-al:nth-child(2) { width: 70px; top: 22px; right: -6px; transform: rotate(-35deg); }
+
+  .w4-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .w4-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+  .w4-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; position: relative; }
+
+  .w4-green { background: rgba(52,211,153,0.04); padding: 16px 22px; }
+  .w4-vol-row { display: flex; align-items: baseline; gap: 6px; }
+  .w4-vol-val { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; }
+  .w4-vol-unit { font-size: 13px; color: var(--rock); }
+  .w4-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .w4-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .w4-st { flex: 1; text-align: center; }
+  .w4-stv { font-size: 20px; font-weight: 800; color: var(--earth); }
+  .w4-stv.green { color: #047857; }
+  .w4-stv.amber { color: #92400E; }
+  .w4-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     W5: GRADIENT BORDER — White card with a gradient border
+     that shifts from green to amber. Clean inside. Unique.
+     ============================================================ */
+
+  .w5-outer { padding: 2px; border-radius: 26px; background: linear-gradient(135deg, var(--trail), #F59E0B); }
+  .w5-card { padding: 24px; border-radius: 24px; background: var(--sand); }
+
+  .w5-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .w5-title { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.6px; margin-top: 4px; }
+  .w5-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .w5-vol { margin-top: 16px; display: flex; align-items: baseline; gap: 6px; }
+  .w5-vol-val { font-size: 44px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .w5-vol-unit { font-size: 14px; color: var(--rock); }
+  .w5-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .w5-stats { display: flex; gap: 8px; margin-top: 14px; }
+  .w5-st { flex: 1; padding: 10px; border-radius: 12px; text-align: center; }
+  .w5-st:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .w5-st:nth-child(2) { background: var(--stone); }
+  .w5-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .w5-stv { font-size: 18px; font-weight: 800; }
+  .w5-st:nth-child(1) .w5-stv { color: #047857; }
+  .w5-st:nth-child(2) .w5-stv { color: var(--earth); }
+  .w5-st:nth-child(3) .w5-stv { color: #92400E; }
+  .w5-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     W6: DARK WITH COLORED STAT ACCENTS — Dark card but each
+     stat has its own colored background tint. Volume is green-
+     tinted, completion green, streak amber. Not all grey.
+     ============================================================ */
+
+  .w6-card { padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+
+  .w6-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .w6-row { display: flex; justify-content: space-between; align-items: flex-start; margin-top: 6px; position: relative; }
+  .w6-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .w6-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  /* Volume with green tint */
+  .w6-vol { padding: 12px 16px; border-radius: 14px; background: rgba(52,211,153,0.06); text-align: right; }
+  .w6-vol-val { font-size: 28px; font-weight: 900; color: var(--trail); letter-spacing: -1px; line-height: 1; }
+  .w6-vol-unit { font-size: 10px; color: rgba(52,211,153,0.4); }
+  .w6-vol-trend { font-size: 8px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.5; }
+
+  /* Colored stat tiles */
+  .w6-tiles { display: flex; gap: 6px; margin-top: 14px; position: relative; }
+  .w6-t { flex: 1; padding: 12px 8px; border-radius: 12px; text-align: center; }
+  .w6-t:nth-child(1) { background: rgba(246,245,240,0.04); }
+  .w6-t:nth-child(2) { background: rgba(52,211,153,0.04); }
+  .w6-t:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .w6-tv { font-size: 20px; font-weight: 800; }
+  .w6-t:nth-child(1) .w6-tv { color: var(--sand); }
+  .w6-t:nth-child(2) .w6-tv { color: var(--trail); }
+  .w6-t:nth-child(3) .w6-tv { color: #F59E0B; }
+  .w6-tl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .w6-t:nth-child(1) .w6-tl { color: rgba(246,245,240,0.2); }
+  .w6-t:nth-child(2) .w6-tl { color: rgba(52,211,153,0.3); }
+  .w6-t:nth-child(3) .w6-tl { color: rgba(245,158,11,0.3); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- W1 -->
+<div>
+  <div class="col-label">W1 — Green Gradient</div>
+  <div class="col-desc">Dark green gradient background with subtle diagonal pattern. White text. Big volume. Clean stat row. Fresh, energetic, different.</div>
+  <div class="block">
+    <div class="w1-card"><div class="w1-pattern"></div><div class="w1-date">Mar 18 – 24</div><div class="w1-title">This Week</div><div class="w1-msg">Crushing it! 💪</div><div class="w1-vol"><div class="w1-vol-val">2.4</div><div class="w1-vol-unit">tons lifted</div><div class="w1-vol-trend">▲ 12% vs last week</div></div><div class="w1-stats"><div class="w1-st"><div class="w1-stv">4</div><div class="w1-stl">Workouts</div></div><div class="w1-st"><div class="w1-stv">80%</div><div class="w1-stl">Complete</div></div><div class="w1-st"><div class="w1-stv">12d</div><div class="w1-stl">Streak</div></div></div></div>
+  </div>
+</div>
+
+<!-- W2 -->
+<div>
+  <div class="col-label">W2 — Green Accent Bar</div>
+  <div class="col-desc">Dark earth card with a bold green gradient bar at the top edge. Title left, volume right. Stat pills bottom. The green bar adds energy without overwhelming.</div>
+  <div class="block">
+    <div class="w2-card"><div class="w2-accent-bar"></div><div class="w2-inner"><div class="w2-top"><div class="w2-left"><div class="w2-date">Mar 18 – 24</div><div class="w2-title">This Week</div><div class="w2-msg">Crushing it! 💪</div></div><div class="w2-right"><div class="w2-vol-val">2.4</div><div class="w2-vol-unit">tons</div><div class="w2-vol-trend">▲ 12%</div></div></div><div class="w2-pills"><div class="w2-p"><span class="w2-pv">4</span><span class="w2-pl">workouts</span></div><div class="w2-p"><span class="w2-pv green">80%</span><span class="w2-pl">complete</span></div><div class="w2-p"><span class="w2-pv amber">12d</span><span class="w2-pl">streak</span></div></div></div></div>
+  </div>
+</div>
+
+<!-- W3 -->
+<div>
+  <div class="col-label">W3 — Glass Card</div>
+  <div class="col-desc">Frosted glass card with green glow blob behind it. Semi-transparent white. Volume inline. Stats in glass tiles. Light, airy, Apple-like.</div>
+  <div class="block">
+    <div class="w3-wrap"><div class="w3-glow"></div><div class="w3-card"><div class="w3-date">Mar 18 – 24</div><div class="w3-title">This Week</div><div class="w3-msg">Crushing it! 💪</div><div class="w3-vol"><span class="w3-vol-val">2.4</span><span class="w3-vol-unit">tons</span><span class="w3-vol-trend">▲ 12%</span></div><div class="w3-stats"><div class="w3-st"><div class="w3-stv">4</div><div class="w3-stl">Workouts</div></div><div class="w3-st"><div class="w3-stv green">80%</div><div class="w3-stl">Complete</div></div><div class="w3-st"><div class="w3-stv amber">12d</div><div class="w3-stl">Streak</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- W4 -->
+<div>
+  <div class="col-label">W4 — Two-Tone Split</div>
+  <div class="col-desc">Top half dark earth (title + message). Bottom half green-tinted (volume + stats). Sharp visual split. Two moods in one card.</div>
+  <div class="block">
+    <div class="w4-card"><div class="w4-dark"><div class="w4-accent"><div class="w4-al"></div><div class="w4-al"></div></div><div class="w4-date">Mar 18 – 24</div><div class="w4-title">This Week</div><div class="w4-msg">Crushing it! 💪</div></div><div class="w4-green"><div class="w4-vol-row"><span class="w4-vol-val">2.4</span><span class="w4-vol-unit">tons</span><span class="w4-vol-trend">▲ 12%</span></div><div class="w4-stats"><div class="w4-st"><div class="w4-stv">4</div><div class="w4-stl">Workouts</div></div><div class="w4-st"><div class="w4-stv green">80%</div><div class="w4-stl">Complete</div></div><div class="w4-st"><div class="w4-stv amber">12d</div><div class="w4-stl">Streak</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- W5 -->
+<div>
+  <div class="col-label">W5 — Gradient Border</div>
+  <div class="col-desc">Sand card with a green-to-amber gradient border. Stats in color-matched tinted tiles. The border itself is the accent. Unique, elegant.</div>
+  <div class="block">
+    <div class="w5-outer"><div class="w5-card"><div class="w5-date">Mar 18 – 24</div><div class="w5-title">This Week</div><div class="w5-msg">Crushing it! 💪</div><div class="w5-vol"><span class="w5-vol-val">2.4</span><span class="w5-vol-unit">tons</span><span class="w5-vol-trend">▲ 12%</span></div><div class="w5-stats"><div class="w5-st"><div class="w5-stv">4</div><div class="w5-stl">Workouts</div></div><div class="w5-st"><div class="w5-stv">80%</div><div class="w5-stl">Complete</div></div><div class="w5-st"><div class="w5-stv">12d</div><div class="w5-stl">Streak</div></div></div></div></div>
+  </div>
+</div>
+
+<!-- W6 -->
+<div>
+  <div class="col-label">W6 — Colored Stat Accents</div>
+  <div class="col-desc">Dark card with colored elements. Volume in a green-tinted box. Each stat tile has its own color tint (neutral/green/amber). Not all grey — each metric has personality.</div>
+  <div class="block">
+    <div class="w6-card"><div class="w6-date">Mar 18 – 24</div><div class="w6-row"><div><div class="w6-title">This Week</div><div class="w6-msg">Crushing it! 💪</div></div><div class="w6-vol"><div class="w6-vol-val">2.4</div><div class="w6-vol-unit">tons</div><div class="w6-vol-trend">▲ 12%</div></div></div><div class="w6-tiles"><div class="w6-t"><div class="w6-tv">4</div><div class="w6-tl">Workouts</div></div><div class="w6-t"><div class="w6-tv">80%</div><div class="w6-tl">Complete</div></div><div class="w6-t"><div class="w6-tv">12d</div><div class="w6-tl">Streak</div></div></div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Mindblowing Directions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; overflow-x: hidden; }
+
+  .header { text-align: center; padding: 40px 24px 12px; }
+  .header h1 { font-size: 28px; font-weight: 700; background: linear-gradient(135deg, #fff 30%, #818CF8 70%, #F59E0B); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .header p { color: #555; font-size: 14px; margin-top: 6px; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 20px; max-width: 1500px; margin: 0 auto; }
+  @media (max-width: 1300px) { .grid { grid-template-columns: 1fr; max-width: 440px; } }
+
+  .col { position: relative; }
+  .col-label { text-align: center; padding: 12px 0 10px; font-size: 12px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+
+  .phone { width: 390px; height: 780px; border-radius: 44px; overflow: hidden; position: relative; margin: 0 auto; border: 2.5px solid rgba(255,255,255,0.08); }
+  .phone-inner { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .phone-inner::-webkit-scrollbar { display: none; }
+
+  /* =============================================
+     D: LIVING ORGANISM — The UI Breathes
+     ============================================= */
+  .col-d .col-label { color: #34D399; }
+  .phone-d { background: #fafafa; }
+
+  /* Breathing background pulse */
+  .d-breath-bg { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.04) 0%, transparent 70%); animation: breathe 4s ease-in-out infinite; pointer-events: none; z-index: 0; }
+  @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.08); opacity: 1; } }
+
+  .d-content { position: relative; z-index: 1; }
+
+  .d-status { padding: 50px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .d-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .d-pill { font-size: 11px; background: rgba(52,211,153,0.12); color: #059669; padding: 4px 10px; border-radius: 100px; font-weight: 600; }
+
+  .d-hero { padding: 24px 24px 0; }
+  .d-hero .sub { font-size: 13px; color: #8E8E93; letter-spacing: 0.3px; }
+  .d-hero .title { font-size: 30px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.8px; line-height: 1.15; margin-top: 4px; }
+
+  /* Organic blob stat cards */
+  .d-blobs { display: flex; gap: 10px; padding: 20px 24px; }
+  .d-blob { flex: 1; position: relative; padding: 18px 14px; border-radius: 24px; overflow: hidden; }
+  .d-blob::before { content: ''; position: absolute; inset: 0; border-radius: 24px; animation: blobMorph 8s ease-in-out infinite; }
+  .d-blob:nth-child(1)::before { background: radial-gradient(ellipse at 30% 40%, rgba(99,102,241,0.12) 0%, rgba(99,102,241,0.03) 70%); animation-delay: 0s; }
+  .d-blob:nth-child(2)::before { background: radial-gradient(ellipse at 60% 30%, rgba(52,211,153,0.12) 0%, rgba(52,211,153,0.03) 70%); animation-delay: -3s; }
+  .d-blob:nth-child(3)::before { background: radial-gradient(ellipse at 40% 60%, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.03) 70%); animation-delay: -5s; }
+  @keyframes blobMorph {
+    0%, 100% { border-radius: 24px 28px 20px 26px; }
+    25% { border-radius: 28px 20px 26px 24px; }
+    50% { border-radius: 20px 26px 24px 28px; }
+    75% { border-radius: 26px 24px 28px 20px; }
+  }
+  .d-blob .num { font-size: 22px; font-weight: 700; color: #1C1C1E; position: relative; }
+  .d-blob .lbl { font-size: 10px; color: #8E8E93; margin-top: 2px; position: relative; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Organic progress — not a ring, a flowing shape */
+  .d-progress-wrap { padding: 0 24px; margin: 4px 0 16px; }
+  .d-progress-organic { height: 64px; border-radius: 32px; background: #F2F2F7; position: relative; overflow: hidden; }
+  .d-progress-fill { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 32px; background: linear-gradient(90deg, #6366F1, #818CF8, #a5b4fc); animation: organicFill 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards; display: flex; align-items: center; justify-content: flex-end; padding-right: 18px; }
+  .d-progress-fill span { font-size: 18px; font-weight: 700; color: #fff; opacity: 0; animation: fadeIn 0.3s ease 2s forwards; }
+  @keyframes organicFill { to { width: 75%; } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  .d-progress-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent 60%, rgba(255,255,255,0.2)); animation: shimmerPass 2s ease-in-out 2.5s infinite; }
+  @keyframes shimmerPass { 0% { transform: translateX(-100%); } 50%, 100% { transform: translateX(100%); } }
+  .d-progress-label { display: flex; justify-content: space-between; margin-top: 6px; font-size: 11px; color: #8E8E93; }
+
+  /* Exercise cards with subtle life */
+  .d-exercises { padding: 0 24px; }
+  .d-ex { background: #fff; border: 1px solid rgba(0,0,0,0.04); border-radius: 20px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; position: relative; overflow: hidden; opacity: 0; transform: translateY(16px); animation: dCardIn 0.6s ease-out forwards; }
+  .d-ex:nth-child(1) { animation-delay: 0.2s; }
+  .d-ex:nth-child(2) { animation-delay: 0.4s; }
+  .d-ex:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes dCardIn { to { opacity: 1; transform: translateY(0); } }
+
+  /* Micro-pulse on the exercise icon */
+  .d-ex-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: iconBreath 3s ease-in-out infinite; }
+  .d-ex:nth-child(1) .d-ex-icon { background: rgba(99,102,241,0.08); animation-delay: 0s; }
+  .d-ex:nth-child(2) .d-ex-icon { background: rgba(245,158,11,0.08); animation-delay: -1s; }
+  .d-ex:nth-child(3) .d-ex-icon { background: rgba(239,68,68,0.08); animation-delay: -2s; }
+  @keyframes iconBreath { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+
+  .d-ex-info .name { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .d-ex-info .detail { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+
+  /* Organic CTA */
+  .d-cta { margin: 16px 24px; position: relative; }
+  .d-cta button { width: 100%; padding: 18px; border: none; border-radius: 20px; background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; position: relative; z-index: 1; transition: transform 0.2s ease; }
+  .d-cta button:active { transform: scale(0.97); }
+  .d-cta-glow { position: absolute; inset: -4px; border-radius: 24px; background: conic-gradient(from 0deg, #6366F1, #34D399, #F59E0B, #EF4444, #6366F1); opacity: 0.15; filter: blur(12px); animation: ctaRotate 6s linear infinite; }
+  @keyframes ctaRotate { to { filter: blur(12px) hue-rotate(360deg); } }
+
+
+  /* =============================================
+     E: ANTI-GRAVITY — Floating Depth Layers
+     ============================================= */
+  .col-e .col-label { color: #818CF8; }
+  .phone-e { background: #0C0C14; perspective: 800px; }
+
+  .e-content { position: relative; }
+
+  /* Floating particle field */
+  .e-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+  .e-particle { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: rgba(129,140,248,0.3); animation: particleFloat 8s ease-in-out infinite; }
+  @keyframes particleFloat { 0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; } 50% { transform: translateY(-40px) translateX(20px); opacity: 0.8; } }
+
+  .e-status { padding: 50px 24px 0; display: flex; justify-content: space-between; }
+  .e-time { font-size: 15px; font-weight: 600; color: rgba(255,255,255,0.6); }
+
+  .e-hero { padding: 20px 24px 0; }
+  .e-hero .sub { font-size: 12px; color: rgba(255,255,255,0.35); text-transform: uppercase; letter-spacing: 1.5px; }
+  .e-hero .title { font-size: 28px; font-weight: 700; color: #fff; letter-spacing: -0.5px; margin-top: 6px; }
+  .e-hero .title span { background: linear-gradient(90deg, #818CF8, #6366F1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+  /* Floating depth cards — different Z layers */
+  .e-layers { padding: 20px 24px; position: relative; }
+
+  .e-float-card { border-radius: 20px; padding: 18px; margin-bottom: 12px; position: relative; backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.06); animation: floatHover 5s ease-in-out infinite; }
+  .e-float-card:nth-child(1) { background: rgba(99,102,241,0.08); animation-delay: 0s; transform-origin: center; }
+  .e-float-card:nth-child(2) { background: rgba(52,211,153,0.06); animation-delay: -1.5s; }
+  .e-float-card:nth-child(3) { background: rgba(245,158,11,0.06); animation-delay: -3s; }
+  @keyframes floatHover {
+    0%, 100% { transform: translateY(0) rotateX(0deg); }
+    50% { transform: translateY(-4px) rotateX(1deg); }
+  }
+
+  .e-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .e-card-title { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.9); }
+  .e-card-badge { font-size: 10px; padding: 3px 8px; border-radius: 100px; background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.4); font-weight: 500; }
+
+  /* Holographic stat bars */
+  .e-stat-bars { display: flex; gap: 8px; }
+  .e-bar-col { flex: 1; }
+  .e-bar-track { height: 40px; border-radius: 8px; background: rgba(255,255,255,0.04); position: relative; overflow: hidden; display: flex; align-items: flex-end; }
+  .e-bar-fill { width: 100%; border-radius: 8px; position: relative; overflow: hidden; animation: barGrow 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; transform-origin: bottom; }
+  .e-bar-fill::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 100%); }
+  @keyframes barGrow { from { height: 0; } }
+  .e-bar-fill.h70 { height: 70%; background: linear-gradient(180deg, #818CF8, #6366F1); animation-delay: 0.2s; }
+  .e-bar-fill.h50 { height: 50%; background: linear-gradient(180deg, #34D399, #059669); animation-delay: 0.35s; }
+  .e-bar-fill.h85 { height: 85%; background: linear-gradient(180deg, #FBBF24, #F59E0B); animation-delay: 0.5s; }
+  .e-bar-fill.h40 { height: 40%; background: linear-gradient(180deg, #F472B6, #EC4899); animation-delay: 0.65s; }
+  .e-bar-label { text-align: center; font-size: 9px; color: rgba(255,255,255,0.3); margin-top: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Depth exercise list */
+  .e-exercises { padding: 0 24px; }
+  .e-ex { display: flex; align-items: center; gap: 14px; padding: 14px; margin-bottom: 8px; border-radius: 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); position: relative; overflow: hidden; opacity: 0; animation: eSlideIn 0.5s ease-out forwards; }
+  .e-ex:nth-child(1) { animation-delay: 0.6s; }
+  .e-ex:nth-child(2) { animation-delay: 0.8s; }
+  .e-ex:nth-child(3) { animation-delay: 1.0s; }
+  @keyframes eSlideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+
+  /* Scan line effect on exercise cards */
+  .e-ex::after { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.4), transparent); animation: scanLine 3s ease-in-out infinite; opacity: 0; }
+  .e-ex:hover::after { opacity: 1; }
+  @keyframes scanLine { 0% { top: 0; } 100% { top: 100%; } }
+
+  .e-ex-ring { width: 44px; height: 44px; border-radius: 50%; border: 2px solid rgba(129,140,248,0.3); display: flex; align-items: center; justify-content: center; font-size: 16px; position: relative; }
+  .e-ex-ring::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 1px solid rgba(129,140,248,0.1); animation: ringPulse 2s ease-in-out infinite; }
+  @keyframes ringPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.15); opacity: 0; } }
+
+  .e-ex-info .name { font-size: 13px; font-weight: 600; color: rgba(255,255,255,0.85); }
+  .e-ex-info .detail { font-size: 11px; color: rgba(255,255,255,0.3); margin-top: 2px; }
+
+  /* Neon CTA */
+  .e-cta { margin: 20px 24px; }
+  .e-cta button { width: 100%; padding: 18px; border: 1px solid rgba(129,140,248,0.3); border-radius: 16px; background: rgba(99,102,241,0.1); color: #818CF8; font-size: 15px; font-weight: 600; cursor: pointer; position: relative; overflow: hidden; transition: all 0.3s ease; letter-spacing: 0.5px; }
+  .e-cta button::before { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(129,140,248,0.1), transparent); transform: translateX(-100%); animation: ctaSweep 3s ease-in-out infinite; }
+  @keyframes ctaSweep { 0% { transform: translateX(-100%); } 50%, 100% { transform: translateX(100%); } }
+
+
+  /* =============================================
+     F: KINETIC FORCE — Physics & Impact
+     ============================================= */
+  .col-f .col-label { color: #F59E0B; }
+  .phone-f { background: #FFFFFF; overflow: hidden; }
+
+  .f-content { position: relative; }
+
+  .f-status { padding: 50px 24px 0; }
+  .f-time { font-size: 14px; font-weight: 500; color: #AEAEB2; }
+
+  .f-hero { padding: 16px 24px 0; }
+  .f-hero .sub { font-size: 12px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  /* Impact title — letters slam in */
+  .f-title { font-size: 36px; font-weight: 800; color: #1C1C1E; letter-spacing: -1.5px; line-height: 1.05; margin-top: 6px; overflow: hidden; }
+  .f-title .word { display: inline-block; opacity: 0; animation: slamIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .f-title .word:nth-child(1) { animation-delay: 0.1s; }
+  .f-title .word:nth-child(2) { animation-delay: 0.2s; }
+  .f-title .word:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes slamIn { 0% { opacity: 0; transform: translateY(40px) scale(1.3); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+
+  /* Force meter — momentum gauge */
+  .f-gauge-wrap { padding: 16px 24px; }
+  .f-gauge { height: 72px; background: #F5F5F8; border-radius: 20px; position: relative; overflow: hidden; display: flex; align-items: center; }
+  .f-gauge-fill { height: 100%; border-radius: 20px; background: linear-gradient(90deg, #1C1C1E 0%, #6366F1 60%, #818CF8 100%); width: 0; animation: gaugeSlam 1s cubic-bezier(0.22, 1, 0.36, 1) 0.5s forwards; display: flex; align-items: center; justify-content: flex-end; padding-right: 16px; position: relative; }
+  @keyframes gaugeSlam { 0% { width: 0; } 80% { width: 78%; } 100% { width: 72%; } }
+  .f-gauge-fill::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 3px; background: #fff; border-radius: 3px; animation: gaugeTick 0.15s ease 1.5s 3; }
+  @keyframes gaugeTick { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.6); } }
+  .f-gauge-num { font-size: 26px; font-weight: 800; color: #fff; opacity: 0; animation: numPop 0.3s ease 1.5s forwards; letter-spacing: -1px; }
+  @keyframes numPop { to { opacity: 1; } }
+  .f-gauge-label { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 11px; color: #AEAEB2; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Momentum stat strip */
+  .f-stats { display: flex; padding: 0 24px; gap: 0; margin-bottom: 16px; }
+  .f-stat { flex: 1; padding: 14px 0; text-align: center; position: relative; }
+  .f-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: #E8E8ED; }
+  .f-stat:last-child::after { display: none; }
+  .f-stat .num { font-size: 20px; font-weight: 800; color: #1C1C1E; font-variant-numeric: tabular-nums; opacity: 0; animation: statSlam 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+  .f-stat:nth-child(1) .num { animation-delay: 0.8s; }
+  .f-stat:nth-child(2) .num { animation-delay: 0.95s; }
+  .f-stat:nth-child(3) .num { animation-delay: 1.1s; }
+  @keyframes statSlam { 0% { opacity: 0; transform: scale(1.5); } 100% { opacity: 1; transform: scale(1); } }
+  .f-stat .lbl { font-size: 10px; color: #AEAEB2; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .f-stat .delta { font-size: 10px; color: #34D399; font-weight: 600; margin-top: 1px; }
+
+  /* Impact cards — weight/gravity feel */
+  .f-cards { padding: 0 24px; }
+  .f-card { background: #1C1C1E; border-radius: 18px; padding: 18px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; opacity: 0; animation: cardDrop 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; position: relative; overflow: hidden; }
+  .f-card:nth-child(1) { animation-delay: 0.4s; }
+  .f-card:nth-child(2) { animation-delay: 0.55s; }
+  .f-card:nth-child(3) { animation-delay: 0.7s; }
+  @keyframes cardDrop { 0% { opacity: 0; transform: translateY(-30px) scaleY(0.8); } 70% { transform: translateY(3px) scaleY(1.02); } 100% { opacity: 1; transform: translateY(0) scaleY(1); } }
+
+  /* Impact line on card landing */
+  .f-card::after { content: ''; position: absolute; bottom: 0; left: 10%; right: 10%; height: 1px; background: rgba(255,255,255,0.06); transform: scaleX(0); animation: impactLine 0.3s ease-out forwards; }
+  .f-card:nth-child(1)::after { animation-delay: 0.7s; }
+  .f-card:nth-child(2)::after { animation-delay: 0.85s; }
+  .f-card:nth-child(3)::after { animation-delay: 1.0s; }
+  @keyframes impactLine { to { transform: scaleX(1); } }
+
+  .f-card-num { width: 44px; height: 44px; border-radius: 12px; background: rgba(255,255,255,0.06); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 800; color: #818CF8; font-variant-numeric: tabular-nums; }
+  .f-card-info .name { font-size: 14px; font-weight: 600; color: #fff; }
+  .f-card-info .detail { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 2px; }
+  .f-card-weight { margin-left: auto; font-size: 18px; font-weight: 800; color: rgba(255,255,255,0.8); letter-spacing: -0.5px; }
+  .f-card-weight span { font-size: 11px; color: rgba(255,255,255,0.3); font-weight: 500; }
+
+  /* PR Impact moment */
+  .f-pr { margin: 12px 24px; background: #1C1C1E; border-radius: 18px; padding: 20px; position: relative; overflow: hidden; text-align: center; }
+  .f-pr-flash { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(245,158,11,0.15) 0%, transparent 70%); animation: prFlash 2s ease-out forwards; }
+  @keyframes prFlash { 0% { transform: scale(0); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
+  .f-pr .emoji { font-size: 32px; position: relative; animation: prShake 0.5s ease 0.5s; }
+  @keyframes prShake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-10deg); } 75% { transform: rotate(10deg); } }
+  .f-pr .msg { font-size: 13px; font-weight: 600; color: #F59E0B; margin-top: 6px; position: relative; }
+  .f-pr .val { font-size: 28px; font-weight: 800; color: #fff; margin-top: 2px; position: relative; letter-spacing: -1px; }
+
+  /* Force CTA */
+  .f-cta { margin: 12px 24px; }
+  .f-cta button { width: 100%; padding: 18px; border: none; border-radius: 16px; background: #6366F1; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; position: relative; overflow: hidden; letter-spacing: 0.3px; transition: transform 0.15s ease; }
+  .f-cta button:active { transform: scale(0.95) translateY(2px); }
+  .f-cta button::before { content: ''; position: absolute; left: 50%; top: 50%; width: 0; height: 0; border-radius: 50%; background: rgba(255,255,255,0.2); transition: width 0.6s ease, height 0.6s ease; transform: translate(-50%, -50%); }
+  .f-cta button:active::before { width: 300px; height: 300px; }
+
+  /* ===== VOTE BAR ===== */
+  .vote-bar { display: flex; gap: 12px; justify-content: center; padding: 36px 24px 48px; max-width: 1400px; margin: 0 auto; flex-wrap: wrap; }
+  .vote-btn { padding: 14px 28px; border-radius: 14px; border: 2px solid rgba(255,255,255,0.08); background: transparent; color: rgba(255,255,255,0.6); font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.25s ease; }
+  .vote-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+  .vote-btn.vd:hover { border-color: #34D399; color: #34D399; }
+  .vote-btn.ve:hover { border-color: #818CF8; color: #818CF8; }
+  .vote-btn.vf:hover { border-color: #F59E0B; color: #F59E0B; }
+  .vote-btn.vmix:hover { border-color: #F472B6; color: #F472B6; }
+
+  .footer { text-align: center; padding: 0 24px 48px; color: #333; font-size: 13px; line-height: 1.6; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Beyond Standard — 3 Unique Directions</h1>
+  <p>These aren't component patterns. These are design philosophies. All animations are live.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ===== D: LIVING ORGANISM ===== -->
+  <div class="col col-d">
+    <div class="col-label">D — Living Organism</div>
+    <div class="phone phone-d">
+      <div class="d-breath-bg"></div>
+      <div class="d-content phone-inner">
+        <div class="d-status">
+          <div class="d-time">9:41</div>
+          <div class="d-pill">&#9679; Active</div>
+        </div>
+        <div class="d-hero">
+          <div class="sub">Wednesday &middot; Push Day</div>
+          <div class="title">Your body is<br>ready today.</div>
+        </div>
+
+        <div class="d-blobs">
+          <div class="d-blob"><div class="num">75%</div><div class="lbl">Weekly</div></div>
+          <div class="d-blob"><div class="num">3/4</div><div class="lbl">Days</div></div>
+          <div class="d-blob"><div class="num">12.4k</div><div class="lbl">Volume</div></div>
+        </div>
+
+        <div class="d-progress-wrap">
+          <div class="d-progress-organic">
+            <div class="d-progress-fill"><span>75%</span></div>
+          </div>
+          <div class="d-progress-label">
+            <span>Week 3 Progress</span>
+            <span>3 of 4 days</span>
+          </div>
+        </div>
+
+        <div class="d-exercises">
+          <div class="d-ex">
+            <div class="d-ex-icon">&#128170;</div>
+            <div class="d-ex-info">
+              <div class="name">Bench Press</div>
+              <div class="detail">4 sets &middot; 8-10 reps &middot; 70kg</div>
+            </div>
+          </div>
+          <div class="d-ex">
+            <div class="d-ex-icon">&#127947;</div>
+            <div class="d-ex-info">
+              <div class="name">Overhead Press</div>
+              <div class="detail">3 sets &middot; 10-12 reps &middot; 40kg</div>
+            </div>
+          </div>
+          <div class="d-ex">
+            <div class="d-ex-icon">&#9889;</div>
+            <div class="d-ex-info">
+              <div class="name">Cable Flyes</div>
+              <div class="detail">3 sets &middot; 12-15 reps &middot; 15kg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="d-cta">
+          <div class="d-cta-glow"></div>
+          <button>Start Workout</button>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;padding:8px 16px 16px;font-size:11px;color:#555;line-height:1.5;">The UI breathes — background pulses, stat blobs morph organically, icons have heartbeat micro-motion, progress fills like liquid, CTA has a rotating conic glow aura. Nothing is ever fully still.</p>
+  </div>
+
+  <!-- ===== E: ANTI-GRAVITY ===== -->
+  <div class="col col-e">
+    <div class="col-label">E — Anti-Gravity</div>
+    <div class="phone phone-e">
+      <div class="e-particles">
+        <div class="e-particle" style="left:15%;top:20%;animation-delay:0s;animation-duration:7s;"></div>
+        <div class="e-particle" style="left:45%;top:40%;animation-delay:-2s;animation-duration:9s;"></div>
+        <div class="e-particle" style="left:75%;top:15%;animation-delay:-4s;animation-duration:6s;"></div>
+        <div class="e-particle" style="left:30%;top:60%;animation-delay:-1s;animation-duration:8s;"></div>
+        <div class="e-particle" style="left:85%;top:55%;animation-delay:-3s;animation-duration:10s;"></div>
+        <div class="e-particle" style="left:60%;top:75%;animation-delay:-5s;animation-duration:7s;"></div>
+        <div class="e-particle" style="left:10%;top:80%;animation-delay:-2.5s;animation-duration:9s;"></div>
+        <div class="e-particle" style="left:50%;top:30%;animation-delay:-1.5s;animation-duration:6.5s;"></div>
+      </div>
+      <div class="e-content phone-inner">
+        <div class="e-status">
+          <div class="e-time">9:41</div>
+        </div>
+        <div class="e-hero">
+          <div class="sub">Push Day &middot; Week 3</div>
+          <div class="title">Defy <span>gravity</span>.</div>
+        </div>
+
+        <div class="e-layers">
+          <div class="e-float-card">
+            <div class="e-card-head">
+              <div class="e-card-title">Weekly Momentum</div>
+              <div class="e-card-badge">75%</div>
+            </div>
+            <div class="e-stat-bars">
+              <div class="e-bar-col">
+                <div class="e-bar-track"><div class="e-bar-fill h70" style="animation-delay:0.4s;"></div></div>
+                <div class="e-bar-label">Mon</div>
+              </div>
+              <div class="e-bar-col">
+                <div class="e-bar-track"><div class="e-bar-fill h85" style="animation-delay:0.5s;"></div></div>
+                <div class="e-bar-label">Tue</div>
+              </div>
+              <div class="e-bar-col">
+                <div class="e-bar-track"><div class="e-bar-fill h50" style="animation-delay:0.6s;"></div></div>
+                <div class="e-bar-label">Wed</div>
+              </div>
+              <div class="e-bar-col">
+                <div class="e-bar-track"><div class="e-bar-fill h40" style="animation-delay:0.7s;"></div></div>
+                <div class="e-bar-label">Thu</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="e-float-card">
+            <div class="e-card-head">
+              <div class="e-card-title">Volume Trend</div>
+              <div class="e-card-badge" style="color:#34D399;">+12%</div>
+            </div>
+            <div style="display:flex;align-items:baseline;gap:8px;">
+              <span style="font-size:28px;font-weight:700;color:#fff;">12,400</span>
+              <span style="font-size:12px;color:rgba(255,255,255,0.3);">kg this week</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="e-exercises">
+          <div class="e-ex">
+            <div class="e-ex-ring">&#128170;</div>
+            <div class="e-ex-info">
+              <div class="name">Bench Press</div>
+              <div class="detail">4 &times; 8-10 &middot; 70kg</div>
+            </div>
+          </div>
+          <div class="e-ex">
+            <div class="e-ex-ring">&#127947;</div>
+            <div class="e-ex-info">
+              <div class="name">Overhead Press</div>
+              <div class="detail">3 &times; 10-12 &middot; 40kg</div>
+            </div>
+          </div>
+          <div class="e-ex">
+            <div class="e-ex-ring">&#9889;</div>
+            <div class="e-ex-info">
+              <div class="name">Cable Flyes</div>
+              <div class="detail">3 &times; 12-15 &middot; 15kg</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="e-cta">
+          <button>Begin Session &rarr;</button>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;padding:8px 16px 16px;font-size:11px;color:#555;line-height:1.5;">Dark spatial UI with floating particles, cards that hover at different depths with subtle 3D rotation, holographic stat bars that grow upward, pulsing exercise rings, and a sweeping neon CTA. Nothing feels grounded.</p>
+  </div>
+
+  <!-- ===== F: KINETIC FORCE ===== -->
+  <div class="col col-f">
+    <div class="col-label">F — Kinetic Force</div>
+    <div class="phone phone-f">
+      <div class="f-content phone-inner">
+        <div class="f-status">
+          <div class="f-time">9:41</div>
+        </div>
+        <div class="f-hero">
+          <div class="sub">Push Day &middot; Week 3</div>
+          <div class="f-title">
+            <span class="word">MOVE </span>
+            <span class="word">HEAVY </span>
+            <span class="word">THINGS.</span>
+          </div>
+        </div>
+
+        <div class="f-gauge-wrap">
+          <div class="f-gauge">
+            <div class="f-gauge-fill">
+              <span class="f-gauge-num">72%</span>
+            </div>
+            <span class="f-gauge-label">momentum</span>
+          </div>
+        </div>
+
+        <div class="f-stats">
+          <div class="f-stat">
+            <div class="num">12.4k</div>
+            <div class="lbl">Volume</div>
+            <div class="delta">&#9650; 12%</div>
+          </div>
+          <div class="f-stat">
+            <div class="num">3/4</div>
+            <div class="lbl">Days</div>
+            <div class="delta">on track</div>
+          </div>
+          <div class="f-stat">
+            <div class="num">80</div>
+            <div class="lbl">Top kg</div>
+            <div class="delta">&#9650; PR</div>
+          </div>
+        </div>
+
+        <div class="f-cards">
+          <div class="f-card">
+            <div class="f-card-num">01</div>
+            <div class="f-card-info">
+              <div class="name">Bench Press</div>
+              <div class="detail">4 sets &middot; 8-10 reps</div>
+            </div>
+            <div class="f-card-weight">70<span>kg</span></div>
+          </div>
+          <div class="f-card">
+            <div class="f-card-num">02</div>
+            <div class="f-card-info">
+              <div class="name">Overhead Press</div>
+              <div class="detail">3 sets &middot; 10-12 reps</div>
+            </div>
+            <div class="f-card-weight">40<span>kg</span></div>
+          </div>
+          <div class="f-card">
+            <div class="f-card-num">03</div>
+            <div class="f-card-info">
+              <div class="name">Cable Flyes</div>
+              <div class="detail">3 sets &middot; 12-15 reps</div>
+            </div>
+            <div class="f-card-weight">15<span>kg</span></div>
+          </div>
+        </div>
+
+        <div class="f-pr">
+          <div class="f-pr-flash"></div>
+          <div class="emoji">&#128293;</div>
+          <div class="msg">NEW PERSONAL RECORD</div>
+          <div class="val">80kg Bench</div>
+        </div>
+
+        <div class="f-cta">
+          <button>Start Workout</button>
+        </div>
+      </div>
+    </div>
+    <p style="text-align:center;padding:8px 16px 16px;font-size:11px;color:#555;line-height:1.5;">Everything has weight and impact. Title words slam in with overshoot. A momentum gauge fills with elastic rebound. Stats pop in at scale. Dark cards drop with gravity + impact lines. PR moment has a radial flash shockwave. The app feels like iron.</p>
+  </div>
+
+</div>
+
+<div class="vote-bar">
+  <button class="vote-btn vd" onclick="pick('D')">D — Living Organism</button>
+  <button class="vote-btn ve" onclick="pick('E')">E — Anti-Gravity</button>
+  <button class="vote-btn vf" onclick="pick('F')">F — Kinetic Force</button>
+  <button class="vote-btn vmix" onclick="pick('Mix')">Mix Elements</button>
+</div>
+
+<div class="footer">All effects achievable with React Native Animated API. No Reanimated, no SVG, no LinearGradient.<br>Gradients shown here are for concept — in the real app they're simulated with layered Views.</div>
+
+<script>
+function pick(choice) {
+  document.querySelectorAll('.vote-btn').forEach(b => {
+    b.style.opacity = '0.3';
+    b.style.borderColor = 'rgba(255,255,255,0.08)';
+    b.style.color = 'rgba(255,255,255,0.4)';
+  });
+  const btn = event.target;
+  btn.style.opacity = '1';
+  const colors = { D: '#34D399', E: '#818CF8', F: '#F59E0B', Mix: '#F472B6' };
+  btn.style.borderColor = colors[choice];
+  btn.style.color = colors[choice];
+  if (window.__recordEvent) window.__recordEvent('vote', choice);
+}
+</script>
+
+</body>
+</html>

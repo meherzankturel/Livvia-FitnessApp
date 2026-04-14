@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Full Design Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #0a0a0f; color: #fff; }
+
+  /* NAV */
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(10,10,15,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 24px; display: flex; align-items: center; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-title { font-size: 14px; font-weight: 700; color: #fff; white-space: nowrap; margin-right: 8px; flex-shrink: 0; }
+  .nav-btn { padding: 8px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s ease; flex-shrink: 0; }
+  .nav-btn:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+  .nav-btn.active { background: #fff; color: #0a0a0f; border-color: #fff; }
+
+  /* SECTIONS */
+  .section { padding: 80px 0 40px; border-bottom: 1px solid rgba(255,255,255,0.04); display: none; }
+  .section.visible { display: block; }
+  .section-head { padding: 0 24px; margin-bottom: 20px; }
+  .section-num { font-size: 11px; font-weight: 700; color: #818CF8; text-transform: uppercase; letter-spacing: 1.5px; }
+  .section-title { font-size: 24px; font-weight: 700; color: #fff; margin-top: 4px; letter-spacing: -0.5px; }
+  .section-desc { font-size: 13px; color: #555; margin-top: 6px; max-width: 700px; line-height: 1.5; }
+
+  /* SHARED PHONE */
+  .phones { display: flex; gap: 24px; padding: 0 24px; justify-content: center; flex-wrap: wrap; }
+  .phone-col { max-width: 420px; }
+  .phone-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0; }
+  .phone-note { text-align: center; font-size: 11px; color: #555; padding: 8px 16px 0; line-height: 1.5; }
+  .phone { width: 375px; height: 720px; border-radius: 40px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.07); margin: 0 auto; }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  .show-all .section { display: block !important; }
+
+  /* ==========================================
+     MOCKUP 1: THREE DIRECTIONS A/B/C
+     ========================================== */
+
+  /* --- A: REFINED --- */
+  .phone-a { background: #fff; }
+  .a-status { height: 44px; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 4px; font-size: 12px; color: #8E8E93; font-weight: 500; }
+  .a-greeting { padding: 20px 24px 0; }
+  .a-greeting .sub { font-size: 14px; color: #8E8E93; }
+  .a-greeting .title { font-size: 28px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+  .a-week { display: flex; gap: 6px; padding: 16px 24px; }
+  .a-day { flex: 1; text-align: center; }
+  .a-day .dl { font-size: 10px; color: #AEAEB2; margin-bottom: 4px; }
+  .a-day .dd { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; }
+  .a-day .dd.done { background: #6366F1; color: #fff; }
+  .a-day .dd.today { background: rgba(99,102,241,0.1); color: #6366F1; border: 2px solid #6366F1; }
+  .a-day .dd.empty { background: #F2F2F7; color: #AEAEB2; }
+  .a-stats { display: flex; gap: 12px; padding: 0 24px; margin-bottom: 16px; }
+  .a-stat { flex: 1; background: #F2F2F7; border-radius: 16px; padding: 14px; }
+  .a-stat .n { font-size: 24px; font-weight: 700; color: #1C1C1E; opacity: 0; animation: acountUp 0.8s ease-out forwards; }
+  .a-stat:nth-child(2) .n { animation-delay: 0.2s; }
+  .a-stat:nth-child(3) .n { animation-delay: 0.4s; }
+  @keyframes acountUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .a-stat .l { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+  .slabel { font-size: 11px; font-weight: 600; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.5px; padding: 12px 24px 6px; }
+  .a-cards { padding: 0 24px; }
+  .a-card { background: #F5F5F8; border-radius: 16px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(20px); animation: aCardIn 0.5s ease-out forwards; }
+  .a-card:nth-child(1) { animation-delay: 0.1s; }
+  .a-card:nth-child(2) { animation-delay: 0.3s; }
+  .a-card:nth-child(3) { animation-delay: 0.5s; }
+  @keyframes aCardIn { to { opacity: 1; transform: translateY(0); } }
+  .a-card-img { width: 52px; height: 52px; border-radius: 12px; background: rgba(99,102,241,0.08); display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .a-card-info .cn { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .a-card-info .cd { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+  .a-skel { height: 52px; border-radius: 12px; margin: 0 24px 10px; background: linear-gradient(90deg, #F2F2F7 25%, #E8E8ED 50%, #F2F2F7 75%); background-size: 200% 100%; animation: shimmer 1.5s ease-in-out infinite; }
+  @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+  .a-btn { margin: 16px 24px; background: #6366F1; color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .a-btn:active { transform: scale(0.97); }
+
+  /* --- B: BOLD --- */
+  .phone-b { background: #fff; }
+  .b-header { height: 130px; position: relative; overflow: hidden; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; flex-direction: column; justify-content: flex-end; padding: 20px 24px; }
+  .b-header::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 70% 30%, rgba(255,255,255,0.2), transparent 50%); }
+  .b-header .sub { font-size: 13px; color: rgba(255,255,255,0.7); position: relative; }
+  .b-header .title { font-size: 26px; font-weight: 700; color: #fff; position: relative; letter-spacing: -0.5px; }
+  .b-stats { display: flex; gap: 10px; padding: 16px 24px; }
+  .b-stat { flex: 1; background: #F5F5F8; border-radius: 16px; padding: 14px; text-align: center; position: relative; overflow: hidden; }
+  .b-stat::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #6366F1, #818CF8); transform: scaleX(0); animation: bBarIn 0.8s ease-out 0.6s forwards; }
+  @keyframes bBarIn { to { transform: scaleX(1); } }
+  .b-stat .n { font-size: 22px; font-weight: 700; color: #1C1C1E; }
+  .b-stat .l { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+  .b-cards { padding: 0 24px; }
+  .b-card { background: #F5F5F8; border-radius: 20px; padding: 18px; margin-bottom: 12px; position: relative; overflow: hidden; }
+  .b-card::before { content: ''; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%); top: -50px; right: -50px; animation: spotDrift 4s ease-in-out infinite alternate; }
+  @keyframes spotDrift { 0% { transform: translate(0,0); } 100% { transform: translate(-30px,20px); } }
+  .b-card-row { display: flex; align-items: center; gap: 14px; position: relative; }
+  .b-card-icon { width: 56px; height: 56px; border-radius: 16px; background: linear-gradient(135deg, rgba(99,102,241,0.15), rgba(99,102,241,0.05)); display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .b-card-text .cn { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .b-card-text .cd { font-size: 12px; color: #8E8E93; margin-top: 3px; }
+  .b-badges { display: flex; gap: 10px; padding: 16px 24px; }
+  .b-badge { width: 52px; height: 52px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+  .b-badge.earned { background: linear-gradient(135deg, #6366F1, #818CF8); box-shadow: 0 0 20px rgba(99,102,241,0.4); animation: bPulse 2s ease-in-out infinite; }
+  .b-badge.locked { background: #E8E8ED; opacity: 0.5; }
+  @keyframes bPulse { 0%,100% { box-shadow: 0 0 20px rgba(99,102,241,0.4); } 50% { box-shadow: 0 0 30px rgba(99,102,241,0.6); } }
+  .b-btn { margin: 16px 24px; background: linear-gradient(135deg, #6366F1, #818CF8); color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; position: relative; overflow: hidden; cursor: pointer; }
+  .b-btn::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent); animation: bShine 3s ease-in-out infinite; }
+  @keyframes bShine { 0% { left: -100%; } 50%,100% { left: 100%; } }
+
+  /* --- C: PLAYFUL --- */
+  .phone-c { background: #fff; }
+  .c-head { padding: 48px 24px 12px; }
+  .c-head .sub { font-size: 13px; color: #8E8E93; }
+  .c-head .title { font-size: 26px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+  .c-streak { display: flex; align-items: center; gap: 8px; padding: 0 24px; margin-bottom: 12px; }
+  .c-flame { font-size: 28px; animation: cFlame 0.6s ease-in-out infinite alternate; }
+  @keyframes cFlame { 0% { transform: scale(1) rotate(-3deg); } 100% { transform: scale(1.15) rotate(3deg); } }
+  .c-streak .t { font-size: 16px; font-weight: 700; color: #F59E0B; }
+  .c-streak .s { font-size: 13px; color: #8E8E93; }
+  .c-stats { display: flex; gap: 10px; padding: 0 24px; margin: 12px 0; }
+  .c-stat { flex: 1; background: #F5F5F8; border-radius: 16px; padding: 14px; text-align: center; }
+  .c-stat .n { font-size: 24px; font-weight: 700; color: #1C1C1E; opacity: 0; animation: cRoll 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .c-stat:nth-child(2) .n { animation-delay: 0.1s; }
+  .c-stat:nth-child(3) .n { animation-delay: 0.2s; }
+  @keyframes cRoll { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .c-stat .l { font-size: 11px; color: #8E8E93; margin-top: 2px; }
+  .c-heatmap { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; padding: 0 24px; margin: 12px 0; }
+  .c-hc { aspect-ratio: 1; border-radius: 4px; opacity: 0; animation: cPop 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .c-hc.l0 { background: #F2F2F7; } .c-hc.l1 { background: rgba(99,102,241,0.2); } .c-hc.l2 { background: rgba(99,102,241,0.5); } .c-hc.l3 { background: #6366F1; }
+  @keyframes cPop { 0% { opacity: 0; transform: scale(0); } 100% { opacity: 1; transform: scale(1); } }
+  .c-cards { padding: 0 24px; }
+  .c-card { background: #F5F5F8; border-radius: 20px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; opacity: 0; animation: cBounce 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .c-card:nth-child(1) { animation-delay: 0.05s; }
+  .c-card:nth-child(2) { animation-delay: 0.15s; }
+  .c-card:nth-child(3) { animation-delay: 0.25s; }
+  @keyframes cBounce { 0% { opacity: 0; transform: scale(0.6) translateY(30px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  .c-card-icon { width: 52px; height: 52px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .c-card-icon.i1 { background: rgba(239,68,68,0.1); }
+  .c-card-icon.i2 { background: rgba(34,197,94,0.1); }
+  .c-card-icon.i3 { background: rgba(245,158,11,0.1); }
+  .c-celeb { position: relative; height: 110px; margin: 12px 24px; background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(245,158,11,0.05)); border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
+  .confetti { position: absolute; width: 8px; height: 8px; border-radius: 2px; animation: confFall 2s ease-out forwards; }
+  @keyframes confFall { 0% { transform: translateY(0) rotate(0); opacity: 1; } 100% { transform: translateY(110px) rotate(720deg); opacity: 0; } }
+  .c-trophy { font-size: 36px; animation: cTrophy 0.8s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  @keyframes cTrophy { 0% { transform: scale(0) rotate(-20deg); } 60% { transform: scale(1.2) rotate(5deg); } 100% { transform: scale(1) rotate(0); } }
+  .c-celeb .msg { font-size: 15px; font-weight: 600; color: #1C1C1E; margin-top: 6px; }
+  .c-btn { margin: 12px 24px; background: #6366F1; color: #fff; border: none; border-radius: 14px; padding: 16px; width: calc(100% - 48px); font-size: 16px; font-weight: 600; cursor: pointer; animation: cPulseBtn 2s ease-in-out infinite; }
+  @keyframes cPulseBtn { 0%,100% { box-shadow: 0 4px 20px rgba(99,102,241,0.3); } 50% { box-shadow: 0 4px 30px rgba(99,102,241,0.5); } }
+
+  /* ==========================================
+     MOCKUP 2: LIVING ORGANISM V2
+     ========================================== */
+  :root { --hb: 2.4s; }
+  .phone-liv { background: #FAFAF8; }
+  .liv-membrane { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .liv-blob { position: absolute; border-radius: 50%; filter: blur(60px); opacity: 0.035; animation: livBlobDrift 16s ease-in-out infinite alternate; }
+  .liv-blob:nth-child(1) { width: 280px; height: 280px; background: #6366F1; top: -80px; left: -60px; }
+  .liv-blob:nth-child(2) { width: 220px; height: 220px; background: #34D399; bottom: 60px; right: -40px; animation-delay: -5s; animation-duration: 20s; }
+  @keyframes livBlobDrift { 0% { transform: translate(0,0) scale(1); } 100% { transform: translate(25px,-20px) scale(1.08); } }
+
+  .liv-content { position: relative; z-index: 1; }
+  .liv-status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .liv-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .liv-vital { display: flex; align-items: center; gap: 6px; }
+  .liv-dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; animation: livPulse var(--hb) ease-in-out infinite; }
+  @keyframes livPulse { 0%,100% { transform: scale(1); opacity: 0.5; } 30% { transform: scale(1.4); opacity: 1; } }
+  .liv-vital-lbl { font-size: 11px; color: #34D399; font-weight: 600; }
+  .liv-hero { padding: 20px 24px 0; }
+  .liv-hero .sub { font-size: 13px; color: #AEAEB2; }
+  .liv-hero .title { font-size: 30px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.8px; line-height: 1.15; margin-top: 4px; }
+
+  .liv-orbs { display: flex; gap: 10px; padding: 16px 24px; }
+  .liv-orb { flex: 1; padding: 18px 14px; border-radius: 24px; background: #fff; border: 1px solid rgba(0,0,0,0.03); position: relative; overflow: hidden; }
+  .liv-orb::before { content: ''; position: absolute; width: 80px; height: 80px; border-radius: 50%; top: -10px; right: -10px; filter: blur(25px); opacity: 0; animation: livBioGlow var(--hb) ease-in-out infinite; }
+  .liv-orb:nth-child(1)::before { background: #6366F1; }
+  .liv-orb:nth-child(2)::before { background: #34D399; }
+  .liv-orb:nth-child(3)::before { background: #F59E0B; animation-delay: 0.8s; }
+  @keyframes livBioGlow { 0%,100% { opacity: 0.04; transform: scale(0.9); } 40% { opacity: 0.12; transform: scale(1.1); } }
+  .liv-orb .n { font-size: 22px; font-weight: 700; color: #1C1C1E; position: relative; }
+  .liv-orb .l { font-size: 10px; color: #AEAEB2; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+
+  .liv-cells-wrap { padding: 0 24px; margin: 4px 0 16px; }
+  .liv-cells-label { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .liv-cells-label .t { font-size: 13px; font-weight: 600; color: #1C1C1E; }
+  .liv-cells-label .p { font-size: 13px; font-weight: 700; color: #6366F1; }
+  .liv-cells { display: flex; gap: 4px; height: 32px; }
+  .liv-cell { flex: 1; border-radius: 10px; opacity: 0; animation: livCellDiv 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .liv-cell.filled { background: #6366F1; position: relative; overflow: hidden; }
+  .liv-cell.filled::before { content: ''; position: absolute; inset: 0; background: rgba(255,255,255,0.15); transform: translateX(-100%); animation: livCellWave 3s ease-in-out infinite; }
+  .liv-cell.filled.recent { background: #818CF8; }
+  .liv-cell.empty { background: #F0F0F4; }
+  .liv-cell:nth-child(1) { animation-delay: 0.1s; }
+  .liv-cell:nth-child(2) { animation-delay: 0.18s; }
+  .liv-cell:nth-child(3) { animation-delay: 0.26s; }
+  .liv-cell:nth-child(4) { animation-delay: 0.34s; }
+  .liv-cell:nth-child(5) { animation-delay: 0.42s; }
+  .liv-cell:nth-child(6) { animation-delay: 0.50s; }
+  .liv-cell:nth-child(7) { animation-delay: 0.58s; }
+  @keyframes livCellDiv { 0% { opacity: 0; transform: scaleX(0) scaleY(1.4); border-radius: 50%; } 100% { opacity: 1; transform: scaleX(1) scaleY(1); border-radius: 10px; } }
+  @keyframes livCellWave { 0% { transform: translateX(-100%); opacity: 0; } 20% { opacity: 1; } 40% { transform: translateX(100%); opacity: 0; } 100% { transform: translateX(100%); opacity: 0; } }
+
+  .liv-ex { background: #fff; border: 1px solid rgba(0,0,0,0.04); border-radius: 20px; padding: 16px; margin: 0 24px 10px; display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(16px); animation: livExIn 0.6s ease-out forwards; }
+  .liv-ex:nth-child(1) { animation-delay: 0.2s; }
+  .liv-ex:nth-child(2) { animation-delay: 0.4s; }
+  .liv-ex:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes livExIn { to { opacity: 1; transform: translateY(0); } }
+  .liv-ex-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; animation: livIconBreath 3s ease-in-out infinite; }
+  .liv-ex-icon.ic1 { background: rgba(99,102,241,0.08); }
+  .liv-ex-icon.ic2 { background: rgba(245,158,11,0.08); animation-delay: -1s; }
+  .liv-ex-icon.ic3 { background: rgba(239,68,68,0.08); animation-delay: -2s; }
+  @keyframes livIconBreath { 0%,100% { transform: scale(1); } 50% { transform: scale(1.06); } }
+  .liv-ex-info .cn { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .liv-ex-info .cd { font-size: 12px; color: #8E8E93; margin-top: 2px; }
+  .liv-cta { margin: 16px 24px 40px; position: relative; }
+  .liv-cta-glow { position: absolute; inset: -4px; border-radius: 24px; background: conic-gradient(from 0deg, #6366F1, #34D399, #F59E0B, #6366F1); opacity: 0.12; filter: blur(12px); animation: livCtaRot 6s linear infinite; }
+  @keyframes livCtaRot { to { filter: blur(12px) hue-rotate(360deg); } }
+  .liv-cta button { width: 100%; padding: 18px; border: none; border-radius: 20px; background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; position: relative; z-index: 1; }
+
+  /* ==========================================
+     MOCKUP 3: RADICAL LAYOUTS (Orbit, Terrain, Bento)
+     ========================================== */
+
+  /* ORBIT */
+  .phone-orbit { background: #FAFAF9; }
+  .o-status { padding: 54px 24px 0; display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .o-core-area { position: relative; height: 310px; display: flex; align-items: center; justify-content: center; margin-top: 8px; }
+  .o-core { width: 110px; height: 110px; border-radius: 50%; background: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; z-index: 10; box-shadow: 0 0 40px rgba(99,102,241,0.08); }
+  .o-core .p { font-size: 30px; font-weight: 800; color: #fff; letter-spacing: -1px; }
+  .o-core .l { font-size: 9px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+  .o-ring { position: absolute; border-radius: 50%; border: 1px solid rgba(99,102,241,0.07); top: 50%; left: 50%; transform: translate(-50%,-50%); animation: oRingExp 4s ease-in-out infinite; }
+  .o-ring:nth-child(1) { width: 150px; height: 150px; }
+  .o-ring:nth-child(2) { width: 210px; height: 210px; animation-delay: 0.5s; border-color: rgba(52,211,153,0.05); }
+  .o-ring:nth-child(3) { width: 270px; height: 270px; animation-delay: 1s; border-color: rgba(245,158,11,0.04); }
+  @keyframes oRingExp { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: 0.6; } 50% { transform: translate(-50%,-50%) scale(1.04); opacity: 1; } }
+  .o-sat { position: absolute; width: 64px; height: 64px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 2px 12px rgba(0,0,0,0.04); z-index: 11; }
+  .o-sat .n { font-size: 15px; font-weight: 700; color: #1C1C1E; }
+  .o-sat .l { font-size: 8px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 1px; }
+  .o-sat-1 { top: 25px; left: 50%; transform: translateX(-50%); animation: oF1 6s ease-in-out infinite; }
+  .o-sat-2 { top: 50%; right: 20px; transform: translateY(-50%); animation: oF2 7s ease-in-out infinite; }
+  .o-sat-3 { bottom: 25px; left: 50%; transform: translateX(-50%); animation: oF3 5s ease-in-out infinite; }
+  .o-sat-4 { top: 50%; left: 20px; transform: translateY(-50%); animation: oF4 8s ease-in-out infinite; }
+  @keyframes oF1 { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(-5px); } }
+  @keyframes oF2 { 0%,100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(5px); } }
+  @keyframes oF3 { 0%,100% { transform: translateX(-50%) translateY(0); } 50% { transform: translateX(-50%) translateY(5px); } }
+  @keyframes oF4 { 0%,100% { transform: translateY(-50%) translateX(0); } 50% { transform: translateY(-50%) translateX(-5px); } }
+
+  .o-exs { padding: 0 20px; }
+  .o-ex { display: flex; align-items: center; gap: 14px; padding: 14px 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.03); margin-bottom: 8px; opacity: 0; animation: oExIn 0.4s ease-out forwards; }
+  .o-ex:nth-child(1) { animation-delay: 0.1s; border-left: 3px solid #6366F1; }
+  .o-ex:nth-child(2) { animation-delay: 0.2s; margin-left: 10px; border-left: 3px solid #F59E0B; }
+  .o-ex:nth-child(3) { animation-delay: 0.3s; margin-left: 20px; border-left: 3px solid #EF4444; }
+  @keyframes oExIn { to { opacity: 1; } }
+  .o-ex .num { font-size: 11px; font-weight: 800; color: #AEAEB2; width: 18px; }
+  .o-ex .cn { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .o-ex .cd { font-size: 11px; color: #AEAEB2; margin-top: 2px; }
+  .o-ex .w { margin-left: auto; font-size: 18px; font-weight: 700; color: #1C1C1E; }
+  .o-ex .w span { font-size: 10px; color: #AEAEB2; }
+
+  /* TERRAIN */
+  .phone-terrain { background: #F6F5F0; overflow: hidden; }
+  .t-topo { position: absolute; inset: 0; pointer-events: none; opacity: 0.03; }
+  .t-contour { position: absolute; border: 1px solid #2D2A24; border-radius: 50%; }
+  .t-contour:nth-child(1) { width: 500px; height: 400px; top: -100px; left: -100px; }
+  .t-contour:nth-child(2) { width: 400px; height: 300px; top: -40px; left: -40px; }
+  .t-content { position: relative; z-index: 1; }
+  .t-head { padding: 54px 24px 0; }
+  .t-head .sub { font-size: 11px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .t-head .title { font-size: 28px; font-weight: 800; color: #2D2A24; letter-spacing: -1px; margin-top: 4px; }
+
+  .t-elev { height: 180px; position: relative; margin: 16px 24px; }
+  .t-elev svg { width: 100%; height: 100%; }
+  .t-path-bg { fill: none; stroke: #DDD9CE; stroke-width: 1.5; }
+  .t-path-fg { fill: none; stroke: #2D2A24; stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 600; stroke-dashoffset: 600; animation: tDraw 2s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes tDraw { to { stroke-dashoffset: 180; } }
+
+  .t-alt { margin: 0 24px; padding: 18px; background: #2D2A24; border-radius: 18px; color: #F6F5F0; display: flex; justify-content: space-between; align-items: center; }
+  .t-alt .label { font-size: 10px; color: rgba(246,245,240,0.4); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .t-alt .val { font-size: 26px; font-weight: 800; margin-top: 2px; letter-spacing: -1px; }
+  .t-alt .sub { font-size: 11px; color: rgba(246,245,240,0.4); margin-top: 2px; }
+  .t-alt-right { text-align: right; }
+  .t-alt-right .big { font-size: 34px; font-weight: 800; letter-spacing: -2px; }
+  .t-alt-right .unit { font-size: 11px; color: rgba(246,245,240,0.4); }
+
+  .t-trail { padding: 20px 24px; position: relative; }
+  .t-trail-line { position: absolute; left: 43px; top: 40px; bottom: 20px; width: 2px; background: #DDD9CE; }
+  .t-trail-pulse { position: absolute; left: 42px; top: 40px; width: 4px; height: 16px; border-radius: 2px; background: #34D399; animation: tPulseDown 3s ease-in-out infinite; opacity: 0.6; }
+  @keyframes tPulseDown { 0% { top: 40px; opacity: 0; } 20% { opacity: 0.6; } 80% { opacity: 0.6; } 100% { top: calc(100% - 30px); opacity: 0; } }
+  .t-wp { display: flex; gap: 14px; margin-bottom: 14px; opacity: 0; animation: tWpIn 0.5s ease-out forwards; }
+  .t-wp:nth-child(3) { animation-delay: 0.15s; }
+  .t-wp:nth-child(4) { animation-delay: 0.3s; }
+  .t-wp:nth-child(5) { animation-delay: 0.45s; }
+  @keyframes tWpIn { to { opacity: 1; } }
+  .t-wp-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #DDD9CE; background: #F6F5F0; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #8E8E7A; flex-shrink: 0; z-index: 2; margin-top: 10px; }
+  .t-wp-card { flex: 1; padding: 12px 14px; border-radius: 14px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .t-wp-card .cn { font-size: 14px; font-weight: 600; color: #2D2A24; }
+  .t-wp-card .cd { font-size: 11px; color: #8E8E7A; margin-top: 2px; }
+
+  /* BENTO */
+  .phone-bento { background: #fff; }
+  .bento-content { padding: 54px 16px 0; }
+  .bento-top { display: flex; gap: 10px; margin-bottom: 10px; }
+  .bento-day { width: 70px; height: 70px; border-radius: 20px; background: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .bento-day .dow { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .bento-day .dn { font-size: 28px; font-weight: 800; color: #fff; margin-top: -2px; }
+  .bento-greet { flex: 1; background: #F5F5F2; border-radius: 20px; padding: 16px; display: flex; flex-direction: column; justify-content: center; }
+  .bento-greet .hi { font-size: 13px; color: #8E8E93; }
+  .bento-greet .t { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; margin-top: 2px; }
+
+  .bento-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+  .bg-cell { border-radius: 20px; padding: 18px; opacity: 0; animation: bgCellIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .bg-cell:nth-child(1) { animation-delay: 0.05s; }
+  .bg-cell:nth-child(2) { animation-delay: 0.1s; }
+  .bg-cell:nth-child(3) { animation-delay: 0.15s; }
+  @keyframes bgCellIn { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
+
+  .bg-weekly { grid-row: span 2; background: #1C1C1E; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 190px; }
+  .bg-weekly .pct { font-size: 40px; font-weight: 800; color: #fff; }
+  .bg-weekly .l { font-size: 11px; color: rgba(255,255,255,0.4); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .bg-vol { background: #F5F5F2; }
+  .bg-vol .l { font-size: 10px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .bg-vol .v { font-size: 26px; font-weight: 800; color: #1C1C1E; margin-top: 4px; letter-spacing: -1px; }
+  .bg-vol .tr { font-size: 11px; color: #34D399; font-weight: 600; margin-top: 2px; }
+
+  .bg-streak { background: linear-gradient(135deg, #FEF3C7, #FDE68A); }
+  .bg-streak .e { font-size: 26px; }
+  .bg-streak .v { font-size: 20px; font-weight: 800; color: #92400E; margin-top: 6px; }
+  .bg-streak .l { font-size: 11px; color: #B45309; margin-top: 2px; }
+
+  .bg-focus { grid-column: span 2; background: #6366F1; padding: 18px; border-radius: 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; opacity: 0; animation: bgCellIn 0.5s ease 0.2s forwards; }
+  .bg-focus .l { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .bg-focus .m { font-size: 20px; font-weight: 700; color: #fff; margin-top: 4px; }
+  .bg-focus .c { font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 2px; }
+  .bg-focus .icon { font-size: 36px; opacity: 0.2; }
+
+  .bento-stack { position: relative; height: 200px; margin: 0 0 10px; }
+  .bento-ex { position: absolute; left: 0; right: 0; padding: 14px 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px; }
+  .bento-ex:nth-child(1) { top: 0; z-index: 3; }
+  .bento-ex:nth-child(2) { top: 10px; z-index: 2; transform: scale(0.96) translateY(48px); opacity: 0.7; }
+  .bento-ex:nth-child(3) { top: 20px; z-index: 1; transform: scale(0.92) translateY(88px); opacity: 0.4; }
+  .bento-ex .num { font-size: 22px; font-weight: 800; color: #E8E8ED; }
+  .bento-ex .cn { font-size: 14px; font-weight: 600; color: #1C1C1E; }
+  .bento-ex .cd { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+  .bento-ex .arr { margin-left: auto; font-size: 18px; color: #AEAEB2; }
+
+  /* ==========================================
+     MOCKUP 4: MAGNETIC PERSONAL
+     ========================================== */
+  .phone-mag { background: #FAFAF8; }
+  .mag-membrane { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .mag-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.035; animation: livBlobDrift 18s ease-in-out infinite alternate; }
+  .mag-blob:nth-child(1) { width: 280px; height: 280px; background: #6366F1; top: -80px; left: -60px; }
+  .mag-blob:nth-child(2) { width: 220px; height: 220px; background: #34D399; bottom: 60px; right: -40px; animation-delay: -6s; }
+  .mag-content { position: relative; z-index: 1; }
+  .mag-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .mag-time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .mag-dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; animation: livPulse var(--hb) ease-in-out infinite; }
+
+  .mag-hero { padding: 20px 24px 0; }
+  .mag-ctx { font-size: 12px; color: #AEAEB2; display: flex; align-items: center; gap: 6px; }
+  .mag-ctx .d { width: 4px; height: 4px; border-radius: 50%; background: #AEAEB2; }
+  .mag-msg { font-size: 28px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.8px; line-height: 1.15; margin-top: 8px; }
+  .mag-hl { color: #6366F1; position: relative; display: inline; }
+  .mag-hl::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: -1px; height: 8px; background: rgba(99,102,241,0.1); border-radius: 4px; z-index: -1; }
+  .mag-nudge { margin-top: 12px; padding: 12px 16px; border-radius: 16px; background: rgba(99,102,241,0.04); border: 1px solid rgba(99,102,241,0.08); font-size: 13px; color: #6366F1; line-height: 1.5; display: flex; gap: 10px; }
+
+  .mag-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .mag-cell { border-radius: 24px; position: relative; overflow: hidden; opacity: 0; animation: bgCellIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .mag-cell:nth-child(1) { animation-delay: 0.05s; }
+  .mag-cell:nth-child(2) { animation-delay: 0.1s; }
+  .mag-cell:nth-child(3) { animation-delay: 0.15s; }
+
+  .mag-streak { grid-row: span 2; background: #1C1C1E; padding: 24px 20px; display: flex; flex-direction: column; }
+  .mag-streak .h { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .mag-streak .big { font-size: 68px; font-weight: 800; letter-spacing: -3px; line-height: 1; margin-top: 8px; background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+  .mag-streak .glow { position: absolute; inset: -20px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.08), transparent 70%); animation: magGlow var(--hb) ease-in-out infinite; }
+  @keyframes magGlow { 0%,100% { opacity: 0.3; transform: scale(0.9); } 30% { opacity: 1; transform: scale(1.05); } }
+  .mag-streak .u { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: -2px; }
+  .mag-streak-bars { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; margin-top: 14px; }
+  .mag-sb { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); }
+  .mag-sb-fill { height: 100%; border-radius: 2px; background: #6366F1; }
+
+  .mag-mom { background: #F2F1ED; padding: 18px; }
+  .mag-mom .l { font-size: 9px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .mag-mom .v { font-size: 28px; font-weight: 700; color: #1C1C1E; margin-top: 6px; }
+  .mag-mom .s { font-size: 10px; color: #AEAEB2; margin-top: 2px; }
+
+  .mag-vol { background: #F2F1ED; padding: 18px; }
+  .mag-vol .l { font-size: 9px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .mag-vol .v { font-size: 24px; font-weight: 800; color: #1C1C1E; margin-top: 6px; letter-spacing: -1px; }
+  .mag-vol .tr { font-size: 11px; color: #34D399; font-weight: 600; margin-top: 2px; }
+
+  .mag-focus { margin: 10px 24px 0; padding: 20px; border-radius: 24px; background: #1C1C1E; position: relative; overflow: hidden; opacity: 0; animation: bgCellIn 0.5s ease 0.25s forwards; }
+  .mag-focus-glow { position: absolute; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(99,102,241,0.12), transparent 70%); top: -70px; right: -30px; animation: mfgDrift 8s ease-in-out infinite alternate; }
+  @keyframes mfgDrift { 0% { transform: translate(0,0); } 100% { transform: translate(-25px,15px); } }
+  .mag-focus .l { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; position: relative; }
+  .mag-focus .m { font-size: 22px; font-weight: 700; color: #fff; margin-top: 4px; position: relative; letter-spacing: -0.5px; }
+  .mag-focus .c { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; position: relative; }
+
+  .mag-ready { margin: 10px 24px 0; display: flex; align-items: center; gap: 12px; padding: 14px 18px; border-radius: 20px; background: #F0FDF4; border: 1px solid rgba(52,211,153,0.1); opacity: 0; animation: bgCellIn 0.5s ease 0.3s forwards; }
+  .mag-ready-dot { width: 8px; height: 8px; border-radius: 50%; background: #34D399; flex-shrink: 0; animation: livPulse var(--hb) ease-in-out infinite; }
+  .mag-ready .t { font-size: 13px; font-weight: 500; color: #166534; }
+  .mag-ready .t strong { font-weight: 700; }
+
+  .mag-exs { padding: 16px 24px 0; }
+  .mag-exs-head { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .mag-exs-head .t { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .mag-exs-head .c { font-size: 12px; color: #AEAEB2; }
+  .mag-ex { background: #fff; border: 1px solid rgba(0,0,0,0.03); border-radius: 22px; padding: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 14px; opacity: 0; transform: translateY(20px); animation: livExIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .mag-ex:nth-child(2) { animation-delay: 0.1s; }
+  .mag-ex:nth-child(3) { animation-delay: 0.2s; }
+  .mag-ex:nth-child(4) { animation-delay: 0.3s; }
+  .mag-ex-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .mag-ex-icon.x1 { background: rgba(99,102,241,0.06); }
+  .mag-ex-icon.x2 { background: rgba(245,158,11,0.06); }
+  .mag-ex-icon.x3 { background: rgba(239,68,68,0.06); }
+  .mag-ex .cn { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .mag-ex .cd { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+  .mag-ex-pips { display: flex; gap: 4px; margin-top: 6px; }
+  .mag-pip { width: 20px; height: 4px; border-radius: 2px; background: #EDEDF0; }
+  .mag-ex-w { margin-left: auto; text-align: right; flex-shrink: 0; }
+  .mag-ex-w .v { font-size: 20px; font-weight: 700; color: #1C1C1E; }
+  .mag-ex-w .u { font-size: 10px; color: #AEAEB2; }
+
+  .mag-cta { margin: 20px 24px 40px; position: relative; }
+  .mag-cta-glow { position: absolute; inset: -6px; border-radius: 28px; background: conic-gradient(from 0deg, #6366F1, #34D399, #818CF8, #6366F1); filter: blur(14px); opacity: 0; animation: magCtaGlow var(--hb) ease-in-out infinite; }
+  @keyframes magCtaGlow { 0%,100% { opacity: 0.06; } 30% { opacity: 0.14; } }
+  .mag-cta button { width: 100%; padding: 20px; border: none; border-radius: 24px; background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <div class="nav-title">Repped Designs</div>
+  <button class="nav-btn active" onclick="show('all',this)">All</button>
+  <button class="nav-btn" onclick="show('s1',this)">1 — A/B/C</button>
+  <button class="nav-btn" onclick="show('s2',this)">2 — Living Organism</button>
+  <button class="nav-btn" onclick="show('s3',this)">3 — Radical Layouts</button>
+  <button class="nav-btn" onclick="show('s4',this)">4 — Magnetic Personal</button>
+</div>
+
+<div id="container" class="show-all">
+
+<!-- ======================== MOCKUP 1: A/B/C ======================== -->
+<div class="section visible" id="s1">
+  <div class="section-head">
+    <div class="section-num">Mockup 1</div>
+    <div class="section-title">Three Directions — A / B / C</div>
+    <div class="section-desc">Same Home Screen in 3 animation styles. A = Refined ease-outs + shimmer. B = Spotlights + gradients + glow. C = Bouncy springs + confetti + flames.</div>
+  </div>
+  <div class="phones">
+    <!-- A -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#818CF8;">A — Refined & Minimal</div>
+      <div class="phone phone-a"><div class="phone-scroll">
+        <div class="a-status">9:41</div>
+        <div class="a-greeting"><div class="sub">Good morning</div><div class="title">Today's Push Day</div></div>
+        <div class="a-week"><div class="a-day"><div class="dl">M</div><div class="dd done">&#10003;</div></div><div class="a-day"><div class="dl">T</div><div class="dd done">&#10003;</div></div><div class="a-day"><div class="dl">W</div><div class="dd today">W</div></div><div class="a-day"><div class="dl">T</div><div class="dd empty">T</div></div><div class="a-day"><div class="dl">F</div><div class="dd empty">F</div></div><div class="a-day"><div class="dl">S</div><div class="dd empty">S</div></div><div class="a-day"><div class="dl">S</div><div class="dd empty">S</div></div></div>
+        <div class="a-stats"><div class="a-stat"><div class="n">75%</div><div class="l">Weekly Goal</div></div><div class="a-stat"><div class="n">3/4</div><div class="l">Days</div></div><div class="a-stat"><div class="n">12.4k</div><div class="l">Volume</div></div></div>
+        <div class="slabel">Today's Exercises</div>
+        <div class="a-cards"><div class="a-card"><div class="a-card-img">&#128170;</div><div class="a-card-info"><div class="cn">Bench Press</div><div class="cd">4 sets · 8-10 reps · 70kg</div></div></div><div class="a-card"><div class="a-card-img">&#127947;</div><div class="a-card-info"><div class="cn">Overhead Press</div><div class="cd">3 sets · 10-12 reps · 40kg</div></div></div><div class="a-card"><div class="a-card-img">&#9889;</div><div class="a-card-info"><div class="cn">Cable Flyes</div><div class="cd">3 sets · 12-15 reps · 15kg</div></div></div></div>
+        <div class="slabel">Loading preview</div>
+        <div class="a-skel"></div><div class="a-skel" style="animation-delay:0.15s;"></div>
+        <button class="a-btn">Start Workout</button>
+      </div></div>
+      <div class="phone-note">Staggered cards · Counting stats · Shimmer skeleton</div>
+    </div>
+    <!-- B -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#60A5FA;">B — Bold & Expressive</div>
+      <div class="phone phone-b"><div class="phone-scroll">
+        <div class="b-header"><div class="sub">Wednesday · Push Day</div><div class="title">Let's go, Meherzan</div></div>
+        <div class="b-stats"><div class="b-stat"><div class="n">75%</div><div class="l">Weekly</div></div><div class="b-stat"><div class="n">3/4</div><div class="l">Days</div></div><div class="b-stat"><div class="n">12.4k</div><div class="l">Volume</div></div></div>
+        <div class="slabel">Today's Exercises</div>
+        <div class="b-cards"><div class="b-card"><div class="b-card-row"><div class="b-card-icon">&#128170;</div><div class="b-card-text"><div class="cn">Bench Press</div><div class="cd">4 sets · 8-10 reps · 70kg</div></div></div></div><div class="b-card"><div class="b-card-row"><div class="b-card-icon">&#127947;</div><div class="b-card-text"><div class="cn">Overhead Press</div><div class="cd">3 sets · 10-12 reps · 40kg</div></div></div></div><div class="b-card"><div class="b-card-row"><div class="b-card-icon">&#9889;</div><div class="b-card-text"><div class="cn">Cable Flyes</div><div class="cd">3 sets · 12-15 reps · 15kg</div></div></div></div></div>
+        <div class="slabel">Achievements</div>
+        <div class="b-badges"><div class="b-badge earned">&#127942;</div><div class="b-badge earned">&#128293;</div><div class="b-badge earned">&#9889;</div><div class="b-badge locked">&#128274;</div><div class="b-badge locked">&#128274;</div></div>
+        <button class="b-btn">Start Workout</button>
+      </div></div>
+      <div class="phone-note">Gradient header · Spotlight cards · Glowing badges · Shine CTA</div>
+    </div>
+    <!-- C -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#F59E0B;">C — Playful & Energetic</div>
+      <div class="phone phone-c"><div class="phone-scroll">
+        <div class="c-head"><div class="sub">Push Day · Week 3</div><div class="title">Let's crush it! &#128170;</div></div>
+        <div class="c-streak"><div class="c-flame">&#128293;</div><div><div class="t">12-day streak!</div><div class="s">Your longest yet</div></div></div>
+        <div class="c-stats"><div class="c-stat"><div class="n">75%</div><div class="l">Weekly</div></div><div class="c-stat"><div class="n">3/4</div><div class="l">Days</div></div><div class="c-stat"><div class="n">12.4k</div><div class="l">Volume</div></div></div>
+        <div class="c-heatmap" id="chm"></div>
+        <div class="slabel">Today's Exercises</div>
+        <div class="c-cards"><div class="c-card"><div class="c-card-icon i1">&#128170;</div><div class="a-card-info"><div class="cn">Bench Press</div><div class="cd">4 sets · 8-10 reps · 70kg</div></div></div><div class="c-card"><div class="c-card-icon i2">&#127947;</div><div class="a-card-info"><div class="cn">Overhead Press</div><div class="cd">3 sets · 10-12 reps · 40kg</div></div></div><div class="c-card"><div class="c-card-icon i3">&#9889;</div><div class="a-card-info"><div class="cn">Cable Flyes</div><div class="cd">3 sets · 12-15 reps · 15kg</div></div></div></div>
+        <div class="c-celeb">
+          <div class="confetti" style="left:15%;top:-5%;background:#6366F1;animation-delay:0.1s;"></div><div class="confetti" style="left:35%;top:-8%;background:#F59E0B;animation-delay:0.3s;"></div><div class="confetti" style="left:55%;top:-3%;background:#EF4444;animation-delay:0s;"></div><div class="confetti" style="left:70%;top:-6%;background:#34D399;animation-delay:0.2s;"></div><div class="confetti" style="left:85%;top:-4%;background:#818CF8;animation-delay:0.15s;"></div>
+          <div class="c-trophy">&#127942;</div><div class="msg">New PR: Bench 80kg!</div>
+        </div>
+        <button class="c-btn">Start Workout</button>
+      </div></div>
+      <div class="phone-note">Bouncy springs · Streak flame · Rolling numbers · Confetti PR</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== MOCKUP 2: LIVING ORGANISM ======================== -->
+<div class="section visible" id="s2">
+  <div class="section-head">
+    <div class="section-num">Mockup 2</div>
+    <div class="section-title">Living Organism v2</div>
+    <div class="section-desc">Unified heartbeat rhythm. Bioluminescent stat orbs. Cellular progress with mitosis animation. Muscle fiber icons. Membrane background. Everything breathes.</div>
+  </div>
+  <div class="phones">
+    <div class="phone-col">
+      <div class="phone-label" style="color:#34D399;">Living Organism</div>
+      <div class="phone phone-liv">
+        <div class="liv-membrane"><div class="liv-blob"></div><div class="liv-blob"></div></div>
+        <div class="phone-scroll"><div class="liv-content">
+          <div class="liv-status"><div class="liv-time">9:41</div><div class="liv-vital"><div class="liv-dot"></div><div class="liv-vital-lbl">Ready</div></div></div>
+          <div class="liv-hero"><div class="sub">Wednesday · Push Day</div><div class="title">Your body is ready.</div></div>
+          <div class="liv-orbs"><div class="liv-orb"><div class="n">75%</div><div class="l">Weekly</div></div><div class="liv-orb"><div class="n">3/4</div><div class="l">Days</div></div><div class="liv-orb"><div class="n">12.4k</div><div class="l">Volume</div></div></div>
+          <div class="liv-cells-wrap"><div class="liv-cells-label"><span class="t">Week 3 Progress</span><span class="p">5 / 7</span></div><div class="liv-cells"><div class="liv-cell filled"></div><div class="liv-cell filled"></div><div class="liv-cell filled"></div><div class="liv-cell filled"></div><div class="liv-cell filled recent"></div><div class="liv-cell empty"></div><div class="liv-cell empty"></div></div></div>
+          <div class="slabel" style="padding-left:24px;">Today's Exercises</div>
+          <div class="liv-ex"><div class="liv-ex-icon ic1">&#128170;</div><div class="liv-ex-info"><div class="cn">Bench Press</div><div class="cd">4 sets · 8-10 reps · 70kg</div></div></div>
+          <div class="liv-ex"><div class="liv-ex-icon ic2">&#127947;</div><div class="liv-ex-info"><div class="cn">Overhead Press</div><div class="cd">3 sets · 10-12 reps · 40kg</div></div></div>
+          <div class="liv-ex"><div class="liv-ex-icon ic3">&#9889;</div><div class="liv-ex-info"><div class="cn">Cable Flyes</div><div class="cd">3 sets · 12-15 reps · 15kg</div></div></div>
+          <div class="liv-cta"><div class="liv-cta-glow"></div><button>Start Workout</button></div>
+        </div></div>
+      </div>
+      <div class="phone-note">Heartbeat pulse · Bio-glow orbs · Cell division progress · Breathing icons · Conic CTA aura</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== MOCKUP 3: RADICAL LAYOUTS ======================== -->
+<div class="section visible" id="s3">
+  <div class="section-head">
+    <div class="section-num">Mockup 3</div>
+    <div class="section-title">Radical Layouts</div>
+    <div class="section-desc">3 non-standard spatial structures. Orbit = radial command center. Terrain = mountain trail. Bento = asymmetric magazine grid.</div>
+  </div>
+  <div class="phones">
+    <!-- ORBIT -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#818CF8;">The Orbit</div>
+      <div class="phone phone-orbit"><div class="phone-scroll">
+        <div class="o-status"><span>9:41</span><span style="font-size:12px;color:#AEAEB2;">Wednesday</span></div>
+        <div class="o-core-area">
+          <div class="o-ring"></div><div class="o-ring"></div><div class="o-ring"></div>
+          <div class="o-core"><div class="p">75%</div><div class="l">Weekly</div></div>
+          <div class="o-sat o-sat-1"><div class="n">3/4</div><div class="l">Days</div></div>
+          <div class="o-sat o-sat-2"><div class="n">12.4k</div><div class="l">Volume</div></div>
+          <div class="o-sat o-sat-3"><div class="n">80kg</div><div class="l">Top</div></div>
+          <div class="o-sat o-sat-4"><div class="n">12</div><div class="l">Streak</div></div>
+        </div>
+        <div class="slabel" style="padding-left:20px;">Today's Route</div>
+        <div class="o-exs">
+          <div class="o-ex"><div class="num">01</div><div class="a-card-info"><div class="cn">Bench Press</div><div class="cd">Chest · 4×8-10</div></div><div class="w" style="margin-left:auto;">70<span>kg</span></div></div>
+          <div class="o-ex"><div class="num">02</div><div class="a-card-info"><div class="cn">Overhead Press</div><div class="cd">Shoulders · 3×10-12</div></div><div class="w" style="margin-left:auto;">40<span>kg</span></div></div>
+          <div class="o-ex"><div class="num">03</div><div class="a-card-info"><div class="cn">Cable Flyes</div><div class="cd">Chest · 3×12-15</div></div><div class="w" style="margin-left:auto;">15<span>kg</span></div></div>
+        </div>
+      </div></div>
+      <div class="phone-note">Radial core · Orbiting satellites · Arcing exercise list</div>
+    </div>
+    <!-- TERRAIN -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#34D399;">The Terrain</div>
+      <div class="phone phone-terrain">
+        <div class="t-topo"><div class="t-contour"></div><div class="t-contour"></div></div>
+        <div class="phone-scroll"><div class="t-content">
+          <div class="t-head"><div class="sub">Expedition · Week 3</div><div class="title">Push Day Summit</div></div>
+          <div class="t-elev"><svg viewBox="0 0 345 140" preserveAspectRatio="none"><path class="t-path-bg" d="M0,120 Q40,110 60,80 Q90,30 120,20 Q150,10 175,40 Q200,70 230,50 Q260,30 290,65 Q320,95 345,110"/><path class="t-path-fg" d="M0,120 Q40,110 60,80 Q90,30 120,20 Q150,10 175,40 Q200,70 230,50 Q260,30 290,65 Q320,95 345,110"/></svg></div>
+          <div class="t-alt"><div><div class="label">Current Altitude</div><div class="val">Day 3 of 7</div><div class="sub">12,400 kg volume</div></div><div class="t-alt-right"><div class="big">3/4</div><div class="unit">days</div></div></div>
+          <div class="t-trail">
+            <div class="t-trail-line"></div><div class="t-trail-pulse"></div>
+            <div class="slabel" style="margin-left:28px;padding:0 0 12px;">Waypoints</div>
+            <div class="t-wp"><div class="t-wp-dot">1</div><div class="t-wp-card"><div class="cn">Bench Press</div><div class="cd">Chest · 70kg</div></div></div>
+            <div class="t-wp"><div class="t-wp-dot">2</div><div class="t-wp-card"><div class="cn">Overhead Press</div><div class="cd">Shoulders · 40kg</div></div></div>
+            <div class="t-wp"><div class="t-wp-dot">3</div><div class="t-wp-card"><div class="cn">Cable Flyes</div><div class="cd">Chest · 15kg</div></div></div>
+          </div>
+        </div></div>
+      </div>
+      <div class="phone-note">Mountain elevation · Trail drawing · Waypoint markers · Topo texture</div>
+    </div>
+    <!-- BENTO -->
+    <div class="phone-col">
+      <div class="phone-label" style="color:#F59E0B;">The Bento</div>
+      <div class="phone phone-bento"><div class="phone-scroll">
+        <div class="bento-content">
+          <div class="bento-top"><div class="bento-day"><div class="dow">Wed</div><div class="dn">19</div></div><div class="bento-greet"><div class="hi">Good morning</div><div class="t">Push Day</div></div></div>
+          <div class="bento-grid">
+            <div class="bg-cell bg-weekly"><div class="pct">75%</div><div class="l">This Week</div></div>
+            <div class="bg-cell bg-vol"><div class="l">Volume</div><div class="v">12.4k</div><div class="tr">▲ 12%</div></div>
+            <div class="bg-cell bg-streak"><div class="e">&#128293;</div><div class="v">12 days</div><div class="l">Best yet</div></div>
+          </div>
+          <div class="bg-focus"><div><div class="l">Focus</div><div class="m">Chest & Shoulders</div><div class="c">5 exercises · ~45 min</div></div><div class="icon">&#128170;</div></div>
+          <div class="bento-stack">
+            <div class="bento-ex" style="z-index:3;top:0;"><div class="num">01</div><div class="a-card-info"><div class="cn">Bench Press</div><div class="cd">4×8-10 · 70kg</div></div><div class="arr" style="margin-left:auto;">›</div></div>
+            <div class="bento-ex"><div class="num">02</div><div class="a-card-info"><div class="cn">Overhead Press</div><div class="cd">3×10-12 · 40kg</div></div><div class="arr" style="margin-left:auto;">›</div></div>
+            <div class="bento-ex"><div class="num">03</div><div class="a-card-info"><div class="cn">Cable Flyes</div><div class="cd">3×12-15 · 15kg</div></div><div class="arr" style="margin-left:auto;">›</div></div>
+          </div>
+        </div>
+      </div></div>
+      <div class="phone-note">Asymmetric grid · Stacked exercise cards · Day badge · Accent focus</div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== MOCKUP 4: MAGNETIC PERSONAL ======================== -->
+<div class="section visible" id="s4">
+  <div class="section-head">
+    <div class="section-num">Mockup 4</div>
+    <div class="section-title">Magnetic Personal</div>
+    <div class="section-desc">Living Organism + Bento + deep personalization. Data-driven daily messages. Streak as identity. Nudge card. Everything breathes on shared heartbeat.</div>
+  </div>
+  <div class="phones">
+    <div class="phone-col">
+      <div class="phone-label" style="color:#818CF8;">The Magnetic App</div>
+      <div class="phone phone-mag">
+        <div class="mag-membrane"><div class="mag-blob"></div><div class="mag-blob"></div></div>
+        <div class="phone-scroll"><div class="mag-content">
+          <div class="mag-status"><div class="mag-time">9:41</div><div class="mag-dot"></div></div>
+          <div class="mag-hero">
+            <div class="mag-ctx">Wednesday <span class="d"></span> Push Day <span class="d"></span> Week 3</div>
+            <div class="mag-msg">You're <span class="mag-hl">1 session away</span> from your longest streak ever.</div>
+            <div class="mag-nudge"><span>&#128161;</span><span>Last push day you hit 75kg bench for 8 reps. Today's plan has you at 77.5kg. You've got this.</span></div>
+          </div>
+          <div class="mag-bento">
+            <div class="mag-cell mag-streak"><div class="h">Your Streak</div><div style="position:relative;"><div class="glow"></div><div class="big">12</div></div><div class="u">days strong</div><div class="mag-streak-bars"><div class="mag-sb"><div class="mag-sb-fill" style="width:100%;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:100%;background:#818CF8;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:100%;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:100%;background:#818CF8;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:100%;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:70%;background:#34D399;"></div></div><div class="mag-sb"><div class="mag-sb-fill" style="width:0%;"></div></div></div></div>
+            <div class="mag-cell mag-mom"><div class="l">Momentum</div><div class="v">75%</div><div class="s">3 of 4 days done</div></div>
+            <div class="mag-cell mag-vol"><div class="l">Volume</div><div class="v">12.4k</div><div class="tr">▲ 12% growth</div></div>
+          </div>
+          <div class="mag-focus"><div class="mag-focus-glow"></div><div class="l">Today's Focus</div><div class="m">Chest & Shoulders</div><div class="c">5 exercises · ~45 min · Peak week</div></div>
+          <div class="mag-ready"><div class="mag-ready-dot"></div><div class="t"><strong>Fresh</strong> — 7.5h sleep, low soreness</div></div>
+          <div class="mag-exs">
+            <div class="mag-exs-head"><span class="t">Your Workout</span><span class="c">5 exercises</span></div>
+            <div class="mag-ex"><div class="mag-ex-icon x1">&#128170;</div><div class="a-card-info"><div class="cn">Bench Press</div><div class="cd">Chest · Compound</div><div class="mag-ex-pips"><div class="mag-pip"></div><div class="mag-pip"></div><div class="mag-pip"></div><div class="mag-pip"></div></div></div><div class="mag-ex-w"><div class="v">77.5</div><div class="u">kg</div></div></div>
+            <div class="mag-ex"><div class="mag-ex-icon x2">&#127947;</div><div class="a-card-info"><div class="cn">Overhead Press</div><div class="cd">Shoulders · Compound</div><div class="mag-ex-pips"><div class="mag-pip"></div><div class="mag-pip"></div><div class="mag-pip"></div></div></div><div class="mag-ex-w"><div class="v">40</div><div class="u">kg</div></div></div>
+            <div class="mag-ex"><div class="mag-ex-icon x3">&#9889;</div><div class="a-card-info"><div class="cn">Cable Flyes</div><div class="cd">Chest · Isolation</div><div class="mag-ex-pips"><div class="mag-pip"></div><div class="mag-pip"></div><div class="mag-pip"></div></div></div><div class="mag-ex-w"><div class="v">15</div><div class="u">kg</div></div></div>
+          </div>
+          <div class="mag-cta"><div class="mag-cta-glow"></div><button>Start Workout</button></div>
+        </div></div>
+      </div>
+      <div class="phone-note">Personal daily message · Giant streak · Nudge card · Bento stats · Living aesthetic · Bio-glow CTA</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+// Populate heatmap for C
+const hm = document.getElementById('chm');
+if (hm) { const lv = ['l0','l1','l2','l3']; for (let i = 0; i < 28; i++) { const c = document.createElement('div'); c.className = 'c-hc ' + lv[Math.floor(Math.random()*4)]; c.style.animationDelay = i*0.04+'s'; hm.appendChild(c); } }
+
+function show(id, btn) {
+  const ct = document.getElementById('container');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  if (id === 'all') {
+    ct.classList.add('show-all');
+    document.querySelectorAll('.section').forEach(s => s.classList.add('visible'));
+  } else {
+    ct.classList.remove('show-all');
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+    document.getElementById(id).classList.add('visible');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>

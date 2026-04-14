@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player Simple</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+
+  /* ============================================================
+     S1: CLEAN SHEET
+     Sand bg. Big name. Two white input tiles. Breathes.
+     ============================================================ */
+  .s1 { background: var(--sand); }
+
+  .s1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .s1-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .s1-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .s1-exit { font-size: 13px; color: var(--rock); margin-left: auto; cursor: pointer; }
+
+  .s1-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .s1-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); transition: width 0.4s; }
+
+  .s1-name { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; padding: 24px 24px 0; line-height: 1.15; }
+  .s1-meta { display: flex; align-items: center; gap: 10px; padding: 6px 24px 0; }
+  .s1-muscle { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .s1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .s1-link { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .s1-link.swap { color: var(--trail); }
+  .s1-link.video { color: var(--rock); }
+
+  /* Set indicator */
+  .s1-set-row { padding: 32px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .s1-set-label { font-size: 12px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s1-prev { font-size: 12px; color: var(--rock); }
+
+  /* Two input tiles */
+  .s1-inputs { display: flex; gap: 12px; padding: 12px 24px 0; }
+  .s1-tile {
+    flex: 1; background: #fff; border-radius: 20px; padding: 20px 16px;
+    text-align: center; border: 2px solid transparent;
+    transition: all 0.2s; cursor: pointer;
+  }
+  .s1-tile:focus-within { border-color: var(--trail); box-shadow: 0 0 0 4px rgba(52,211,153,0.06); }
+  .s1-tile-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s1-tile-input {
+    display: block; width: 100%; border: none; background: none; outline: none;
+    font-size: 40px; font-weight: 800; color: var(--earth); text-align: center;
+    letter-spacing: -1px; margin-top: 6px;
+  }
+  .s1-tile-hint { font-size: 10px; color: var(--rock); margin-top: 6px; opacity: 0.6; }
+
+  /* Set dots */
+  .s1-dots { display: flex; gap: 6px; justify-content: center; padding: 28px 0 0; }
+  .s1-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--stone); transition: all 0.3s; }
+  .s1-dot.done { background: var(--trail); }
+  .s1-dot.active { background: var(--earth); }
+
+  /* Log */
+  .s1-log { margin: 24px 24px 40px; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; cursor: pointer; }
+  .s1-log:active { opacity: 0.9; }
+  .s1-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     S2: TERRAIN CONSISTENT
+     Dark hero card (matches other screens) + clean input zone.
+     The design language users already approved elsewhere.
+     ============================================================ */
+  .s2 { background: var(--sand); }
+
+  .s2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .s2-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .s2-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .s2-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .s2-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .s2-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Dark hero card */
+  .s2-hero {
+    margin: 16px 20px 0; padding: 20px; border-radius: 22px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .s2-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .s2-ha:nth-child(1) { width: 80px; top: 12px; right: -4px; transform: rotate(-35deg); }
+  .s2-ha:nth-child(2) { width: 60px; top: 22px; right: -4px; transform: rotate(-35deg); }
+
+  .s2-hero-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .s2-hero-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; flex: 1; line-height: 1.15; }
+  .s2-hero-actions { display: flex; gap: 10px; margin-top: 4px; flex-shrink: 0; }
+  .s2-hero-action { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .s2-hero-action.swap { color: var(--trail); opacity: 0.7; }
+  .s2-hero-action.video { color: rgba(246,245,240,0.25); }
+
+  .s2-hero-sub { display: flex; align-items: center; gap: 8px; margin-top: 8px; position: relative; }
+  .s2-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .s2-hero-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .s2-hero-prev { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .s2-hero-prev strong { color: rgba(246,245,240,0.5); }
+
+  /* Focus cue inside hero */
+  .s2-cue { margin-top: 12px; display: flex; align-items: center; gap: 6px; position: relative; }
+  .s2-cue-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); animation: s2p 2.4s infinite; }
+  @keyframes s2p { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .s2-cue-text { font-size: 10px; color: rgba(246,245,240,0.3); }
+
+  /* Input zone */
+  .s2-set-row { padding: 24px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .s2-set-label { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s2-set-dots { display: flex; gap: 5px; }
+  .s2-sd { width: 8px; height: 8px; border-radius: 50%; background: var(--stone); }
+  .s2-sd.done { background: var(--trail); }
+  .s2-sd.active { background: var(--earth); }
+
+  .s2-inputs { display: flex; gap: 12px; padding: 12px 20px 0; }
+  .s2-tile {
+    flex: 1; background: #fff; border-radius: 20px; padding: 20px 16px;
+    text-align: center; border: 2px solid transparent; transition: all 0.2s;
+  }
+  .s2-tile:focus-within { border-color: var(--trail); box-shadow: 0 0 0 4px rgba(52,211,153,0.06); }
+  .s2-tile-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s2-tile-input {
+    display: block; width: 100%; border: none; background: none; outline: none;
+    font-size: 38px; font-weight: 800; color: var(--earth); text-align: center;
+    letter-spacing: -1px; margin-top: 6px;
+  }
+  .s2-tile-hint { font-size: 10px; color: var(--rock); margin-top: 6px; opacity: 0.5; }
+
+  /* Logged sets */
+  .s2-logged { padding: 20px 20px 0; }
+  .s2-logged-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .s2-logged-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
+  .s2-logged-num { font-size: 12px; font-weight: 700; color: var(--trail); width: 16px; }
+  .s2-logged-vals { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .s2-logged-check { margin-left: auto; width: 20px; height: 20px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; }
+
+  .s2-log { margin: 24px 20px 40px; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; cursor: pointer; }
+  .s2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     S3: THE EDITORIAL
+     Full-width, magazine feel. Exercise name enormous.
+     Single card holds the current set. Nothing else visible.
+     Maximum whitespace. Ultra-premium.
+     ============================================================ */
+  .s3 { background: var(--sand); }
+
+  .s3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .s3-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .s3-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .s3-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .s3-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Big exercise name */
+  .s3-exercise { padding: 32px 24px 0; }
+  .s3-ex-name {
+    font-size: 34px; font-weight: 800; color: var(--earth);
+    letter-spacing: -1.2px; line-height: 1.05;
+  }
+  .s3-ex-sub { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+  .s3-muscle { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .s3-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .s3-link { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .s3-link.swap { color: var(--trail); }
+  .s3-link.video { color: var(--rock); }
+
+  /* The single set card */
+  .s3-card {
+    margin: 28px 20px 0; padding: 24px; border-radius: 24px;
+    background: #fff; box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+  }
+
+  .s3-card-header { display: flex; justify-content: space-between; align-items: center; }
+  .s3-card-set { font-size: 12px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 0.5px; }
+  .s3-card-dots { display: flex; gap: 5px; }
+  .s3-cd { width: 7px; height: 7px; border-radius: 50%; background: var(--stone); }
+  .s3-cd.done { background: var(--trail); }
+  .s3-cd.active { background: var(--earth); }
+
+  .s3-card-prev { font-size: 11px; color: var(--rock); margin-top: 8px; }
+
+  .s3-card-inputs { display: flex; gap: 12px; margin-top: 16px; }
+  .s3-card-group { flex: 1; text-align: center; }
+  .s3-card-input {
+    width: 100%; padding: 18px 8px; border-radius: 16px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 36px; font-weight: 800;
+    color: var(--earth); outline: none; letter-spacing: -0.5px;
+    transition: all 0.2s;
+  }
+  .s3-card-input:focus { border-color: var(--trail); background: #fff; }
+  .s3-card-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 5px; }
+
+  /* Log button inside card */
+  .s3-card-log {
+    margin-top: 18px; padding: 16px; border-radius: 14px;
+    background: var(--earth); text-align: center; cursor: pointer;
+  }
+  .s3-card-log-text { font-size: 15px; font-weight: 700; color: var(--sand); }
+
+  /* Completed sets — minimal below */
+  .s3-history { padding: 20px 24px 0; }
+  .s3-h-row { display: flex; align-items: center; gap: 8px; padding: 6px 0; opacity: 0.5; }
+  .s3-h-num { font-size: 11px; font-weight: 700; color: var(--trail); width: 24px; }
+  .s3-h-val { font-size: 13px; color: var(--earth); font-weight: 500; }
+  .s3-h-check { margin-left: auto; font-size: 10px; color: var(--trail); }
+
+  /* Focus cue at bottom */
+  .s3-cue {
+    margin: 16px 24px 40px; display: flex; align-items: center; gap: 6px;
+  }
+  .s3-cue-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); animation: s3p 2.4s infinite; }
+  @keyframes s3p { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .s3-cue-text { font-size: 11px; color: var(--rock); }
+
+
+  /* ============================================================
+     ENTRANCE ANIMATIONS — subtle, clean
+     ============================================================ */
+  @keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .s1-name, .s2-hero, .s3-exercise { animation: fadeUp 0.4s ease-out; }
+  .s1-inputs, .s2-inputs, .s3-card { animation: fadeUp 0.4s ease-out 0.1s backwards; }
+  .s1-log, .s2-log, .s3-history { animation: fadeUp 0.4s ease-out 0.2s backwards; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== S1: CLEAN SHEET =============== -->
+  <div>
+    <div class="col-label">S1 — CLEAN SHEET</div>
+    <div class="col-desc">Sand background. Big name. Two white input tiles. Maximum breathing room. Nothing unnecessary.</div>
+    <div class="phone s1">
+      <div class="ps">
+
+        <div class="s1-top">
+          <span class="s1-timer">12:34</span>
+          <span class="s1-of">3 / 6</span>
+          <span class="s1-exit">End</span>
+        </div>
+
+        <div class="s1-bar"><div class="s1-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="s1-name">Barbell Bench Press</div>
+        <div class="s1-meta">
+          <span class="s1-muscle">Chest</span>
+          <span class="s1-sep"></span>
+          <span class="s1-link swap">Swap</span>
+          <span class="s1-sep"></span>
+          <span class="s1-link video">▶ Video</span>
+        </div>
+
+        <div class="s1-set-row">
+          <span class="s1-set-label">Set 2 of 4</span>
+          <span class="s1-prev">Last: 70 × 10</span>
+        </div>
+
+        <div class="s1-inputs">
+          <div class="s1-tile">
+            <div class="s1-tile-label">Weight</div>
+            <input class="s1-tile-input" value="72.5" type="text" inputmode="decimal">
+            <div class="s1-tile-hint">kg</div>
+          </div>
+          <div class="s1-tile">
+            <div class="s1-tile-label">Reps</div>
+            <input class="s1-tile-input" value="10" type="text" inputmode="numeric">
+            <div class="s1-tile-hint">target 10</div>
+          </div>
+        </div>
+
+        <div class="s1-dots">
+          <div class="s1-dot done"></div>
+          <div class="s1-dot active"></div>
+          <div class="s1-dot"></div>
+          <div class="s1-dot"></div>
+        </div>
+
+        <div class="s1-log">
+          <div class="s1-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== S2: TERRAIN CONSISTENT =============== -->
+  <div>
+    <div class="col-label">S2 — TERRAIN CONSISTENT</div>
+    <div class="col-desc">Dark hero card (matches your other screens) + clean input tiles below. Focus cue inside hero. Logged sets appear as rows.</div>
+    <div class="phone s2">
+      <div class="ps">
+
+        <div class="s2-top">
+          <span class="s2-timer">12:34</span>
+          <span class="s2-of">3 / 6</span>
+          <span class="s2-exit">End</span>
+        </div>
+
+        <div class="s2-bar"><div class="s2-bar-fill" style="width: 40%;"></div></div>
+
+        <!-- Dark hero -->
+        <div class="s2-hero">
+          <div class="s2-ha"></div>
+          <div class="s2-ha"></div>
+          <div class="s2-hero-row">
+            <div class="s2-hero-name">Barbell<br>Bench Press</div>
+            <div class="s2-hero-actions">
+              <span class="s2-hero-action swap">Swap</span>
+              <span class="s2-hero-action video">▶ Video</span>
+            </div>
+          </div>
+          <div class="s2-hero-sub">
+            <span class="s2-muscle">Chest</span>
+            <span class="s2-hero-dot"></span>
+            <span class="s2-hero-prev">Last: <strong>70 × 10</strong></span>
+          </div>
+          <div class="s2-cue">
+            <div class="s2-cue-dot"></div>
+            <span class="s2-cue-text">Drive feet into floor — create full-body tension</span>
+          </div>
+        </div>
+
+        <!-- Input zone -->
+        <div class="s2-set-row">
+          <span class="s2-set-label">Set 2 of 4</span>
+          <div class="s2-set-dots">
+            <div class="s2-sd done"></div>
+            <div class="s2-sd active"></div>
+            <div class="s2-sd"></div>
+            <div class="s2-sd"></div>
+          </div>
+        </div>
+
+        <div class="s2-inputs">
+          <div class="s2-tile">
+            <div class="s2-tile-label">Weight</div>
+            <input class="s2-tile-input" value="72.5" type="text" inputmode="decimal">
+            <div class="s2-tile-hint">kg</div>
+          </div>
+          <div class="s2-tile">
+            <div class="s2-tile-label">Reps</div>
+            <input class="s2-tile-input" value="10" type="text" inputmode="numeric">
+            <div class="s2-tile-hint">target 10</div>
+          </div>
+        </div>
+
+        <!-- Logged sets -->
+        <div class="s2-logged">
+          <div class="s2-logged-label">Completed</div>
+          <div class="s2-logged-row">
+            <span class="s2-logged-num">1</span>
+            <span class="s2-logged-vals">70 kg × 10 reps</span>
+            <span class="s2-logged-check">✓</span>
+          </div>
+        </div>
+
+        <div class="s2-log">
+          <div class="s2-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== S3: THE EDITORIAL =============== -->
+  <div>
+    <div class="col-label">S3 — THE EDITORIAL</div>
+    <div class="col-desc">Enormous exercise name. One white card holds everything for the current set. Log button inside the card. Magazine-level whitespace.</div>
+    <div class="phone s3">
+      <div class="ps">
+
+        <div class="s3-top">
+          <span class="s3-timer">12:34</span>
+          <span class="s3-exit">End</span>
+        </div>
+
+        <div class="s3-bar"><div class="s3-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="s3-exercise">
+          <div class="s3-ex-name">Barbell<br>Bench Press</div>
+          <div class="s3-ex-sub">
+            <span class="s3-muscle">Chest</span>
+            <span class="s3-sep"></span>
+            <span class="s3-link swap">Swap</span>
+            <span class="s3-sep"></span>
+            <span class="s3-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <!-- The card -->
+        <div class="s3-card">
+          <div class="s3-card-header">
+            <span class="s3-card-set">Set 2 of 4</span>
+            <div class="s3-card-dots">
+              <div class="s3-cd done"></div>
+              <div class="s3-cd active"></div>
+              <div class="s3-cd"></div>
+              <div class="s3-cd"></div>
+            </div>
+          </div>
+          <div class="s3-card-prev">Last session: 70 kg × 10 reps</div>
+
+          <div class="s3-card-inputs">
+            <div class="s3-card-group">
+              <input class="s3-card-input" value="72.5" type="text" inputmode="decimal">
+              <div class="s3-card-label">kg</div>
+            </div>
+            <div class="s3-card-group">
+              <input class="s3-card-input" value="10" type="text" inputmode="numeric">
+              <div class="s3-card-label">reps</div>
+            </div>
+          </div>
+
+          <div class="s3-card-log">
+            <div class="s3-card-log-text">Log Set</div>
+          </div>
+        </div>
+
+        <!-- Completed sets -->
+        <div class="s3-history">
+          <div class="s3-h-row">
+            <span class="s3-h-num">Set 1</span>
+            <span class="s3-h-val">70 kg × 10 reps</span>
+            <span class="s3-h-check">✓</span>
+          </div>
+        </div>
+
+        <div class="s3-cue">
+          <div class="s3-cue-dot"></div>
+          <span class="s3-cue-text">Drive feet into floor — create full-body tension</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

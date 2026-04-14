@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Below-Heading Variants</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* Shared locked hero (N5 style) — minimal version */
+.top{padding:56px 24px 0;display:flex;align-items:center;position:relative}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:24px;z-index:2}
+.type{font-size:12px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;text-align:center;width:100%}
+.hero-name{padding:0 20px;font-size:28px;font-weight:800;color:var(--earth);letter-spacing:-1.2px;line-height:1;text-align:center;margin-top:10px}
+.hero-sub{text-align:center;padding:6px 24px 0;font-size:12px;color:var(--rock)}
+.hero-sub strong{color:var(--earth);font-weight:700}
+.hero-video{display:flex;justify-content:center;padding:8px 0 0}
+.video-pill{padding:5px 14px;border-radius:100px;background:var(--earth);font-size:11px;font-weight:600;color:var(--trail);cursor:pointer}
+.pill{padding:5px 12px;border-radius:100px;background:var(--stone);font-size:11px;font-weight:600;color:var(--earth)}
+
+/* Divider */
+.section-div{height:1px;background:rgba(0,0,0,0.04);margin:16px 24px 0}
+
+
+/* ============================================================
+   E1: CHECKLIST + TRAIL TIMELINE
+   Ingredients as tappable checklist. Steps as trail timeline
+   with numbered dots + white cards. (Previously approved combo)
+   ============================================================ */
+.e1-section{padding:18px 24px 0}
+.e1-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e1-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e1-count{font-size:11px;color:var(--trail);font-weight:600}
+.e1-sub{font-size:11px;color:var(--rock)}
+.e1-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.04);cursor:pointer}
+.e1-item:last-child{border-bottom:none}
+.e1-cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.e1-cb.on{background:var(--trail);border-color:var(--trail)}
+.e1-ck{font-size:10px;color:#fff;font-weight:700}
+.e1-name{font-size:14px;color:var(--earth);flex:1}
+.e1-amt{font-size:12px;color:var(--rock)}
+.e1-item.done .e1-name{text-decoration:line-through;opacity:0.35}
+.e1-item.done .e1-amt{opacity:0.3}
+
+.e1-tl{position:relative;padding-left:30px}
+.e1-tl-line{position:absolute;left:6px;top:0;bottom:0;width:2px;background:var(--stone)}
+.e1-step{position:relative;margin-bottom:12px}
+.e1-dot{position:absolute;left:-30px;top:4px;width:14px;height:14px;border-radius:7px;z-index:1;display:flex;align-items:center;justify-content:center}
+.e1-dot.first{background:var(--earth)}.e1-dot.rest{background:var(--stone)}
+.e1-dot-num{font-size:8px;font-weight:700}
+.e1-dot.first .e1-dot-num{color:var(--sand)}.e1-dot.rest .e1-dot-num{color:var(--rock)}
+.e1-step-card{background:#fff;border-radius:14px;padding:12px 14px;border:1px solid rgba(0,0,0,0.04)}
+.e1-step-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.e1-step-label{font-size:9px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.3px}
+.e1-step-time{font-size:9px;color:var(--rock);opacity:0.5}
+.e1-step-text{font-size:13px;color:var(--earth);line-height:1.5}
+
+
+/* ============================================================
+   E2: CHIPS + ALTERNATING STEP CARDS
+   Ingredients as flowing chips. Steps as vertical cards
+   alternating dark/light with number circles.
+   ============================================================ */
+.e2-section{padding:18px 24px 0}
+.e2-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e2-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e2-sub{font-size:11px;color:var(--rock)}
+
+.e2-chips{display:flex;flex-wrap:wrap;gap:6px}
+.e2-chip{padding:8px 14px;border-radius:12px;background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.e2-chip-text{font-size:12px;color:var(--earth)}
+.e2-chip-text strong{font-weight:700}
+.e2-chip-text span{color:var(--rock);font-size:10px;margin-left:3px}
+
+.e2-step{border-radius:16px;padding:14px 16px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.e2-step.dark{background:var(--earth)}.e2-step.light{background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.e2-step-num{width:26px;height:26px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;font-weight:700}
+.e2-step.dark .e2-step-num{background:rgba(246,245,240,0.08);color:var(--sand)}
+.e2-step.light .e2-step-num{background:var(--stone);color:var(--earth)}
+.e2-step-content{flex:1}
+.e2-step-text{font-size:13px;line-height:1.5}
+.e2-step.dark .e2-step-text{color:rgba(246,245,240,0.65)}.e2-step.light .e2-step-text{color:var(--earth)}
+.e2-step-time{font-size:9px;margin-top:4px}
+.e2-step.dark .e2-step-time{color:rgba(246,245,240,0.2)}.e2-step.light .e2-step-time{color:var(--rock);opacity:0.4}
+
+
+/* ============================================================
+   E3: NUMBERED LIST + HORIZONTAL SWIPE STEPS
+   Ingredients as numbered rows (trail green numbers).
+   Steps as horizontal swipe cards with watermark numbers.
+   ============================================================ */
+.e3-section{padding:18px 24px 0}
+.e3-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e3-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e3-sub{font-size:11px;color:var(--rock)}
+.e3-ing-row{display:flex;align-items:center;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.e3-ing-row:last-child{border-bottom:none}
+.e3-ing-num{width:20px;font-size:12px;font-weight:700;color:var(--trail)}
+.e3-ing-name{flex:1;font-size:13px;color:var(--earth)}
+.e3-ing-amt{font-size:11px;color:var(--rock)}
+
+.e3-steps{padding:18px 0 0}
+.e3-steps-head{display:flex;justify-content:space-between;padding:0 24px;margin-bottom:10px}
+.e3-scroll{display:flex;gap:10px;overflow-x:auto;padding:0 24px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.e3-scroll::-webkit-scrollbar{display:none}
+.e3-scard{flex-shrink:0;width:270px;border-radius:18px;padding:16px;position:relative;overflow:hidden;min-height:140px;scroll-snap-align:start;display:flex;flex-direction:column}
+.e3-scard.dark{background:var(--earth)}.e3-scard.light{background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.e3-scard-wm{position:absolute;right:14px;top:6px;font-size:70px;font-weight:800;line-height:1}
+.e3-scard.dark .e3-scard-wm{color:rgba(246,245,240,0.03)}.e3-scard.light .e3-scard-wm{color:rgba(0,0,0,0.02)}
+.e3-scard-label{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;position:relative}
+.e3-scard.dark .e3-scard-label{color:var(--trail)}.e3-scard.light .e3-scard-label{color:var(--rock)}
+.e3-scard-text{font-size:13px;line-height:1.5;position:relative;margin-top:auto}
+.e3-scard.dark .e3-scard-text{color:rgba(246,245,240,0.65)}.e3-scard.light .e3-scard-text{color:var(--earth)}
+.e3-scard-time{font-size:9px;position:relative;margin-top:6px}
+.e3-scard.dark .e3-scard-time{color:rgba(246,245,240,0.2)}.e3-scard.light .e3-scard-time{color:var(--rock);opacity:0.4}
+.e3-dots{display:flex;gap:4px;justify-content:center;padding:10px 0 0}
+.e3-dot{height:4px;border-radius:2px}.e3-dot.active{width:18px;background:var(--earth)}.e3-dot.inactive{width:6px;background:var(--stone)}
+
+
+/* ============================================================
+   E4: 2-COLUMN CARDS + STEPPER
+   Ingredients as 2-column mini cards. Steps as a dark stepper
+   (one step at a time with prev/next buttons).
+   ============================================================ */
+.e4-section{padding:18px 24px 0}
+.e4-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e4-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e4-sub{font-size:11px;color:var(--rock)}
+.e4-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.e4-card{padding:10px 12px;border-radius:12px;background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.e4-card-dot{width:4px;height:4px;border-radius:2px;background:var(--trail);display:inline-block;margin-right:4px}
+.e4-card-name{font-size:12px;font-weight:600;color:var(--earth)}
+.e4-card-amt{font-size:10px;color:var(--rock);margin-top:1px}
+
+.e4-stepper{margin-top:16px;background:var(--earth);border-radius:22px;padding:20px;position:relative;overflow:hidden}
+.e4-stepper-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.e4-stepper-top{display:flex;justify-content:space-between;align-items:center;position:relative}
+.e4-stepper-label{font-size:11px;font-weight:700;color:var(--trail);text-transform:uppercase;letter-spacing:0.5px}
+.e4-stepper-time{font-size:10px;color:rgba(246,245,240,0.2)}
+.e4-stepper-dots{display:flex;gap:4px;position:relative;margin-top:10px}
+.e4-sd{width:8px;height:8px;border-radius:4px}.e4-sd.done{background:var(--trail)}.e4-sd.active{background:var(--sand)}.e4-sd.future{background:rgba(246,245,240,0.1)}
+.e4-stepper-wm{position:absolute;right:0;bottom:30px;font-size:90px;font-weight:800;color:rgba(246,245,240,0.03);line-height:1}
+.e4-stepper-text{font-size:15px;color:rgba(246,245,240,0.7);line-height:1.6;margin-top:auto;position:relative;padding-top:14px}
+.e4-stepper-nav{display:flex;gap:10px;margin-top:16px;position:relative}
+.e4-nav-btn{flex:1;padding:12px;border-radius:14px;text-align:center;cursor:pointer}
+.e4-nav-prev{background:rgba(246,245,240,0.06)}
+.e4-nav-prev-text{font-size:13px;font-weight:600;color:rgba(246,245,240,0.4)}
+.e4-nav-next{background:var(--sand)}
+.e4-nav-next-text{font-size:13px;font-weight:600;color:var(--earth)}
+
+
+/* ============================================================
+   E5: CHECKLIST + NUMBERED VERTICAL CARDS
+   Ingredients as checklist (like E1). Steps as full-width
+   numbered cards (number circles left, text right). Simple.
+   ============================================================ */
+.e5-section{padding:18px 24px 0}
+.e5-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e5-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e5-count{font-size:11px;color:var(--trail);font-weight:600}
+.e5-sub{font-size:11px;color:var(--rock)}
+/* Reuse e1 checklist styles */
+
+.e5-step-card{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:16px;padding:14px 16px;border:1px solid rgba(0,0,0,0.04);margin-bottom:8px}
+.e5-step-num{width:30px;height:30px;border-radius:15px;background:var(--earth);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:12px;font-weight:700;color:var(--sand)}
+.e5-step-content{flex:1}
+.e5-step-text{font-size:13px;color:var(--earth);line-height:1.5}
+.e5-step-time{font-size:9px;color:var(--rock);margin-top:3px}
+
+
+/* ============================================================
+   E6: BENTO INGREDIENT TILES + TRAIL STEPS
+   Ingredients as 3-column bento tiles (compact).
+   Steps as trail timeline (like E1). Mixed spatial concept.
+   ============================================================ */
+.e6-section{padding:18px 24px 0}
+.e6-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.e6-title{font-size:14px;font-weight:700;color:var(--earth)}
+.e6-sub{font-size:11px;color:var(--rock)}
+.e6-bento{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px}
+.e6-tile{padding:10px;border-radius:12px;text-align:center}
+.e6-tile.white{background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.e6-tile.stone{background:var(--stone)}
+.e6-tile-name{font-size:11px;font-weight:700;color:var(--earth)}
+.e6-tile-amt{font-size:9px;color:var(--rock);margin-top:2px}
+/* Reuse e1 trail timeline for steps */
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- E1 -->
+  <div>
+    <div class="col-label">E1 — CHECKLIST + TRAIL TIMELINE</div>
+    <div class="col-desc">Tappable ingredient checklist with progress. Steps as trail timeline with dot cards.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e1-section"><div class="e1-head"><span class="e1-title">Ingredients</span><span class="e1-count">2/6 ready</span></div>
+        <div class="e1-item done"><div class="e1-cb on"><span class="e1-ck">✓</span></div><span class="e1-name">Black beans</span><span class="e1-amt">1/2 can</span></div>
+        <div class="e1-item done"><div class="e1-cb on"><span class="e1-ck">✓</span></div><span class="e1-name">White rice</span><span class="e1-amt">1 cup</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Corn</span><span class="e1-amt">1/4 cup</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Avocado</span><span class="e1-amt">1/2</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Salsa</span><span class="e1-amt">3 tbsp</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Sour cream</span><span class="e1-amt">1 tbsp</span></div>
+      </div>
+      <div class="e1-section"><div class="e1-head"><span class="e1-title">Steps</span><span class="e1-sub">4 steps</span></div>
+        <div class="e1-tl"><div class="e1-tl-line"></div>
+          <div class="e1-step"><div class="e1-dot first"><span class="e1-dot-num">1</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 1</span><span class="e1-step-time">~2 min</span></div><div class="e1-step-text">Cook rice according to package directions.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">2</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 2</span><span class="e1-step-time">~3 min</span></div><div class="e1-step-text">Heat black beans. Season with cumin and salt.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">3</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 3</span><span class="e1-step-time">~2 min</span></div><div class="e1-step-text">Slice avocado and prep toppings.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">4</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 4</span><span class="e1-step-time">~1 min</span></div><div class="e1-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- E2 -->
+  <div>
+    <div class="col-label">E2 — CHIPS + ALT CARDS</div>
+    <div class="col-desc">Ingredients as flowing chips. Steps as vertical dark/light alternating cards with number circles.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e2-section"><div class="e2-head"><span class="e2-title">Ingredients</span><span class="e2-sub">6 items</span></div>
+        <div class="e2-chips">
+          <div class="e2-chip"><span class="e2-chip-text"><strong>Black beans</strong> <span>1/2 can</span></span></div>
+          <div class="e2-chip"><span class="e2-chip-text"><strong>White rice</strong> <span>1 cup</span></span></div>
+          <div class="e2-chip"><span class="e2-chip-text"><strong>Corn</strong> <span>1/4 cup</span></span></div>
+          <div class="e2-chip"><span class="e2-chip-text"><strong>Avocado</strong> <span>1/2</span></span></div>
+          <div class="e2-chip"><span class="e2-chip-text"><strong>Salsa</strong> <span>3 tbsp</span></span></div>
+          <div class="e2-chip"><span class="e2-chip-text"><strong>Sour cream</strong> <span>1 tbsp</span></span></div>
+        </div>
+      </div>
+      <div class="e2-section"><div class="e2-head"><span class="e2-title">Steps</span><span class="e2-sub">4 steps</span></div>
+        <div class="e2-step dark"><div class="e2-step-num">1</div><div class="e2-step-content"><div class="e2-step-text">Cook rice according to package directions.</div><div class="e2-step-time">~2 min</div></div></div>
+        <div class="e2-step light"><div class="e2-step-num">2</div><div class="e2-step-content"><div class="e2-step-text">Heat black beans. Season with cumin and salt.</div><div class="e2-step-time">~3 min</div></div></div>
+        <div class="e2-step dark"><div class="e2-step-num">3</div><div class="e2-step-content"><div class="e2-step-text">Slice avocado and prep toppings.</div><div class="e2-step-time">~2 min</div></div></div>
+        <div class="e2-step light"><div class="e2-step-num">4</div><div class="e2-step-content"><div class="e2-step-text">Assemble bowl with all ingredients.</div><div class="e2-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- E3 -->
+  <div>
+    <div class="col-label">E3 — NUMBERED LIST + SWIPE</div>
+    <div class="col-desc">Numbered ingredient rows (green numbers). Steps as horizontal swipe cards with watermark numbers.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e3-section"><div class="e3-head"><span class="e3-title">Ingredients</span><span class="e3-sub">6 items</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">1</span><span class="e3-ing-name">Black beans</span><span class="e3-ing-amt">1/2 can</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">2</span><span class="e3-ing-name">White rice</span><span class="e3-ing-amt">1 cup</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">3</span><span class="e3-ing-name">Corn</span><span class="e3-ing-amt">1/4 cup</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">4</span><span class="e3-ing-name">Avocado</span><span class="e3-ing-amt">1/2</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">5</span><span class="e3-ing-name">Salsa</span><span class="e3-ing-amt">3 tbsp</span></div>
+        <div class="e3-ing-row"><span class="e3-ing-num">6</span><span class="e3-ing-name">Sour cream</span><span class="e3-ing-amt">1 tbsp</span></div>
+      </div>
+      <div class="e3-steps"><div class="e3-steps-head"><span class="e3-title">Steps</span><span class="e3-sub">4 steps</span></div>
+        <div class="e3-scroll">
+          <div class="e3-scard dark"><span class="e3-scard-wm">1</span><span class="e3-scard-label">Step 1 of 4</span><span class="e3-scard-text">Cook rice according to package directions.</span><span class="e3-scard-time">~2 min</span></div>
+          <div class="e3-scard light"><span class="e3-scard-wm">2</span><span class="e3-scard-label">Step 2 of 4</span><span class="e3-scard-text">Heat black beans. Season with cumin and salt.</span><span class="e3-scard-time">~3 min</span></div>
+          <div class="e3-scard dark"><span class="e3-scard-wm">3</span><span class="e3-scard-label">Step 3 of 4</span><span class="e3-scard-text">Slice avocado and prep toppings.</span><span class="e3-scard-time">~2 min</span></div>
+          <div class="e3-scard light"><span class="e3-scard-wm">4</span><span class="e3-scard-label">Step 4 of 4</span><span class="e3-scard-text">Assemble bowl with all ingredients.</span><span class="e3-scard-time">~1 min</span></div>
+        </div>
+        <div class="e3-dots"><div class="e3-dot active"></div><div class="e3-dot inactive"></div><div class="e3-dot inactive"></div><div class="e3-dot inactive"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- E4 -->
+  <div>
+    <div class="col-label">E4 — 2-COL CARDS + DARK STEPPER</div>
+    <div class="col-desc">Ingredients as 2-column mini cards. Steps as a dark single-card stepper with prev/next buttons.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e4-section"><div class="e4-head"><span class="e4-title">Ingredients</span><span class="e4-sub">6 items</span></div>
+        <div class="e4-grid">
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">Black beans</span><div class="e4-card-amt">1/2 can</div></div>
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">White rice</span><div class="e4-card-amt">1 cup</div></div>
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">Corn</span><div class="e4-card-amt">1/4 cup</div></div>
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">Avocado</span><div class="e4-card-amt">1/2</div></div>
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">Salsa</span><div class="e4-card-amt">3 tbsp</div></div>
+          <div class="e4-card"><span class="e4-card-dot"></span><span class="e4-card-name">Sour cream</span><div class="e4-card-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="e4-section">
+        <div class="e4-head"><span class="e4-title">Steps</span><span class="e4-sub">4 steps</span></div>
+        <div class="e4-stepper">
+          <div class="e4-stepper-diag" style="width:80px;top:12px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="e4-stepper-diag" style="width:55px;top:22px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="e4-stepper-wm">2</div>
+          <div class="e4-stepper-top"><span class="e4-stepper-label">Step 2 of 4</span><span class="e4-stepper-time">~3 min</span></div>
+          <div class="e4-stepper-dots"><div class="e4-sd done"></div><div class="e4-sd active"></div><div class="e4-sd future"></div><div class="e4-sd future"></div></div>
+          <div class="e4-stepper-text">Heat black beans in a small pot. Season with cumin and salt to taste.</div>
+          <div class="e4-stepper-nav"><div class="e4-nav-btn e4-nav-prev"><span class="e4-nav-prev-text">Previous</span></div><div class="e4-nav-btn e4-nav-next"><span class="e4-nav-next-text">Next Step</span></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- E5 -->
+  <div>
+    <div class="col-label">E5 — CHECKLIST + BIG NUM CARDS</div>
+    <div class="col-desc">Checklist ingredients. Steps as white cards with large dark number circles. Clean, readable.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e1-section"><div class="e1-head"><span class="e1-title">Ingredients</span><span class="e1-count">0/6 ready</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Black beans</span><span class="e1-amt">1/2 can</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">White rice</span><span class="e1-amt">1 cup</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Corn</span><span class="e1-amt">1/4 cup</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Avocado</span><span class="e1-amt">1/2</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Salsa</span><span class="e1-amt">3 tbsp</span></div>
+        <div class="e1-item"><div class="e1-cb"></div><span class="e1-name">Sour cream</span><span class="e1-amt">1 tbsp</span></div>
+      </div>
+      <div class="e5-section"><div class="e5-head"><span class="e5-title">Steps</span><span class="e5-sub">4 steps</span></div>
+        <div class="e5-step-card"><div class="e5-step-num">1</div><div class="e5-step-content"><div class="e5-step-text">Cook rice according to package directions.</div><div class="e5-step-time">~2 min</div></div></div>
+        <div class="e5-step-card"><div class="e5-step-num">2</div><div class="e5-step-content"><div class="e5-step-text">Heat black beans. Season with cumin and salt.</div><div class="e5-step-time">~3 min</div></div></div>
+        <div class="e5-step-card"><div class="e5-step-num">3</div><div class="e5-step-content"><div class="e5-step-text">Slice avocado and prep toppings.</div><div class="e5-step-time">~2 min</div></div></div>
+        <div class="e5-step-card"><div class="e5-step-num">4</div><div class="e5-step-content"><div class="e5-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div><div class="e5-step-time">~1 min</div></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- E6 -->
+  <div>
+    <div class="col-label">E6 — BENTO TILES + TRAIL</div>
+    <div class="col-desc">Ingredients as 3-column bento tiles. Steps as trail timeline. Spatial grid + vertical flow.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="type">Breakfast · Recipe</span></div>
+      <div class="hero-name">Black Bean Burrito Bowl</div>
+      <div class="hero-sub"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hero-video"><span class="video-pill">▶ Watch Video</span></div>
+      <div class="e6-section"><div class="e6-head"><span class="e6-title">Ingredients</span><span class="e6-sub">6 items</span></div>
+        <div class="e6-bento">
+          <div class="e6-tile white"><div class="e6-tile-name">Black beans</div><div class="e6-tile-amt">1/2 can</div></div>
+          <div class="e6-tile stone"><div class="e6-tile-name">White rice</div><div class="e6-tile-amt">1 cup</div></div>
+          <div class="e6-tile white"><div class="e6-tile-name">Corn</div><div class="e6-tile-amt">1/4 cup</div></div>
+          <div class="e6-tile stone"><div class="e6-tile-name">Avocado</div><div class="e6-tile-amt">1/2</div></div>
+          <div class="e6-tile white"><div class="e6-tile-name">Salsa</div><div class="e6-tile-amt">3 tbsp</div></div>
+          <div class="e6-tile stone"><div class="e6-tile-name">Sour cream</div><div class="e6-tile-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="e1-section"><div class="e1-head"><span class="e1-title">Steps</span><span class="e1-sub">4 steps</span></div>
+        <div class="e1-tl"><div class="e1-tl-line"></div>
+          <div class="e1-step"><div class="e1-dot first"><span class="e1-dot-num">1</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 1</span><span class="e1-step-time">~2 min</span></div><div class="e1-step-text">Cook rice according to package directions.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">2</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 2</span><span class="e1-step-time">~3 min</span></div><div class="e1-step-text">Heat black beans. Season with cumin and salt.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">3</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 3</span><span class="e1-step-time">~2 min</span></div><div class="e1-step-text">Slice avocado and prep toppings.</div></div></div>
+          <div class="e1-step"><div class="e1-dot rest"><span class="e1-dot-num">4</span></div><div class="e1-step-card"><div class="e1-step-top"><span class="e1-step-label">Step 4</span><span class="e1-step-time">~1 min</span></div><div class="e1-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

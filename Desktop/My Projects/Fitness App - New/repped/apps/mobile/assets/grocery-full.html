@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Full Screen</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+
+/* ============================================================
+   TOP BAR
+   ============================================================ */
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+
+
+/* ============================================================
+   HERO FLIP CARD
+   ============================================================ */
+.flip-container{margin:14px 18px 0;perspective:1000px;height:160px}
+.flip-card{position:relative;width:100%;height:100%;transition:transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);transform-style:preserve-3d;will-change:transform}
+.flip-card.flipped{transform:rotateY(180deg)}
+.flip-front,.flip-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:22px;overflow:hidden;transform:translateZ(0)}
+
+.flip-front{background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);padding:12px 18px 12px}
+.flip-front::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.f-top{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:2px}
+.f-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.f-meta{font-size:10px;color:var(--rock)}
+.f-mid{display:flex;align-items:center;position:relative}
+.f-total-wrap{flex:1}
+.f-total{display:flex;align-items:center}
+.f-dollar{font-family:'DM Serif Display',serif;font-size:42px;color:#2E7D32;line-height:1;opacity:0.7;margin-right:6px}
+.f-amount{font-family:'DM Serif Display',serif;font-size:42px;color:var(--earth);line-height:1;letter-spacing:-0.5px}
+.f-est{font-size:9px;color:var(--rock);margin-top:3px}
+.f-cart{width:100px;height:100px;flex-shrink:0;margin-right:-8px;margin-top:-8px;margin-bottom:-8px}
+.f-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:4px;position:relative}
+.save-btn{display:flex;align-items:center;gap:5px;padding:8px 16px;border-radius:12px;background:linear-gradient(145deg,#C8C3B9,#B8B3A9);cursor:pointer;flex-shrink:0;box-shadow:4px 4px 10px rgba(0,0,0,0.08),-4px -4px 10px rgba(255,255,255,0.6)}
+.save-btn:active{box-shadow:inset 2px 2px 6px rgba(0,0,0,0.08),inset -2px -2px 6px rgba(255,255,255,0.5)}
+.save-text{font-size:9px;font-weight:700;color:var(--earth);letter-spacing:0.3px}
+
+.flip-back{background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);padding:12px 18px 12px;transform:rotateY(180deg)}
+.flip-back::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.b-top{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px;padding-bottom:8px;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.b-title{font-size:10px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:1.5px}
+.b-close{font-size:9px;font-weight:600;color:var(--rock);cursor:pointer;padding:5px 12px;border-radius:10px;background:linear-gradient(145deg,#C8C3B9,#B8B3A9);box-shadow:3px 3px 8px rgba(0,0,0,0.06),-3px -3px 8px rgba(255,255,255,0.5)}
+.b-tips{position:relative}
+.b-tip{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid rgba(0,0,0,0.03)}
+.b-tip:last-child{border-bottom:none}
+.b-tip-icon{width:22px;height:22px;border-radius:8px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;margin-top:1px}
+.b-tip-content{flex:1}
+.b-tip-text{font-size:10px;font-weight:500;color:var(--earth);line-height:1.4}
+.b-tip-save{font-size:9px;font-weight:700;color:#2E7D32;margin-top:1px}
+
+
+/* ============================================================
+   AISLE ROUTE LIST (R1)
+   ============================================================ */
+.route{padding:20px 24px 0}
+.route-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.route-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.route-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.route-meta{font-size:10px;color:var(--rock)}
+
+.trail{position:relative;padding-left:40px}
+.trail-line{position:absolute;left:13px;top:14px;bottom:14px;width:2px;background:var(--stone);border-radius:1px}
+.trail-fill{width:100%;background:var(--trail);border-radius:1px}
+
+.aisle{position:relative;margin-bottom:4px}
+.aisle-dot{position:absolute;left:-40px;top:2px;width:28px;height:28px;border-radius:14px;z-index:2;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,0.06);font-size:13px}
+.aisle-dot.g{background:var(--trail)}.aisle-dot.d{background:var(--earth)}.aisle-dot.u{background:var(--stone)}
+.aisle-head{display:flex;align-items:center;justify-content:space-between;padding:6px 0}
+.aisle-name{font-size:10px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:1px}
+.aisle-count{font-size:9px;color:var(--rock)}
+
+.r-items{padding:4px 0}
+.r-item{display:flex;align-items:center;gap:10px;padding:13px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.r-item:last-child{border-bottom:none}
+.r-cb{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.r-cb.on{background:var(--trail);border-color:var(--trail)}
+.r-ck{font-size:8px;color:#fff;font-weight:700}
+.r-info{flex:1}
+.r-name{font-size:14px;font-weight:500;color:var(--earth)}
+.r-qty{font-size:10px;color:var(--rock);margin-top:2px}
+.r-price{font-size:12px;font-weight:600;color:var(--rock)}
+.r-item.done{opacity:0.25}
+.r-item.done .r-name{text-decoration:line-through}
+
+.finish{display:flex;align-items:center;gap:10px;padding:6px 0;margin-left:-40px}
+.finish-dot{width:28px;height:28px;border-radius:14px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 6px rgba(0,0,0,0.04)}
+.finish-text{font-size:11px;font-weight:600;color:var(--rock)}
+.finish-total{margin-left:auto;font-size:13px;font-weight:700;color:var(--earth)}
+
+
+/* ============================================================
+   GLASS STORE CARDS
+   ============================================================ */
+.stores{padding:22px 20px 50px}
+.stores-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.stores-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--earth);letter-spacing:-0.2px}
+.stores-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.stores-meta{font-size:10px;color:var(--rock)}
+
+.store-card{background:linear-gradient(155deg,rgba(255,255,255,0.65),rgba(237,235,229,0.5),rgba(246,245,240,0.55),rgba(255,255,255,0.6));border:1px solid rgba(255,255,255,0.5);border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:all 0.15s;position:relative;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.03)}
+.store-card::before{content:'';position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.store-card.closest{background:linear-gradient(155deg,rgba(52,211,153,0.08),rgba(255,255,255,0.6),rgba(237,235,229,0.5),rgba(246,245,240,0.55),rgba(52,211,153,0.05));border-color:rgba(52,211,153,0.15)}
+.store-card.pressing{transform:scale(0.98)}
+
+.store-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative}
+.store-info{flex:1}
+.store-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--earth);letter-spacing:-0.2px}
+.store-address{font-family:'Inter',sans-serif;font-size:10px;color:var(--rock);margin-top:1px}
+.store-rating{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.store-star{font-size:12px}
+.store-rating-val{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--earth)}
+
+.store-bottom{display:flex;align-items:center;gap:6px;position:relative}
+.walk-icon{width:16px;height:16px;object-fit:contain;opacity:0.75;flex-shrink:0}
+.store-dist{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--earth)}
+.store-card.closest .store-dist{color:var(--trail)}
+.store-dot{width:3px;height:3px;border-radius:50%;background:var(--rock);opacity:0.3}
+.store-walk{font-size:11px;color:var(--rock)}
+.store-badge{margin-left:auto;padding:3px 10px;border-radius:100px;font-size:9px;font-weight:700}
+.store-badge.open{background:rgba(52,211,153,0.1);color:var(--trail)}
+.store-badge.closed{background:rgba(239,68,68,0.06);color:#EF4444}
+
+/* Directions panel */
+.store-directions{max-height:0;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.25,0.46,0.45,0.94),padding 0.4s,opacity 0.3s;opacity:0;padding:0;border-top:0px solid rgba(0,0,0,0.04)}
+.store-card.expanded .store-directions{max-height:120px;opacity:1;padding:10px 0 0;margin-top:10px;border-top-width:0.5px}
+.dir-row{display:flex;gap:8px}
+.dir-btn{flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:14px;cursor:pointer;transition:all 0.15s;background:linear-gradient(155deg,rgba(255,255,255,0.5),rgba(237,235,229,0.4),rgba(246,245,240,0.45));border:1px solid rgba(255,255,255,0.45);box-shadow:0 1px 6px rgba(0,0,0,0.03)}
+.dir-btn:active{transform:scale(0.96);box-shadow:inset 0 1px 4px rgba(0,0,0,0.04)}
+.dir-btn-icon{font-size:13px}
+.dir-btn-text{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:var(--earth);letter-spacing:0.2px}
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+<!-- Toast -->
+<div id="copyToast" style="position:absolute;top:50px;left:50%;z-index:200;transform:translateX(-50%) translateY(-20px);padding:10px 20px;border-radius:14px;background:rgba(45,42,36,0.9);display:flex;align-items:center;gap:8px;opacity:0;pointer-events:none;transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);box-shadow:0 4px 16px rgba(0,0,0,0.15)">
+  <span style="font-size:14px;color:#34D399">✓</span>
+  <span style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#F6F5F0">Copied to clipboard</span>
+</div>
+
+<div class="ps">
+
+  <!-- TOP BAR -->
+  <div class="top">
+    <div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div>
+    <span class="title">Grocery List</span>
+  </div>
+
+  <!-- HERO FLIP CARD -->
+  <div class="flip-container">
+    <div class="flip-card" id="flipCard">
+      <div class="flip-front">
+        <div class="f-top"><span class="f-label">Weekly Shop</span><span class="f-meta">18 items</span></div>
+        <div class="f-mid">
+          <div class="f-total-wrap">
+            <div class="f-total"><span class="f-dollar">$</span><span class="f-amount">47.82</span></div>
+            <div class="f-est">estimated total</div>
+          </div>
+          <div id="cart-anim" class="f-cart"></div>
+        </div>
+        <div class="f-bottom">
+          <div></div>
+          <div class="save-btn" onclick="document.getElementById('flipCard').classList.add('flipped')"><span class="save-text">💡 Save Tips</span></div>
+        </div>
+      </div>
+      <div class="flip-back">
+        <div class="b-top"><span class="b-title">💡 Smart Save Tips</span><span class="b-close" onclick="document.getElementById('flipCard').classList.remove('flipped')">✕ Close</span></div>
+        <div class="b-tips">
+          <div class="b-tip"><div class="b-tip-icon">🥦</div><div class="b-tip-content"><div class="b-tip-text">Seasonal spinach & avocado are cheaper this week</div><div class="b-tip-save">Save ~$2.40</div></div></div>
+          <div class="b-tip"><div class="b-tip-icon">🧊</div><div class="b-tip-content"><div class="b-tip-text">Frozen salmon — 40% cheaper, same nutrients</div><div class="b-tip-save">Save ~$5.20</div></div></div>
+          <div class="b-tip"><div class="b-tip-icon">📦</div><div class="b-tip-content"><div class="b-tip-text">Buy oats & rice in bulk — lasts 3 weeks</div><div class="b-tip-save">Save ~$3.50</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AISLE ROUTE LIST -->
+  <div class="route">
+    <div class="route-head"><div><span class="route-title">Store Route</span><div class="route-accent"></div></div><span class="route-meta">5/18</span></div>
+    <div class="trail">
+      <div class="trail-line"><div class="trail-fill" style="height:22%"></div></div>
+
+      <div class="aisle"><div class="aisle-dot g">🥦</div><div class="aisle-head"><span class="aisle-name">Produce</span><span class="aisle-count">2/5</span></div>
+        <div class="r-items">
+          <div class="r-item done"><div class="r-cb on"><span class="r-ck">✓</span></div><div class="r-info"><div class="r-name">Avocado</div><div class="r-qty">3 pieces</div></div><span class="r-price">$5.97</span></div>
+          <div class="r-item done"><div class="r-cb on"><span class="r-ck">✓</span></div><div class="r-info"><div class="r-name">Spinach</div><div class="r-qty">200g bag</div></div><span class="r-price">$3.49</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Banana</div><div class="r-qty">6 pieces</div></div><span class="r-price">$4.14</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Tomato</div><div class="r-qty">4 pieces</div></div><span class="r-price">$5.96</span></div>
+        </div>
+      </div>
+
+      <div class="aisle"><div class="aisle-dot d">🥛</div><div class="aisle-head"><span class="aisle-name">Dairy</span><span class="aisle-count">0/3</span></div>
+        <div class="r-items">
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Greek yogurt</div><div class="r-qty">500g</div></div><span class="r-price">$5.99</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Butter</div><div class="r-qty">250g</div></div><span class="r-price">$4.49</span></div>
+        </div>
+      </div>
+
+      <div class="aisle"><div class="aisle-dot u">🥩</div><div class="aisle-head"><span class="aisle-name">Protein</span><span class="aisle-count">2/4</span></div>
+        <div class="r-items">
+          <div class="r-item done"><div class="r-cb on"><span class="r-ck">✓</span></div><div class="r-info"><div class="r-name">Chicken breast</div><div class="r-qty">500g</div></div><span class="r-price">$8.99</span></div>
+          <div class="r-item done"><div class="r-cb on"><span class="r-ck">✓</span></div><div class="r-info"><div class="r-name">Eggs</div><div class="r-qty">12 pack</div></div><span class="r-price">$4.99</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Salmon</div><div class="r-qty">300g fillet</div></div><span class="r-price">$12.99</span></div>
+        </div>
+      </div>
+
+      <div class="aisle"><div class="aisle-dot u">🌾</div><div class="aisle-head"><span class="aisle-name">Grains & Pantry</span><span class="aisle-count">0/3</span></div>
+        <div class="r-items">
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Brown rice</div><div class="r-qty">1 kg</div></div><span class="r-price">$4.99</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Oats</div><div class="r-qty">500g</div></div><span class="r-price">$3.99</span></div>
+          <div class="r-item"><div class="r-cb"></div><div class="r-info"><div class="r-name">Olive oil</div><div class="r-qty">500ml</div></div><span class="r-price">$6.99</span></div>
+        </div>
+      </div>
+
+      <div class="finish"><div class="finish-dot">🛒</div><span class="finish-text">Est. Total</span><span class="finish-total">$47.82</span></div>
+    </div>
+  </div>
+
+  <!-- NEARBY STORES -->
+  <div class="stores">
+    <div class="stores-head"><div><span class="stores-title">Nearby Stores</span><div class="stores-accent"></div></div><span class="stores-meta">4 found</span></div>
+
+    <div class="store-card closest" onclick="toggleCard(event, this)">
+      <div class="store-top"><div class="store-info"><div class="store-name">No Frills</div><div class="store-address">245 Queen St W</div></div><div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.3/5</span></div></div>
+      <div class="store-bottom"><img class="walk-icon" src="/walking.png"><span class="store-dist">172m</span><span class="store-dot"></span><span class="store-walk">2 min</span><span class="store-badge open">Open</span></div>
+      <div class="store-directions"><div class="dir-row"><div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div><div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div></div></div>
+    </div>
+
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top"><div class="store-info"><div class="store-name">Walmart Supercentre</div><div class="store-address">900 Dufferin St</div></div><div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">3.8/5</span></div></div>
+      <div class="store-bottom"><img class="walk-icon" src="/walking.png"><span class="store-dist">1.2 km</span><span class="store-dot"></span><span class="store-walk">14 min</span><span class="store-badge open">Open</span></div>
+      <div class="store-directions"><div class="dir-row"><div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div><div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div></div></div>
+    </div>
+
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top"><div class="store-info"><div class="store-name">Loblaws</div><div class="store-address">396 St. Clair Ave W</div></div><div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.5/5</span></div></div>
+      <div class="store-bottom"><img class="walk-icon" src="/walking.png"><span class="store-dist">1.8 km</span><span class="store-dot"></span><span class="store-walk">22 min</span><span class="store-badge closed">Closed</span></div>
+      <div class="store-directions"><div class="dir-row"><div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div><div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div></div></div>
+    </div>
+
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top"><div class="store-info"><div class="store-name">Metro</div><div class="store-address">925 Wilson Ave</div></div><div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.1/5</span></div></div>
+      <div class="store-bottom"><img class="walk-icon" src="/walking.png"><span class="store-dist">2.3 km</span><span class="store-dot"></span><span class="store-walk">28 min</span><span class="store-badge open">Open</span></div>
+      <div class="store-directions"><div class="dir-row"><div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div><div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div></div></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script>
+lottie.loadAnimation({container:document.getElementById('cart-anim'),renderer:'svg',loop:true,autoplay:true,path:'/shopping-cart.json'});
+
+function copyAddress(btn){
+  var card=btn.closest('.store-card');
+  var address=card.querySelector('.store-address').textContent;
+  navigator.clipboard.writeText(address).catch(function(){});
+  var toast=document.getElementById('copyToast');
+  toast.style.opacity='1';toast.style.transform='translateX(-50%) translateY(0)';
+  setTimeout(function(){toast.style.opacity='0';toast.style.transform='translateX(-50%) translateY(-20px)'},2000);
+}
+
+function toggleCard(e,card){
+  if(e.target.closest('.store-directions'))return;
+  document.querySelectorAll('.store-card.expanded').forEach(function(c){if(c!==card)c.classList.remove('expanded')});
+  card.classList.toggle('expanded');
+  card.classList.add('pressing');setTimeout(function(){card.classList.remove('pressing')},150);
+}
+</script>
+</body>
+</html>

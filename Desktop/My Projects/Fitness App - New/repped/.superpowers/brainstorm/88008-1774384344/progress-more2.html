@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress Options Round 3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .links { display: flex; gap: 8px; padding: 18px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     P7: HERO RING CENTER — Ring is the page hero, dead center.
+     Stats orbit below as a 3-column row. Then sections flow.
+     ============================================================ */
+
+  .p7-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; text-align: center; }
+  .p7-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; text-align: center; }
+
+  /* Centered ring */
+  .p7-ring-area { display: flex; justify-content: center; padding: 20px 0 6px; }
+  .p7-ring { width: 130px; height: 130px; position: relative; }
+  .p7-ring svg { width: 130px; height: 130px; transform: rotate(-90deg); }
+  .p7-ring-track { fill: none; stroke: var(--stone); stroke-width: 8; }
+  .p7-ring-fill { fill: none; stroke: var(--trail); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 346; stroke-dashoffset: 346; animation: p7Fill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes p7Fill { to { stroke-dashoffset: 86; } }
+  .p7-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .p7-ring-num { font-size: 36px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; }
+  .p7-ring-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* 3-column stat row */
+  .p7-stats { display: flex; gap: 10px; padding: 10px 24px 0; }
+  .p7-stat { flex: 1; text-align: center; padding: 14px 8px; border-radius: 16px; }
+  .p7-stat:nth-child(1) { background: var(--earth); }
+  .p7-stat:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p7-stat:nth-child(3) { background: var(--stone); }
+  .p7-stat-val { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .p7-stat:nth-child(1) .p7-stat-val { color: var(--sand); }
+  .p7-stat:nth-child(2) .p7-stat-val, .p7-stat:nth-child(3) .p7-stat-val { color: var(--earth); }
+  .p7-stat-label { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .p7-stat:nth-child(1) .p7-stat-label { color: rgba(246,245,240,0.3); }
+  .p7-stat:nth-child(2) .p7-stat-label, .p7-stat:nth-child(3) .p7-stat-label { color: var(--rock); }
+
+  /* Section pattern */
+  .p7-sec { padding: 16px 24px 0; }
+  .p7-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  /* Heatmap — compact */
+  .p7-heat { padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p7-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .p7-hc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; }
+  .p7-hc.empty { background: var(--stone); }
+  .p7-hc.done { background: var(--earth); }
+  .p7-hc.today { background: var(--trail); }
+
+  /* Weight inline */
+  .p7-weight { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .p7-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p7-w-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .p7-w-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .p7-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p7-w-btn { padding: 10px 18px; border-radius: 12px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  /* 1RM horizontal */
+  .p7-rm-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .p7-rm-scroll::-webkit-scrollbar { display: none; }
+  .p7-rm { min-width: 120px; padding: 14px; border-radius: 16px; flex-shrink: 0; }
+  .p7-rm:nth-child(odd) { background: var(--earth); }
+  .p7-rm:nth-child(even) { background: var(--stone); }
+  .p7-rm-name { font-size: 10px; font-weight: 600; }
+  .p7-rm:nth-child(odd) .p7-rm-name { color: rgba(246,245,240,0.35); }
+  .p7-rm:nth-child(even) .p7-rm-name { color: var(--rock); }
+  .p7-rm-val { font-size: 20px; font-weight: 800; margin-top: 4px; letter-spacing: -0.5px; }
+  .p7-rm:nth-child(odd) .p7-rm-val { color: var(--sand); }
+  .p7-rm:nth-child(even) .p7-rm-val { color: var(--earth); }
+  .p7-rm-val span { font-size: 9px; font-weight: 500; }
+  .p7-rm:nth-child(odd) .p7-rm-val span { color: rgba(246,245,240,0.3); }
+  .p7-rm:nth-child(even) .p7-rm-val span { color: var(--rock); }
+  .p7-rm-level { font-size: 8px; font-weight: 600; color: var(--trail); margin-top: 3px; }
+  .p7-rm:nth-child(odd) .p7-rm-level { opacity: 0.6; }
+
+  /* PRs */
+  .p7-pr { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p7-pr:last-child { border-bottom: none; }
+  .p7-pr-icon { font-size: 14px; }
+  .p7-pr-name { font-size: 14px; font-weight: 500; color: var(--earth); flex: 1; }
+  .p7-pr-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .p7-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+
+
+  /* ============================================================
+     P8: DARK TOP + TABBED CONTENT — Dark hero zone with key
+     stats. Below: tab switcher for Activity / Strength / Body.
+     Only one tab visible at a time.
+     ============================================================ */
+
+  .p8-dark { background: var(--earth); padding: 56px 24px 22px; border-radius: 0 0 28px 28px; position: relative; overflow: hidden; }
+  .p8-accent { position: absolute; top: 0; right: 0; width: 100px; height: 100px; }
+  .p8-line { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .p8-line:nth-child(1) { width: 120px; top: 56px; right: -10px; transform: rotate(-35deg); }
+  .p8-line:nth-child(2) { width: 100px; top: 70px; right: -10px; transform: rotate(-35deg); }
+
+  .p8-ctx { font-size: 10px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .p8-title { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+
+  .p8-hero-row { display: flex; gap: 14px; margin-top: 16px; position: relative; }
+  .p8-hs { flex: 1; padding: 12px; border-radius: 14px; background: rgba(246,245,240,0.04); text-align: center; }
+  .p8-hs-val { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .p8-hs-label { font-size: 7px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 1px; }
+
+  /* Tabs */
+  .p8-tabs { display: flex; margin: 14px 24px 0; background: var(--stone); border-radius: 14px; padding: 3px; }
+  .p8-tab { flex: 1; padding: 11px; border-radius: 11px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .p8-tab.on { background: var(--earth); color: var(--sand); }
+  .p8-tab.off { color: var(--rock); }
+
+  /* Tab panels */
+  .p8-panel { padding: 14px 24px 0; display: none; }
+  .p8-panel.vis { display: block; animation: p8Fade 0.3s ease; }
+  @keyframes p8Fade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Activity panel */
+  .p8-heat { padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 12px; }
+  .p8-heat-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .p8-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .p8-hc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; }
+  .p8-hc.empty { background: var(--stone); }
+  .p8-hc.done { background: var(--earth); }
+  .p8-hc.today { background: var(--trail); }
+
+  .p8-vol { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p8-vol-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p8-vol-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .p8-vol-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .p8-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p8-vol-bars { display: flex; gap: 3px; align-items: flex-end; height: 32px; margin-top: 10px; }
+  .p8-vb { flex: 1; border-radius: 3px; background: var(--stone); }
+  .p8-vb.active { background: var(--trail); opacity: 0.4; }
+
+  /* Strength panel */
+  .p8-lift-card { padding: 16px; border-radius: 18px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .p8-lift-card:nth-child(odd) { background: var(--earth); }
+  .p8-lift-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p8-lc-left {}
+  .p8-lc-name { font-size: 13px; font-weight: 600; }
+  .p8-lift-card:nth-child(odd) .p8-lc-name { color: rgba(246,245,240,0.5); }
+  .p8-lift-card:nth-child(even) .p8-lc-name { color: var(--rock); }
+  .p8-lc-level { font-size: 9px; font-weight: 600; color: var(--trail); margin-top: 2px; }
+  .p8-lift-card:nth-child(odd) .p8-lc-level { opacity: 0.6; }
+  .p8-lc-val { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; }
+  .p8-lift-card:nth-child(odd) .p8-lc-val { color: var(--sand); }
+  .p8-lift-card:nth-child(even) .p8-lc-val { color: var(--earth); }
+  .p8-lc-val span { font-size: 10px; font-weight: 500; }
+  .p8-lift-card:nth-child(odd) .p8-lc-val span { color: rgba(246,245,240,0.3); }
+  .p8-lift-card:nth-child(even) .p8-lc-val span { color: var(--rock); }
+
+  /* Body panel */
+  .p8-body-card { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 10px; }
+  .p8-bc-top { display: flex; justify-content: space-between; align-items: center; }
+  .p8-bc-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p8-bc-btn { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; }
+  .p8-bc-val { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .p8-bc-val span { font-size: 14px; color: var(--rock); font-weight: 500; }
+  .p8-bc-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p8-bc-chart { height: 40px; margin-top: 8px; }
+  .p8-bc-chart svg { width: 100%; height: 100%; }
+
+  .p8-meas { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+  .p8-m { padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .p8-m-val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .p8-m-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     P9: MOSAIC DASHBOARD — Asymmetric bento of varying sizes.
+     Completion is a big dark tile. Streak, Volume, Weight as
+     smaller tiles. Heatmap as full-width. 1RM as row.
+     ============================================================ */
+
+  .p9-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .p9-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  .p9-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 14px 24px 0; }
+  .p9-cell { border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+
+  /* Big completion cell — tall, spans 2 rows */
+  .p9-comp { grid-row: span 2; background: var(--earth); display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .p9-comp-ring { width: 80px; height: 80px; position: relative; }
+  .p9-comp-ring svg { width: 80px; height: 80px; transform: rotate(-90deg); }
+  .p9-cr-track { fill: none; stroke: rgba(246,245,240,0.06); stroke-width: 6; }
+  .p9-cr-fill { fill: none; stroke: var(--trail); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 213; stroke-dashoffset: 213; animation: p9Fill 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes p9Fill { to { stroke-dashoffset: 53; } }
+  .p9-cr-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 900; color: var(--sand); letter-spacing: -0.5px; }
+  .p9-comp-label { font-size: 10px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 8px; }
+  .p9-comp-sub { font-size: 11px; color: rgba(246,245,240,0.2); margin-top: 2px; }
+
+  /* Small cells */
+  .p9-sm { display: flex; flex-direction: column; justify-content: center; }
+  .p9-sm.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p9-sm.stone { background: var(--stone); }
+  .p9-sm-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .p9-sm-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .p9-sm-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  /* Weight card — full width */
+  .p9-weight { grid-column: span 2; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .p9-wl {}
+  .p9-wl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p9-wl-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 2px; }
+  .p9-wl-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .p9-wl-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p9-w-btn { padding: 10px 18px; border-radius: 12px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  /* Heatmap — full width section */
+  .p9-sec { padding: 16px 24px 0; }
+  .p9-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .p9-heat { padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p9-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .p9-hc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; }
+  .p9-hc.empty { background: var(--stone); }
+  .p9-hc.done { background: var(--earth); }
+  .p9-hc.today { background: var(--trail); }
+
+  /* 1RM as dark card */
+  .p9-rm { margin: 14px 24px 0; padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .p9-rm-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .p9-rm-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; position: relative; }
+  .p9-rm-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .p9-rm-row:last-child { border-bottom: none; }
+  .p9-rm-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .p9-rm-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .p9-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== P7: HERO RING CENTER ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">P7 — Centered Ring</div>
+  <div class="dsc">Large ring centered at top. 3-column stat row below (dark/white/stone). Heatmap in white card. Weight inline card with log button. Horizontal 1RM scroll. PR rows.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p7-ctx">Monday, Mar 24</div>
+    <div class="p7-title">Your Journey</div>
+
+    <div class="p7-ring-area"><div class="p7-ring"><svg viewBox="0 0 130 130"><circle class="p7-ring-track" cx="65" cy="65" r="55"/><circle class="p7-ring-fill" cx="65" cy="65" r="55"/></svg><div class="p7-ring-center"><div class="p7-ring-num">75%</div><div class="p7-ring-label">This Week</div></div></div></div>
+
+    <div class="p7-stats">
+      <div class="p7-stat"><div class="p7-stat-val">12</div><div class="p7-stat-label">Streak</div></div>
+      <div class="p7-stat"><div class="p7-stat-val">47</div><div class="p7-stat-label">Workouts</div></div>
+      <div class="p7-stat"><div class="p7-stat-val">2.4t</div><div class="p7-stat-label">Volume</div></div>
+    </div>
+
+    <div class="p7-sec"><div class="p7-sec-title">Activity</div><div class="p7-heat"><div class="p7-heat-grid" id="p7Heat"></div></div></div>
+
+    <div class="p7-sec"><div class="p7-sec-title">Weight</div><div class="p7-weight"><div><div class="p7-w-label">Current</div><div class="p7-w-val">74.2 <span>kg</span></div><div class="p7-w-trend">▼ 0.8kg this month</div></div><div class="p7-w-btn">+ Log</div></div></div>
+
+    <div class="p7-sec"><div class="p7-sec-title">Estimated 1RM</div><div class="p7-rm-scroll"><div class="p7-rm"><div class="p7-rm-name">Bench</div><div class="p7-rm-val">80 <span>kg</span></div><div class="p7-rm-level">Intermediate</div></div><div class="p7-rm"><div class="p7-rm-name">Squat</div><div class="p7-rm-val">100 <span>kg</span></div><div class="p7-rm-level">Intermediate</div></div><div class="p7-rm"><div class="p7-rm-name">Deadlift</div><div class="p7-rm-val">120 <span>kg</span></div><div class="p7-rm-level">Novice</div></div><div class="p7-rm"><div class="p7-rm-name">OHP</div><div class="p7-rm-val">50 <span>kg</span></div><div class="p7-rm-level">Novice</div></div></div></div>
+
+    <div class="p7-sec"><div class="p7-sec-title">Recent PRs</div><div class="p7-pr"><span class="p7-pr-icon">🏆</span><span class="p7-pr-name">Bench Press</span><span class="p7-pr-val">80 <span>kg</span></span></div><div class="p7-pr"><span class="p7-pr-icon">🏆</span><span class="p7-pr-name">Squat</span><span class="p7-pr-val">105 <span>kg</span></span></div><div class="p7-pr"><span class="p7-pr-icon">🏆</span><span class="p7-pr-name">Deadlift</span><span class="p7-pr-val">120 <span>kg</span></span></div></div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P8: DARK TOP + TABS ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">P8 — Dark Top + Tabs</div>
+  <div class="dsc">Dark header zone with 4 stat tiles. Tab switcher: Activity (heatmap + volume), Strength (alternating lift cards), Body (weight chart + measurements grid). Click tabs to switch.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p8-dark"><div class="p8-accent"><div class="p8-line"></div><div class="p8-line"></div></div>
+      <div class="p8-ctx">Monday, Mar 24</div>
+      <div class="p8-title">Your Journey</div>
+      <div class="p8-hero-row">
+        <div class="p8-hs"><div class="p8-hs-val">75%</div><div class="p8-hs-label">Completion</div></div>
+        <div class="p8-hs"><div class="p8-hs-val">12</div><div class="p8-hs-label">Streak</div></div>
+        <div class="p8-hs"><div class="p8-hs-val">47</div><div class="p8-hs-label">Workouts</div></div>
+        <div class="p8-hs"><div class="p8-hs-val">2.4t</div><div class="p8-hs-label">Volume</div></div>
+      </div>
+    </div>
+
+    <div class="p8-tabs">
+      <div class="p8-tab on" id="p8t1" onclick="p8Tab(1)">Activity</div>
+      <div class="p8-tab off" id="p8t2" onclick="p8Tab(2)">Strength</div>
+      <div class="p8-tab off" id="p8t3" onclick="p8Tab(3)">Body</div>
+    </div>
+
+    <!-- Activity -->
+    <div class="p8-panel vis" id="p8p1">
+      <div class="p8-heat"><div class="p8-heat-label">12-Week Activity</div><div class="p8-heat-grid" id="p8Heat"></div></div>
+      <div style="height:12px;"></div>
+      <div class="p8-vol"><div class="p8-vol-label">Volume This Week</div><div class="p8-vol-val">2.4 <span>tons</span></div><div class="p8-vol-trend">▲ 12% vs last week</div><div class="p8-vol-bars"><div class="p8-vb" style="height:40%;"></div><div class="p8-vb" style="height:55%;"></div><div class="p8-vb" style="height:45%;"></div><div class="p8-vb" style="height:70%;"></div><div class="p8-vb" style="height:60%;"></div><div class="p8-vb" style="height:85%;"></div><div class="p8-vb active" style="height:100%;"></div></div></div>
+    </div>
+
+    <!-- Strength -->
+    <div class="p8-panel" id="p8p2">
+      <div class="p8-lift-card"><div class="p8-lc-left"><div class="p8-lc-name">Bench Press</div><div class="p8-lc-level">Intermediate</div></div><div class="p8-lc-val">80 <span>kg</span></div></div>
+      <div class="p8-lift-card"><div class="p8-lc-left"><div class="p8-lc-name">Squat</div><div class="p8-lc-level">Intermediate</div></div><div class="p8-lc-val">100 <span>kg</span></div></div>
+      <div class="p8-lift-card"><div class="p8-lc-left"><div class="p8-lc-name">Deadlift</div><div class="p8-lc-level">Novice</div></div><div class="p8-lc-val">120 <span>kg</span></div></div>
+      <div class="p8-lift-card"><div class="p8-lc-left"><div class="p8-lc-name">OHP</div><div class="p8-lc-level">Novice</div></div><div class="p8-lc-val">50 <span>kg</span></div></div>
+
+      <div style="font-size:13px;font-weight:700;color:var(--earth);margin:14px 0 8px;">Recent PRs</div>
+      <div class="p7-pr"><span class="p7-pr-icon">🏆</span><span class="p7-pr-name">Bench Press</span><span class="p7-pr-val">80 <span>kg</span></span></div>
+      <div class="p7-pr"><span class="p7-pr-icon">🏆</span><span class="p7-pr-name">Squat</span><span class="p7-pr-val">105 <span>kg</span></span></div>
+    </div>
+
+    <!-- Body -->
+    <div class="p8-panel" id="p8p3">
+      <div class="p8-body-card">
+        <div class="p8-bc-top"><span class="p8-bc-label">Weight</span><span class="p8-bc-btn">+ Log</span></div>
+        <div class="p8-bc-val">74.2 <span>kg</span></div>
+        <div class="p8-bc-trend">▼ 0.8kg from last month</div>
+        <div class="p8-bc-chart"><svg viewBox="0 0 300 40"><path fill="none" stroke="var(--earth)" stroke-width="1.5" stroke-linecap="round" opacity="0.15" d="M0,32 Q40,30 80,26 Q120,22 160,20 Q200,16 240,14 Q270,12 300,8"/></svg></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--earth);margin:0 0 8px;">Measurements</div>
+      <div class="p8-meas">
+        <div class="p8-m"><div class="p8-m-val">102</div><div class="p8-m-label">Chest cm</div></div>
+        <div class="p8-m"><div class="p8-m-val">82</div><div class="p8-m-label">Waist cm</div></div>
+        <div class="p8-m"><div class="p8-m-val">96</div><div class="p8-m-label">Hips cm</div></div>
+        <div class="p8-m"><div class="p8-m-val">36</div><div class="p8-m-label">Bicep cm</div></div>
+        <div class="p8-m"><div class="p8-m-val">58</div><div class="p8-m-label">Thigh cm</div></div>
+        <div class="p8-m"><div class="p8-m-val">18%</div><div class="p8-m-label">Body Fat</div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P9: MOSAIC DASHBOARD ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">P9 — Mosaic Bento</div>
+  <div class="dsc">Asymmetric bento grid. Large dark completion tile with ring spans 2 rows. Streak, volume, weight as smaller tiles. Full-width heatmap below. Dark 1RM card. Everything visible, no tabs.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p9-ctx">Monday, Mar 24</div>
+    <div class="p9-title">Your Journey</div>
+
+    <div class="p9-bento">
+      <div class="p9-cell p9-comp"><div class="p9-comp-ring"><svg viewBox="0 0 80 80"><circle class="p9-cr-track" cx="40" cy="40" r="34"/><circle class="p9-cr-fill" cx="40" cy="40" r="34"/></svg><div class="p9-cr-pct">75%</div></div><div class="p9-comp-label">This Week</div><div class="p9-comp-sub">3 of 4 done</div></div>
+      <div class="p9-cell p9-sm white"><div class="p9-sm-val">12</div><div class="p9-sm-label">Day Streak</div><div class="p9-sm-trend">Longest yet</div></div>
+      <div class="p9-cell p9-sm stone"><div class="p9-sm-val">2.4t</div><div class="p9-sm-label">Volume</div><div class="p9-sm-trend">▲ 12%</div></div>
+      <div class="p9-cell p9-weight"><div class="p9-wl"><div class="p9-wl-label">Weight</div><div class="p9-wl-val">74.2 <span>kg</span></div><div class="p9-wl-trend">▼ 0.8kg</div></div><div class="p9-w-btn">+ Log</div></div>
+    </div>
+
+    <div class="p9-sec"><div class="p9-sec-title">Activity</div><div class="p9-heat"><div class="p9-heat-grid" id="p9Heat"></div></div></div>
+
+    <div class="p9-rm"><div class="p9-rm-accent"></div><div class="p9-rm-label">Estimated 1RM</div>
+      <div class="p9-rm-row"><span class="p9-rm-name">Bench Press</span><span class="p9-rm-val">80 <span>kg</span></span></div>
+      <div class="p9-rm-row"><span class="p9-rm-name">Squat</span><span class="p9-rm-val">100 <span>kg</span></span></div>
+      <div class="p9-rm-row"><span class="p9-rm-name">Deadlift</span><span class="p9-rm-val">120 <span>kg</span></span></div>
+      <div class="p9-rm-row"><span class="p9-rm-name">OHP</span><span class="p9-rm-val">50 <span>kg</span></span></div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function genHeat(id, cls) {
+  const g = document.getElementById(id);
+  for (let i = 0; i < 84; i++) {
+    const c = document.createElement('div');
+    c.className = cls + (i === 83 ? ' today' : Math.random() < 0.45 ? ' done' : ' empty');
+    g.appendChild(c);
+  }
+}
+genHeat('p7Heat','p7-hc'); genHeat('p8Heat','p8-hc'); genHeat('p9Heat','p9-hc');
+
+function p8Tab(n) {
+  for (let i = 1; i <= 3; i++) {
+    document.getElementById('p8t'+i).className = i===n ? 'p8-tab on' : 'p8-tab off';
+    document.getElementById('p8p'+i).className = i===n ? 'p8-panel vis' : 'p8-panel';
+  }
+}
+</script>
+
+</body>
+</html>

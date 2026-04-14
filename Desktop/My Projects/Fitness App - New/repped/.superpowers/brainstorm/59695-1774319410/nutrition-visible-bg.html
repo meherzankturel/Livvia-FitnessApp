@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Visible Background Shifts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; z-index: 2; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  /* =================================================================
+     BACKGROUND SYSTEM
+     The entire phone bg color transitions smoothly.
+     4 blobs move, breathe, and change color with scroll.
+     ================================================================= */
+
+  /* Base phone bg — transitions on scroll */
+  #phone {
+    background: #F5EDE0;
+    transition: background-color 1.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Background blob container */
+  .bg { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+
+  .blob {
+    position: absolute; border-radius: 50%;
+    filter: blur(70px);
+    will-change: transform, background-color, opacity;
+    transition: background-color 1.8s cubic-bezier(0.4,0,0.2,1),
+                opacity 1.8s cubic-bezier(0.4,0,0.2,1),
+                top 2.5s cubic-bezier(0.4,0,0.2,1),
+                left 2.5s cubic-bezier(0.4,0,0.2,1),
+                right 2.5s cubic-bezier(0.4,0,0.2,1),
+                bottom 2.5s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .blob.a { width: 300px; height: 300px; animation: drift1 8s ease-in-out infinite; }
+  .blob.b { width: 260px; height: 260px; animation: drift2 10s ease-in-out infinite; }
+  .blob.c { width: 280px; height: 280px; animation: drift3 9s ease-in-out infinite; }
+
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    33% { transform: translate(15px,10px) scale(1.04); }
+    66% { transform: translate(-10px,15px) scale(0.97); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    40% { transform: translate(-12px,8px) scale(1.05); }
+    70% { transform: translate(8px,-10px) scale(0.96); }
+  }
+  @keyframes drift3 {
+    0%, 100% { transform: translate(0,0) scale(1); }
+    35% { transform: translate(10px,-12px) scale(1.03); }
+    65% { transform: translate(-8px,10px) scale(0.97); }
+  }
+
+  /* Topo */
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 1; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  /* ===== CONTENT ===== */
+  .cnt { position: relative; }
+
+  .status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .alive { display: flex; align-items: center; gap: 6px; }
+  .alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity:0.5; transform:scale(1); } 30% { opacity:1; transform:scale(1.35); } }
+  .alive-lbl { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  .hero { padding: 18px 24px 0; }
+  .hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  .macros { display: flex; gap: 8px; padding: 18px 24px; }
+  .macro { flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center; }
+  .macro.cal { background: var(--earth); }
+  .macro.other { background: rgba(255,255,255,0.45); border: 1px solid rgba(255,255,255,0.3); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  .macro .v { font-size: 18px; font-weight: 800; }
+  .macro.cal .v { color: var(--sand); }
+  .macro.other .v { color: var(--earth); }
+  .macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .macro.cal .l { color: rgba(246,245,240,0.35); }
+  .macro.other .l { color: var(--rock); }
+
+  .section { padding: 0 24px; }
+  .section-head { font-size: 13px; font-weight: 700; color: var(--earth); margin: 8px 0 14px; }
+
+  .meal {
+    margin-bottom: 20px; border-radius: 24px; overflow: hidden;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(255,255,255,0.35);
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    cursor: pointer; transition: transform 0.2s;
+    min-height: 220px;
+  }
+  .meal:active { transform: scale(0.98); }
+
+  .meal-inner { padding: 20px 22px; }
+  .meal-top { display: flex; justify-content: space-between; align-items: center; }
+  .meal-time { display: flex; align-items: center; gap: 6px; }
+  .meal-emoji { font-size: 16px; }
+  .meal-when { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .meal-cal { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .meal-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .meal-name { font-size: 18px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; margin-top: 10px; line-height: 1.2; }
+  .meal-macros { font-size: 12px; color: var(--rock); margin-top: 4px; }
+  .meal-mode { display: flex; gap: 6px; margin-top: 12px; }
+  .mp { padding: 6px 14px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .mp.on { background: var(--earth); color: var(--sand); }
+  .mp.off { background: rgba(45,42,36,0.05); color: var(--rock); }
+  .meal-acts { display: flex; gap: 6px; margin-top: 10px; }
+  .mb { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .mb.primary { background: var(--earth); color: var(--sand); }
+  .mb.swap { background: rgba(52,211,153,0.06); color: #047857; }
+  .mb.secondary { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .mb.muted { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+  .grocery { margin: 8px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone">
+  <div class="bg">
+    <div class="blob a" id="ba"></div>
+    <div class="blob b" id="bb"></div>
+    <div class="blob c" id="bc"></div>
+  </div>
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+
+  <div class="ps" id="scroll">
+    <div class="cnt">
+      <div class="status"><span class="time">9:41</span><div class="alive"><div class="alive-dot"></div><span class="alive-lbl">Fresh</span></div></div>
+      <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+      <div class="macros">
+        <div class="macro cal"><div class="v">2,180</div><div class="l">kcal</div></div>
+        <div class="macro other"><div class="v">165g</div><div class="l">Protein</div></div>
+        <div class="macro other"><div class="v">245g</div><div class="l">Carbs</div></div>
+        <div class="macro other"><div class="v">72g</div><div class="l">Fat</div></div>
+      </div>
+
+      <div class="section">
+        <div class="section-head">Today's Meals</div>
+
+        <div class="meal" id="z0"><div class="meal-inner">
+          <div class="meal-top"><div class="meal-time"><span class="meal-emoji">🌅</span><span class="meal-when">8 AM · Breakfast</span></div><div class="meal-cal">520 <span>kcal</span></div></div>
+          <div class="meal-name">Greek Yogurt Power Bowl</div>
+          <div class="meal-macros">35g protein · 42g carbs · 12g fat</div>
+          <div style="font-size:12px;color:var(--rock);margin-top:10px;line-height:1.5;">Creamy Greek yogurt with mixed berries, granola crunch, chia seeds, and a drizzle of honey.</div>
+          <div class="meal-mode"><span class="mp on">🍳 Cook</span><span class="mp off">🍽️ Eat Out</span></div>
+          <div class="meal-acts"><span class="mb primary">Recipe</span><span class="mb swap">Swap</span><span class="mb secondary">Eat Out</span><span class="mb muted">Nah</span></div>
+        </div></div>
+
+        <div class="meal" id="z1"><div class="meal-inner">
+          <div class="meal-top"><div class="meal-time"><span class="meal-emoji">☀️</span><span class="meal-when">12 PM · Lunch</span></div><div class="meal-cal">680 <span>kcal</span></div></div>
+          <div class="meal-name">Grilled Chicken & Brown Rice</div>
+          <div class="meal-macros">45g protein · 55g carbs · 14g fat</div>
+          <div style="font-size:12px;color:var(--rock);margin-top:10px;line-height:1.5;">Herb-marinated chicken breast with fluffy brown rice, steamed broccoli, and a squeeze of lemon.</div>
+          <div class="meal-mode"><span class="mp on">🍳 Cook</span><span class="mp off">🍽️ Eat Out</span></div>
+          <div class="meal-acts"><span class="mb primary">Recipe</span><span class="mb swap">Swap</span><span class="mb secondary">Eat Out</span><span class="mb muted">Nah</span></div>
+        </div></div>
+
+        <div class="meal" id="z2"><div class="meal-inner">
+          <div class="meal-top"><div class="meal-time"><span class="meal-emoji">🌇</span><span class="meal-when">4 PM · Snack</span></div><div class="meal-cal">260 <span>kcal</span></div></div>
+          <div class="meal-name">Protein Shake & Almonds</div>
+          <div class="meal-macros">37g protein · 18g carbs · 14g fat</div>
+          <div style="font-size:12px;color:var(--rock);margin-top:10px;line-height:1.5;">Whey protein blended with banana and oat milk. Handful of roasted almonds on the side.</div>
+          <div class="meal-mode"><span class="mp on">🍳 Cook</span><span class="mp off">🍽️ Eat Out</span></div>
+          <div class="meal-acts"><span class="mb primary">Recipe</span><span class="mb swap">Swap</span><span class="mb muted">Nah</span></div>
+        </div></div>
+
+        <div class="meal" id="z3"><div class="meal-inner">
+          <div class="meal-top"><div class="meal-time"><span class="meal-emoji">🌙</span><span class="meal-when">7 PM · Dinner</span></div><div class="meal-cal">720 <span>kcal</span></div></div>
+          <div class="meal-name">Salmon & Sweet Potato</div>
+          <div class="meal-macros">48g protein · 62g carbs · 22g fat</div>
+          <div style="font-size:12px;color:var(--rock);margin-top:10px;line-height:1.5;">Pan-seared salmon fillet with roasted sweet potato wedges, asparagus, and garlic butter.</div>
+          <div class="meal-mode"><span class="mp on">🍳 Cook</span><span class="mp off">🍽️ Eat Out</span></div>
+          <div class="meal-acts"><span class="mb primary">Recipe</span><span class="mb swap">Swap</span><span class="mb secondary">Eat Out</span><span class="mb muted">Nah</span></div>
+        </div></div>
+      </div>
+
+      <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const phone = document.getElementById('phone');
+const scroll = document.getElementById('scroll');
+const ba = document.getElementById('ba');
+const bb = document.getElementById('bb');
+const bc = document.getElementById('bc');
+const zones = ['z0','z1','z2','z3'].map(id => document.getElementById(id));
+
+// Each meal has: phone bg, blob colors/positions/opacities
+const states = [
+  { // Breakfast — current golden morning (keep what works)
+    bg: '#F5EDDF',
+    a: { color: '#E8D4B0', opacity: 0.45, top: '-40px', left: '-30px', right: 'auto', bottom: 'auto' },
+    b: { color: '#E0CCAA', opacity: 0.3, top: '25%', left: 'auto', right: '-50px', bottom: 'auto' },
+    c: { color: '#DCC8A0', opacity: 0.25, top: 'auto', left: '10%', right: 'auto', bottom: '30%' },
+  },
+  { // Lunch — trail green hints visible through the sand
+    bg: '#EFF2EA',
+    a: { color: '#8ECDB5', opacity: 0.2, top: '-50px', left: '-20px', right: 'auto', bottom: 'auto' },
+    b: { color: '#7BC4A8', opacity: 0.25, top: '20%', left: 'auto', right: '-40px', bottom: 'auto' },
+    c: { color: '#90D0B8', opacity: 0.18, top: 'auto', left: '10%', right: 'auto', bottom: '25%' },
+  },
+  { // Snack — golden hour, orange warmth
+    bg: '#F4E6D2',
+    a: { color: '#E0A868', opacity: 0.35, top: '-50px', left: 'auto', right: '-20px', bottom: 'auto' },
+    b: { color: '#D8A060', opacity: 0.4, top: '30%', left: '-40px', right: 'auto', bottom: 'auto' },
+    c: { color: '#E0AA70', opacity: 0.3, top: 'auto', left: '25%', right: 'auto', bottom: '15%' },
+  },
+  { // Dinner — darker night, earth deepens
+    bg: '#D8D0C5',
+    a: { color: '#8C8478', opacity: 0.4, top: '-40px', left: '20%', right: 'auto', bottom: 'auto' },
+    b: { color: '#7A7268', opacity: 0.45, top: 'auto', left: 'auto', right: '-30px', bottom: '20%' },
+    c: { color: '#908880', opacity: 0.35, top: 'auto', left: '-30px', right: 'auto', bottom: '-20px' },
+  },
+];
+
+function applyBlob(el, s) {
+  el.style.backgroundColor = s.color;
+  el.style.opacity = s.opacity;
+  el.style.top = s.top;
+  el.style.left = s.left;
+  el.style.right = s.right;
+  el.style.bottom = s.bottom;
+}
+
+let current = 0;
+
+// Apply initial state
+phone.style.backgroundColor = states[0].bg;
+applyBlob(ba, states[0].a);
+applyBlob(bb, states[0].b);
+applyBlob(bc, states[0].c);
+
+// Simple threshold-based detection using scrollTop
+scroll.addEventListener('scroll', function() {
+  const st = this.scrollTop;
+  const max = this.scrollHeight - this.clientHeight;
+  const pct = st / max; // 0 to 1
+
+  // Map scroll % to meal index
+  let idx;
+  if (pct < 0.2) idx = 0;       // breakfast
+  else if (pct < 0.45) idx = 1;  // lunch
+  else if (pct < 0.7) idx = 2;   // snack
+  else idx = 3;                   // dinner
+
+  if (idx !== current) {
+    current = idx;
+    const s = states[idx];
+    phone.style.backgroundColor = s.bg;
+    applyBlob(ba, s.a);
+    applyBlob(bb, s.b);
+    applyBlob(bc, s.c);
+  }
+});
+</script>
+
+</body>
+</html>

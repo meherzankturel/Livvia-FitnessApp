@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress Hero (Research-Based)</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0c;padding:30px 20px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--amber:#F59E0B}
+.phones{display:flex;justify-content:center;gap:50px;flex-wrap:wrap}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phone-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.phone-desc{font-size:10px;color:rgba(255,255,255,0.25);max-width:393px;text-align:center}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+.ph{padding:12px 22px}
+.ph-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ph-t{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--earth)}
+.ph-b{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:3px}
+.ph-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-dot{width:12px;height:12px;border-radius:6px;border:1.5px solid var(--stone);flex-shrink:0}
+.ph-line{height:8px;border-radius:4px;background:var(--stone);flex:1;opacity:0.25}
+.ph-sm{width:28px;height:7px;border-radius:3px;background:var(--stone);opacity:0.2}
+
+/* Shared heatmap */
+.hm-card{margin:0 18px 14px;padding:10px 12px 8px;border-radius:16px;background:linear-gradient(155deg,#EAE6DE 0%,#F0ECE4 30%,#F4F1EA 60%,#EDE9E1 100%);border:1px solid rgba(255,255,255,0.5);position:relative;overflow:hidden;box-shadow:0 2px 6px rgba(0,0,0,0.02)}
+.hm-card::before{content:'';position:absolute;top:-15px;right:-15px;width:50px;height:50px;border-radius:50%;background:rgba(52,211,153,0.03)}
+.hm-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.hm-nav-btn{width:22px;height:22px;border-radius:11px;background:rgba(255,255,255,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--rock)}
+.hm-nav-btn.disabled{opacity:0.25}
+.hm-nav-center{display:flex;align-items:baseline;gap:4px}
+.hm-nav-month{font-size:12px;font-weight:700;color:var(--earth)}
+.hm-nav-year{font-size:9px;color:var(--rock)}
+.hm-day-headers{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px}
+.hm-day-h{font-size:7px;font-weight:600;color:var(--rock);text-align:center}
+.hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.hm-cell{height:22px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:500;color:var(--rock)}
+.hm-cell.empty{background:transparent}.hm-cell.rest{background:rgba(45,42,36,0.03)}.hm-cell.today{background:var(--trail);color:#fff;font-weight:700;box-shadow:0 0 6px rgba(52,211,153,0.25)}
+.hm-footer{display:flex;align-items:center;margin-top:5px;padding-top:5px;border-top:0.5px solid rgba(0,0,0,0.03)}
+.hm-total{font-size:8px;color:var(--rock);flex:1}.hm-total b{color:var(--earth)}
+.hm-legend{display:flex;align-items:center;gap:2px}
+.hm-lt{font-size:6px;color:var(--rock)}.hm-lb{width:8px;height:8px;border-radius:2px}
+
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 0 0 rgba(52,211,153,0.25)}50%{box-shadow:0 0 0 6px rgba(52,211,153,0)}}
+@keyframes count-up{0%{opacity:0;transform:translateY(6px)}100%{opacity:1;transform:translateY(0)}}
+
+
+/* ═══════════════════════════════════════════════════════
+   H1 — ILLUSTRATION + WEEK TRACKER
+   Lottie fitness animation on left.
+   Week day pills on right showing this week's progress.
+   Streak badge. Motivational line.
+   Combines visual delight with useful data.
+   ═══════════════════════════════════════════════════════ */
+.h1{padding:44px 20px 12px;background:var(--sand)}
+.h1-top{display:flex;align-items:center;gap:6px}
+.h1-lottie{width:110px;height:110px;flex-shrink:0;margin-left:-8px}
+.h1-right{flex:1}
+.h1-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.h1-msg{font-size:10px;color:var(--rock);line-height:1.4;margin-top:4px}
+.h1-msg b{color:var(--earth);font-weight:600}
+
+/* Weekly day pills */
+.h1-week{display:flex;gap:5px;margin-top:10px}
+.h1-day{display:flex;flex-direction:column;align-items:center;gap:3px}
+.h1-day-circle{width:30px;height:30px;border-radius:15px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;transition:all 0.3s}
+.h1-day-circle.done{background:var(--trail);color:#fff}
+.h1-day-circle.rest{background:var(--stone);color:var(--rock)}
+.h1-day-circle.today{background:var(--earth);color:var(--sand);animation:pulse-glow 2.4s ease-in-out infinite}
+.h1-day-circle.upcoming{background:transparent;border:1.5px dashed rgba(45,42,36,0.12);color:var(--rock)}
+.h1-day-name{font-size:7px;font-weight:600;color:var(--rock)}
+
+/* Bottom bar: streak + completion */
+.h1-bar{display:flex;align-items:center;gap:8px;margin-top:10px;padding-top:8px;border-top:0.5px solid rgba(0,0,0,0.04)}
+.h1-badge{display:flex;align-items:center;gap:4px;padding:4px 10px;border-radius:10px;font-size:9px;font-weight:700}
+.h1-badge.streak{background:rgba(52,211,153,0.08);color:var(--trail)}
+.h1-badge.goal{background:rgba(45,42,36,0.04);color:var(--rock)}
+
+
+/* ═══════════════════════════════════════════════════════
+   H2 — WEEKLY RING + STATS CARDS
+   Circular ring showing weekly completion as the centerpiece.
+   3 mini stat cards below: streak, total workouts, weight.
+   Inspired by Apple Fitness / Fitbit. Clean, data-forward.
+   ═══════════════════════════════════════════════════════ */
+.h2{padding:44px 20px 12px;background:var(--sand);text-align:center}
+.h2-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--earth);letter-spacing:-0.3px;margin-bottom:14px}
+
+/* Ring */
+.h2-ring-wrap{position:relative;width:150px;height:150px;margin:0 auto}
+.h2-ring-wrap svg{width:150px;height:150px}
+.h2-ring-track{fill:none;stroke:var(--stone);stroke-width:12;stroke-linecap:round}
+.h2-ring-fill{fill:none;stroke:var(--trail);stroke-width:12;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(52,211,153,0.2))}
+.h2-ring-glow{fill:none;stroke:rgba(52,211,153,0.08);stroke-width:22;stroke-linecap:round}
+.h2-ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.h2-ring-num{font-family:'DM Serif Display',serif;font-size:36px;color:var(--earth);line-height:0.9}
+.h2-ring-of{font-size:11px;color:var(--rock);margin-top:2px}
+.h2-ring-label{font-size:8px;font-weight:700;color:var(--rock);letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+
+/* Day dots around the ring */
+.h2-days{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.h2-day{display:flex;flex-direction:column;align-items:center;gap:2px}
+.h2-day-dot{width:18px;height:18px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700}
+.h2-day-dot.done{background:var(--trail);color:#fff}
+.h2-day-dot.rest{background:var(--stone);color:transparent}
+.h2-day-dot.today{background:var(--earth);color:var(--sand)}
+.h2-day-dot.up{border:1.5px dashed rgba(45,42,36,0.1)}
+.h2-day-name{font-size:6px;font-weight:600;color:var(--rock)}
+
+/* 3 mini stat cards */
+.h2-stats{display:flex;gap:8px;margin-top:14px}
+.h2-stat{flex:1;padding:10px 6px;border-radius:14px;background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4));border:1px solid rgba(255,255,255,0.4);text-align:center}
+.h2-stat-icon{font-size:16px;margin-bottom:2px}
+.h2-stat-val{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth);line-height:1}
+.h2-stat.hl .h2-stat-val{color:var(--trail)}
+.h2-stat-label{font-size:7px;font-weight:600;color:var(--rock);margin-top:2px}
+.h2-stat-sub{font-size:7px;font-weight:700;margin-top:1px}
+
+.h2-msg{font-size:10px;color:var(--rock);margin-top:10px;line-height:1.4}
+.h2-msg b{color:var(--earth);font-weight:600}
+
+
+/* ═══════════════════════════════════════════════════════
+   H3 — STATS HERO WITH BACKGROUND ILLUSTRATION
+   Big prominent stats with a subtle fitness illustration
+   behind them. Data IS the visual. Gamified badges.
+   Premium card feel without being a separate card.
+   ═══════════════════════════════════════════════════════ */
+.h3{padding:44px 20px 12px;background:var(--sand);position:relative;overflow:hidden}
+
+/* Background illustration (subtle, behind content) */
+.h3-bg-illustration{position:absolute;top:40px;right:-10px;width:160px;height:160px;opacity:0.04;z-index:0}
+
+.h3-content{position:relative;z-index:2}
+.h3-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--earth);letter-spacing:-0.3px;margin-bottom:12px}
+
+/* Big stat row */
+.h3-big-stats{display:flex;gap:10px;margin-bottom:12px}
+.h3-big-stat{flex:1;padding:14px 10px;border-radius:16px;position:relative;overflow:hidden}
+.h3-big-stat::before{content:'';position:absolute;top:-8px;right:-8px;width:30px;height:30px;border-radius:50%}
+.h3-bs1{background:linear-gradient(155deg,rgba(52,211,153,0.08),rgba(255,255,255,0.5),rgba(237,235,229,0.4));border:1px solid rgba(52,211,153,0.1)}
+.h3-bs1::before{background:rgba(52,211,153,0.05)}
+.h3-bs2{background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4),rgba(246,245,240,0.45));border:1px solid rgba(255,255,255,0.4)}
+.h3-bs2::before{background:rgba(52,211,153,0.03)}
+.h3-bs-icon{font-size:18px;margin-bottom:4px}
+.h3-bs-val{font-family:'DM Serif Display',serif;font-size:28px;color:var(--earth);line-height:0.9}
+.h3-bs1 .h3-bs-val{color:var(--trail)}
+.h3-bs-label{font-size:7px;font-weight:700;letter-spacing:1px;color:var(--rock);text-transform:uppercase;margin-top:3px}
+.h3-bs-sub{font-size:8px;font-weight:600;margin-top:2px}
+
+/* Week progress bar */
+.h3-week-wrap{margin-bottom:10px}
+.h3-week-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.h3-week-label{font-size:9px;font-weight:700;color:var(--earth)}
+.h3-week-count{font-size:9px;font-weight:700;color:var(--trail)}
+.h3-week-bar{height:8px;border-radius:4px;background:var(--stone);overflow:visible;position:relative}
+.h3-week-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--trail),rgba(52,211,153,0.6));width:80%;position:relative}
+.h3-week-fill::after{content:'';position:absolute;right:-4px;top:-3px;width:14px;height:14px;border-radius:7px;background:var(--trail);border:2.5px solid var(--sand);box-shadow:0 0 6px rgba(52,211,153,0.25)}
+
+/* Day indicators below bar */
+.h3-days{display:flex;justify-content:space-between;margin-top:8px}
+.h3-day{display:flex;flex-direction:column;align-items:center;gap:2px}
+.h3-day-dot{width:20px;height:20px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+.h3-day-dot.done{background:var(--trail);color:#fff}
+.h3-day-dot.rest{background:rgba(45,42,36,0.04);color:var(--rock)}
+.h3-day-dot.today{background:var(--earth);color:var(--sand);animation:pulse-glow 2.4s ease-in-out infinite}
+.h3-day-dot.upcoming{background:transparent;border:1.5px dashed rgba(45,42,36,0.1);color:var(--rock)}
+.h3-day-name{font-size:6px;font-weight:600;color:var(--rock)}
+
+.h3-msg{font-size:10px;color:var(--rock);text-align:center;margin-top:10px;line-height:1.4}
+.h3-msg b{color:var(--earth);font-weight:600}
+
+</style>
+</head>
+<body>
+
+<div class="phones">
+
+<!-- ══════ H1 — ILLUSTRATION + WEEK TRACKER ══════ -->
+<div class="phone-col">
+<span class="phone-label">H1 — Illustration + Week</span>
+<span class="phone-desc">Lottie animation left, weekly day circles right. Data meets delight.</span>
+<div class="phone"><div class="ps">
+  <div class="h1">
+    <div class="h1-top">
+      <div class="h1-lottie" id="lottie-h1"></div>
+      <div class="h1-right">
+        <div class="h1-title">Progress</div>
+        <div class="h1-msg"><b>Consistency beats perfection.</b> Show up today, results follow.</div>
+      </div>
+    </div>
+    <div class="h1-week">
+      <div class="h1-day"><div class="h1-day-circle done">✓</div><div class="h1-day-name">Mon</div></div>
+      <div class="h1-day"><div class="h1-day-circle rest">—</div><div class="h1-day-name">Tue</div></div>
+      <div class="h1-day"><div class="h1-day-circle done">✓</div><div class="h1-day-name">Wed</div></div>
+      <div class="h1-day"><div class="h1-day-circle done">✓</div><div class="h1-day-name">Thu</div></div>
+      <div class="h1-day"><div class="h1-day-circle done">✓</div><div class="h1-day-name">Fri</div></div>
+      <div class="h1-day"><div class="h1-day-circle today">—</div><div class="h1-day-name">Sat</div></div>
+      <div class="h1-day"><div class="h1-day-circle upcoming">—</div><div class="h1-day-name">Sun</div></div>
+    </div>
+    <div class="h1-bar">
+      <div class="h1-badge streak">🔥 5-day streak</div>
+      <div class="h1-badge goal">4 of 5 this week</div>
+    </div>
+  </div>
+  <!-- Heatmap -->
+  <div class="hm-card"><div class="hm-nav"><div class="hm-nav-btn">‹</div><div class="hm-nav-center"><span class="hm-nav-month">April</span><span class="hm-nav-year">2026</span></div><div class="hm-nav-btn disabled">›</div></div><div class="hm-day-headers"><div class="hm-day-h">Mon</div><div class="hm-day-h">Tue</div><div class="hm-day-h">Wed</div><div class="hm-day-h">Thu</div><div class="hm-day-h">Fri</div><div class="hm-day-h">Sat</div><div class="hm-day-h">Sun</div></div><div class="hm-grid"><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell rest">1</div><div class="hm-cell rest">2</div><div class="hm-cell rest">3</div><div class="hm-cell rest">4</div><div class="hm-cell rest">5</div><div class="hm-cell rest">6</div><div class="hm-cell today">7</div><div class="hm-cell rest">8</div><div class="hm-cell rest">9</div><div class="hm-cell rest">10</div><div class="hm-cell rest">11</div><div class="hm-cell rest">12</div><div class="hm-cell rest">13</div><div class="hm-cell rest">14</div><div class="hm-cell rest">15</div><div class="hm-cell rest">16</div><div class="hm-cell rest">17</div><div class="hm-cell rest">18</div><div class="hm-cell rest">19</div><div class="hm-cell rest">20</div><div class="hm-cell rest">21</div><div class="hm-cell rest">22</div><div class="hm-cell rest">23</div><div class="hm-cell rest">24</div><div class="hm-cell rest">25</div><div class="hm-cell rest">26</div><div class="hm-cell rest">27</div><div class="hm-cell rest">28</div><div class="hm-cell rest">29</div><div class="hm-cell rest">30</div><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell empty"></div></div><div class="hm-footer"><span class="hm-total"><b>0</b> workouts</span><div class="hm-legend"><span class="hm-lt">Rest</span><div class="hm-lb" style="background:rgba(45,42,36,0.03)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.08)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.18)"></div><div class="hm-lb" style="background:var(--earth)"></div><span class="hm-lt">Heavy</span></div></div></div>
+  <div class="ph"><div class="ph-head"><div><div class="ph-t">Stats</div><div class="ph-b"></div></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:55%"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:65%"></div><div class="ph-sm"></div></div><div style="height:12px"></div><div class="ph-head"><div><div class="ph-t">Nutrition</div><div class="ph-b"></div></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:50%"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:60%"></div><div class="ph-sm"></div></div></div>
+</div></div>
+</div>
+
+
+<!-- ══════ H2 — WEEKLY RING + STAT CARDS ══════ -->
+<div class="phone-col">
+<span class="phone-label">H2 — Ring + Stats</span>
+<span class="phone-desc">Central weekly ring, day dots, 3 stat cards below. Apple Fitness inspired.</span>
+<div class="phone"><div class="ps">
+  <div class="h2">
+    <div class="h2-title">Progress</div>
+    <div class="h2-ring-wrap">
+      <svg viewBox="0 0 150 150">
+        <!-- 80% fill: circumference = 2*pi*60 = 377. dashoffset = 377 * 0.2 = 75.4 -->
+        <circle class="h2-ring-glow" cx="75" cy="75" r="60" stroke-dasharray="377" stroke-dashoffset="75" transform="rotate(-90 75 75)"/>
+        <circle class="h2-ring-track" cx="75" cy="75" r="60" transform="rotate(-90 75 75)"/>
+        <circle class="h2-ring-fill" cx="75" cy="75" r="60" stroke-dasharray="377" stroke-dashoffset="75" transform="rotate(-90 75 75)"/>
+      </svg>
+      <div class="h2-ring-center">
+        <div class="h2-ring-num">4</div>
+        <div class="h2-ring-of">of 5</div>
+        <div class="h2-ring-label">This Week</div>
+      </div>
+    </div>
+    <div class="h2-days">
+      <div class="h2-day"><div class="h2-day-dot done">✓</div><div class="h2-day-name">M</div></div>
+      <div class="h2-day"><div class="h2-day-dot rest"></div><div class="h2-day-name">T</div></div>
+      <div class="h2-day"><div class="h2-day-dot done">✓</div><div class="h2-day-name">W</div></div>
+      <div class="h2-day"><div class="h2-day-dot done">✓</div><div class="h2-day-name">T</div></div>
+      <div class="h2-day"><div class="h2-day-dot done">✓</div><div class="h2-day-name">F</div></div>
+      <div class="h2-day"><div class="h2-day-dot today">—</div><div class="h2-day-name">S</div></div>
+      <div class="h2-day"><div class="h2-day-dot up"></div><div class="h2-day-name">S</div></div>
+    </div>
+    <div class="h2-stats">
+      <div class="h2-stat hl"><div class="h2-stat-icon">🔥</div><div class="h2-stat-val">5</div><div class="h2-stat-label">Streak</div><div class="h2-stat-sub" style="color:var(--amber)">Best: 9</div></div>
+      <div class="h2-stat"><div class="h2-stat-icon">💪</div><div class="h2-stat-val">12</div><div class="h2-stat-label">Workouts</div><div class="h2-stat-sub" style="color:var(--trail)">+33%</div></div>
+      <div class="h2-stat"><div class="h2-stat-icon">⚖️</div><div class="h2-stat-val">72.4</div><div class="h2-stat-label">Weight</div><div class="h2-stat-sub" style="color:var(--trail)">-0.8 kg</div></div>
+    </div>
+    <div class="h2-msg"><b>One more session</b> to complete your weekly goal</div>
+  </div>
+  <!-- Heatmap -->
+  <div class="hm-card"><div class="hm-nav"><div class="hm-nav-btn">‹</div><div class="hm-nav-center"><span class="hm-nav-month">April</span><span class="hm-nav-year">2026</span></div><div class="hm-nav-btn disabled">›</div></div><div class="hm-day-headers"><div class="hm-day-h">Mon</div><div class="hm-day-h">Tue</div><div class="hm-day-h">Wed</div><div class="hm-day-h">Thu</div><div class="hm-day-h">Fri</div><div class="hm-day-h">Sat</div><div class="hm-day-h">Sun</div></div><div class="hm-grid"><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell rest">1</div><div class="hm-cell rest">2</div><div class="hm-cell rest">3</div><div class="hm-cell rest">4</div><div class="hm-cell rest">5</div><div class="hm-cell rest">6</div><div class="hm-cell today">7</div><div class="hm-cell rest">8</div><div class="hm-cell rest">9</div><div class="hm-cell rest">10</div><div class="hm-cell rest">11</div><div class="hm-cell rest">12</div><div class="hm-cell rest">13</div><div class="hm-cell rest">14</div><div class="hm-cell rest">15</div><div class="hm-cell rest">16</div><div class="hm-cell rest">17</div><div class="hm-cell rest">18</div><div class="hm-cell rest">19</div><div class="hm-cell rest">20</div><div class="hm-cell rest">21</div><div class="hm-cell rest">22</div><div class="hm-cell rest">23</div><div class="hm-cell rest">24</div><div class="hm-cell rest">25</div><div class="hm-cell rest">26</div><div class="hm-cell rest">27</div><div class="hm-cell rest">28</div><div class="hm-cell rest">29</div><div class="hm-cell rest">30</div><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell empty"></div></div><div class="hm-footer"><span class="hm-total"><b>0</b> workouts</span><div class="hm-legend"><span class="hm-lt">Rest</span><div class="hm-lb" style="background:rgba(45,42,36,0.03)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.08)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.18)"></div><div class="hm-lb" style="background:var(--earth)"></div><span class="hm-lt">Heavy</span></div></div></div>
+  <div class="ph"><div class="ph-head"><div><div class="ph-t">Nutrition</div><div class="ph-b"></div></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:50%"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:60%"></div><div class="ph-sm"></div></div></div>
+</div></div>
+</div>
+
+
+<!-- ══════ H3 — STATS HERO + WEEK BAR ══════ -->
+<div class="phone-col">
+<span class="phone-label">H3 — Stats + Week Bar</span>
+<span class="phone-desc">Big stat cards + progress bar + day dots. Data-forward, gamified, premium.</span>
+<div class="phone"><div class="ps">
+  <div class="h3">
+    <!-- Subtle background illustration -->
+    <div class="h3-bg-illustration" id="lottie-h3-bg"></div>
+    <div class="h3-content">
+      <div class="h3-title">Progress</div>
+      <!-- Big 2-column stats -->
+      <div class="h3-big-stats">
+        <div class="h3-big-stat h3-bs1">
+          <div class="h3-bs-icon">🔥</div>
+          <div class="h3-bs-val">5</div>
+          <div class="h3-bs-label">Day Streak</div>
+          <div class="h3-bs-sub" style="color:var(--amber)">Best: 9</div>
+        </div>
+        <div class="h3-big-stat h3-bs2">
+          <div class="h3-bs-icon">💪</div>
+          <div class="h3-bs-val">12</div>
+          <div class="h3-bs-label">Workouts</div>
+          <div class="h3-bs-sub" style="color:var(--trail)">+33% this month</div>
+        </div>
+      </div>
+      <!-- Week progress -->
+      <div class="h3-week-wrap">
+        <div class="h3-week-header"><span class="h3-week-label">This Week</span><span class="h3-week-count">4 of 5</span></div>
+        <div class="h3-week-bar"><div class="h3-week-fill"></div></div>
+      </div>
+      <!-- Day indicators -->
+      <div class="h3-days">
+        <div class="h3-day"><div class="h3-day-dot done">✓</div><div class="h3-day-name">Mon</div></div>
+        <div class="h3-day"><div class="h3-day-dot rest">—</div><div class="h3-day-name">Tue</div></div>
+        <div class="h3-day"><div class="h3-day-dot done">✓</div><div class="h3-day-name">Wed</div></div>
+        <div class="h3-day"><div class="h3-day-dot done">✓</div><div class="h3-day-name">Thu</div></div>
+        <div class="h3-day"><div class="h3-day-dot done">✓</div><div class="h3-day-name">Fri</div></div>
+        <div class="h3-day"><div class="h3-day-dot today">—</div><div class="h3-day-name">Sat</div></div>
+        <div class="h3-day"><div class="h3-day-dot upcoming">—</div><div class="h3-day-name">Sun</div></div>
+      </div>
+      <div class="h3-msg"><b>One more session</b> to complete your weekly goal</div>
+    </div>
+  </div>
+  <!-- Heatmap -->
+  <div class="hm-card"><div class="hm-nav"><div class="hm-nav-btn">‹</div><div class="hm-nav-center"><span class="hm-nav-month">April</span><span class="hm-nav-year">2026</span></div><div class="hm-nav-btn disabled">›</div></div><div class="hm-day-headers"><div class="hm-day-h">Mon</div><div class="hm-day-h">Tue</div><div class="hm-day-h">Wed</div><div class="hm-day-h">Thu</div><div class="hm-day-h">Fri</div><div class="hm-day-h">Sat</div><div class="hm-day-h">Sun</div></div><div class="hm-grid"><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell rest">1</div><div class="hm-cell rest">2</div><div class="hm-cell rest">3</div><div class="hm-cell rest">4</div><div class="hm-cell rest">5</div><div class="hm-cell rest">6</div><div class="hm-cell today">7</div><div class="hm-cell rest">8</div><div class="hm-cell rest">9</div><div class="hm-cell rest">10</div><div class="hm-cell rest">11</div><div class="hm-cell rest">12</div><div class="hm-cell rest">13</div><div class="hm-cell rest">14</div><div class="hm-cell rest">15</div><div class="hm-cell rest">16</div><div class="hm-cell rest">17</div><div class="hm-cell rest">18</div><div class="hm-cell rest">19</div><div class="hm-cell rest">20</div><div class="hm-cell rest">21</div><div class="hm-cell rest">22</div><div class="hm-cell rest">23</div><div class="hm-cell rest">24</div><div class="hm-cell rest">25</div><div class="hm-cell rest">26</div><div class="hm-cell rest">27</div><div class="hm-cell rest">28</div><div class="hm-cell rest">29</div><div class="hm-cell rest">30</div><div class="hm-cell empty"></div><div class="hm-cell empty"></div><div class="hm-cell empty"></div></div><div class="hm-footer"><span class="hm-total"><b>0</b> workouts</span><div class="hm-legend"><span class="hm-lt">Rest</span><div class="hm-lb" style="background:rgba(45,42,36,0.03)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.08)"></div><div class="hm-lb" style="background:rgba(45,42,36,0.18)"></div><div class="hm-lb" style="background:var(--earth)"></div><span class="hm-lt">Heavy</span></div></div></div>
+  <div class="ph"><div class="ph-head"><div><div class="ph-t">Nutrition</div><div class="ph-b"></div></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:50%"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-dot"></div><div class="ph-line" style="width:60%"></div><div class="ph-sm"></div></div></div>
+</div></div>
+</div>
+
+</div>
+
+<script>
+// Fitness running animation for H1
+lottie.loadAnimation({container:document.getElementById('lottie-h1'),renderer:'svg',loop:true,autoplay:true,
+  path:'https://lottie.host/5baa9cc4-1c6e-4e58-bfb2-83ad159dd3ab/5DmkDSGsFD.json'});
+// Subtle background illustration for H3
+lottie.loadAnimation({container:document.getElementById('lottie-h3-bg'),renderer:'svg',loop:true,autoplay:true,
+  path:'https://lottie.host/5baa9cc4-1c6e-4e58-bfb2-83ad159dd3ab/5DmkDSGsFD.json'});
+</script>
+</body>
+</html>

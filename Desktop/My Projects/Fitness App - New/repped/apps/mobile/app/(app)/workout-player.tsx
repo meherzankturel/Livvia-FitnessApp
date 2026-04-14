@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TextInput, Vibration, ScrollView } from "react-native";
+import { View, Text, Pressable, TextInput, Vibration, ScrollView, Animated } from "react-native";
 import { router } from "expo-router";
 import { useState, useEffect, useRef } from "react";
 import {
@@ -10,6 +10,7 @@ import {
   getFocusCue,
   generateFinisher,
   getFinisherCoreNames,
+  calculateProgression,
 } from "@repped/shared";
 import type { Exercise, MuscleGroup, FinisherBlock } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
@@ -81,6 +82,11 @@ export default function WorkoutPlayer() {
   const [prMessage, setPrMessage] = useState<string | null>(null);
   const prTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Progression suggestion state
+  const [progressionMsg, setProgressionMsg] = useState<string | null>(null);
+  const progressionOpacity = useRef(new Animated.Value(0)).current;
+  const progressionTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Finisher state
   const [showFinisher, setShowFinisher] = useState(false);
   const [finisher, setFinisher] = useState<FinisherBlock | null>(null);
@@ -89,6 +95,12 @@ export default function WorkoutPlayer() {
   const [finisherActive, setFinisherActive] = useState(false);
   const [finisherDone, setFinisherDone] = useState(false);
   const finisherTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // RPE tracking state
+  const [showRpeSelector, setShowRpeSelector] = useState(false);
+  const [rpeValues, setRpeValues] = useState<number[]>([]);
+  const [sessionAvgRpe, setSessionAvgRpe] = useState<number | null>(null);
+  const rpeSelectorOpacity = useRef(new Animated.Value(0)).current;
 
   // Profile data for weight suggestions
   const [profileData, setProfileData] = useState<{
@@ -109,6 +121,7 @@ export default function WorkoutPlayer() {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
       if (prTimeoutRef.current) clearTimeout(prTimeoutRef.current);
+      if (progressionTimeoutRef.current) clearTimeout(progressionTimeoutRef.current);
       if (finisherTimerRef.current) clearInterval(finisherTimerRef.current);
       if (elapsedRef.current) clearInterval(elapsedRef.current);
       if (checkTimeoutRef.current) clearTimeout(checkTimeoutRef.current);
@@ -158,12 +171,12 @@ export default function WorkoutPlayer() {
     // Fetch profile
     const { data: profile } = await supabase
       .from("profiles")
-      .select("body_weight_kg, sex, training_history")
+      .select("weight_kg, sex, training_history")
       .eq("id", session.user.id)
       .single();
 
     const pData = {
-      bodyWeightKg: profile?.body_weight_kg ?? 70,
+      bodyWeightKg: profile?.weight_kg ?? 70,
       sex: profile?.sex ?? "male",
       trainingHistory: profile?.training_history ?? "beginner",
     };
@@ -286,7 +299,8 @@ export default function WorkoutPlayer() {
       currentEx.muscleGroup as MuscleGroup,
       equipment,
       currentEx.difficulty,
-      library as Exercise[]
+      library as Exercise[],
+      currentEx.exerciseName
     );
     setSwapAlternatives(alternatives);
     setSwapVisible(true);
@@ -300,14 +314,17 @@ export default function WorkoutPlayer() {
       muscleGroup: exercise.muscle_group,
     });
 
+    // Preserve the original exercise's goal-aware sets/reps/rest — the swap
+    // should only change WHAT exercise, not HOW it's programmed
+    const original = exercises[currentExIdx];
     const updated = [...exercises];
     updated[currentExIdx] = {
       exerciseId: exercise.id,
       exerciseName: exercise.name,
-      targetSets: exercise.default_sets,
-      targetReps: exercise.default_reps,
-      restSeconds: exercise.default_rest_seconds,
-      explainWhy: "",
+      targetSets: original.targetSets,
+      targetReps: original.targetReps,
+      restSeconds: original.restSeconds,
+      explainWhy: `Swapped in for ${original.exerciseName} — targets the same muscle with different equipment.`,
       muscleGroup: exercise.muscle_group,
       difficulty: exercise.difficulty,
       suggestedWeight: suggestion.suggestedKg,
@@ -326,12 +343,35 @@ export default function WorkoutPlayer() {
     prTimeoutRef.current = setTimeout(() => setPrMessage(null), 5000);
   };
 
+  const showProgressionSuggestion = (message: string) => {
+    setProgressionMsg(message);
+    progressionOpacity.setValue(0);
+    Animated.timing(progressionOpacity, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
+    if (progressionTimeoutRef.current) clearTimeout(progressionTimeoutRef.current);
+    progressionTimeoutRef.current = setTimeout(() => {
+      Animated.timing(progressionOpacity, {
+        toValue: 0,
+        duration: 400,
+        useNativeDriver: true,
+      }).start(() => setProgressionMsg(null));
+    }, 4500);
+  };
+
   const triggerCheckAnimation = () => {
     setShowCheck(true);
     Vibration.vibrate(50);
     if (checkTimeoutRef.current) clearTimeout(checkTimeoutRef.current);
     checkTimeoutRef.current = setTimeout(() => setShowCheck(false), 800);
   };
+
+  // Refs for finisher single-interval pattern
+  const finisherExIdxRef = useRef(0);
+  const finisherTimeLeftRef = useRef(0);
+  const finisherRef = useRef<FinisherBlock | null>(null);
 
   const startFinisher = () => {
     if (!finisher || finisher.exercises.length === 0) return;
@@ -340,45 +380,39 @@ export default function WorkoutPlayer() {
     setFinisherExIdx(0);
     setFinisherTimeLeft(finisher.exercises[0].duration_seconds);
 
+    // Store in refs so the single interval can read current values
+    finisherExIdxRef.current = 0;
+    finisherTimeLeftRef.current = finisher.exercises[0].duration_seconds;
+    finisherRef.current = finisher;
+
+    if (finisherTimerRef.current) clearInterval(finisherTimerRef.current);
+
     finisherTimerRef.current = setInterval(() => {
-      setFinisherTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(finisherTimerRef.current!);
+      const fb = finisherRef.current;
+      if (!fb) return;
+
+      finisherTimeLeftRef.current -= 1;
+      const timeLeft = finisherTimeLeftRef.current;
+      setFinisherTimeLeft(timeLeft);
+
+      if (timeLeft <= 0) {
+        Vibration.vibrate([0, 200, 100, 200]);
+        const nextIdx = finisherExIdxRef.current + 1;
+
+        if (nextIdx < fb.exercises.length) {
+          // Advance to next finisher exercise
+          finisherExIdxRef.current = nextIdx;
+          finisherTimeLeftRef.current = fb.exercises[nextIdx].duration_seconds;
+          setFinisherExIdx(nextIdx);
+          setFinisherTimeLeft(fb.exercises[nextIdx].duration_seconds);
+        } else {
+          // All finisher exercises done
+          if (finisherTimerRef.current) clearInterval(finisherTimerRef.current);
           finisherTimerRef.current = null;
-          Vibration.vibrate([0, 200, 100, 200]);
-          setFinisherExIdx((prevIdx) => {
-            const nextIdx = prevIdx + 1;
-            if (finisher && nextIdx < finisher.exercises.length) {
-              setFinisherTimeLeft(finisher.exercises[nextIdx].duration_seconds);
-              finisherTimerRef.current = setInterval(() => {
-                setFinisherTimeLeft((p) => {
-                  if (p <= 1) {
-                    clearInterval(finisherTimerRef.current!);
-                    finisherTimerRef.current = null;
-                    Vibration.vibrate([0, 200, 100, 200]);
-                    setFinisherExIdx((pIdx) => {
-                      if (finisher && pIdx + 1 >= finisher.exercises.length) {
-                        setFinisherActive(false);
-                        setFinisherDone(true);
-                      }
-                      return pIdx + 1;
-                    });
-                    return 0;
-                  }
-                  return p - 1;
-                });
-              }, 1000);
-              return nextIdx;
-            } else {
-              setFinisherActive(false);
-              setFinisherDone(true);
-              return prevIdx;
-            }
-          });
-          return 0;
+          setFinisherActive(false);
+          setFinisherDone(true);
         }
-        return prev - 1;
-      });
+      }
     }, 1000);
   };
 
@@ -387,6 +421,35 @@ export default function WorkoutPlayer() {
     setShowFinisher(false);
     setFinisherActive(false);
     setCompleted(true);
+  };
+
+  const handleRpeSelect = (rpe: number) => {
+    setRpeValues((prev) => {
+      const updated = [...prev, rpe];
+      const avg = updated.reduce((a, b) => a + b, 0) / updated.length;
+      setSessionAvgRpe(avg);
+      return updated;
+    });
+    // Fade out RPE selector
+    Animated.timing(rpeSelectorOpacity, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => setShowRpeSelector(false));
+  };
+
+  const dismissRpeSelector = () => {
+    Animated.timing(rpeSelectorOpacity, {
+      toValue: 0,
+      duration: 200,
+      useNativeDriver: true,
+    }).start(() => setShowRpeSelector(false));
+  };
+
+  const getRpeFeedback = (avgRpe: number): string => {
+    if (avgRpe >= 9) return "Tough session! Consider a lighter day next time.";
+    if (avgRpe <= 6.5) return "Felt easy? You might be ready for heavier weights.";
+    return "Right in the zone. Great effort.";
   };
 
   const logSet = async () => {
@@ -409,6 +472,21 @@ export default function WorkoutPlayer() {
 
     // Trigger check animation
     triggerCheckAnimation();
+
+    // Show RPE selector after a brief delay
+    setTimeout(() => {
+      setShowRpeSelector(true);
+      rpeSelectorOpacity.setValue(0);
+      Animated.timing(rpeSelectorOpacity, {
+        toValue: 1,
+        duration: 250,
+        useNativeDriver: true,
+      }).start();
+      // Auto-dismiss after 6 seconds if no selection
+      setTimeout(() => {
+        dismissRpeSelector();
+      }, 6000);
+    }, 900);
 
     // PR detection
     if (weight > 0) {
@@ -440,6 +518,34 @@ export default function WorkoutPlayer() {
 
     setRepsInput("");
     setWeightInput("");
+
+    // Show progression suggestion when all sets for this exercise are done
+    if (currentSet >= currentEx.targetSets) {
+      const allReps = [...loggedSets.map((s) => s.reps), reps];
+      const avgWeight =
+        [...loggedSets.map((s) => s.weightKg), weight].reduce((a, b) => a + b, 0) / allReps.length;
+      const progression = calculateProgression(
+        avgWeight,
+        currentEx.targetReps,
+        currentEx.targetSets,
+        allReps,
+        currentEx.muscleGroup as MuscleGroup
+      );
+
+      if (progression.newWeight > avgWeight) {
+        showProgressionSuggestion(
+          `Next time: try ${progression.newWeight % 1 === 0 ? progression.newWeight : progression.newWeight.toFixed(1)} kg (+${(progression.newWeight - avgWeight) % 1 === 0 ? (progression.newWeight - avgWeight) : (progression.newWeight - avgWeight).toFixed(1)})`
+        );
+      } else if (progression.newWeight < avgWeight) {
+        showProgressionSuggestion(
+          `Next time: drop to ${progression.newWeight % 1 === 0 ? progression.newWeight : progression.newWeight.toFixed(1)} kg — nail the form`
+        );
+      } else {
+        showProgressionSuggestion(
+          `Great form — keep at ${avgWeight % 1 === 0 ? avgWeight : avgWeight.toFixed(1)} kg next session`
+        );
+      }
+    }
 
     if (currentSet < currentEx.targetSets) {
       setCurrentSet(currentSet + 1);
@@ -664,6 +770,31 @@ export default function WorkoutPlayer() {
           </BentoWidget>
         </View>
 
+        {/* RPE Session Feedback */}
+        {sessionAvgRpe !== null && (
+          <View
+            style={{
+              backgroundColor: sessionAvgRpe >= 9 ? "#FEF3C7" : sessionAvgRpe <= 6.5 ? "#D1FAE5" : C.stone,
+              borderRadius: 16,
+              paddingHorizontal: 20,
+              paddingVertical: 16,
+              marginBottom: 24,
+              width: "100%",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 6 }}>
+              SESSION INTENSITY
+            </Text>
+            <Text style={{ fontSize: 22, fontWeight: "800", color: C.earth, marginBottom: 4 }}>
+              RPE {sessionAvgRpe.toFixed(1)}
+            </Text>
+            <Text style={{ fontSize: 13, color: C.rock, textAlign: "center" }}>
+              {getRpeFeedback(sessionAvgRpe)}
+            </Text>
+          </View>
+        )}
+
         <Pressable
           onPress={() => router.replace({ pathname: "/(app)/cooldown", params: { focus } } as any)}
           style={{
@@ -727,6 +858,28 @@ export default function WorkoutPlayer() {
           </View>
         </View>
 
+        {/* Progression suggestion banner */}
+        {progressionMsg && (
+          <Animated.View
+            style={{
+              position: "absolute",
+              top: 104,
+              left: 24,
+              right: 24,
+              backgroundColor: C.stone,
+              borderRadius: 14,
+              paddingHorizontal: 16,
+              paddingVertical: 12,
+              zIndex: 10,
+              opacity: progressionOpacity,
+            }}
+          >
+            <Text style={{ color: C.earth, fontSize: 14, fontWeight: "600", textAlign: "center" }}>
+              {progressionMsg}
+            </Text>
+          </Animated.View>
+        )}
+
         <Text style={{ color: C.rock, fontSize: 16, marginBottom: 16 }}>Rest</Text>
         <Text style={{ color: C.earth, fontSize: 48, fontWeight: "800", marginBottom: 8 }}>
           {formatDuration(restTime)}
@@ -766,13 +919,18 @@ export default function WorkoutPlayer() {
     );
   }
 
-  // ─── Main Exercise Screen ───
+  // ─── Main Exercise Screen — Trail Timeline Layout ───
   const progressPct = ((currentExIdx + (currentSet - 1) / currentEx.targetSets) / exercises.length) * 100;
+  const timelineFillPct = ((currentSet - 1) / currentEx.targetSets) * 100;
+
+  // Previous set data for current set
+  const prevSetData = prevEx?.sets[currentSet - 1];
+  const prevLabel = prevSetData ? `${prevSetData.weight_kg} × ${prevSetData.reps}` : null;
 
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: C.bg }}
-      contentContainerStyle={{ paddingBottom: 40 }}
+      contentContainerStyle={{ paddingBottom: 100 }}
     >
       <TopoBackground />
 
@@ -796,6 +954,28 @@ export default function WorkoutPlayer() {
             {prMessage}
           </Text>
         </View>
+      )}
+
+      {/* Progression suggestion banner */}
+      {progressionMsg && (
+        <Animated.View
+          style={{
+            position: "absolute",
+            top: prMessage ? 160 : 96,
+            left: 24,
+            right: 24,
+            backgroundColor: C.stone,
+            borderRadius: 14,
+            paddingHorizontal: 16,
+            paddingVertical: 12,
+            zIndex: 9,
+            opacity: progressionOpacity,
+          }}
+        >
+          <Text style={{ color: C.earth, fontSize: 14, fontWeight: "600", textAlign: "center" }}>
+            {progressionMsg}
+          </Text>
+        </Animated.View>
       )}
 
       {/* Check animation overlay */}
@@ -822,263 +1002,324 @@ export default function WorkoutPlayer() {
               backgroundColor: "rgba(52,211,153,0.2)",
             }}
           >
-            <Text style={{ fontSize: 40, color: "#34D399" }}>&#10003;</Text>
+            <Text style={{ fontSize: 40, color: C.trail }}>&#10003;</Text>
           </View>
         </View>
       )}
 
-      {/* ─── Top bar: elapsed time + counter + exit ─── */}
-      <View style={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 8 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
-            {/* Elapsed time badge */}
-            <View style={{ backgroundColor: C.stone, borderRadius: 100, paddingHorizontal: 12, paddingVertical: 4 }}>
-              <Text style={{ color: C.earth, fontSize: 13, fontWeight: "600" }}>{formatElapsed(elapsed)}</Text>
-            </View>
-            {/* Exercise counter */}
-            <Text style={{ color: C.rock, fontSize: 14 }}>
-              {currentExIdx + 1} of {exercises.length}
-            </Text>
-          </View>
-          <Pressable onPress={() => router.back()}>
-            <Text style={{ color: C.rock, fontSize: 15 }}>Exit</Text>
+      {/* ─── Top bar ─── */}
+      <View style={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 4 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+          <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth, fontVariant: ["tabular-nums"] }}>
+            {formatElapsed(elapsed)}
+          </Text>
+          <Text style={{ fontSize: 12, color: C.rock, marginLeft: 8 }}>
+            {currentExIdx + 1} / {exercises.length}
+          </Text>
+          <Pressable onPress={() => router.back()} style={{ marginLeft: "auto" }}>
+            <Text style={{ color: C.rock, fontSize: 13 }}>End</Text>
           </Pressable>
         </View>
 
         {/* Progress bar */}
-        <View style={{ height: 4, backgroundColor: C.stone, borderRadius: 4, marginBottom: 16 }}>
-          <View
-            style={{
-              height: 4,
-              backgroundColor: C.earth,
-              borderRadius: 4,
-              width: `${progressPct}%`,
-            }}
-          />
+        <View style={{ height: 3, backgroundColor: C.stone, borderRadius: 2 }}>
+          <View style={{ height: 3, backgroundColor: C.trail, borderRadius: 2, width: `${progressPct}%` }} />
         </View>
       </View>
 
       {/* ─── Exercise header ─── */}
-      <View style={{ paddingHorizontal: 24, marginBottom: 12 }}>
-        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
-          <Text style={{ fontSize: 20, fontWeight: "700", color: C.earth, flex: 1 }}>{currentEx.exerciseName}</Text>
+      <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
+        <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, letterSpacing: -0.7 }}>
+          {currentEx.exerciseName}
+        </Text>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 5 }}>
+          <Text style={{ fontSize: 11, fontWeight: "600", color: C.rock }}>
+            {currentEx.muscleGroup.replace("_", " ").replace(/\b\w/g, (c: string) => c.toUpperCase())}
+          </Text>
+          <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.stone }} />
           <Pressable onPress={handleSwap}>
-            <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500" }}>Swap</Text>
+            <Text style={{ fontSize: 11, fontWeight: "600", color: C.trail }}>Swap</Text>
           </Pressable>
-        </View>
-
-        {/* Muscle tag pill + suggested weight */}
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
-          <View style={{ backgroundColor: mt.bg, borderRadius: 100, paddingHorizontal: 10, paddingVertical: 3 }}>
-            <Text style={{ fontSize: 12, fontWeight: "600", color: mt.tint }}>
-              {currentEx.muscleGroup.replace("_", " ")}
-            </Text>
-          </View>
-          {currentEx.suggestedWeight > 0 && (
-            <Text style={{ color: C.rock, fontSize: 13 }}>Suggested: {currentEx.suggestedWeight} kg</Text>
-          )}
+          <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.stone }} />
+          <Text style={{ fontSize: 11, fontWeight: "600", color: C.rock }}>▶ Video</Text>
         </View>
       </View>
 
-      {/* ─── Focus cue (collapsible) ─── */}
-      <Pressable onPress={() => setShowCue(!showCue)} style={{ paddingHorizontal: 24, marginBottom: 16 }}>
+      {/* ─── Trail Timeline ─── */}
+      <View style={{ paddingLeft: 24, paddingRight: 24, paddingTop: 24, position: "relative" }}>
+
+        {/* Vertical line */}
         <View
           style={{
-            borderRadius: 14,
-            paddingHorizontal: 16,
-            paddingVertical: 12,
-            backgroundColor: "rgba(52,211,153,0.05)",
-            borderWidth: 1,
-            borderColor: "rgba(52,211,153,0.15)",
+            position: "absolute",
+            left: 38,
+            top: 24,
+            bottom: 0,
+            width: 2,
+            backgroundColor: C.stone,
           }}
         >
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-            <Text style={{ color: "#4D7C5B", fontSize: 11, fontWeight: "700", textTransform: "uppercase", letterSpacing: 0.8 }}>
-              FOCUS CUE
-            </Text>
-            <Text style={{ color: C.rock, fontSize: 12 }}>{showCue ? "\u25B2" : "\u25BC"}</Text>
-          </View>
-          {showCue && (
-            <Text style={{ color: "#4D7C5B", fontSize: 14, lineHeight: 20, marginTop: 8 }}>
-              {getFocusCue(currentEx.exerciseName, currentEx.muscleGroup)}
-            </Text>
-          )}
+          <View
+            style={{
+              width: 2,
+              backgroundColor: C.trail,
+              borderRadius: 1,
+              height: `${timelineFillPct}%`,
+            }}
+          />
         </View>
-      </Pressable>
 
-      {/* ─── Set table ─── */}
-      <View style={{ paddingHorizontal: 24, marginBottom: 16 }}>
-        <View
-          style={{
-            backgroundColor: C.white,
-            borderRadius: 20,
-            borderWidth: 1,
-            borderColor: "rgba(0,0,0,0.04)",
-            overflow: "hidden",
-          }}
-        >
-          {/* Table header */}
-          <View
-            style={{
-              flexDirection: "row",
-              paddingHorizontal: 16,
-              paddingVertical: 12,
-              backgroundColor: C.stone,
-            }}
-          >
-            <Text style={{ width: 36, fontSize: 11, fontWeight: "600", color: C.rock, textTransform: "uppercase" }}>SET</Text>
-            <Text style={{ flex: 1, fontSize: 11, fontWeight: "600", color: C.rock, textAlign: "center", textTransform: "uppercase" }}>PREVIOUS</Text>
-            <Text style={{ width: 70, fontSize: 11, fontWeight: "600", color: C.rock, textAlign: "center", textTransform: "uppercase" }}>KG</Text>
-            <Text style={{ width: 60, fontSize: 11, fontWeight: "600", color: C.rock, textAlign: "center", textTransform: "uppercase" }}>REPS</Text>
-            <Text style={{ width: 36, fontSize: 11, fontWeight: "600", color: C.rock, textAlign: "center" }}></Text>
-          </View>
-
-          {/* Completed set rows */}
-          {loggedSets.map((ls) => (
-            <View
-              key={ls.setNumber}
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                paddingHorizontal: 16,
-                paddingVertical: 12,
-                backgroundColor: C.white,
-                borderTopWidth: 1,
-                borderTopColor: "rgba(0,0,0,0.04)",
-              }}
-            >
-              <Text style={{ width: 36, fontSize: 14, color: C.earth }}>{ls.setNumber}</Text>
-              <Text style={{ flex: 1, fontSize: 13, color: C.rock, textAlign: "center" }}>
-                {prevEx?.sets[ls.setNumber - 1]
-                  ? `${prevEx.sets[ls.setNumber - 1].weight_kg} x ${prevEx.sets[ls.setNumber - 1].reps}`
-                  : "\u2014"}
-              </Text>
-              <Text style={{ width: 70, fontSize: 14, fontWeight: "500", color: C.earth, textAlign: "center" }}>{ls.weightKg}</Text>
-              <Text style={{ width: 60, fontSize: 14, fontWeight: "500", color: C.earth, textAlign: "center" }}>{ls.reps}</Text>
-              <View style={{ width: 36, alignItems: "center", justifyContent: "center" }}>
-                <View
-                  style={{
-                    width: 22,
-                    height: 22,
-                    borderRadius: 11,
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backgroundColor: "#34D399",
-                  }}
-                >
-                  <Text style={{ color: "#fff", fontSize: 12, fontWeight: "700" }}>&#10003;</Text>
-                </View>
-              </View>
-            </View>
-          ))}
-
-          {/* Current set row (input) — trail-green left border */}
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              paddingHorizontal: 16,
-              paddingVertical: 10,
-              backgroundColor: C.white,
-              borderTopWidth: 1,
-              borderTopColor: "rgba(0,0,0,0.04)",
-              borderLeftWidth: 3,
-              borderLeftColor: "#34D399",
-            }}
-          >
-            <Text style={{ width: 36, fontSize: 14, fontWeight: "700", color: C.earth }}>{currentSet}</Text>
-            <Text style={{ flex: 1, fontSize: 13, color: C.rock, textAlign: "center" }}>
-              {prevEx?.sets[currentSet - 1]
-                ? `${prevEx.sets[currentSet - 1].weight_kg} x ${prevEx.sets[currentSet - 1].reps}`
-                : "\u2014"}
-            </Text>
-            <TextInput
-              style={{
-                width: 70,
-                fontSize: 14,
-                color: C.earth,
-                textAlign: "center",
-                borderRadius: 12,
-                paddingVertical: 8,
-                backgroundColor: C.stone,
-              }}
-              placeholder={currentEx.suggestedWeight > 0 ? String(currentEx.suggestedWeight) : "0"}
-              placeholderTextColor={C.rock}
-              keyboardType="decimal-pad"
-              value={weightInput}
-              onChangeText={setWeightInput}
-            />
-            <TextInput
-              style={{
-                width: 60,
-                fontSize: 14,
-                color: C.earth,
-                textAlign: "center",
-                borderRadius: 12,
-                paddingVertical: 8,
-                marginLeft: 4,
-                backgroundColor: C.stone,
-              }}
-              placeholder={String(currentEx.targetReps)}
-              placeholderTextColor={C.rock}
-              keyboardType="number-pad"
-              value={repsInput}
-              onChangeText={setRepsInput}
-            />
-            <View style={{ width: 36 }} />
-          </View>
-
-          {/* Remaining sets preview */}
-          {Array.from({ length: Math.max(0, currentEx.targetSets - currentSet) }).map((_, i) => {
-            const setNum = currentSet + i + 1;
-            return (
+        {/* ─── Completed sets ─── */}
+        {loggedSets.map((ls) => (
+          <View key={ls.setNumber} style={{ flexDirection: "row", gap: 16 }}>
+            {/* Dot */}
+            <View style={{ width: 30, alignItems: "center", paddingTop: 2 }}>
               <View
-                key={setNum}
                 style={{
-                  flexDirection: "row",
+                  width: 12,
+                  height: 12,
+                  borderRadius: 6,
+                  backgroundColor: C.trail,
                   alignItems: "center",
-                  paddingHorizontal: 16,
-                  paddingVertical: 12,
-                  borderTopWidth: 1,
-                  borderTopColor: "rgba(0,0,0,0.04)",
+                  justifyContent: "center",
+                  zIndex: 1,
                 }}
               >
-                <Text style={{ width: 36, fontSize: 14, color: C.rock }}>{setNum}</Text>
-                <Text style={{ flex: 1, fontSize: 13, color: C.rock, textAlign: "center" }}>
-                  {prevEx?.sets[setNum - 1]
-                    ? `${prevEx.sets[setNum - 1].weight_kg} x ${prevEx.sets[setNum - 1].reps}`
-                    : "\u2014"}
-                </Text>
-                <Text style={{ width: 70, fontSize: 14, color: C.rock, textAlign: "center" }}>{"\u2014"}</Text>
-                <Text style={{ width: 60, fontSize: 14, color: C.rock, textAlign: "center" }}>{"\u2014"}</Text>
-                <View style={{ width: 36 }} />
+                <Text style={{ fontSize: 7, fontWeight: "700", color: "#fff" }}>✓</Text>
               </View>
-            );
-          })}
+            </View>
+            {/* Content */}
+            <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingBottom: 16, paddingTop: 0 }}>
+              <Text style={{ fontSize: 11, fontWeight: "600", color: C.rock }}>Set {ls.setNumber}</Text>
+              <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth }}>{ls.weightKg} kg × {ls.reps}</Text>
+            </View>
+          </View>
+        ))}
+
+        {/* ─── Current set — expanded card ─── */}
+        <View style={{ flexDirection: "row", gap: 16 }}>
+          {/* Active dot */}
+          <View style={{ width: 30, alignItems: "center", paddingTop: 2 }}>
+            <View
+              style={{
+                width: 14,
+                height: 14,
+                borderRadius: 7,
+                backgroundColor: C.earth,
+                zIndex: 1,
+              }}
+            />
+            {/* Glow ring */}
+            <View
+              style={{
+                position: "absolute",
+                top: -1,
+                width: 22,
+                height: 22,
+                borderRadius: 11,
+                backgroundColor: "rgba(52,211,153,0.12)",
+                zIndex: 0,
+              }}
+            />
+          </View>
+          {/* Card */}
+          <View
+            style={{
+              flex: 1,
+              backgroundColor: C.white,
+              borderRadius: 18,
+              padding: 16,
+              marginBottom: 12,
+              borderWidth: 1.5,
+              borderColor: "rgba(52,211,153,0.08)",
+            }}
+          >
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
+              <Text style={{ fontSize: 11, fontWeight: "700", color: C.trail, textTransform: "uppercase", letterSpacing: 0.5 }}>
+                Set {currentSet}
+              </Text>
+              {prevLabel && (
+                <Text style={{ fontSize: 11, color: C.rock }}>Last: {prevLabel}</Text>
+              )}
+            </View>
+
+            {/* Inputs */}
+            <View style={{ flexDirection: "row", gap: 10, marginTop: 10 }}>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    paddingVertical: 14,
+                    paddingHorizontal: 8,
+                    borderRadius: 14,
+                    backgroundColor: C.bg,
+                    borderWidth: 2,
+                    borderColor: "transparent",
+                    textAlign: "center",
+                    fontSize: 30,
+                    fontWeight: "800",
+                    color: C.earth,
+                  }}
+                  placeholder={currentEx.suggestedWeight > 0 ? String(currentEx.suggestedWeight) : "0"}
+                  placeholderTextColor={C.rock}
+                  keyboardType="decimal-pad"
+                  value={weightInput}
+                  onChangeText={setWeightInput}
+                />
+                <Text style={{ fontSize: 9, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
+                  kg
+                </Text>
+              </View>
+              <View style={{ flex: 1, alignItems: "center" }}>
+                <TextInput
+                  style={{
+                    width: "100%",
+                    paddingVertical: 14,
+                    paddingHorizontal: 8,
+                    borderRadius: 14,
+                    backgroundColor: C.bg,
+                    borderWidth: 2,
+                    borderColor: "transparent",
+                    textAlign: "center",
+                    fontSize: 30,
+                    fontWeight: "800",
+                    color: C.earth,
+                  }}
+                  placeholder={String(currentEx.targetReps)}
+                  placeholderTextColor={C.rock}
+                  keyboardType="number-pad"
+                  value={repsInput}
+                  onChangeText={setRepsInput}
+                />
+                <Text style={{ fontSize: 9, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
+                  reps
+                </Text>
+              </View>
+            </View>
+
+            {/* Log button inside card */}
+            <Pressable
+              onPress={logSet}
+              style={{
+                backgroundColor: C.earth,
+                borderRadius: 12,
+                paddingVertical: 14,
+                alignItems: "center",
+                marginTop: 12,
+              }}
+            >
+              <Text style={{ color: C.bg, fontSize: 14, fontWeight: "700" }}>
+                {currentSet < currentEx.targetSets
+                  ? "Log Set"
+                  : currentExIdx < exercises.length - 1
+                  ? "Next Exercise"
+                  : "Complete Workout"}
+              </Text>
+            </Pressable>
+          </View>
         </View>
+
+        {/* ─── Future sets ─── */}
+        {Array.from({ length: Math.max(0, currentEx.targetSets - currentSet) }).map((_, i) => {
+          const setNum = currentSet + i + 1;
+          return (
+            <View key={setNum} style={{ flexDirection: "row", gap: 16 }}>
+              {/* Future dot */}
+              <View style={{ width: 30, alignItems: "center", paddingTop: 2 }}>
+                <View
+                  style={{
+                    width: 12,
+                    height: 12,
+                    borderRadius: 6,
+                    backgroundColor: C.stone,
+                    opacity: 0.5,
+                    zIndex: 1,
+                  }}
+                />
+              </View>
+              {/* Content */}
+              <View style={{ flex: 1, paddingBottom: 16 }}>
+                <Text style={{ fontSize: 11, color: C.rock, opacity: 0.4 }}>Set {setNum}</Text>
+                <Text style={{ fontSize: 10, color: C.rock, opacity: 0.25, marginTop: 2 }}>
+                  Target: {currentEx.targetReps} reps
+                </Text>
+              </View>
+            </View>
+          );
+        })}
       </View>
 
-      {/* ─── Log Set button ─── */}
-      <View style={{ paddingHorizontal: 24 }}>
-        <Pressable
-          onPress={logSet}
+      {/* ─── Focus cue ─── */}
+      <View style={{ flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 24, marginTop: 8 }}>
+        <View style={{ width: 5, height: 5, borderRadius: 2.5, backgroundColor: C.trail, opacity: 0.6 }} />
+        <Text style={{ fontSize: 11, color: C.rock }}>
+          {getFocusCue(currentEx.exerciseName, currentEx.muscleGroup)}
+        </Text>
+      </View>
+
+      {/* RPE Quick-Tap Selector */}
+      {showRpeSelector && (
+        <Animated.View
           style={{
-            backgroundColor: C.earth,
-            borderRadius: 16,
-            paddingVertical: 16,
-            alignItems: "center",
-            width: "100%",
+            position: "absolute",
+            bottom: 40,
+            left: 24,
+            right: 24,
+            backgroundColor: C.white,
+            borderRadius: 18,
+            padding: 14,
+            zIndex: 25,
+            borderWidth: 1.5,
+            borderColor: "rgba(0,0,0,0.06)",
+            opacity: rpeSelectorOpacity,
           }}
         >
-          <Text style={{ color: C.bg, fontSize: 17, fontWeight: "700" }}>
-            {currentSet < currentEx.targetSets
-              ? `Log Set ${currentSet}`
-              : currentExIdx < exercises.length - 1
-              ? "Next Exercise"
-              : "Complete Workout"}
+          <Text style={{ fontSize: 11, fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", marginBottom: 10 }}>
+            How did that feel?
           </Text>
-        </Pressable>
-      </View>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <Pressable
+              onPress={() => handleRpeSelect(6.5)}
+              style={{
+                flex: 1,
+                backgroundColor: "#D1FAE5",
+                borderRadius: 12,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 14, fontWeight: "700", color: "#059669" }}>Easy</Text>
+              <Text style={{ fontSize: 10, color: "#059669", marginTop: 2 }}>RPE 6-7</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => handleRpeSelect(8)}
+              style={{
+                flex: 1,
+                backgroundColor: C.stone,
+                borderRadius: 12,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth }}>Right</Text>
+              <Text style={{ fontSize: 10, color: C.rock, marginTop: 2 }}>RPE 8</Text>
+            </Pressable>
+            <Pressable
+              onPress={() => handleRpeSelect(9.5)}
+              style={{
+                flex: 1,
+                backgroundColor: "#FEF3C7",
+                borderRadius: 12,
+                paddingVertical: 12,
+                alignItems: "center",
+              }}
+            >
+              <Text style={{ fontSize: 14, fontWeight: "700", color: "#D97706" }}>Hard</Text>
+              <Text style={{ fontSize: 10, color: "#D97706", marginTop: 2 }}>RPE 9-10</Text>
+            </Pressable>
+          </View>
+        </Animated.View>
+      )}
 
       {/* Exercise swap modal */}
       <ExerciseSwapModal

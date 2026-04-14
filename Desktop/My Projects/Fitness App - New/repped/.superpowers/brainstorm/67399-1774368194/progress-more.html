@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — More Progress Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     P4: BIG NUMBER HERO — Giant streak number as the centerpiece.
+     Ring small & inline. Stats as horizontal scroll pills.
+     ============================================================ */
+
+  .p4-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .p4-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  /* Giant streak */
+  .p4-streak { padding: 20px 24px 0; display: flex; align-items: flex-end; gap: 12px; }
+  .p4-streak-num { font-size: 80px; font-weight: 900; color: var(--earth); letter-spacing: -4px; line-height: 0.85; }
+  .p4-streak-info { padding-bottom: 8px; }
+  .p4-streak-label { font-size: 12px; font-weight: 700; color: var(--earth); }
+  .p4-streak-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  /* Stat pills — horizontal scroll */
+  .p4-pills { display: flex; gap: 8px; padding: 16px 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .p4-pills::-webkit-scrollbar { display: none; }
+  .p4-pill { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 14px; flex-shrink: 0; }
+  .p4-pill:last-child { margin-right: 24px; }
+  .p4-pill.dark { background: var(--earth); }
+  .p4-pill.stone { background: var(--stone); }
+  .p4-pill.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p4-pill-val { font-size: 18px; font-weight: 800; }
+  .p4-pill.dark .p4-pill-val { color: var(--sand); }
+  .p4-pill.stone .p4-pill-val, .p4-pill.white .p4-pill-val { color: var(--earth); }
+  .p4-pill-label { font-size: 10px; font-weight: 500; }
+  .p4-pill.dark .p4-pill-label { color: rgba(246,245,240,0.35); }
+  .p4-pill.stone .p4-pill-label, .p4-pill.white .p4-pill-label { color: var(--rock); }
+
+  /* Heatmap — full width, no card */
+  .p4-heat { padding: 18px 24px 0; }
+  .p4-heat-label { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .p4-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .p4-hc { aspect-ratio: 1; border-radius: 4px; }
+  .p4-hc.empty { background: var(--stone); }
+  .p4-hc.done { background: var(--earth); }
+  .p4-hc.today { background: var(--trail); }
+
+  /* Weight — compact dark card */
+  .p4-weight { margin: 16px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .p4-w-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .p4-w-row { display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+  .p4-w-left {}
+  .p4-w-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p4-w-val { font-size: 32px; font-weight: 800; color: var(--sand); letter-spacing: -1px; margin-top: 4px; }
+  .p4-w-val span { font-size: 14px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .p4-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p4-w-btn { padding: 8px 18px; border-radius: 12px; background: rgba(246,245,240,0.06); font-size: 11px; color: var(--sand); font-weight: 600; cursor: pointer; position: relative; }
+
+  /* 1RM as bento */
+  .p4-rm { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .p4-rm-card { padding: 16px; border-radius: 18px; }
+  .p4-rm-card:nth-child(odd) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p4-rm-card:nth-child(even) { background: var(--stone); }
+  .p4-rm-name { font-size: 11px; color: var(--rock); font-weight: 600; }
+  .p4-rm-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 4px; }
+  .p4-rm-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .p4-rm-level { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  .p4-links { display: flex; gap: 8px; padding: 18px 24px; }
+  .p4-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+
+
+  /* ============================================================
+     P5: HORIZONTAL SCROLL SECTIONS — Each section is a
+     horizontal swipeable zone. Stats, Heatmap, Lifts,
+     Weight — all as horizontal card groups.
+     ============================================================ */
+
+  .p5-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .p5-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  .p5-sec { padding: 16px 0 0; }
+  .p5-sec-head { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-bottom: 10px; }
+  .p5-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .p5-sec-sub { font-size: 10px; color: var(--rock); }
+
+  /* Horizontal stat cards */
+  .p5-scroll { display: flex; gap: 10px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .p5-scroll::-webkit-scrollbar { display: none; }
+
+  .p5-card { min-width: 140px; padding: 18px; border-radius: 20px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .p5-card:last-child { margin-right: 24px; }
+  .p5-card.dark { background: var(--earth); }
+  .p5-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .p5-card.stone { background: var(--stone); }
+  .p5-card.trail { background: rgba(52,211,153,0.06); }
+
+  .p5-c-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .p5-card.dark .p5-c-label { color: rgba(246,245,240,0.3); }
+  .p5-card.white .p5-c-label, .p5-card.stone .p5-c-label { color: var(--rock); }
+  .p5-card.trail .p5-c-label { color: #047857; }
+
+  .p5-c-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
+  .p5-card.dark .p5-c-val { color: var(--sand); }
+  .p5-card.white .p5-c-val, .p5-card.stone .p5-c-val { color: var(--earth); }
+  .p5-card.trail .p5-c-val { color: #047857; }
+  .p5-c-val span { font-size: 12px; font-weight: 500; letter-spacing: 0; }
+  .p5-card.dark .p5-c-val span { color: rgba(246,245,240,0.3); }
+  .p5-card.white .p5-c-val span, .p5-card.stone .p5-c-val span { color: var(--rock); }
+
+  .p5-c-sub { font-size: 10px; margin-top: 3px; }
+  .p5-card.dark .p5-c-sub { color: rgba(246,245,240,0.25); }
+  .p5-card.white .p5-c-sub, .p5-card.stone .p5-c-sub { color: var(--rock); }
+  .p5-card.trail .p5-c-sub { color: var(--trail); }
+
+  /* Mini trend in card */
+  .p5-mini-bars { display: flex; gap: 2px; align-items: flex-end; height: 20px; margin-top: 8px; }
+  .p5-mb { flex: 1; border-radius: 2px; }
+  .p5-card.dark .p5-mb { background: rgba(246,245,240,0.06); }
+  .p5-card.dark .p5-mb.active { background: var(--trail); opacity: 0.5; }
+  .p5-card.white .p5-mb, .p5-card.stone .p5-mb { background: var(--stone); }
+  .p5-card.white .p5-mb.active, .p5-card.stone .p5-mb.active { background: var(--earth); opacity: 0.15; }
+
+  /* Heatmap card — wider, scrollable */
+  .p5-heat-card { min-width: 320px; padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); flex-shrink: 0; }
+  .p5-heat-card:last-child { margin-right: 24px; }
+  .p5-heat-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .p5-hc { width: 14px; height: 14px; border-radius: 3px; }
+  .p5-hc.empty { background: var(--stone); }
+  .p5-hc.done { background: var(--earth); }
+  .p5-hc.today { background: var(--trail); }
+
+  .p5-links { display: flex; gap: 8px; padding: 18px 24px; }
+  .p5-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+
+
+  /* ============================================================
+     P6: MINIMAL NUMBERS — Typography-driven. Giant numbers
+     ARE the interface. Minimal cards. Maximum whitespace.
+     ============================================================ */
+
+  .p6-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .p6-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  /* Giant stat — one per row */
+  .p6-stat { padding: 20px 24px 0; display: flex; align-items: baseline; gap: 8px; }
+  .p6-stat-num { font-size: 56px; font-weight: 900; color: var(--earth); letter-spacing: -3px; line-height: 1; }
+  .p6-stat-right {}
+  .p6-stat-label { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .p6-stat-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+
+  .p6-divider { height: 1px; background: var(--stone); margin: 18px 24px; }
+
+  /* Compact heatmap — no card */
+  .p6-heat { padding: 0 24px; }
+  .p6-heat-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .p6-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .p6-hc { aspect-ratio: 1; border-radius: 4px; }
+  .p6-hc.empty { background: var(--stone); }
+  .p6-hc.done { background: var(--earth); }
+  .p6-hc.today { background: var(--trail); }
+
+  /* Number rows — lift stats */
+  .p6-lifts { padding: 0 24px; }
+  .p6-lift-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-bottom: 8px; }
+  .p6-lift { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p6-lift:last-child { border-bottom: none; }
+  .p6-lift-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+  .p6-lift-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .p6-lift-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* Weight row — same style */
+  .p6-weight-row { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-top: 18px; }
+  .p6-wr-left {}
+  .p6-wr-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .p6-wr-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 2px; }
+  .p6-wr-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .p6-wr-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .p6-wr-btn { padding: 10px 20px; border-radius: 14px; background: var(--earth); font-size: 12px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  .p6-links { display: flex; gap: 8px; padding: 20px 24px; }
+  .p6-link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== P4: BIG NUMBER HERO ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">P4 — Big Number Hero</div>
+  <div class="dsc">Giant 80px streak number dominates the top. Stat pills scroll horizontally. Full-width heatmap (no card wrapper). Dark weight card. 2×2 bento for 1RM lifts.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p4-ctx">Monday, Mar 24</div>
+    <div class="p4-title">Your Journey</div>
+
+    <div class="p4-streak"><div class="p4-streak-num">12</div><div class="p4-streak-info"><div class="p4-streak-label">day streak</div><div class="p4-streak-sub">Your longest yet</div></div></div>
+
+    <div class="p4-pills">
+      <div class="p4-pill dark"><span class="p4-pill-val">75%</span><span class="p4-pill-label">weekly</span></div>
+      <div class="p4-pill stone"><span class="p4-pill-val">47</span><span class="p4-pill-label">workouts</span></div>
+      <div class="p4-pill white"><span class="p4-pill-val">2.4t</span><span class="p4-pill-label">volume</span></div>
+      <div class="p4-pill stone"><span class="p4-pill-val">3</span><span class="p4-pill-label">PRs</span></div>
+    </div>
+
+    <div class="p4-heat"><div class="p4-heat-label">Activity</div><div class="p4-heat-grid" id="p4Heat"></div></div>
+
+    <div class="p4-weight"><div class="p4-w-accent"></div><div class="p4-w-row"><div class="p4-w-left"><div class="p4-w-label">Weight</div><div class="p4-w-val">74.2 <span>kg</span></div><div class="p4-w-trend">▼ 0.8kg this month</div></div><div class="p4-w-btn">+ Log</div></div></div>
+
+    <div class="p4-rm">
+      <div class="p4-rm-card"><div class="p4-rm-name">Bench Press</div><div class="p4-rm-val">80 <span>kg</span></div><div class="p4-rm-level">Intermediate</div></div>
+      <div class="p4-rm-card"><div class="p4-rm-name">Squat</div><div class="p4-rm-val">100 <span>kg</span></div><div class="p4-rm-level">Intermediate</div></div>
+      <div class="p4-rm-card"><div class="p4-rm-name">Deadlift</div><div class="p4-rm-val">120 <span>kg</span></div><div class="p4-rm-level">Novice</div></div>
+      <div class="p4-rm-card"><div class="p4-rm-name">OHP</div><div class="p4-rm-val">50 <span>kg</span></div><div class="p4-rm-level">Novice</div></div>
+    </div>
+
+    <div class="p4-links"><div class="p4-link">Achievements</div><div class="p4-link">Weekly</div><div class="p4-link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P5: HORIZONTAL SCROLL SECTIONS ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">P5 — Horizontal Everything</div>
+  <div class="dsc">Every section scrolls horizontally. Stats as swipeable cards (dark/white/stone/green). Heatmap in a wide card. Lifts as cards. Consistent swipe pattern throughout.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p5-ctx">Monday, Mar 24</div>
+    <div class="p5-title">Your Journey</div>
+
+    <!-- Overview stats — horizontal -->
+    <div class="p5-sec">
+      <div class="p5-sec-head"><span class="p5-sec-title">Overview</span></div>
+      <div class="p5-scroll">
+        <div class="p5-card dark"><div class="p5-c-label">Completion</div><div class="p5-c-val">75<span>%</span></div><div class="p5-c-sub">3 of 4 this week</div></div>
+        <div class="p5-card trail"><div class="p5-c-label">Streak</div><div class="p5-c-val">12</div><div class="p5-c-sub">days strong</div></div>
+        <div class="p5-card white"><div class="p5-c-label">Workouts</div><div class="p5-c-val">47</div><div class="p5-c-sub">all time</div></div>
+        <div class="p5-card stone"><div class="p5-c-label">Volume</div><div class="p5-c-val">2.4<span>t</span></div><div class="p5-c-sub">▲ 12% vs last wk</div><div class="p5-mini-bars"><div class="p5-mb" style="height:40%;"></div><div class="p5-mb" style="height:55%;"></div><div class="p5-mb" style="height:45%;"></div><div class="p5-mb" style="height:70%;"></div><div class="p5-mb" style="height:60%;"></div><div class="p5-mb" style="height:85%;"></div><div class="p5-mb active" style="height:100%;"></div></div></div>
+      </div>
+    </div>
+
+    <!-- Activity heatmap -->
+    <div class="p5-sec">
+      <div class="p5-sec-head"><span class="p5-sec-title">Activity</span><span class="p5-sec-sub">12 weeks</span></div>
+      <div class="p5-scroll"><div class="p5-heat-card"><div class="p5-heat-grid" id="p5Heat"></div></div></div>
+    </div>
+
+    <!-- Body -->
+    <div class="p5-sec">
+      <div class="p5-sec-head"><span class="p5-sec-title">Body</span></div>
+      <div class="p5-scroll">
+        <div class="p5-card dark" style="min-width:180px;"><div class="p5-c-label">Weight</div><div class="p5-c-val">74.2 <span>kg</span></div><div class="p5-c-sub">▼ 0.8kg this month</div></div>
+        <div class="p5-card white"><div class="p5-c-label">Body Fat</div><div class="p5-c-val">18<span>%</span></div><div class="p5-c-sub">estimated</div></div>
+      </div>
+    </div>
+
+    <!-- Lifts -->
+    <div class="p5-sec">
+      <div class="p5-sec-head"><span class="p5-sec-title">Estimated 1RM</span></div>
+      <div class="p5-scroll">
+        <div class="p5-card dark"><div class="p5-c-label">Bench</div><div class="p5-c-val">80 <span>kg</span></div><div class="p5-c-sub" style="color:var(--trail);opacity:0.6;">Intermediate</div></div>
+        <div class="p5-card white"><div class="p5-c-label">Squat</div><div class="p5-c-val">100 <span>kg</span></div><div class="p5-c-sub">Intermediate</div></div>
+        <div class="p5-card stone"><div class="p5-c-label">Deadlift</div><div class="p5-c-val">120 <span>kg</span></div><div class="p5-c-sub">Novice</div></div>
+        <div class="p5-card white"><div class="p5-c-label">OHP</div><div class="p5-c-val">50 <span>kg</span></div><div class="p5-c-sub">Novice</div></div>
+      </div>
+    </div>
+
+    <div class="p5-links"><div class="p5-link">Achievements</div><div class="p5-link">Weekly</div><div class="p5-link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== P6: MINIMAL NUMBERS ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">P6 — Minimal Numbers</div>
+  <div class="dsc">Typography IS the UI. Giant numbers for key stats. Full-width heatmap. Simple rows for lifts. Weight as inline row with log button. Maximum whitespace. Cleanest possible.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p6-ctx">Monday, Mar 24</div>
+    <div class="p6-title">Your Journey</div>
+
+    <div class="p6-stat"><div class="p6-stat-num">75%</div><div class="p6-stat-right"><div class="p6-stat-label">weekly completion</div><div class="p6-stat-sub">3 of 4 workouts done</div></div></div>
+
+    <div class="p6-stat"><div class="p6-stat-num">12</div><div class="p6-stat-right"><div class="p6-stat-label">day streak</div><div class="p6-stat-sub">your longest yet</div></div></div>
+
+    <div class="p6-divider"></div>
+
+    <div class="p6-heat"><div class="p6-heat-label">12-Week Activity</div><div class="p6-heat-grid" id="p6Heat"></div></div>
+
+    <div class="p6-divider"></div>
+
+    <div class="p6-weight-row"><div class="p6-wr-left"><div class="p6-wr-label">Weight</div><div class="p6-wr-val">74.2 <span>kg</span></div><div class="p6-wr-trend">▼ 0.8kg this month</div></div><div class="p6-wr-btn">+ Log</div></div>
+
+    <div class="p6-divider"></div>
+
+    <div class="p6-lifts"><div class="p6-lift-label">Estimated 1RM</div>
+      <div class="p6-lift"><span class="p6-lift-name">Bench Press</span><span class="p6-lift-val">80 <span>kg</span></span></div>
+      <div class="p6-lift"><span class="p6-lift-name">Squat</span><span class="p6-lift-val">100 <span>kg</span></span></div>
+      <div class="p6-lift"><span class="p6-lift-name">Deadlift</span><span class="p6-lift-val">120 <span>kg</span></span></div>
+      <div class="p6-lift"><span class="p6-lift-name">OHP</span><span class="p6-lift-val">50 <span>kg</span></span></div>
+    </div>
+
+    <div class="p6-links"><div class="p6-link">Achievements</div><div class="p6-link">Weekly</div><div class="p6-link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function genHeat(id, cls) {
+  const grid = document.getElementById(id);
+  for (let i = 0; i < 84; i++) {
+    const cell = document.createElement('div');
+    const r = Math.random();
+    cell.className = cls + (i === 83 ? ' today' : r < 0.45 ? ' done' : ' empty');
+    grid.appendChild(cell);
+  }
+}
+genHeat('p4Heat', 'p4-hc');
+genHeat('p5Heat', 'p5-hc');
+genHeat('p6Heat', 'p6-hc');
+</script>
+
+</body>
+</html>

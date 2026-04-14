@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — The Magnetic Personal App</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #030305; color: #fff; }
+
+  .page-head { text-align: center; padding: 28px 24px 4px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #444; margin-top: 4px; max-width: 600px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+  .showcase { display: flex; gap: 32px; padding: 20px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: #FAFAF8; }
+  .phone-inner { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-inner::-webkit-scrollbar { display: none; }
+
+  :root { --hb: 2.4s; }
+
+  /* ===== PHONE BACKGROUND: Living membrane ===== */
+  .bg-membrane { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .bg-blob { position: absolute; border-radius: 50%; filter: blur(70px); opacity: 0.035; animation: blobDrift 18s ease-in-out infinite alternate; }
+  .bg-blob:nth-child(1) { width: 280px; height: 280px; background: #6366F1; top: -80px; left: -60px; }
+  .bg-blob:nth-child(2) { width: 220px; height: 220px; background: #34D399; bottom: 60px; right: -40px; animation-delay: -6s; animation-duration: 22s; }
+  .bg-blob:nth-child(3) { width: 180px; height: 180px; background: #F59E0B; top: 45%; left: 40%; animation-delay: -10s; animation-duration: 20s; }
+  @keyframes blobDrift { 0% { transform: translate(0,0) scale(1); } 50% { transform: translate(25px,-20px) scale(1.08); } 100% { transform: translate(-15px,20px) scale(0.96); } }
+
+  .content { position: relative; z-index: 1; }
+
+  /* ===== STATUS ===== */
+  .status-bar { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .alive-dot { width: 7px; height: 7px; border-radius: 50%; background: #34D399; animation: alivePulse var(--hb) ease-in-out infinite; }
+  @keyframes alivePulse { 0%, 100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.35); } }
+
+  /* ===== THE PERSONAL MOMENT — Hero that talks to you ===== */
+  .personal-hero { padding: 20px 24px 0; }
+  .context-line { font-size: 12px; color: #AEAEB2; display: flex; align-items: center; gap: 6px; }
+  .context-line .dot { width: 4px; height: 4px; border-radius: 50%; background: #AEAEB2; }
+
+  /* Changing daily message — the reason you open the app */
+  .daily-msg {
+    font-size: 28px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.8px;
+    line-height: 1.15; margin-top: 8px;
+  }
+  .daily-msg .highlight {
+    color: #6366F1; position: relative; display: inline;
+  }
+  .daily-msg .highlight::after {
+    content: ''; position: absolute; left: -2px; right: -2px; bottom: -1px; height: 8px;
+    background: rgba(99,102,241,0.1); border-radius: 4px; z-index: -1;
+  }
+
+  /* The nudge — contextual, personal insight */
+  .nudge {
+    margin-top: 12px; padding: 12px 16px; border-radius: 16px;
+    background: rgba(99,102,241,0.04); border: 1px solid rgba(99,102,241,0.08);
+    font-size: 13px; color: #6366F1; line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .nudge-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* ===== BENTO GRID — Asymmetric, alive ===== */
+  .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+
+  .cell {
+    border-radius: 24px; position: relative; overflow: hidden;
+    opacity: 0; animation: cellPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .cell:nth-child(1) { animation-delay: 0.05s; }
+  .cell:nth-child(2) { animation-delay: 0.1s; }
+  .cell:nth-child(3) { animation-delay: 0.15s; }
+  .cell:nth-child(4) { animation-delay: 0.2s; }
+  @keyframes cellPop { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+
+  /* Cell: YOUR STREAK — tall left, the pride piece */
+  .cell-streak {
+    grid-row: span 2; background: #1C1C1E; padding: 24px 20px;
+    display: flex; flex-direction: column;
+  }
+  .streak-header { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .streak-number {
+    font-size: 72px; font-weight: 800; letter-spacing: -4px; line-height: 1;
+    margin-top: 8px;
+    background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,0.4));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .streak-unit { font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.5); margin-top: -2px; }
+  .streak-bar { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 3px; margin-top: 16px; }
+  .streak-day { height: 4px; border-radius: 2px; background: rgba(255,255,255,0.06); position: relative; overflow: hidden; }
+  .streak-day-fill { height: 100%; border-radius: 2px; background: #6366F1; position: absolute; left: 0; top: 0; }
+  .streak-day:nth-child(1) .streak-day-fill { width: 100%; }
+  .streak-day:nth-child(2) .streak-day-fill { width: 100%; background: #818CF8; }
+  .streak-day:nth-child(3) .streak-day-fill { width: 100%; }
+  .streak-day:nth-child(4) .streak-day-fill { width: 100%; background: #818CF8; }
+  .streak-day:nth-child(5) .streak-day-fill { width: 100%; }
+  .streak-day:nth-child(6) .streak-day-fill { width: 70%; background: #34D399; animation: fillGrow 1s ease-out 0.8s both; }
+  .streak-day:nth-child(7) .streak-day-fill { width: 0%; }
+  @keyframes fillGrow { from { width: 0%; } }
+
+  /* Glow on streak number synced to heartbeat */
+  .streak-number-wrap { position: relative; }
+  .streak-glow {
+    position: absolute; inset: -20px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.08) 0%, transparent 70%);
+    animation: streakGlow var(--hb) ease-in-out infinite;
+  }
+  @keyframes streakGlow { 0%, 100% { opacity: 0.3; transform: scale(0.9); } 30% { opacity: 1; transform: scale(1.05); } }
+
+  /* Cell: MOMENTUM — top right */
+  .cell-momentum { background: #F2F1ED; padding: 18px; }
+  .cm-label { font-size: 9px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .cm-ring-area { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+  .cm-ring { width: 56px; height: 56px; position: relative; flex-shrink: 0; }
+  .cm-ring svg { width: 56px; height: 56px; transform: rotate(-90deg); }
+  .cm-ring-track { fill: none; stroke: #DDD9CE; stroke-width: 5; }
+  .cm-ring-fill { fill: none; stroke: #1C1C1E; stroke-width: 5; stroke-linecap: round; stroke-dasharray: 150; stroke-dashoffset: 150; animation: cmRingFill 1.2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards; }
+  @keyframes cmRingFill { to { stroke-dashoffset: 37; } }
+  .cm-ring-pct { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 800; color: #1C1C1E; }
+  .cm-stat .val { font-size: 20px; font-weight: 700; color: #1C1C1E; }
+  .cm-stat .sub { font-size: 10px; color: #AEAEB2; margin-top: 1px; }
+
+  /* Cell: VOLUME — bottom right */
+  .cell-volume { background: #F2F1ED; padding: 18px; }
+  .cv-label { font-size: 9px; color: #AEAEB2; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .cv-val { font-size: 24px; font-weight: 800; color: #1C1C1E; margin-top: 6px; letter-spacing: -1px; }
+  .cv-trend { font-size: 11px; font-weight: 600; color: #34D399; margin-top: 2px; }
+  .cv-bars { display: flex; gap: 3px; align-items: flex-end; height: 28px; margin-top: 10px; }
+  .cv-bar { flex: 1; border-radius: 3px; background: #DDD9CE; animation: barUp 0.6s ease-out forwards; transform-origin: bottom; }
+  @keyframes barUp { from { transform: scaleY(0); } }
+  .cv-bar:nth-child(1) { height: 35%; animation-delay: 0.4s; }
+  .cv-bar:nth-child(2) { height: 55%; animation-delay: 0.45s; }
+  .cv-bar:nth-child(3) { height: 40%; animation-delay: 0.5s; }
+  .cv-bar:nth-child(4) { height: 70%; animation-delay: 0.55s; }
+  .cv-bar:nth-child(5) { height: 60%; animation-delay: 0.6s; }
+  .cv-bar:nth-child(6) { height: 85%; animation-delay: 0.65s; }
+  .cv-bar:nth-child(7) { height: 100%; animation-delay: 0.7s; background: #1C1C1E; }
+
+  /* ===== FOCUS CARD — full width accent ===== */
+  .focus-card {
+    margin: 10px 24px 0; padding: 20px 22px; border-radius: 24px;
+    background: #1C1C1E; position: relative; overflow: hidden;
+    opacity: 0; animation: cellPop 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.25s forwards;
+  }
+  .focus-glow {
+    position: absolute; width: 200px; height: 200px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
+    top: -80px; right: -40px;
+    animation: focusGlowDrift 8s ease-in-out infinite alternate;
+  }
+  @keyframes focusGlowDrift { 0% { transform: translate(0,0); } 100% { transform: translate(-30px,20px); } }
+  .focus-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .focus-label { font-size: 9px; color: rgba(255,255,255,0.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .focus-muscle { font-size: 22px; font-weight: 700; color: #fff; margin-top: 4px; letter-spacing: -0.5px; }
+  .focus-meta { font-size: 12px; color: rgba(255,255,255,0.4); margin-top: 4px; position: relative; }
+  .focus-emoji { font-size: 36px; opacity: 0.15; position: relative; }
+
+  /* ===== READINESS — organic bar ===== */
+  .readiness-strip {
+    margin: 10px 24px 0; display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px; border-radius: 20px; background: #F0FDF4;
+    border: 1px solid rgba(52,211,153,0.1);
+    opacity: 0; animation: cellPop 0.5s ease 0.3s forwards;
+  }
+  .rs-dot { width: 8px; height: 8px; border-radius: 50%; background: #34D399; flex-shrink: 0; animation: rsDotPulse var(--hb) ease-in-out infinite; }
+  @keyframes rsDotPulse { 0%, 100% { transform: scale(1); opacity: 0.5; } 30% { transform: scale(1.4); opacity: 1; } }
+  .rs-text { font-size: 13px; font-weight: 500; color: #166534; }
+  .rs-text strong { font-weight: 700; }
+
+  /* ===== EXERCISE LIST — Stacked cards with depth + living borders ===== */
+  .exercises { padding: 16px 24px 0; }
+  .ex-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .ex-header .title { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .ex-header .count { font-size: 12px; color: #AEAEB2; }
+
+  .ex-card {
+    background: #fff; border: 1px solid rgba(0,0,0,0.03); border-radius: 22px;
+    padding: 18px; margin-bottom: 10px; position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(20px);
+    animation: exIn 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .ex-card:nth-child(2) { animation-delay: 0.1s; }
+  .ex-card:nth-child(3) { animation-delay: 0.2s; }
+  .ex-card:nth-child(4) { animation-delay: 0.3s; }
+  .ex-card:nth-child(5) { animation-delay: 0.4s; }
+  @keyframes exIn { to { opacity: 1; transform: translateY(0); } }
+
+  /* Living border — rotating conic accent */
+  .ex-card::before {
+    content: ''; position: absolute; inset: -1px; border-radius: 22px; z-index: -1;
+    background: conic-gradient(from var(--a, 0deg), transparent 85%, rgba(99,102,241,0.12) 92%, transparent 100%);
+    animation: borderSpin 10s linear infinite;
+  }
+  @keyframes borderSpin { to { --a: 360deg; } }
+  @property --a { syntax: '<angle>'; initial-value: 0deg; inherits: false; }
+
+  .ex-main { display: flex; align-items: center; gap: 14px; }
+
+  /* Icon with fiber contraction */
+  .ex-icon { width: 50px; height: 50px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 20px; position: relative; overflow: hidden; flex-shrink: 0; }
+  .ex-icon.c1 { background: rgba(99,102,241,0.06); }
+  .ex-icon.c2 { background: rgba(245,158,11,0.06); }
+  .ex-icon.c3 { background: rgba(239,68,68,0.06); }
+  .ex-icon.c4 { background: rgba(52,211,153,0.06); }
+  .ex-icon.c5 { background: rgba(129,140,248,0.06); }
+  .ex-fiber { position: absolute; left: 8px; right: 8px; height: 1px; background: currentColor; opacity: 0.05; animation: fiberPulse 3s ease-in-out infinite; }
+  .ex-fiber:nth-child(1) { top: 30%; color: inherit; }
+  .ex-fiber:nth-child(2) { top: 50%; animation-delay: 0.3s; }
+  .ex-fiber:nth-child(3) { top: 70%; animation-delay: 0.6s; }
+  @keyframes fiberPulse { 0%, 100% { transform: scaleX(0.6); opacity: 0.03; } 50% { transform: scaleX(1); opacity: 0.08; } }
+
+  .ex-info { flex: 1; }
+  .ex-name { font-size: 15px; font-weight: 600; color: #1C1C1E; }
+  .ex-meta { font-size: 12px; color: #AEAEB2; margin-top: 2px; }
+
+  /* Set pips — cellular progress per exercise */
+  .set-pips { display: flex; gap: 4px; margin-top: 8px; }
+  .set-pip { width: 22px; height: 5px; border-radius: 3px; background: #EDEDF0; }
+
+  .ex-weight { text-align: right; flex-shrink: 0; }
+  .ex-weight .val { font-size: 20px; font-weight: 700; color: #1C1C1E; letter-spacing: -0.5px; }
+  .ex-weight .unit { font-size: 10px; color: #AEAEB2; }
+
+  /* ===== CTA — the heartbeat button ===== */
+  .cta-area { margin: 20px 24px 40px; position: relative; }
+  .cta-glow {
+    position: absolute; inset: -6px; border-radius: 28px;
+    background: conic-gradient(from 0deg, #6366F1, #34D399, #818CF8, #6366F1);
+    filter: blur(14px); opacity: 0;
+    animation: ctaGlow var(--hb) ease-in-out infinite;
+  }
+  @keyframes ctaGlow { 0%, 100% { opacity: 0.06; } 30% { opacity: 0.14; } }
+
+  .cta-btn {
+    width: 100%; padding: 20px; border: none; border-radius: 24px;
+    background: #1C1C1E; color: #fff; font-size: 16px; font-weight: 600;
+    cursor: pointer; position: relative; z-index: 1; overflow: hidden;
+    transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .cta-btn:active { transform: scale(0.97); }
+  /* Helix line inside */
+  .cta-btn::after {
+    content: ''; position: absolute; left: 0; top: 50%; width: 200%; height: 1px;
+    background: repeating-linear-gradient(90deg, transparent 0px, rgba(255,255,255,0.04) 15px, transparent 30px);
+    animation: helixMove 5s linear infinite;
+  }
+  @keyframes helixMove { to { transform: translateX(-50%); } }
+
+  /* ===== NOTES PANEL ===== */
+  .notes { max-width: 420px; padding: 20px; }
+  .n-section { margin-bottom: 24px; }
+  .n-title { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px; }
+  .n-title.purple { color: #818CF8; }
+  .n-title.green { color: #34D399; }
+  .n-title.amber { color: #F59E0B; }
+  .n-title.pink { color: #F472B6; }
+
+  .n-item { display: flex; gap: 10px; margin-bottom: 10px; }
+  .n-icon { font-size: 15px; flex-shrink: 0; }
+  .n-text { font-size: 12px; color: #777; line-height: 1.55; }
+  .n-text strong { color: #ccc; }
+  .n-text em { color: #999; font-style: normal; }
+
+  .n-example { margin-top: 8px; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); font-size: 11px; color: #666; line-height: 1.5; }
+  .n-example strong { color: #aaa; display: block; margin-bottom: 3px; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>The Magnetic Personal App</h1>
+  <p>Living Organism aesthetic + Bento layout + deep personalization. An app you open because it <em>knows you</em> and feels alive.</p>
+</div>
+
+<div class="showcase">
+
+  <div class="phone">
+    <div class="bg-membrane">
+      <div class="bg-blob"></div>
+      <div class="bg-blob"></div>
+      <div class="bg-blob"></div>
+    </div>
+    <div class="phone-inner">
+      <div class="content">
+
+        <div class="status-bar">
+          <div class="time">9:41</div>
+          <div class="alive-dot"></div>
+        </div>
+
+        <!-- THE PERSONAL MOMENT -->
+        <div class="personal-hero">
+          <div class="context-line">Wednesday <span class="dot"></span> Push Day <span class="dot"></span> Week 3</div>
+          <div class="daily-msg">
+            You're <span class="highlight">1 session away</span> from your longest streak ever.
+          </div>
+          <div class="nudge">
+            <div class="nudge-icon">&#128161;</div>
+            <div>Last push day you hit 75kg bench for 8 reps. Today's plan has you at 77.5kg. You've got this.</div>
+          </div>
+        </div>
+
+        <!-- BENTO GRID -->
+        <div class="bento">
+          <!-- Streak: tall left -->
+          <div class="cell cell-streak">
+            <div class="streak-header">Your Streak</div>
+            <div class="streak-number-wrap">
+              <div class="streak-glow"></div>
+              <div class="streak-number">12</div>
+            </div>
+            <div class="streak-unit">days strong</div>
+            <div class="streak-bar">
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+              <div class="streak-day"><div class="streak-day-fill"></div></div>
+            </div>
+          </div>
+
+          <!-- Momentum: top right -->
+          <div class="cell cell-momentum">
+            <div class="cm-label">Momentum</div>
+            <div class="cm-ring-area">
+              <div class="cm-ring">
+                <svg viewBox="0 0 56 56">
+                  <circle class="cm-ring-track" cx="28" cy="28" r="24"/>
+                  <circle class="cm-ring-fill" cx="28" cy="28" r="24"/>
+                </svg>
+                <div class="cm-ring-pct">75%</div>
+              </div>
+              <div class="cm-stat">
+                <div class="val">3/4</div>
+                <div class="sub">days done</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Volume: bottom right -->
+          <div class="cell cell-volume">
+            <div class="cv-label">Volume</div>
+            <div class="cv-val">12.4k</div>
+            <div class="cv-trend">&#9650; 12% growth</div>
+            <div class="cv-bars">
+              <div class="cv-bar"></div><div class="cv-bar"></div><div class="cv-bar"></div>
+              <div class="cv-bar"></div><div class="cv-bar"></div><div class="cv-bar"></div><div class="cv-bar"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOCUS CARD -->
+        <div class="focus-card">
+          <div class="focus-glow"></div>
+          <div class="focus-top">
+            <div>
+              <div class="focus-label">Today's Focus</div>
+              <div class="focus-muscle">Chest & Shoulders</div>
+              <div class="focus-meta">5 exercises &middot; ~45 min &middot; Peak week</div>
+            </div>
+            <div class="focus-emoji">&#128170;</div>
+          </div>
+        </div>
+
+        <!-- READINESS -->
+        <div class="readiness-strip">
+          <div class="rs-dot"></div>
+          <div class="rs-text"><strong>Fresh</strong> &mdash; 7.5h sleep, low soreness, 2 days since push</div>
+        </div>
+
+        <!-- EXERCISES -->
+        <div class="exercises">
+          <div class="ex-header">
+            <span class="title">Your Workout</span>
+            <span class="count">5 exercises</span>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-main">
+              <div class="ex-icon c1" style="color:#6366F1;">
+                &#128170;
+                <div class="ex-fiber"></div><div class="ex-fiber"></div><div class="ex-fiber"></div>
+              </div>
+              <div class="ex-info">
+                <div class="ex-name">Bench Press</div>
+                <div class="ex-meta">Chest &middot; Compound</div>
+                <div class="set-pips"><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div></div>
+              </div>
+              <div class="ex-weight"><div class="val">77.5</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-main">
+              <div class="ex-icon c2" style="color:#F59E0B;">
+                &#127947;
+                <div class="ex-fiber"></div><div class="ex-fiber"></div><div class="ex-fiber"></div>
+              </div>
+              <div class="ex-info">
+                <div class="ex-name">Overhead Press</div>
+                <div class="ex-meta">Shoulders &middot; Compound</div>
+                <div class="set-pips"><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div></div>
+              </div>
+              <div class="ex-weight"><div class="val">40</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-main">
+              <div class="ex-icon c3" style="color:#EF4444;">
+                &#9889;
+                <div class="ex-fiber"></div><div class="ex-fiber"></div><div class="ex-fiber"></div>
+              </div>
+              <div class="ex-info">
+                <div class="ex-name">Incline DB Press</div>
+                <div class="ex-meta">Upper Chest &middot; Compound</div>
+                <div class="set-pips"><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div></div>
+              </div>
+              <div class="ex-weight"><div class="val">24</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-main">
+              <div class="ex-icon c4" style="color:#34D399;">
+                &#127919;
+                <div class="ex-fiber"></div><div class="ex-fiber"></div><div class="ex-fiber"></div>
+              </div>
+              <div class="ex-info">
+                <div class="ex-name">Cable Flyes</div>
+                <div class="ex-meta">Chest &middot; Isolation</div>
+                <div class="set-pips"><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div></div>
+              </div>
+              <div class="ex-weight"><div class="val">15</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="ex-card">
+            <div class="ex-main">
+              <div class="ex-icon c5" style="color:#818CF8;">
+                &#10024;
+                <div class="ex-fiber"></div><div class="ex-fiber"></div><div class="ex-fiber"></div>
+              </div>
+              <div class="ex-info">
+                <div class="ex-name">Lateral Raises</div>
+                <div class="ex-meta">Delts &middot; Isolation</div>
+                <div class="set-pips"><div class="set-pip"></div><div class="set-pip"></div><div class="set-pip"></div></div>
+              </div>
+              <div class="ex-weight"><div class="val">10</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta-area">
+          <div class="cta-glow"></div>
+          <button class="cta-btn">Start Workout</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="notes">
+
+    <div class="n-section">
+      <div class="n-title purple">Why You Open This App</div>
+      <div class="n-item">
+        <div class="n-icon">&#128172;</div>
+        <div class="n-text"><strong>The daily message changes every session.</strong> It's not "Good morning." It's a personal insight that only YOUR data can generate. It references your history, your streaks, your upcoming milestones. It gives you a reason to care today.</div>
+      </div>
+      <div class="n-example">
+        <strong>Examples of daily messages:</strong>
+        "You're <em>1 session away</em> from your longest streak ever."<br>
+        "Your bench has gone up <em>12.5kg in 6 weeks</em>. That's elite progress."<br>
+        "You haven't missed a Monday in <em>5 weeks</em>. Consistency is your superpower."<br>
+        "Last week you crushed legs. This week, let's match that energy on push."<br>
+        "It's deload week. Go lighter. Trust the process."
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title green">The Streak as Identity</div>
+      <div class="n-item">
+        <div class="n-icon">&#128293;</div>
+        <div class="n-text"><strong>The streak isn't a number in a corner — it's the biggest thing on screen.</strong> Giant 72px number. A bioluminescent glow that pulses with the heartbeat. A mini-heatmap showing the last 7 days. It's the first thing you see. It's your scoreboard. Breaking it would feel like losing something physical.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title amber">The Nudge Card</div>
+      <div class="n-item">
+        <div class="n-icon">&#128161;</div>
+        <div class="n-text"><strong>A contextual insight below the hero.</strong> References your last session's performance and connects it to today's plan. "Last time you hit X, today you're going for Y." Makes you feel like the app remembers everything and is coaching you forward. Uses your actual data from set_logs.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title pink">The Living Aesthetic</div>
+      <div class="n-item">
+        <div class="n-icon">&#128147;</div>
+        <div class="n-text"><strong>Every element breathes on a shared 2.4s heartbeat.</strong> The alive-dot, streak glow, readiness pulse, CTA aura — all synced. During workouts the rhythm accelerates. After completion it slows to resting. The app has a pulse like you do.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#129516;</div>
+        <div class="n-text"><strong>Membrane blobs</strong> drift behind the surface at 3.5% opacity. Muscle fiber lines contract inside exercise icons. Card borders have a rotating conic accent. Nothing is dead. But nothing is distracting — it's all peripheral, felt more than seen.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title purple">Layout Choices</div>
+      <div class="n-item">
+        <div class="n-icon">&#127912;</div>
+        <div class="n-text"><strong>Asymmetric bento grid</strong> for stats. The streak cell is tall and dominant (it's your identity). Momentum and volume are smaller supporting cells. No two cells are the same size. Creates visual hierarchy that says "this matters most."</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128195;</div>
+        <div class="n-text"><strong>Exercise cards are still a list</strong> — but with living borders, fiber icons, set-pip progress, and weight on the right. The list is the right structure here because exercises are sequential. But each card feels alive, not dead.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title green">What No Other App Does</div>
+      <div class="n-item">
+        <div class="n-icon">&#10060;</div>
+        <div class="n-text">Strava: data-heavy but impersonal. Opens to a feed of other people.<br>
+Nike: beautiful but generic. Same screen for everyone.<br>
+Hevy/Strong: functional but dead. Spreadsheet with a skin.<br>
+Peloton: instructor-led, not self-led.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#10004;&#65039;</div>
+        <div class="n-text"><strong>Repped opens with YOUR story.</strong> Your streak. Your milestone. Your data turned into a personal message. In a UI that breathes. No other app does all of this together.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

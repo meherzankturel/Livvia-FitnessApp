@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — H1 Refined</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .top { padding: 54px 24px 0; }
+  .ctx {
+    font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px;
+    font-weight: 600; padding: 14px 24px 0;
+    opacity: 0; animation: fadeSlideUp 0.4s ease-out 0.05s forwards;
+  }
+
+  /* Hero card */
+  .hero-card {
+    margin: 14px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden;
+    opacity: 0; transform: translateY(16px);
+    animation: heroIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.1s forwards;
+  }
+  @keyframes heroIn { to { opacity: 1; transform: translateY(0); } }
+
+  .hero-ring {
+    position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; border-radius: 50%;
+    border: 12px solid rgba(246,245,240,0.04);
+    animation: ringRotate 20s linear infinite;
+  }
+  @keyframes ringRotate { to { transform: rotate(360deg); } }
+
+  .hero-ring-inner {
+    position: absolute; top: -18px; right: -18px; width: 116px; height: 116px; border-radius: 50%;
+    border: 6px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail);
+    transform: rotate(-30deg); opacity: 0.35;
+    animation: ringInnerRotate 12s linear infinite reverse;
+  }
+  @keyframes ringInnerRotate { to { transform: rotate(330deg); } }
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-cal-row { display: flex; align-items: baseline; gap: 5px; margin-top: 6px; position: relative; }
+  .cal-num { font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1; }
+  .cal-unit { font-size: 14px; color: rgba(246,245,240,0.35); }
+  .hero-macros { display: flex; gap: 12px; margin-top: 16px; position: relative; }
+  .hm { flex: 1; }
+  .hm-bar { height: 4px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; }
+  .hm-fill { height: 100%; border-radius: 2px; transform-origin: left; animation: barFill 1s cubic-bezier(0.16,1,0.3,1) forwards; transform: scaleX(0); }
+  .hm-fill.p { background: var(--trail); width: 75%; animation-delay: 0.5s; }
+  .hm-fill.c { background: rgba(246,245,240,0.2); width: 60%; animation-delay: 0.6s; }
+  .hm-fill.f { background: rgba(246,245,240,0.12); width: 55%; animation-delay: 0.7s; }
+  @keyframes barFill { to { transform: scaleX(1); } }
+
+  /* Shimmer sweep across hero card */
+  .hero-card::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(246,245,240,0.03) 50%, transparent 100%);
+    transform: translateX(-100%);
+    animation: heroShimmer 2.5s ease 0.8s forwards;
+  }
+  @keyframes heroShimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  .cal-num {
+    font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1;
+    opacity: 0; animation: calPop 0.6s cubic-bezier(0.34,1.56,0.64,1) 0.3s forwards;
+  }
+  @keyframes calPop { 0% { opacity: 0; transform: scale(0.8) translateY(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+  .hm-row { display: flex; justify-content: space-between; margin-top: 5px; }
+  .hm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .hm-label { font-size: 8px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* Cuisine */
+  .cuisine-section { padding: 16px 24px 14px; }
+  .cuisine-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .cuisine-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .cuisine-allergy { font-size: 10px; color: #B91C1C; font-weight: 600; padding: 4px 10px; border-radius: 100px; background: rgba(239,68,68,0.05); cursor: pointer; }
+  .cuisine-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .cuisine-scroll::-webkit-scrollbar { display: none; }
+  .ct {
+    min-width: 100px; height: 72px; border-radius: 18px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); position: relative;
+    opacity: 0; transform: translateY(10px) scale(0.95);
+    animation: cuisineIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .ct:nth-child(1) { animation-delay: 0.5s; }
+  .ct:nth-child(2) { animation-delay: 0.56s; }
+  .ct:nth-child(3) { animation-delay: 0.62s; }
+  .ct:nth-child(4) { animation-delay: 0.68s; }
+  .ct:nth-child(5) { animation-delay: 0.74s; }
+  @keyframes cuisineIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+  .ct.on { background: var(--earth); transform: scale(1.02); }
+  .ct.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .ct .flag { font-size: 32px; }
+  .ct .cname { font-size: 10px; font-weight: 600; margin-top: 4px; }
+  .ct.on .cname { color: var(--sand); }
+  .ct.off .cname { color: var(--earth); }
+  /* Checkmark on selected cuisine */
+  .ct.on::after { content: '✓'; position: absolute; top: 6px; right: 8px; font-size: 9px; font-weight: 700; color: var(--sand); width: 16px; height: 16px; border-radius: 50%; background: rgba(246,245,240,0.12); display: flex; align-items: center; justify-content: center; }
+
+  /* Grocery — inline with hero, not bottom */
+  .grocery-inline {
+    margin: 10px 24px 0; padding: 12px 16px; border-radius: 16px;
+    background: rgba(45,42,36,0.03); border: 1px solid rgba(45,42,36,0.04);
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; transition: background 0.2s;
+    opacity: 0; transform: translateY(8px);
+    animation: fadeSlideUp 0.5s ease-out 0.4s forwards;
+  }
+  @keyframes fadeSlideUp { to { opacity: 1; transform: translateY(0); } }
+  .grocery-inline:active { background: rgba(45,42,36,0.06); }
+  .grocery-inline .left { display: flex; align-items: center; gap: 10px; }
+  .grocery-inline .gi {
+    width: 32px; height: 32px; border-radius: 10px; background: var(--earth);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .grocery-inline .gi svg { width: 16px; height: 16px; fill: none; stroke: var(--sand); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .grocery-inline .gt { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .grocery-inline .gs { font-size: 10px; color: var(--rock); }
+  .grocery-inline .arr { font-size: 14px; color: var(--rock); }
+
+  /* Tap hint on meal cards */
+  .tap-hint {
+    text-align: center; padding: 2px 0 6px;
+    font-size: 9px; color: var(--rock); opacity: 0.6;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .tap-hint-icon { width: 12px; height: 12px; opacity: 0.5; animation: tapBounce 2s ease-in-out infinite; }
+  @keyframes tapBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+
+  /* ===== HORIZONTAL CARDS ===== */
+  .card-scroll { display: flex; gap: 12px; padding: 4px 0 4px 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .card-scroll::-webkit-scrollbar { display: none; }
+
+  .meal-card {
+    min-width: 280px; max-width: 280px; border-radius: 24px; overflow: hidden;
+    flex-shrink: 0; scroll-snap-align: start; cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+    opacity: 0; transform: translateX(30px) scale(0.95);
+    animation: cardSlideIn 0.5s cubic-bezier(0.16,1,0.3,1) forwards;
+  }
+  .meal-card:nth-child(1) { animation-delay: 0.7s; }
+  .meal-card:nth-child(2) { animation-delay: 0.78s; }
+  .meal-card:nth-child(3) { animation-delay: 0.86s; }
+  .meal-card:nth-child(4) { animation-delay: 0.94s; }
+  @keyframes cardSlideIn { to { opacity: 1; transform: translateX(0) scale(1); } }
+
+  .meal-card:last-child { margin-right: 24px; }
+
+  /* Unselected cards dim slightly */
+  .meal-card:not(.selected) { opacity: 0.7; transform: scale(0.96); }
+  .meal-card.selected { transform: scale(1.02); box-shadow: 0 8px 28px rgba(45,42,36,0.08); opacity: 1; }
+
+  /* Shine sweep on selected card */
+  .meal-card.selected::after {
+    content: ''; position: absolute; inset: 0; z-index: 4; pointer-events: none;
+    background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.06) 50%, transparent 60%);
+    animation: cardShine 1.2s ease 0.1s forwards;
+  }
+  @keyframes cardShine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+  .meal-card.dark { background: var(--earth); }
+  .meal-card.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .meal-card-inner { padding: 22px; min-height: 190px; display: flex; flex-direction: column; }
+
+  /* Selected ring indicator */
+  .meal-card.selected::before {
+    content: ''; position: absolute; inset: -2px; border-radius: 26px;
+    border: 2px solid var(--trail); pointer-events: none; z-index: 5;
+  }
+
+  .mc-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .mc-time { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .meal-card.dark .mc-time { color: rgba(246,245,240,0.3); }
+  .meal-card.light .mc-time { color: var(--rock); }
+
+  /* Meal type icon — SVG-based */
+  .mc-type-icon { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+  .meal-card.dark .mc-type-icon { background: rgba(246,245,240,0.06); }
+  .meal-card.light .mc-type-icon { background: var(--stone); }
+  .mc-type-icon svg { width: 16px; height: 16px; }
+  .meal-card.dark .mc-type-icon svg { fill: rgba(246,245,240,0.4); stroke: rgba(246,245,240,0.4); }
+  .meal-card.light .mc-type-icon svg { fill: var(--rock); stroke: var(--rock); }
+
+  .mc-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.12; margin-top: auto; padding-top: 20px; }
+  .meal-card.dark .mc-name { color: var(--sand); }
+  .meal-card.light .mc-name { color: var(--earth); }
+
+  .mc-footer { display: flex; justify-content: space-between; align-items: baseline; margin-top: 8px; }
+  .mc-cal { font-size: 30px; font-weight: 800; letter-spacing: -1px; }
+  .meal-card.dark .mc-cal { color: var(--sand); }
+  .meal-card.light .mc-cal { color: var(--earth); }
+  .mc-cal span { font-size: 11px; font-weight: 500; }
+  .meal-card.dark .mc-cal span { color: rgba(246,245,240,0.3); }
+  .meal-card.light .mc-cal span { color: var(--rock); }
+  .mc-macros { font-size: 11px; }
+  .meal-card.dark .mc-macros { color: rgba(246,245,240,0.3); }
+  .meal-card.light .mc-macros { color: var(--rock); }
+
+  /* Scroll dots */
+  .card-dots { display: flex; justify-content: center; gap: 6px; padding: 10px 0 4px; }
+  .card-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1); cursor: pointer; }
+  .card-dot.on { background: var(--earth); width: 20px; border-radius: 3px; }
+
+
+  /* ===== ACTION SHEET — redesigned with proper icons ===== */
+  .action-sheet {
+    margin: 6px 24px 0; padding: 20px; border-radius: 22px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    animation: sheetUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes sheetUp { 0% { opacity:0; transform:translateY(10px); } 100% { opacity:1; transform:translateY(0); } }
+
+  .sheet-meal-info { display: flex; align-items: center; gap: 12px; }
+  .sheet-desc-area { flex: 1; }
+  .sheet-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .sheet-desc { font-size: 11px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+
+  /* Divider */
+  .sheet-div { height: 1px; background: var(--stone); margin: 14px 0; }
+
+  /* Action icons — clean SVG circles */
+  .sheet-actions { display: flex; justify-content: space-between; }
+
+  .action-item {
+    display: flex; flex-direction: column; align-items: center; gap: 5px;
+    cursor: pointer; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); padding: 4px;
+    opacity: 0; transform: translateY(8px);
+    animation: actionIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+  }
+  .action-item:nth-child(1) { animation-delay: 0.05s; }
+  .action-item:nth-child(2) { animation-delay: 0.1s; }
+  .action-item:nth-child(3) { animation-delay: 0.15s; }
+  .action-item:nth-child(4) { animation-delay: 0.2s; }
+  .action-item:nth-child(5) { animation-delay: 0.25s; }
+  @keyframes actionIn { to { opacity: 1; transform: translateY(0); } }
+
+  .action-item:active { transform: scale(0.85); }
+
+  .action-circle {
+    width: 48px; height: 48px; border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  /* Ripple on tap */
+  .action-circle::after {
+    content: ''; position: absolute; inset: 0; border-radius: 16px;
+    background: rgba(255,255,255,0.15); transform: scale(0); opacity: 0;
+    transition: transform 0.3s, opacity 0.3s;
+  }
+  .action-item:active .action-circle::after { transform: scale(1); opacity: 1; transition: transform 0.1s; }
+  .action-circle svg { width: 20px; height: 20px; }
+
+  .action-circle.cook { background: var(--earth); }
+  .action-circle.cook svg { fill: none; stroke: var(--sand); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-circle.recipe { background: var(--stone); }
+  .action-circle.recipe svg { fill: none; stroke: var(--earth); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-circle.swap { background: rgba(52,211,153,0.08); }
+  .action-circle.swap svg { fill: none; stroke: #047857; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-circle.eatout { background: rgba(245,158,11,0.06); }
+  .action-circle.eatout svg { fill: none; stroke: #92400E; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-circle.nah { background: rgba(45,42,36,0.03); }
+  .action-circle.nah svg { fill: none; stroke: #AEAEB2; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+  .action-label { font-size: 9px; font-weight: 600; color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <div class="top"><span style="font-size:15px;font-weight:600;color:var(--earth);">9:41</span></div>
+    <div class="ctx">Wednesday · Nutrition</div>
+
+    <!-- Hero -->
+    <div class="hero-card"><div class="hero-ring"></div><div class="hero-ring-inner"></div><div class="hero-label">Daily Target</div><div class="hero-cal-row"><div class="cal-num">2,180</div><div class="cal-unit">kcal</div></div><div class="hero-macros"><div class="hm"><div class="hm-bar"><div class="hm-fill p"></div></div><div class="hm-row"><span class="hm-val">165g</span><span class="hm-label">Protein</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill c"></div></div><div class="hm-row"><span class="hm-val">245g</span><span class="hm-label">Carbs</span></div></div><div class="hm"><div class="hm-bar"><div class="hm-fill f"></div></div><div class="hm-row"><span class="hm-val">72g</span><span class="hm-label">Fat</span></div></div></div></div>
+
+    <!-- Grocery — right after hero, not at bottom -->
+    <div class="grocery-inline">
+      <div class="left">
+        <div class="gi"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+        <div><div class="gt">Grocery List</div><div class="gs">14 items · ~$45</div></div>
+      </div>
+      <div class="arr">›</div>
+    </div>
+
+    <!-- Cuisine -->
+    <div class="cuisine-section"><div class="cuisine-head"><span class="cuisine-title">Cuisine</span><span class="cuisine-allergy">⚠️ Allergies</span></div><div class="cuisine-scroll"><div class="ct on"><span class="flag">🇮🇳</span><span class="cname">Indian</span></div><div class="ct on"><span class="flag">🇮🇹</span><span class="cname">Italian</span></div><div class="ct off"><span class="flag">🇲🇽</span><span class="cname">Mexican</span></div><div class="ct off"><span class="flag">🇯🇵</span><span class="cname">Japanese</span></div><div class="ct off"><span class="flag">🇺🇸</span><span class="cname">American</span></div></div></div>
+
+    <!-- Meal Cards -->
+    <div class="card-scroll" id="cardScroll">
+      <div class="meal-card dark selected" onclick="selectCard(0)">
+        <div class="meal-card-inner">
+          <div class="mc-top">
+            <div class="mc-time">Breakfast · 8 AM</div>
+            <div class="mc-type-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v1m0 16v1m-8-9H3m18 0h-1M5.6 5.6l.7.7m12.4 12.4l-.7-.7M5.6 18.4l.7-.7M18.4 5.6l-.7.7" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="12" r="4"/></svg></div>
+          </div>
+          <div class="mc-name">Greek Yogurt<br>Power Bowl</div>
+          <div class="mc-footer"><div class="mc-cal">520 <span>kcal</span></div><div class="mc-macros">35P · 42C · 12F</div></div>
+        </div>
+      </div>
+
+      <div class="meal-card light" onclick="selectCard(1)">
+        <div class="meal-card-inner">
+          <div class="mc-top">
+            <div class="mc-time">Lunch · 12 PM</div>
+            <div class="mc-type-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="5" stroke-width="1.5"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m15.07-7.07l-1.41 1.41M8.34 15.66l-1.41 1.41m12.14 0l-1.41-1.41M8.34 8.34L6.93 6.93" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+          </div>
+          <div class="mc-name">Grilled Chicken<br>& Brown Rice</div>
+          <div class="mc-footer"><div class="mc-cal">680 <span>kcal</span></div><div class="mc-macros">45P · 55C · 14F</div></div>
+        </div>
+      </div>
+
+      <div class="meal-card dark" onclick="selectCard(2)">
+        <div class="meal-card-inner">
+          <div class="mc-top">
+            <div class="mc-time">Snack · 4 PM</div>
+            <div class="mc-type-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3C7.03 3 3 7.03 3 12h9V3z" stroke-width="1.5"/><path d="M12 3c4.97 0 9 4.03 9 9h-9V3z" stroke-width="1.5" opacity="0.4"/></svg></div>
+          </div>
+          <div class="mc-name">Protein Shake<br>& Almonds</div>
+          <div class="mc-footer"><div class="mc-cal">260 <span>kcal</span></div><div class="mc-macros">37P · 18C · 14F</div></div>
+        </div>
+      </div>
+
+      <div class="meal-card light" onclick="selectCard(3)">
+        <div class="meal-card-inner">
+          <div class="mc-top">
+            <div class="mc-time">Dinner · 7 PM</div>
+            <div class="mc-type-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 1 0 9.79 9.79z" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          </div>
+          <div class="mc-name">Salmon &<br>Sweet Potato</div>
+          <div class="mc-footer"><div class="mc-cal">720 <span>kcal</span></div><div class="mc-macros">48P · 62C · 22F</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-dots"><div class="card-dot on" onclick="selectCard(0)"></div><div class="card-dot" onclick="selectCard(1)"></div><div class="card-dot" onclick="selectCard(2)"></div><div class="card-dot" onclick="selectCard(3)"></div></div>
+
+    <div class="tap-hint">
+      <svg class="tap-hint-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 15l-2 5L9 9l11 4-5 2z"/><path d="M15 15l5 5"/></svg>
+      Tap a meal for options
+    </div>
+
+    <!-- Action Sheet -->
+    <div class="action-sheet" id="actionSheet">
+      <div class="sheet-meal-info">
+        <div class="sheet-desc-area">
+          <div class="sheet-name" id="sheetName">Greek Yogurt Power Bowl</div>
+          <div class="sheet-desc" id="sheetDesc">Creamy yogurt with berries, granola, chia seeds, and honey.</div>
+        </div>
+      </div>
+
+      <div class="sheet-div"></div>
+
+      <div class="sheet-actions">
+        <!-- Cook -->
+        <div class="action-item">
+          <div class="action-circle cook">
+            <svg viewBox="0 0 24 24"><path d="M15 11h7v1a7 7 0 0 1-7 7H9a7 7 0 0 1-7-7v-1h7"/><path d="M12 4v4"/><path d="M8 4v2"/><path d="M16 4v2"/></svg>
+          </div>
+          <span class="action-label">Cook</span>
+        </div>
+
+        <!-- Recipe -->
+        <div class="action-item">
+          <div class="action-circle recipe">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8"/><path d="M8 11h6"/></svg>
+          </div>
+          <span class="action-label">Recipe</span>
+        </div>
+
+        <!-- Swap -->
+        <div class="action-item">
+          <div class="action-circle swap">
+            <svg viewBox="0 0 24 24"><path d="M16 3l4 4-4 4"/><path d="M20 7H4"/><path d="M8 21l-4-4 4-4"/><path d="M4 17h16"/></svg>
+          </div>
+          <span class="action-label">Swap</span>
+        </div>
+
+        <!-- Eat Out -->
+        <div class="action-item">
+          <div class="action-circle eatout">
+            <svg viewBox="0 0 24 24"><path d="M3 2l1.578 4.657A2 2 0 0 0 6.476 8H17.52a2 2 0 0 0 1.898-1.343L21 2"/><path d="M12 12v6"/><path d="M8 22h8"/><path d="M12 18h.01"/><circle cx="12" cy="10" r="2"/></svg>
+          </div>
+          <span class="action-label">Eat Out</span>
+        </div>
+
+        <!-- Nah -->
+        <div class="action-item">
+          <div class="action-circle nah">
+            <svg viewBox="0 0 24 24"><path d="M10 15l-4 4m0-4l4 4"/><circle cx="12" cy="10" r="7" opacity="0.3"/><path d="M12 3a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74"/><path d="M12 3a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74"/></svg>
+          </div>
+          <span class="action-label">Nah</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="height:40px;"></div>
+
+  </div></div>
+</div>
+
+<script>
+const meals = [
+  { name: 'Greek Yogurt Power Bowl', desc: 'Creamy yogurt with berries, granola, chia seeds, and honey.' },
+  { name: 'Grilled Chicken & Brown Rice', desc: 'Herb-marinated chicken with brown rice, broccoli, and lemon.' },
+  { name: 'Protein Shake & Almonds', desc: 'Whey protein blended with banana, oat milk, and roasted almonds.' },
+  { name: 'Salmon & Sweet Potato', desc: 'Pan-seared salmon with roasted sweet potato wedges and asparagus.' },
+];
+
+function selectCard(idx) {
+  const cards = document.querySelectorAll('.meal-card');
+  const scroll = document.getElementById('cardScroll');
+
+  // Update cards
+  cards.forEach((c, i) => c.classList.toggle('selected', i === idx));
+
+  // Update dots
+  document.querySelectorAll('.card-dot').forEach((d, i) => d.classList.toggle('on', i === idx));
+
+  // Scroll the selected card into view
+  const target = cards[idx];
+  if (target && scroll) {
+    const scrollLeft = target.offsetLeft - 24; // 24px left padding
+    scroll.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+  }
+
+  // Update sheet
+  document.getElementById('sheetName').textContent = meals[idx].name;
+  document.getElementById('sheetDesc').textContent = meals[idx].desc;
+
+  // Re-animate sheet + action icons
+  const sheet = document.getElementById('actionSheet');
+  sheet.style.animation = 'none';
+  sheet.offsetHeight;
+  sheet.style.animation = 'sheetUp 0.35s cubic-bezier(0.34,1.56,0.64,1)';
+
+  // Re-trigger staggered action icon entrance
+  document.querySelectorAll('.action-item').forEach((item, i) => {
+    item.style.animation = 'none';
+    item.offsetHeight;
+    item.style.animation = `actionIn 0.4s cubic-bezier(0.34,1.56,0.64,1) ${0.05 + i * 0.05}s forwards`;
+  });
+
+  // Re-trigger shine on selected card
+  cards.forEach(c => {
+    const after = c.querySelector('::after');
+    c.style.setProperty('--shine', '0');
+  });
+
+  // Hide tap hint after first interaction
+  const hint = document.querySelector('.tap-hint');
+  if (hint) hint.style.opacity = '0';
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Immersive Nutrition</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; display: flex; justify-content: center; padding: 24px; }
+
+  .phone {
+    width: 393px; height: 852px; border-radius: 48px; overflow: hidden;
+    position: relative; border: 2.5px solid rgba(255,255,255,0.06);
+  }
+  .scroll {
+    width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none;
+    position: relative;
+  }
+  .scroll::-webkit-scrollbar { display: none; }
+
+  /* ===== THE SKY — background that lives behind everything ===== */
+  .sky {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0; pointer-events: none;
+    transition: none; /* JS handles smooth interpolation */
+  }
+
+  /* Stars layer — visible at night */
+  .stars {
+    position: absolute; inset: 0; opacity: 0;
+    transition: opacity 1.5s ease;
+  }
+  .star {
+    position: absolute; border-radius: 50%; background: #fff;
+    animation: twinkle 3s ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { 0% { opacity: 0.2; } 100% { opacity: 0.8; } }
+
+  /* Sun/Moon */
+  .celestial {
+    position: absolute; left: 50%; transform: translateX(-50%);
+    border-radius: 50%; z-index: 1;
+    transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .content { position: relative; z-index: 2; }
+
+  /* ===== STATUS ===== */
+  .status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; }
+  .alive { display: flex; align-items: center; gap: 6px; }
+  .alive-dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; animation: pulse 2.4s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.35); } }
+  .alive-lbl { font-size: 11px; font-weight: 600; }
+
+  /* ===== HERO ===== */
+  .hero { padding: 20px 24px 0; }
+  .hero-ctx { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .hero-ttl { font-size: 28px; font-weight: 700; letter-spacing: -0.8px; margin-top: 4px; }
+  .hero-sub { font-size: 13px; margin-top: 6px; line-height: 1.4; }
+
+  /* ===== MACRO STRIP ===== */
+  .macros { display: flex; gap: 8px; padding: 20px 24px; }
+  .macro {
+    flex: 1; border-radius: 18px; padding: 14px 8px; text-align: center;
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    transition: background 0.8s, border-color 0.8s;
+  }
+  .macro .v { font-size: 20px; font-weight: 800; }
+  .macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 3px; }
+
+  /* ===== MEAL ZONES ===== */
+  .zone {
+    padding: 40px 24px 48px; position: relative;
+    min-height: 240px;
+  }
+
+  /* Ambient glow behind each zone */
+  .zone-glow {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 300px; height: 300px; border-radius: 50%;
+    filter: blur(80px); opacity: 0.08; pointer-events: none;
+  }
+
+  /* Time badge */
+  .zone-time-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 11px; font-weight: 600;
+    backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  }
+  .zone-time-emoji { font-size: 16px; }
+
+  /* Meal name — large, confident */
+  .zone-name {
+    font-size: 26px; font-weight: 700; letter-spacing: -0.8px;
+    margin-top: 16px; line-height: 1.15;
+  }
+
+  /* Macros inline */
+  .zone-macros {
+    margin-top: 8px; font-size: 13px; font-weight: 500;
+    display: flex; gap: 12px;
+  }
+
+  /* Calorie — large accent */
+  .zone-cal {
+    margin-top: 14px; display: flex; align-items: baseline; gap: 4px;
+  }
+  .zone-cal-num { font-size: 40px; font-weight: 800; letter-spacing: -2px; }
+  .zone-cal-unit { font-size: 12px; font-weight: 500; }
+
+  /* Action row */
+  .zone-actions { display: flex; gap: 8px; margin-top: 18px; }
+  .zone-btn {
+    padding: 10px 18px; border-radius: 14px; font-size: 13px; font-weight: 600;
+    cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    transition: transform 0.15s ease;
+  }
+  .zone-btn:active { transform: scale(0.96); }
+
+  /* Divider between zones */
+  .zone-divider {
+    height: 1px; margin: 0 48px;
+    opacity: 0.08;
+  }
+
+  /* ===== GROCERY ===== */
+  .grocery {
+    margin: 20px 24px 48px; padding: 18px; border-radius: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    transition: background 0.8s;
+  }
+  .grocery .t { font-size: 14px; font-weight: 600; }
+  .grocery .s { font-size: 11px; margin-top: 2px; }
+
+  /* ===== COLOR THEMES — interpolated by JS ===== */
+  /* Dawn */
+  [data-theme="dawn"] { --bg: #FEF7EC; --fg: #78350F; --muted: rgba(120,53,15,0.4); --card: rgba(120,53,15,0.06); --card-border: rgba(120,53,15,0.08); --glow: #F59E0B; --btn-bg: rgba(120,53,15,0.08); --btn-fill: #78350F; --btn-text: #FEF7EC; }
+  [data-theme="noon"] { --bg: #ECFDF5; --fg: #064E3B; --muted: rgba(6,78,59,0.4); --card: rgba(6,78,59,0.06); --card-border: rgba(6,78,59,0.08); --glow: #34D399; --btn-bg: rgba(6,78,59,0.08); --btn-fill: #064E3B; --btn-text: #ECFDF5; }
+  [data-theme="golden"] { --bg: #FFF7ED; --fg: #7C2D12; --muted: rgba(124,45,18,0.4); --card: rgba(124,45,18,0.06); --card-border: rgba(124,45,18,0.08); --glow: #F97316; --btn-bg: rgba(124,45,18,0.08); --btn-fill: #7C2D12; --btn-text: #FFF7ED; }
+  [data-theme="night"] { --bg: #0F0A1A; --fg: #C4B5FD; --muted: rgba(196,181,253,0.35); --card: rgba(196,181,253,0.06); --card-border: rgba(196,181,253,0.08); --glow: #7C3AED; --btn-bg: rgba(196,181,253,0.08); --btn-fill: #7C3AED; --btn-text: #EDE9FE; }
+</style>
+</head>
+<body>
+
+<div class="phone" id="phone" data-theme="dawn">
+  <!-- SKY BACKGROUND — JS-driven gradient -->
+  <div class="sky" id="sky" style="background: linear-gradient(180deg, #FDE68A 0%, #FEF3C7 35%, #FEF7EC 100%);"></div>
+
+  <!-- STARS — appear at night -->
+  <div class="stars" id="stars">
+    <div class="star" style="width:2px;height:2px;top:8%;left:15%;animation-delay:0s;"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:12%;left:45%;animation-delay:0.8s;"></div>
+    <div class="star" style="width:2px;height:2px;top:6%;left:72%;animation-delay:1.6s;"></div>
+    <div class="star" style="width:1px;height:1px;top:18%;left:28%;animation-delay:0.4s;"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:10%;left:85%;animation-delay:1.2s;"></div>
+    <div class="star" style="width:2px;height:2px;top:22%;left:60%;animation-delay:2s;"></div>
+    <div class="star" style="width:1px;height:1px;top:4%;left:35%;animation-delay:0.6s;"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:15%;left:90%;animation-delay:1.4s;"></div>
+    <div class="star" style="width:2px;height:2px;top:20%;left:10%;animation-delay:1.8s;"></div>
+    <div class="star" style="width:1px;height:1px;top:25%;left:50%;animation-delay:0.2s;"></div>
+    <div class="star" style="width:1.5px;height:1.5px;top:3%;left:20%;animation-delay:2.2s;"></div>
+    <div class="star" style="width:2px;height:2px;top:16%;left:78%;animation-delay:0.9s;"></div>
+  </div>
+
+  <!-- CELESTIAL BODY (sun → moon) -->
+  <div class="celestial" id="celestial" style="width:44px;height:44px;top:70px;background:#FBBF24;box-shadow:0 0 40px rgba(251,191,36,0.4);"></div>
+
+  <div class="scroll" id="scroll">
+    <div class="content">
+
+      <!-- STATUS -->
+      <div class="status">
+        <span class="time" id="s-time" style="color:#78350F;">9:41</span>
+        <div class="alive"><div class="alive-dot"></div><span class="alive-lbl" id="s-alive" style="color:#34D399;">Fresh</span></div>
+      </div>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-ctx" id="h-ctx" style="color:rgba(120,53,15,0.4);">Wednesday · Nutrition</div>
+        <div class="hero-ttl" id="h-ttl" style="color:#78350F;">Today's Fuel</div>
+        <div class="hero-sub" id="h-sub" style="color:rgba(120,53,15,0.5);">4 meals planned · 2,180 kcal target</div>
+      </div>
+
+      <!-- MACROS -->
+      <div class="macros" id="macros-row">
+        <div class="macro" id="m0" style="background:rgba(120,53,15,0.08);border:1px solid rgba(120,53,15,0.06);">
+          <div class="v" id="m0v" style="color:#78350F;">2,180</div>
+          <div class="l" id="m0l" style="color:rgba(120,53,15,0.4);">kcal</div>
+        </div>
+        <div class="macro" id="m1" style="background:rgba(120,53,15,0.05);border:1px solid rgba(120,53,15,0.04);">
+          <div class="v" id="m1v" style="color:#78350F;">165g</div>
+          <div class="l" id="m1l" style="color:rgba(120,53,15,0.4);">Protein</div>
+        </div>
+        <div class="macro" id="m2" style="background:rgba(120,53,15,0.05);border:1px solid rgba(120,53,15,0.04);">
+          <div class="v" id="m2v" style="color:#78350F;">245g</div>
+          <div class="l" id="m2l" style="color:rgba(120,53,15,0.4);">Carbs</div>
+        </div>
+        <div class="macro" id="m3" style="background:rgba(120,53,15,0.05);border:1px solid rgba(120,53,15,0.04);">
+          <div class="v" id="m3v" style="color:#78350F;">72g</div>
+          <div class="l" id="m3l" style="color:rgba(120,53,15,0.4);">Fat</div>
+        </div>
+      </div>
+
+      <!-- BREAKFAST — Dawn -->
+      <div class="zone" id="z0">
+        <div class="zone-glow" style="background:#F59E0B;"></div>
+        <div class="zone-time-badge" id="ztb0" style="background:rgba(120,53,15,0.06);color:#78350F;">
+          <span class="zone-time-emoji">🌅</span> 8:00 AM · Breakfast
+        </div>
+        <div class="zone-name" id="zn0" style="color:#78350F;">Greek Yogurt<br>Power Bowl</div>
+        <div class="zone-macros" id="zm0" style="color:rgba(120,53,15,0.5);">
+          <span>35g protein</span><span>42g carbs</span><span>12g fat</span>
+        </div>
+        <div class="zone-cal">
+          <span class="zone-cal-num" id="zc0" style="color:#78350F;">520</span>
+          <span class="zone-cal-unit" id="zcu0" style="color:rgba(120,53,15,0.4);">kcal</span>
+        </div>
+        <div class="zone-actions">
+          <span class="zone-btn" id="zb0a" style="background:#78350F;color:#FEF7EC;">Recipe</span>
+          <span class="zone-btn" id="zb0b" style="background:rgba(120,53,15,0.06);color:#78350F;">Swap</span>
+          <span class="zone-btn" id="zb0c" style="background:rgba(120,53,15,0.06);color:#78350F;">Eat Out</span>
+        </div>
+      </div>
+
+      <div class="zone-divider" id="zd0" style="background:#78350F;"></div>
+
+      <!-- LUNCH — Noon -->
+      <div class="zone" id="z1">
+        <div class="zone-glow" style="background:#34D399;"></div>
+        <div class="zone-time-badge" id="ztb1" style="background:rgba(6,78,59,0.06);color:#064E3B;">
+          <span class="zone-time-emoji">☀️</span> 12:00 PM · Lunch
+        </div>
+        <div class="zone-name" id="zn1" style="color:#064E3B;">Grilled Chicken<br>& Brown Rice</div>
+        <div class="zone-macros" id="zm1" style="color:rgba(6,78,59,0.5);">
+          <span>45g protein</span><span>55g carbs</span><span>14g fat</span>
+        </div>
+        <div class="zone-cal">
+          <span class="zone-cal-num" id="zc1" style="color:#064E3B;">680</span>
+          <span class="zone-cal-unit" id="zcu1" style="color:rgba(6,78,59,0.4);">kcal</span>
+        </div>
+        <div class="zone-actions">
+          <span class="zone-btn" id="zb1a" style="background:#064E3B;color:#ECFDF5;">Recipe</span>
+          <span class="zone-btn" id="zb1b" style="background:rgba(6,78,59,0.06);color:#064E3B;">Swap</span>
+          <span class="zone-btn" id="zb1c" style="background:rgba(6,78,59,0.06);color:#064E3B;">Eat Out</span>
+        </div>
+      </div>
+
+      <div class="zone-divider" id="zd1" style="background:#064E3B;"></div>
+
+      <!-- SNACK — Golden Hour -->
+      <div class="zone" id="z2">
+        <div class="zone-glow" style="background:#F97316;"></div>
+        <div class="zone-time-badge" id="ztb2" style="background:rgba(124,45,18,0.06);color:#7C2D12;">
+          <span class="zone-time-emoji">🌇</span> 4:00 PM · Snack
+        </div>
+        <div class="zone-name" id="zn2" style="color:#7C2D12;">Protein Shake<br>& Almonds</div>
+        <div class="zone-macros" id="zm2" style="color:rgba(124,45,18,0.5);">
+          <span>37g protein</span><span>18g carbs</span><span>14g fat</span>
+        </div>
+        <div class="zone-cal">
+          <span class="zone-cal-num" id="zc2" style="color:#7C2D12;">260</span>
+          <span class="zone-cal-unit" id="zcu2" style="color:rgba(124,45,18,0.4);">kcal</span>
+        </div>
+        <div class="zone-actions">
+          <span class="zone-btn" id="zb2a" style="background:#7C2D12;color:#FFF7ED;">Recipe</span>
+          <span class="zone-btn" id="zb2b" style="background:rgba(124,45,18,0.06);color:#7C2D12;">Swap</span>
+        </div>
+      </div>
+
+      <div class="zone-divider" id="zd2" style="background:#7C2D12;"></div>
+
+      <!-- DINNER — Night -->
+      <div class="zone" id="z3">
+        <div class="zone-glow" style="background:#7C3AED;"></div>
+        <div class="zone-time-badge" id="ztb3" style="background:rgba(196,181,253,0.08);color:#C4B5FD;">
+          <span class="zone-time-emoji">🌙</span> 7:00 PM · Dinner
+        </div>
+        <div class="zone-name" id="zn3" style="color:#E9E5FF;">Salmon &<br>Sweet Potato</div>
+        <div class="zone-macros" id="zm3" style="color:rgba(196,181,253,0.5);">
+          <span>48g protein</span><span>62g carbs</span><span>22g fat</span>
+        </div>
+        <div class="zone-cal">
+          <span class="zone-cal-num" id="zc3" style="color:#C4B5FD;">720</span>
+          <span class="zone-cal-unit" id="zcu3" style="color:rgba(196,181,253,0.35);">kcal</span>
+        </div>
+        <div class="zone-actions">
+          <span class="zone-btn" id="zb3a" style="background:#7C3AED;color:#EDE9FE;">Recipe</span>
+          <span class="zone-btn" id="zb3b" style="background:rgba(196,181,253,0.08);color:#C4B5FD;">Swap</span>
+          <span class="zone-btn" id="zb3c" style="background:rgba(196,181,253,0.08);color:#C4B5FD;">Eat Out</span>
+        </div>
+      </div>
+
+      <!-- GROCERY -->
+      <div class="grocery" id="grocery" style="background:rgba(124,58,237,0.1);border:1px solid rgba(196,181,253,0.08);">
+        <div>
+          <div class="t" id="gt" style="color:#C4B5FD;">Grocery List</div>
+          <div class="s" id="gs" style="color:rgba(196,181,253,0.4);">14 items · ~$45</div>
+        </div>
+        <span id="ga" style="color:rgba(196,181,253,0.3);font-size:18px;">›</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const scroll = document.getElementById('scroll');
+const phone = document.getElementById('phone');
+const sky = document.getElementById('sky');
+const stars = document.getElementById('stars');
+const cel = document.getElementById('celestial');
+
+// Sky gradients per phase
+const skies = [
+  'linear-gradient(180deg, #FBBF24 0%, #FDE68A 30%, #FEF7EC 100%)',
+  'linear-gradient(180deg, #6EE7B7 0%, #A7F3D0 25%, #ECFDF5 100%)',
+  'linear-gradient(180deg, #FB923C 0%, #FDBA74 30%, #FFF7ED 100%)',
+  'linear-gradient(180deg, #1E1035 0%, #2E1065 40%, #0F0A1A 100%)',
+];
+
+// Celestial configs
+const celStyles = [
+  { top: 70, size: 44, bg: '#FBBF24', shadow: '0 0 40px rgba(251,191,36,0.5)', opacity: 1 },
+  { top: 50, size: 48, bg: '#FDE68A', shadow: '0 0 50px rgba(253,230,138,0.5)', opacity: 1 },
+  { top: 90, size: 40, bg: '#FB923C', shadow: '0 0 35px rgba(251,146,60,0.5)', opacity: 1 },
+  { top: 65, size: 36, bg: '#C4B5FD', shadow: '0 0 25px rgba(196,181,253,0.4)', opacity: 0.8 },
+];
+
+// Color themes for foreground elements
+const themes = [
+  { fg: '#78350F', muted: 'rgba(120,53,15,0.4)', cardBg: 'rgba(120,53,15,0.06)', border: 'rgba(120,53,15,0.04)' },
+  { fg: '#064E3B', muted: 'rgba(6,78,59,0.4)', cardBg: 'rgba(6,78,59,0.06)', border: 'rgba(6,78,59,0.04)' },
+  { fg: '#7C2D12', muted: 'rgba(124,45,18,0.4)', cardBg: 'rgba(124,45,18,0.06)', border: 'rgba(124,45,18,0.04)' },
+  { fg: '#C4B5FD', muted: 'rgba(196,181,253,0.35)', cardBg: 'rgba(196,181,253,0.06)', border: 'rgba(196,181,253,0.06)' },
+];
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3), 16);
+  const g = parseInt(hex.slice(3,5), 16);
+  const b = parseInt(hex.slice(5,7), 16);
+  return [r, g, b];
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r,g,b].map(x => Math.round(x).toString(16).padStart(2,'0')).join('');
+}
+
+function lerpColor(hex1, hex2, t) {
+  const [r1,g1,b1] = hexToRgb(hex1);
+  const [r2,g2,b2] = hexToRgb(hex2);
+  return rgbToHex(lerp(r1,r2,t), lerp(g1,g2,t), lerp(b1,b2,t));
+}
+
+let lastPhase = -1;
+
+scroll.addEventListener('scroll', () => {
+  const zones = document.querySelectorAll('.zone');
+  const phoneRect = phone.getBoundingClientRect();
+  const phoneH = phoneRect.height;
+
+  // Find which zone is most centered
+  let bestIdx = 0;
+  let bestDist = Infinity;
+  zones.forEach((z, i) => {
+    const rect = z.getBoundingClientRect();
+    const center = rect.top + rect.height / 2 - phoneRect.top;
+    const dist = Math.abs(center - phoneH * 0.45);
+    if (dist < bestDist) { bestDist = dist; bestIdx = i; }
+  });
+
+  // Calculate blend with next/prev
+  const activeZone = zones[bestIdx];
+  const rect = activeZone.getBoundingClientRect();
+  const relCenter = (rect.top + rect.height / 2 - phoneRect.top) / phoneH;
+
+  let nextIdx = bestIdx;
+  let t = 0;
+  if (relCenter < 0.4 && bestIdx < zones.length - 1) {
+    nextIdx = bestIdx + 1;
+    t = (0.4 - relCenter) / 0.3;
+    t = Math.max(0, Math.min(1, t));
+  } else if (relCenter > 0.5 && bestIdx > 0) {
+    nextIdx = bestIdx - 1;
+    t = (relCenter - 0.5) / 0.3;
+    t = Math.max(0, Math.min(1, t));
+    [bestIdx, nextIdx] = [nextIdx, bestIdx]; // swap for correct interpolation direction
+    t = 1 - t;
+  }
+
+  // Interpolate sky
+  if (bestIdx !== nextIdx) {
+    // Simple crossfade: use the one that's more centered
+    sky.style.background = t > 0.5 ? skies[nextIdx] : skies[bestIdx];
+  } else {
+    sky.style.background = skies[bestIdx];
+  }
+  sky.style.transition = 'background 0.6s ease';
+
+  // Stars visibility
+  const isNight = bestIdx === 3 || nextIdx === 3;
+  stars.style.opacity = isNight ? (bestIdx === 3 ? 1 : t) : 0;
+
+  // Celestial body
+  const cFrom = celStyles[Math.min(bestIdx, 3)];
+  const cTo = celStyles[Math.min(nextIdx, 3)];
+  const ct = bestIdx === nextIdx ? 0 : t;
+  cel.style.top = lerp(cFrom.top, cTo.top, ct) + 'px';
+  cel.style.width = cel.style.height = lerp(cFrom.size, cTo.size, ct) + 'px';
+  cel.style.background = lerpColor(cFrom.bg, cTo.bg, ct);
+  cel.style.boxShadow = ct > 0.5 ? cTo.shadow : cFrom.shadow;
+  cel.style.opacity = lerp(cFrom.opacity, cTo.opacity, ct);
+
+  // Update hero text colors
+  const phase = bestIdx === nextIdx ? bestIdx : (t > 0.5 ? nextIdx : bestIdx);
+  if (phase !== lastPhase) {
+    lastPhase = phase;
+    const th = themes[phase];
+    document.getElementById('s-time').style.color = th.fg;
+    document.getElementById('h-ctx').style.color = th.muted;
+    document.getElementById('h-ttl').style.color = th.fg;
+    document.getElementById('h-sub').style.color = th.muted;
+
+    // Macros
+    for (let i = 0; i < 4; i++) {
+      const m = document.getElementById('m' + i);
+      m.style.background = i === 0 ? th.cardBg : th.cardBg;
+      m.style.borderColor = th.border;
+      document.getElementById('m' + i + 'v').style.color = th.fg;
+      document.getElementById('m' + i + 'l').style.color = th.muted;
+    }
+  }
+});
+
+// Trigger initial state
+scroll.dispatchEvent(new Event('scroll'));
+</script>
+
+</body>
+</html>

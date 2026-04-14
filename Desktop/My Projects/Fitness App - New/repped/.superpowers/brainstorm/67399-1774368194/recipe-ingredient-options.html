@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Ingredient Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; gap: 20px; justify-content: center; padding: 24px; flex-wrap: wrap; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .lbl { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 0 2px; }
+  .dsc { text-align: center; font-size: 8px; color: #555; padding: 0 8px 4px; line-height: 1.3; max-width: 400px; }
+
+  /* Shared header */
+  .hdr { padding: 54px 22px 0; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+  /* Hero card — video moved inside */
+  .hero { margin: 12px 22px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .hero-ring { position: absolute; top: -28px; right: -28px; width: 126px; height: 126px; border-radius: 50%; border: 10px solid rgba(246,245,240,0.03); animation: spin 18s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .hero-ring-in { position: absolute; top: -16px; right: -16px; width: 104px; height: 104px; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); opacity: 0.3; transform: rotate(-30deg); }
+  .hero-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .hero-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; line-height: 1.08; margin-top: 6px; position: relative; }
+  .hero-bottom { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 14px; position: relative; }
+  .hero-pills { display: flex; gap: 6px; }
+  .hp { padding: 6px 12px; border-radius: 9px; background: rgba(246,245,240,0.06); display: flex; align-items: baseline; gap: 3px; }
+  .hp-v { font-size: 15px; font-weight: 800; color: var(--sand); }
+  .hp-u { font-size: 8px; color: rgba(246,245,240,0.3); }
+  /* Video link — clean, subtle, inside hero bottom-right */
+  .hero-video { font-size: 10px; color: var(--trail); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; opacity: 0.7; transition: opacity 0.2s; }
+  .hero-video:hover { opacity: 1; }
+  .hero-video-dot { width: 22px; height: 22px; border-radius: 50%; background: rgba(52,211,153,0.1); display: flex; align-items: center; justify-content: center; }
+  .hero-video-dot svg { width: 8px; height: 8px; fill: var(--trail); }
+
+  /* Placeholder steps section */
+  .steps-ph { padding: 14px 22px 0; }
+  .steps-ph-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .steps-ph-cards { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+  .steps-ph-cards::-webkit-scrollbar { display: none; }
+  .steps-ph-card { min-width: 200px; height: 120px; border-radius: 18px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--rock); }
+  .steps-ph-card:nth-child(odd) { background: var(--earth); color: rgba(246,245,240,0.2); }
+  .steps-ph-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+
+  /* ============================================================
+     INGREDIENT OPTION A: HORIZONTAL SCROLL TILES
+     Each ingredient is its own mini card in a horizontal scroll.
+     Spacious, airy, one ingredient per tile.
+     ============================================================ */
+
+  .ia-section { padding: 14px 0 0; }
+  .ia-head { display: flex; justify-content: space-between; align-items: center; padding: 0 22px; margin-bottom: 10px; }
+  .ia-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ia-count { font-size: 10px; color: var(--rock); }
+
+  .ia-scroll { display: flex; gap: 8px; padding: 0 0 0 22px; overflow-x: auto; scrollbar-width: none; }
+  .ia-scroll::-webkit-scrollbar { display: none; }
+
+  .ia-tile {
+    min-width: 110px; padding: 16px; border-radius: 18px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    flex-shrink: 0; display: flex; flex-direction: column;
+    justify-content: space-between; min-height: 80px;
+  }
+  .ia-tile:last-child { margin-right: 22px; }
+  .ia-tile-name { font-size: 14px; font-weight: 600; color: var(--earth); line-height: 1.2; }
+  .ia-tile-amount { font-size: 11px; color: var(--rock); margin-top: 8px; }
+
+
+  /* ============================================================
+     INGREDIENT OPTION B: WRAPPED CHIPS
+     Compact rounded pills that wrap to multiple lines.
+     Each chip = name + amount. Minimal space.
+     ============================================================ */
+
+  .ib-section { padding: 14px 22px 0; }
+  .ib-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .ib-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ib-count { font-size: 10px; color: var(--rock); }
+
+  .ib-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .ib-chip {
+    padding: 10px 16px; border-radius: 14px;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+  }
+  .ib-chip-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .ib-chip-amount { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+
+  /* ============================================================
+     INGREDIENT OPTION C: SINGLE-COLUMN AIRY LIST
+     No card wrapper. Just rows with generous padding.
+     Thin dividers. Name left, amount right. Breathes.
+     ============================================================ */
+
+  .ic-section { padding: 14px 22px 0; }
+  .ic-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .ic-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ic-count { font-size: 10px; color: var(--rock); }
+
+  .ic-list { padding: 6px 0; }
+  .ic-row {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03);
+  }
+  .ic-row:last-child { border-bottom: none; }
+  .ic-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+  .ic-amount { font-size: 13px; color: var(--rock); }
+
+
+  /* ============================================================
+     INGREDIENT OPTION D: DARK COMPACT CARD
+     Ingredients inside a dark earth card. Sand text.
+     Two columns. Compact but visually distinct from background.
+     ============================================================ */
+
+  .id-section { padding: 14px 22px 0; }
+  .id-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .id-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .id-count { font-size: 10px; color: var(--rock); }
+
+  .id-card { padding: 18px 20px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .id-ring { position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.03); }
+  .id-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px 20px; position: relative; }
+  .id-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); }
+  .id-row:nth-last-child(-n+2) { border-bottom: none; }
+  .id-name { font-size: 13px; color: var(--sand); font-weight: 400; }
+  .id-amount { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+
+  /* ============================================================
+     INGREDIENT OPTION E: ALTERNATING TILES
+     2-column grid but each tile alternates white/stone.
+     More visual interest than plain list. Each tile is its own unit.
+     ============================================================ */
+
+  .ie-section { padding: 14px 22px 0; }
+  .ie-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .ie-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .ie-count { font-size: 10px; color: var(--rock); }
+
+  .ie-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ie-tile { padding: 14px 16px; border-radius: 16px; }
+  .ie-tile:nth-child(odd) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .ie-tile:nth-child(even) { background: var(--stone); }
+  .ie-tile-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .ie-tile-amount { font-size: 11px; color: var(--rock); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ===== OPTION A: Horizontal Scroll Tiles ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">A — Horizontal Scroll Tiles</div>
+  <div class="dsc">Each ingredient is its own tile. Swipe sideways. Airy, spacious, one idea per tile. Same scroll pattern as cuisine filter and step cards.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="back">←</div></div>
+    <div class="hero"><div class="hero-ring"></div><div class="hero-ring-in"></div><div class="hero-label">Breakfast Recipe</div><div class="hero-name">Veggie Stir Fry<br>with Tofu</div><div class="hero-bottom"><div class="hero-pills"><div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div><div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div><div class="hp"><span class="hp-v">Easy</span></div></div><div class="hero-video"><div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span>Video</span></div></div></div>
+
+    <div class="ia-section"><div class="ia-head"><span class="ia-title">Ingredients</span><span class="ia-count">8 items</span></div>
+      <div class="ia-scroll">
+        <div class="ia-tile"><div class="ia-tile-name">Firm tofu</div><div class="ia-tile-amount">½ block cubed</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Broccoli</div><div class="ia-tile-amount">1 cup florets</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Bell pepper</div><div class="ia-tile-amount">1 sliced</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Snap peas</div><div class="ia-tile-amount">½ cup</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Teriyaki</div><div class="ia-tile-amount">2 tbsp</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">White rice</div><div class="ia-tile-amount">1 cup cooked</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Sesame oil</div><div class="ia-tile-amount">1 tbsp</div></div>
+        <div class="ia-tile"><div class="ia-tile-name">Garlic</div><div class="ia-tile-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <div class="steps-ph"><div class="steps-ph-title">Steps</div><div class="steps-ph-cards"><div class="steps-ph-card">Step cards here →</div><div class="steps-ph-card">Step 2</div><div class="steps-ph-card">Step 3</div></div></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION B: Wrapped Chips ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">B — Wrapped Chips</div>
+  <div class="dsc">Compact rounded pills that wrap naturally. Each chip has name + amount. Takes less vertical space than a list. Organic flow.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="back">←</div></div>
+    <div class="hero"><div class="hero-ring"></div><div class="hero-ring-in"></div><div class="hero-label">Breakfast Recipe</div><div class="hero-name">Veggie Stir Fry<br>with Tofu</div><div class="hero-bottom"><div class="hero-pills"><div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div><div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div><div class="hp"><span class="hp-v">Easy</span></div></div><div class="hero-video"><div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span>Video</span></div></div></div>
+
+    <div class="ib-section"><div class="ib-head"><span class="ib-title">Ingredients</span><span class="ib-count">8 items</span></div>
+      <div class="ib-chips">
+        <div class="ib-chip"><div class="ib-chip-name">Firm tofu</div><div class="ib-chip-amount">½ block cubed</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Broccoli</div><div class="ib-chip-amount">1 cup florets</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Bell pepper</div><div class="ib-chip-amount">1 sliced</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Snap peas</div><div class="ib-chip-amount">½ cup</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Teriyaki</div><div class="ib-chip-amount">2 tbsp</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">White rice</div><div class="ib-chip-amount">1 cup cooked</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Sesame oil</div><div class="ib-chip-amount">1 tbsp</div></div>
+        <div class="ib-chip"><div class="ib-chip-name">Garlic</div><div class="ib-chip-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <div class="steps-ph"><div class="steps-ph-title">Steps</div><div class="steps-ph-cards"><div class="steps-ph-card">Step cards here →</div><div class="steps-ph-card">Step 2</div><div class="steps-ph-card">Step 3</div></div></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION C: Airy Single Column ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">C — Airy List</div>
+  <div class="dsc">No card wrapper at all. Just rows with generous 12px padding and thin dividers. Name left, amount right. Maximum breathing room. Most minimal.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="back">←</div></div>
+    <div class="hero"><div class="hero-ring"></div><div class="hero-ring-in"></div><div class="hero-label">Breakfast Recipe</div><div class="hero-name">Veggie Stir Fry<br>with Tofu</div><div class="hero-bottom"><div class="hero-pills"><div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div><div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div><div class="hp"><span class="hp-v">Easy</span></div></div><div class="hero-video"><div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span>Video</span></div></div></div>
+
+    <div class="ic-section"><div class="ic-head"><span class="ic-title">Ingredients</span><span class="ic-count">8 items</span></div>
+      <div class="ic-list">
+        <div class="ic-row"><span class="ic-name">Firm tofu</span><span class="ic-amount">½ block cubed</span></div>
+        <div class="ic-row"><span class="ic-name">Broccoli</span><span class="ic-amount">1 cup florets</span></div>
+        <div class="ic-row"><span class="ic-name">Bell pepper</span><span class="ic-amount">1 sliced</span></div>
+        <div class="ic-row"><span class="ic-name">Snap peas</span><span class="ic-amount">½ cup</span></div>
+        <div class="ic-row"><span class="ic-name">Teriyaki sauce</span><span class="ic-amount">2 tbsp</span></div>
+        <div class="ic-row"><span class="ic-name">White rice</span><span class="ic-amount">1 cup cooked</span></div>
+        <div class="ic-row"><span class="ic-name">Sesame oil</span><span class="ic-amount">1 tbsp</span></div>
+        <div class="ic-row"><span class="ic-name">Garlic</span><span class="ic-amount">2 cloves</span></div>
+      </div>
+    </div>
+
+    <div class="steps-ph"><div class="steps-ph-title">Steps</div><div class="steps-ph-cards"><div class="steps-ph-card">Step cards here →</div><div class="steps-ph-card">Step 2</div><div class="steps-ph-card">Step 3</div></div></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION D: Dark Card ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">D — Dark Card</div>
+  <div class="dsc">Ingredients inside a dark earth card with sand text. Two columns. Decorative ring. Visually matches the hero. Creates a "dark zone" for recipe identity.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="back">←</div></div>
+    <div class="hero"><div class="hero-ring"></div><div class="hero-ring-in"></div><div class="hero-label">Breakfast Recipe</div><div class="hero-name">Veggie Stir Fry<br>with Tofu</div><div class="hero-bottom"><div class="hero-pills"><div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div><div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div><div class="hp"><span class="hp-v">Easy</span></div></div><div class="hero-video"><div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span>Video</span></div></div></div>
+
+    <div class="id-section"><div class="id-head"><span class="id-title">Ingredients</span><span class="id-count">8 items</span></div>
+      <div class="id-card"><div class="id-ring"></div><div class="id-grid">
+        <div class="id-row"><span class="id-name">Firm tofu</span><span class="id-amount">½ block</span></div>
+        <div class="id-row"><span class="id-name">Broccoli</span><span class="id-amount">1 cup</span></div>
+        <div class="id-row"><span class="id-name">Bell pepper</span><span class="id-amount">1 sliced</span></div>
+        <div class="id-row"><span class="id-name">Snap peas</span><span class="id-amount">½ cup</span></div>
+        <div class="id-row"><span class="id-name">Teriyaki</span><span class="id-amount">2 tbsp</span></div>
+        <div class="id-row"><span class="id-name">White rice</span><span class="id-amount">1 cup</span></div>
+        <div class="id-row"><span class="id-name">Sesame oil</span><span class="id-amount">1 tbsp</span></div>
+        <div class="id-row"><span class="id-name">Garlic</span><span class="id-amount">2 cloves</span></div>
+      </div></div>
+    </div>
+
+    <div class="steps-ph"><div class="steps-ph-title">Steps</div><div class="steps-ph-cards"><div class="steps-ph-card">Step cards here →</div><div class="steps-ph-card">Step 2</div><div class="steps-ph-card">Step 3</div></div></div>
+  </div></div></div>
+</div>
+
+<!-- ===== OPTION E: Alternating Tiles ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">E — Alternating Tiles</div>
+  <div class="dsc">2-column grid. Each ingredient is its own tile — white and stone alternating. More visual interest than a list. Each tile is an independent unit with name + amount.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="back">←</div></div>
+    <div class="hero"><div class="hero-ring"></div><div class="hero-ring-in"></div><div class="hero-label">Breakfast Recipe</div><div class="hero-name">Veggie Stir Fry<br>with Tofu</div><div class="hero-bottom"><div class="hero-pills"><div class="hp"><span class="hp-v">10</span><span class="hp-u">prep</span></div><div class="hp"><span class="hp-v">12</span><span class="hp-u">cook</span></div><div class="hp"><span class="hp-v">Easy</span></div></div><div class="hero-video"><div class="hero-video-dot"><svg viewBox="0 0 24 24"><polygon points="10,8 16,12 10,16"/></svg></div><span>Video</span></div></div></div>
+
+    <div class="ie-section"><div class="ie-head"><span class="ie-title">Ingredients</span><span class="ie-count">8 items</span></div>
+      <div class="ie-grid">
+        <div class="ie-tile"><div class="ie-tile-name">Firm tofu</div><div class="ie-tile-amount">½ block cubed</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Broccoli</div><div class="ie-tile-amount">1 cup florets</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Bell pepper</div><div class="ie-tile-amount">1 sliced</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Snap peas</div><div class="ie-tile-amount">½ cup</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Teriyaki</div><div class="ie-tile-amount">2 tbsp</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">White rice</div><div class="ie-tile-amount">1 cup cooked</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Sesame oil</div><div class="ie-tile-amount">1 tbsp</div></div>
+        <div class="ie-tile"><div class="ie-tile-name">Garlic</div><div class="ie-tile-amount">2 cloves</div></div>
+      </div>
+    </div>
+
+    <div class="steps-ph"><div class="steps-ph-title">Steps</div><div class="steps-ph-cards"><div class="steps-ph-card">Step cards here →</div><div class="steps-ph-card">Step 2</div><div class="steps-ph-card">Step 3</div></div></div>
+  </div></div></div>
+</div>
+
+</body>
+</html>

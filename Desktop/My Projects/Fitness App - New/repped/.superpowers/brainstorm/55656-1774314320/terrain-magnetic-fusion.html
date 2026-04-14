@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Terrain × Magnetic Fusion</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --hb: 2.4s; --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --accent: #6366F1; --rock: #8E8E7A; }
+
+  .page-head { text-align: center; padding: 28px 24px 8px; }
+  .page-head h1 { font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #F6F5F0 30%, #34D399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .page-head p { font-size: 12px; color: #444; margin-top: 4px; max-width: 550px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+
+  .showcase { display: flex; gap: 32px; justify-content: center; padding: 16px 24px 60px; flex-wrap: wrap; align-items: flex-start; }
+
+  /* ===== PHONE ===== */
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  /* ===== TOPOGRAPHIC BACKGROUND ===== */
+  .topo-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .topo-line {
+    position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.025;
+    animation: topoShift 25s ease-in-out infinite alternate;
+  }
+  .topo-line:nth-child(1) { width: 600px; height: 480px; top: -120px; left: -120px; }
+  .topo-line:nth-child(2) { width: 500px; height: 400px; top: -80px; left: -80px; animation-delay: -4s; }
+  .topo-line:nth-child(3) { width: 400px; height: 320px; top: -40px; left: -40px; animation-delay: -8s; }
+  .topo-line:nth-child(4) { width: 550px; height: 450px; bottom: -100px; right: -120px; animation-delay: -12s; }
+  .topo-line:nth-child(5) { width: 450px; height: 360px; bottom: -60px; right: -80px; animation-delay: -16s; }
+  .topo-line:nth-child(6) { width: 350px; height: 280px; bottom: -20px; right: -40px; animation-delay: -20s; }
+  @keyframes topoShift { 0% { transform: rotate(0deg) scale(1); } 100% { transform: rotate(2deg) scale(1.015); } }
+
+  /* Subtle living warmth blobs */
+  .warmth-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.025; animation: warmDrift 20s ease-in-out infinite alternate; }
+  .warmth-blob:nth-child(7) { width: 250px; height: 250px; background: var(--trail); top: 10%; left: -40px; }
+  .warmth-blob:nth-child(8) { width: 200px; height: 200px; background: var(--accent); bottom: 20%; right: -30px; animation-delay: -7s; }
+
+  .content { position: relative; z-index: 1; }
+
+  /* ===== STATUS BAR ===== */
+  .status-bar { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .trail-status { display: flex; align-items: center; gap: 6px; }
+  .trail-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: dotPulse var(--hb) ease-in-out infinite; }
+  @keyframes dotPulse { 0%,100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.4); } }
+  .trail-label { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  /* ===== PERSONAL HERO ===== */
+  .hero { padding: 18px 24px 0; }
+  .hero-ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .hero-ctx .sep { width: 3px; height: 3px; border-radius: 50%; background: var(--rock); }
+  .hero-msg { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.15; margin-top: 8px; }
+  .hero-hl { color: var(--trail); position: relative; display: inline; }
+  .hero-hl::after { content: ''; position: absolute; left: -2px; right: -2px; bottom: 0px; height: 7px; background: rgba(52,211,153,0.12); border-radius: 4px; z-index: -1; }
+
+  /* Nudge */
+  .nudge { margin-top: 12px; padding: 12px 16px; border-radius: 16px; background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.1); font-size: 12px; color: #4D7C5B; line-height: 1.5; display: flex; gap: 10px; align-items: flex-start; }
+  .nudge-icon { flex-shrink: 0; margin-top: 1px; font-size: 14px; }
+
+  /* ===== BENTO WIDGETS ===== */
+  .bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .widget { border-radius: 22px; position: relative; overflow: hidden; opacity: 0; animation: wPop 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .widget:nth-child(1) { animation-delay: 0.05s; }
+  .widget:nth-child(2) { animation-delay: 0.1s; }
+  .widget:nth-child(3) { animation-delay: 0.15s; }
+  @keyframes wPop { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+
+  /* Streak widget — tall, dominant */
+  .w-streak {
+    grid-row: span 2; background: var(--earth); padding: 22px 18px;
+    display: flex; flex-direction: column;
+  }
+  .w-streak .label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600; }
+  .w-streak .big-num-wrap { position: relative; margin-top: 6px; }
+  .streak-glow { position: absolute; inset: -20px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.1) 0%, transparent 70%); animation: sGlow var(--hb) ease-in-out infinite; }
+  @keyframes sGlow { 0%,100% { opacity: 0.3; transform: scale(0.9); } 30% { opacity: 1; transform: scale(1.05); } }
+  .w-streak .big-num { font-size: 64px; font-weight: 800; letter-spacing: -3px; line-height: 1; background: linear-gradient(180deg, var(--sand) 30%, rgba(246,245,240,0.4)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; position: relative; }
+  .w-streak .unit { font-size: 13px; font-weight: 600; color: rgba(246,245,240,0.45); margin-top: -2px; }
+  /* Mini elevation bars for streak days */
+  .streak-mini-elev { flex: 1; display: flex; align-items: flex-end; gap: 4px; margin-top: 14px; padding-top: 8px; }
+  .sme-bar { flex: 1; border-radius: 4px 4px 0 0; background: rgba(246,245,240,0.06); position: relative; min-height: 4px; }
+  .sme-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; border-radius: 4px 4px 0 0; animation: smeGrow 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+  @keyframes smeGrow { from { height: 0; } }
+  .sme-bar:nth-child(1) .sme-bar-fill { height: 60%; background: var(--trail); animation-delay: 0.3s; }
+  .sme-bar:nth-child(2) .sme-bar-fill { height: 85%; background: var(--trail); animation-delay: 0.36s; }
+  .sme-bar:nth-child(3) .sme-bar-fill { height: 45%; background: var(--trail); animation-delay: 0.42s; }
+  .sme-bar:nth-child(4) .sme-bar-fill { height: 100%; background: var(--trail); animation-delay: 0.48s; }
+  .sme-bar:nth-child(5) .sme-bar-fill { height: 70%; background: var(--trail); animation-delay: 0.54s; }
+  .sme-bar:nth-child(6) .sme-bar-fill { height: 55%; background: var(--accent); animation-delay: 0.6s; opacity: 0.7; }
+  .sme-bar:nth-child(7) .sme-bar-fill { height: 0; }
+  .sme-day { text-align: center; font-size: 7px; color: rgba(246,245,240,0.2); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Momentum widget */
+  .w-momentum { background: #EDEBE5; padding: 18px; }
+  .w-momentum .label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .w-momentum .val { font-size: 32px; font-weight: 800; color: var(--earth); margin-top: 6px; letter-spacing: -1px; }
+  .w-momentum .sub { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  /* Contour accent inside widget */
+  .w-momentum::before { content: ''; position: absolute; width: 120px; height: 120px; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.04; bottom: -40px; right: -40px; }
+
+  /* Volume widget */
+  .w-volume { background: #EDEBE5; padding: 18px; }
+  .w-volume .label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .w-volume .val { font-size: 24px; font-weight: 800; color: var(--earth); margin-top: 6px; letter-spacing: -0.5px; }
+  .w-volume .trend { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .vol-sparks { display: flex; gap: 3px; align-items: flex-end; height: 24px; margin-top: 10px; }
+  .vol-spark { flex: 1; border-radius: 3px; background: #D6D3CA; animation: vSparkUp 0.7s ease-out forwards; transform-origin: bottom; }
+  @keyframes vSparkUp { from { transform: scaleY(0); } }
+  .vol-spark:nth-child(1) { height: 35%; animation-delay: 0.3s; }
+  .vol-spark:nth-child(2) { height: 55%; animation-delay: 0.35s; }
+  .vol-spark:nth-child(3) { height: 40%; animation-delay: 0.4s; }
+  .vol-spark:nth-child(4) { height: 70%; animation-delay: 0.45s; }
+  .vol-spark:nth-child(5) { height: 60%; animation-delay: 0.5s; }
+  .vol-spark:nth-child(6) { height: 85%; animation-delay: 0.55s; }
+  .vol-spark:nth-child(7) { height: 100%; animation-delay: 0.6s; background: var(--earth); }
+
+  /* ===== TRAIL CONDITIONS (readiness) ===== */
+  .trail-conditions { margin: 10px 24px 0; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 18px; background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.08); opacity: 0; animation: wPop 0.4s ease 0.3s forwards; }
+  .tc-icon { font-size: 18px; flex-shrink: 0; }
+  .tc-text { font-size: 12px; color: #4D7C5B; font-weight: 500; line-height: 1.4; }
+  .tc-text strong { font-weight: 700; color: #2D5F3F; }
+
+  /* ===== ELEVATION PROFILE ===== */
+  .elevation-section { margin: 16px 24px 0; }
+  .elev-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .elev-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .elev-summit { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  .elevation { height: 140px; position: relative; border-radius: 20px; background: #EDEBE5; overflow: hidden; padding: 12px; }
+
+  .elev-svg { width: 100%; height: 100%; }
+  .elev-path-bg { fill: none; stroke: #D6D3CA; stroke-width: 1.5; }
+  .elev-path-fg { fill: none; stroke: var(--earth); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 500; stroke-dashoffset: 500; animation: drawTrail 2.2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards; }
+  @keyframes drawTrail { to { stroke-dashoffset: 150; } }
+  .elev-fill { fill: url(#elevGrad); opacity: 0; animation: fillIn 0.8s ease 2.2s forwards; }
+  @keyframes fillIn { to { opacity: 0.12; } }
+
+  /* Animated hiker dot on the trail */
+  .hiker-dot { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--trail); box-shadow: 0 0 8px rgba(52,211,153,0.5); animation: hikerMove 2.2s cubic-bezier(0.16,1,0.3,1) 0.6s forwards; left: 12px; bottom: 60px; z-index: 5; }
+  @keyframes hikerMove { 0% { left: 12px; bottom: 55px; } 15% { left: 55px; bottom: 78px; } 30% { left: 100px; bottom: 95px; } 45% { left: 140px; bottom: 82px; } 60% { left: 180px; bottom: 65px; } 75% { left: 215px; bottom: 80px; } 100% { left: 240px; bottom: 73px; } }
+  .hiker-dot::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(52,211,153,0.25); animation: hikerPing 1.5s ease-in-out infinite; }
+  @keyframes hikerPing { 0%,100% { transform: scale(1); opacity: 0.6; } 50% { transform: scale(1.5); opacity: 0; } }
+
+  /* Day markers on elevation */
+  .elev-markers { display: flex; justify-content: space-between; padding: 8px 4px 0; }
+  .elev-mark { text-align: center; }
+  .elev-mark-dot { width: 8px; height: 8px; border-radius: 50%; margin: 0 auto; border: 1.5px solid #D6D3CA; background: var(--sand); }
+  .elev-mark-dot.done { background: var(--earth); border-color: var(--earth); }
+  .elev-mark-dot.now { background: var(--trail); border-color: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.4); }
+  .elev-mark-label { font-size: 8px; color: var(--rock); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+
+  /* ===== SUMMIT TARGET — original addition ===== */
+  .summit-card { margin: 14px 24px 0; padding: 18px 20px; border-radius: 20px; background: var(--earth); display: flex; align-items: center; gap: 16px; position: relative; overflow: hidden; opacity: 0; animation: wPop 0.5s ease 0.4s forwards; }
+  .summit-glow { position: absolute; width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 70%); right: -40px; top: -40px; animation: sGlow var(--hb) ease-in-out infinite; }
+  /* Contour lines inside summit card */
+  .summit-contour { position: absolute; border: 1px solid rgba(246,245,240,0.03); border-radius: 50%; }
+  .summit-contour:nth-child(1) { width: 200px; height: 200px; right: -60px; bottom: -80px; }
+  .summit-contour:nth-child(2) { width: 160px; height: 160px; right: -40px; bottom: -60px; }
+
+  .summit-icon { font-size: 28px; position: relative; z-index: 1; }
+  .summit-info { position: relative; z-index: 1; }
+  .summit-info .label { font-size: 9px; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .summit-info .target { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 2px; letter-spacing: -0.3px; }
+  .summit-info .remain { font-size: 11px; color: rgba(246,245,240,0.45); margin-top: 2px; }
+  .summit-progress { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: rgba(246,245,240,0.06); }
+  .summit-progress-fill { height: 100%; width: 0; background: var(--trail); border-radius: 0 2px 0 0; animation: summitFill 1.5s cubic-bezier(0.16,1,0.3,1) 0.8s forwards; }
+  @keyframes summitFill { to { width: 60%; } }
+
+  /* ===== TRAIL WORKOUT — the exercises ===== */
+  .trail-section { padding: 18px 24px 0; position: relative; }
+  .trail-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .trail-count { font-size: 11px; color: var(--rock); }
+
+  /* The living trail line */
+  .trail-line-wrap { position: absolute; left: 39px; top: 56px; bottom: 16px; width: 2px; z-index: 0; }
+  .trail-line { width: 100%; height: 100%; background: #DDD9CE; border-radius: 1px; }
+  .trail-pulse { position: absolute; left: -1px; top: 0; width: 4px; height: 24px; border-radius: 2px; background: var(--trail); opacity: 0.5; animation: trailPulseDown 4s ease-in-out infinite; }
+  @keyframes trailPulseDown { 0% { top: 0; opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.6; } 100% { top: calc(100% - 24px); opacity: 0; } }
+
+  /* Waypoint exercise cards */
+  .waypoint { display: flex; gap: 14px; margin-bottom: 12px; position: relative; z-index: 1; opacity: 0; animation: wpSlide 0.5s ease-out forwards; }
+  .waypoint:nth-child(2) { animation-delay: 0.1s; }
+  .waypoint:nth-child(3) { animation-delay: 0.2s; }
+  .waypoint:nth-child(4) { animation-delay: 0.3s; }
+  .waypoint:nth-child(5) { animation-delay: 0.4s; }
+  .waypoint:nth-child(6) { animation-delay: 0.5s; }
+  @keyframes wpSlide { to { opacity: 1; } }
+
+  .wp-marker-wrap { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px; padding-top: 14px; }
+  .wp-marker { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #DDD9CE; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--rock); z-index: 2; transition: all 0.3s ease; }
+  .waypoint:first-child .wp-marker { border-color: var(--trail); color: var(--trail); background: rgba(52,211,153,0.08); }
+
+  /* Altitude tag on marker */
+  .wp-altitude { font-size: 7px; color: var(--rock); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.3px; opacity: 0.6; }
+
+  .wp-card { flex: 1; padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); position: relative; overflow: hidden; }
+  /* Subtle contour in card */
+  .wp-card::after { content: ''; position: absolute; width: 100px; height: 100px; border: 1px solid rgba(45,42,36,0.02); border-radius: 50%; right: -30px; top: -30px; }
+  .wp-card .name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .wp-card .meta { font-size: 11px; color: var(--rock); margin-top: 3px; display: flex; align-items: center; gap: 6px; }
+  .wp-card .meta .dot { width: 3px; height: 3px; border-radius: 50%; background: #D6D3CA; }
+
+  /* Set progress pips */
+  .wp-sets { display: flex; gap: 4px; margin-top: 10px; }
+  .wp-pip { height: 5px; border-radius: 3px; background: #EDEBE5; }
+  .wp-pip.w1 { width: 28px; }
+  .wp-pip.w2 { width: 22px; }
+
+  .wp-weight { position: absolute; top: 16px; right: 16px; text-align: right; }
+  .wp-weight .val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .wp-weight .unit { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* ===== SUMMIT MARKER at end of trail ===== */
+  .summit-marker { display: flex; align-items: center; gap: 14px; padding-left: 4px; margin-top: 4px; position: relative; z-index: 1; opacity: 0; animation: wpSlide 0.5s ease-out 0.6s forwards; }
+  .summit-flag { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .summit-text { font-size: 12px; color: var(--rock); font-weight: 600; font-style: italic; }
+
+  /* ===== CTA ===== */
+  .cta-area { margin: 22px 24px 40px; position: relative; }
+  .cta-glow { position: absolute; inset: -6px; border-radius: 26px; background: conic-gradient(from 0deg, var(--trail), var(--accent), var(--trail)); filter: blur(16px); opacity: 0; animation: ctaGlow var(--hb) ease-in-out infinite; }
+  @keyframes ctaGlow { 0%,100% { opacity: 0.05; } 30% { opacity: 0.12; } }
+  .cta-btn { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--earth); color: var(--sand); font-size: 16px; font-weight: 700; cursor: pointer; position: relative; z-index: 1; overflow: hidden; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); letter-spacing: 0.2px; }
+  .cta-btn:active { transform: scale(0.97); }
+  .cta-btn::after { content: ''; position: absolute; left: 0; top: 50%; width: 200%; height: 1px; background: repeating-linear-gradient(90deg, transparent 0px, rgba(246,245,240,0.04) 20px, transparent 40px); animation: ctaHelix 6s linear infinite; }
+  @keyframes ctaHelix { to { transform: translateX(-50%); } }
+
+
+  /* ===== NOTES ===== */
+  .notes { max-width: 400px; padding: 16px; }
+  .n-section { margin-bottom: 22px; }
+  .n-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 8px; padding-bottom: 5px; border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .n-title.green { color: var(--trail); }
+  .n-title.amber { color: #F59E0B; }
+  .n-title.indigo { color: var(--accent); }
+  .n-title.sand { color: #D6D3CA; }
+  .n-item { display: flex; gap: 9px; margin-bottom: 10px; }
+  .n-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+  .n-text { font-size: 11px; color: #777; line-height: 1.55; }
+  .n-text strong { color: #bbb; }
+  .n-example { margin-top: 6px; padding: 8px 12px; border-radius: 8px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.04); font-size: 10px; color: #666; line-height: 1.5; }
+  .n-example strong { color: #999; display: block; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Terrain × Magnetic — The Fusion</h1>
+  <p>Personal messaging widgets + terrain workout trail + original additions. A fitness app that feels like a living expedition journal.</p>
+</div>
+
+<div class="showcase">
+
+  <div class="phone">
+    <div class="topo-bg">
+      <div class="topo-line"></div><div class="topo-line"></div><div class="topo-line"></div>
+      <div class="topo-line"></div><div class="topo-line"></div><div class="topo-line"></div>
+      <div class="warmth-blob"></div><div class="warmth-blob"></div>
+    </div>
+    <div class="phone-scroll">
+      <div class="content">
+
+        <!-- STATUS -->
+        <div class="status-bar">
+          <div class="time">9:41</div>
+          <div class="trail-status">
+            <div class="trail-dot"></div>
+            <div class="trail-label">On Trail</div>
+          </div>
+        </div>
+
+        <!-- PERSONAL HERO -->
+        <div class="hero">
+          <div class="hero-ctx">Wednesday <span class="sep"></span> Push Day <span class="sep"></span> Week 3</div>
+          <div class="hero-msg">You're <span class="hero-hl">1 session away</span> from your longest streak ever.</div>
+          <div class="nudge">
+            <div class="nudge-icon">&#9968;</div>
+            <div>Last push day you summited at 75kg bench for 8. Today's route goes to 77.5kg. Clear conditions ahead.</div>
+          </div>
+        </div>
+
+        <!-- BENTO WIDGETS -->
+        <div class="bento">
+          <!-- Streak — tall dominant -->
+          <div class="widget w-streak">
+            <div class="label">Your Streak</div>
+            <div class="big-num-wrap">
+              <div class="streak-glow"></div>
+              <div class="big-num">12</div>
+            </div>
+            <div class="unit">days strong</div>
+            <div class="streak-mini-elev">
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">M</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">T</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">W</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">T</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">F</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">S</div></div>
+              <div class="sme-bar"><div class="sme-bar-fill"></div><div class="sme-day">S</div></div>
+            </div>
+          </div>
+          <!-- Momentum -->
+          <div class="widget w-momentum">
+            <div class="label">Momentum</div>
+            <div class="val">75%</div>
+            <div class="sub">3 of 4 days done</div>
+          </div>
+          <!-- Volume -->
+          <div class="widget w-volume">
+            <div class="label">Volume</div>
+            <div class="val">12.4k</div>
+            <div class="trend">&#9650; 12%</div>
+            <div class="vol-sparks">
+              <div class="vol-spark"></div><div class="vol-spark"></div><div class="vol-spark"></div>
+              <div class="vol-spark"></div><div class="vol-spark"></div><div class="vol-spark"></div><div class="vol-spark"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TRAIL CONDITIONS -->
+        <div class="trail-conditions">
+          <div class="tc-icon">&#9925;</div>
+          <div class="tc-text"><strong>Clear conditions</strong> — 7.5h sleep, low soreness, 2 rest days since last push</div>
+        </div>
+
+        <!-- ELEVATION PROFILE -->
+        <div class="elevation-section">
+          <div class="elev-header">
+            <span class="elev-title">This Week's Elevation</span>
+            <span class="elev-summit">&#9968; Summit: Friday</span>
+          </div>
+          <div class="elevation">
+            <div class="hiker-dot"></div>
+            <svg class="elev-svg" viewBox="0 0 345 110" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="elevGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#2D2A24"/>
+                  <stop offset="100%" stop-color="#EDEBE5"/>
+                </linearGradient>
+              </defs>
+              <path class="elev-fill" d="M0,90 Q30,80 55,65 Q85,30 115,22 Q145,14 170,35 Q195,55 225,42 Q255,25 285,50 Q315,75 345,85 L345,110 L0,110 Z"/>
+              <path class="elev-path-bg" d="M0,90 Q30,80 55,65 Q85,30 115,22 Q145,14 170,35 Q195,55 225,42 Q255,25 285,50 Q315,75 345,85"/>
+              <path class="elev-path-fg" d="M0,90 Q30,80 55,65 Q85,30 115,22 Q145,14 170,35 Q195,55 225,42 Q255,25 285,50 Q315,75 345,85"/>
+            </svg>
+          </div>
+          <div class="elev-markers">
+            <div class="elev-mark"><div class="elev-mark-dot done"></div><div class="elev-mark-label">Mon</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot done"></div><div class="elev-mark-label">Tue</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot now"></div><div class="elev-mark-label">Wed</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot"></div><div class="elev-mark-label">Thu</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot"></div><div class="elev-mark-label">Fri</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot"></div><div class="elev-mark-label">Sat</div></div>
+            <div class="elev-mark"><div class="elev-mark-dot"></div><div class="elev-mark-label">Sun</div></div>
+          </div>
+        </div>
+
+        <!-- SUMMIT TARGET (original) -->
+        <div class="summit-card">
+          <div class="summit-contour"></div><div class="summit-contour"></div>
+          <div class="summit-glow"></div>
+          <div class="summit-icon">&#9968;</div>
+          <div class="summit-info">
+            <div class="label">Today's Summit</div>
+            <div class="target">77.5kg Bench Press</div>
+            <div class="remain">2.5kg above your last peak</div>
+          </div>
+          <div class="summit-progress"><div class="summit-progress-fill"></div></div>
+        </div>
+
+        <!-- TRAIL WORKOUT -->
+        <div class="trail-section">
+          <div class="trail-header">
+            <span class="trail-title">Today's Route</span>
+            <span class="trail-count">5 waypoints</span>
+          </div>
+          <div class="trail-line-wrap">
+            <div class="trail-line"></div>
+            <div class="trail-pulse"></div>
+          </div>
+
+          <div class="waypoint">
+            <div class="wp-marker-wrap"><div class="wp-marker">1</div><div class="wp-altitude">base</div></div>
+            <div class="wp-card">
+              <div class="name">Bench Press</div>
+              <div class="meta">Chest <span class="dot"></span> Compound <span class="dot"></span> 4 sets</div>
+              <div class="wp-sets"><div class="wp-pip w1"></div><div class="wp-pip w1"></div><div class="wp-pip w1"></div><div class="wp-pip w1"></div></div>
+              <div class="wp-weight"><div class="val">77.5</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="waypoint">
+            <div class="wp-marker-wrap"><div class="wp-marker">2</div><div class="wp-altitude">2,800</div></div>
+            <div class="wp-card">
+              <div class="name">Overhead Press</div>
+              <div class="meta">Shoulders <span class="dot"></span> Compound <span class="dot"></span> 3 sets</div>
+              <div class="wp-sets"><div class="wp-pip w1"></div><div class="wp-pip w1"></div><div class="wp-pip w1"></div></div>
+              <div class="wp-weight"><div class="val">40</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="waypoint">
+            <div class="wp-marker-wrap"><div class="wp-marker">3</div><div class="wp-altitude">4,200</div></div>
+            <div class="wp-card">
+              <div class="name">Incline DB Press</div>
+              <div class="meta">Upper Chest <span class="dot"></span> Compound <span class="dot"></span> 3 sets</div>
+              <div class="wp-sets"><div class="wp-pip w1"></div><div class="wp-pip w1"></div><div class="wp-pip w1"></div></div>
+              <div class="wp-weight"><div class="val">24</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="waypoint">
+            <div class="wp-marker-wrap"><div class="wp-marker">4</div><div class="wp-altitude">5,600</div></div>
+            <div class="wp-card">
+              <div class="name">Cable Flyes</div>
+              <div class="meta">Chest <span class="dot"></span> Isolation <span class="dot"></span> 3 sets</div>
+              <div class="wp-sets"><div class="wp-pip w2"></div><div class="wp-pip w2"></div><div class="wp-pip w2"></div></div>
+              <div class="wp-weight"><div class="val">15</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <div class="waypoint">
+            <div class="wp-marker-wrap"><div class="wp-marker">5</div><div class="wp-altitude">6,800</div></div>
+            <div class="wp-card">
+              <div class="name">Lateral Raises</div>
+              <div class="meta">Delts <span class="dot"></span> Isolation <span class="dot"></span> 3 sets</div>
+              <div class="wp-sets"><div class="wp-pip w2"></div><div class="wp-pip w2"></div><div class="wp-pip w2"></div></div>
+              <div class="wp-weight"><div class="val">10</div><div class="unit">kg</div></div>
+            </div>
+          </div>
+
+          <!-- Summit end marker -->
+          <div class="summit-marker">
+            <div class="summit-flag">&#127937;</div>
+            <div class="summit-text">Summit — 77.5kg Bench awaits</div>
+          </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-area">
+          <div class="cta-glow"></div>
+          <button class="cta-btn">Begin Ascent &#8599;</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTES ===== -->
+  <div class="notes">
+
+    <div class="n-section">
+      <div class="n-title green">The Fusion Concept</div>
+      <div class="n-item">
+        <div class="n-icon">&#9968;</div>
+        <div class="n-text"><strong>Every workout is an expedition.</strong> Terrain's earthy palette (#2D2A24 earth, #F6F5F0 sand, #34D399 trail green) creates a grounded, outdoorsy warmth. Magnetic's personal messaging and bento widgets bring the emotional hook. Together: an expedition journal that knows you.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title sand">From Magnetic</div>
+      <div class="n-item">
+        <div class="n-icon">&#128172;</div>
+        <div class="n-text"><strong>Personal hero message</strong> — data-driven, changes daily. Adapted to terrain language: "Last push day you summited at 75kg. Today's route goes to 77.5kg."</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128293;</div>
+        <div class="n-text"><strong>Streak widget</strong> — tall, dominant, giant number. Added: mini elevation bars showing effort intensity per day (replacing flat bars).</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128200;</div>
+        <div class="n-text"><strong>Bento layout</strong> — asymmetric grid. Momentum + volume widgets with contour line decoration inside.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title green">From Terrain</div>
+      <div class="n-item">
+        <div class="n-icon">&#127956;</div>
+        <div class="n-text"><strong>Elevation profile</strong> — your week as a mountain range with a trail that draws itself. Added: a <strong>hiker dot</strong> with a pinging radius that travels along the trail, showing where you are right now.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128205;</div>
+        <div class="n-text"><strong>Waypoint exercises</strong> — connected by a living trail line with a pulse traveling downward. Each waypoint has an altitude number showing cumulative effort elevation.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#127758;</div>
+        <div class="n-text"><strong>Topo contour background</strong> — subtle contour lines drift behind the entire UI at 2.5% opacity. Also woven into individual cards as decoration.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title amber">Original Additions</div>
+      <div class="n-item">
+        <div class="n-icon">&#127937;</div>
+        <div class="n-text"><strong>Summit Target card.</strong> Shows today's peak challenge (your hardest lift goal) as a mountain summit. A progress bar fills as you approach it. "77.5kg Bench — 2.5kg above your last peak." Gives you a concrete thing to chase.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#9925;</div>
+        <div class="n-text"><strong>Trail Conditions</strong> — readiness reframed as weather. "Clear conditions" = fresh. "Foggy" = mild soreness. "Storm warning" = high fatigue. Fits the expedition metaphor perfectly.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128694;</div>
+        <div class="n-text"><strong>Hiker dot</strong> — an animated dot with a pinging ring that travels along the elevation profile trail. Shows "you are here" in your week. No other fitness app has this.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128207;</div>
+        <div class="n-text"><strong>Altitude markers</strong> on each waypoint — cumulative "elevation" based on exercise volume. Base camp → 2,800 → 4,200 → summit. Gamifies the workout as vertical gain.</div>
+      </div>
+      <div class="n-item">
+        <div class="n-icon">&#128147;</div>
+        <div class="n-text"><strong>Heartbeat system</strong> preserved from Living Organism — the trail-dot, streak glow, hiker ping, and CTA aura all pulse on a shared 2.4s rhythm. The expedition journal is alive.</div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title indigo">Color System</div>
+      <div class="n-item">
+        <div class="n-icon">&#127912;</div>
+        <div class="n-text">
+          <strong>Earth:</strong> #2D2A24 — primary text, cards, CTA<br>
+          <strong>Sand:</strong> #F6F5F0 — background, light surfaces<br>
+          <strong>Trail:</strong> #34D399 — active states, progress, hiker dot<br>
+          <strong>Rock:</strong> #8E8E7A — secondary text, labels<br>
+          <strong>Stone:</strong> #EDEBE5 — widget backgrounds<br>
+          <strong>Accent:</strong> #6366F1 — streak bars, highlights (sparingly)
+        </div>
+      </div>
+    </div>
+
+    <div class="n-section">
+      <div class="n-title green">Expo Go Compatible</div>
+      <div class="n-item">
+        <div class="n-icon">&#9989;</div>
+        <div class="n-text">Every effect uses Animated API only. Elevation SVG → replaced with View-based layered approach in RN. Gradients → layered opacity Views. Contour lines → absolute positioned rounded Views. Trail pulse → Animated.Value translateY loop. Hiker dot → Animated.ValueXY with spring.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Cooldown Completion Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; display: flex; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+
+  /* ============================================================
+     C1: "THE SUMMIT"
+     Large animated mountain peak icon built from Views.
+     Workout stats in a bento grid. Celebratory confetti particles.
+     Earth-toned CTA button.
+     ============================================================ */
+  .c1-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; width: 100%; height: 100%;
+    padding: 0 24px; position: relative; overflow: hidden;
+  }
+
+  /* Confetti particles */
+  .c1-confetti { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .c1-particle {
+    position: absolute; border-radius: 2px; opacity: 0;
+    animation: confettiFall 3s ease-out infinite;
+  }
+  @keyframes confettiFall {
+    0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+    10% { opacity: 0.7; }
+    100% { transform: translateY(852px) rotate(720deg); opacity: 0; }
+  }
+  .c1-particle:nth-child(1) { width: 6px; height: 6px; background: var(--trail); left: 15%; animation-delay: 0s; animation-duration: 3.5s; }
+  .c1-particle:nth-child(2) { width: 4px; height: 8px; background: var(--earth); left: 30%; animation-delay: 0.5s; animation-duration: 3s; }
+  .c1-particle:nth-child(3) { width: 5px; height: 5px; background: var(--trail); left: 50%; animation-delay: 1s; animation-duration: 3.8s; }
+  .c1-particle:nth-child(4) { width: 4px; height: 6px; background: var(--rock); left: 70%; animation-delay: 0.3s; animation-duration: 3.2s; }
+  .c1-particle:nth-child(5) { width: 6px; height: 4px; background: var(--trail); left: 85%; animation-delay: 0.8s; animation-duration: 3.6s; }
+  .c1-particle:nth-child(6) { width: 3px; height: 7px; background: var(--earth); left: 40%; animation-delay: 1.5s; animation-duration: 3.1s; }
+  .c1-particle:nth-child(7) { width: 5px; height: 5px; background: var(--trail); left: 60%; animation-delay: 0.2s; animation-duration: 3.4s; }
+  .c1-particle:nth-child(8) { width: 4px; height: 4px; background: var(--rock); left: 25%; animation-delay: 1.2s; animation-duration: 3.7s; }
+
+  /* Mountain icon — stacked triangles */
+  .c1-mountain {
+    position: relative; margin-bottom: 28px; width: 80px; height: 60px;
+    animation: mountainPop 0.5s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  @keyframes mountainPop { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+  .c1-peak {
+    width: 0; height: 0;
+    border-left: 40px solid transparent;
+    border-right: 40px solid transparent;
+    border-bottom: 60px solid var(--earth);
+    position: absolute; bottom: 0; left: 0;
+  }
+  .c1-snow {
+    width: 0; height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 16px solid var(--trail);
+    position: absolute; top: 0; left: 28px;
+  }
+
+  .c1-title {
+    font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px;
+    text-align: center; margin-bottom: 6px;
+    animation: textFade 0.5s ease-out 0.2s backwards;
+  }
+  .c1-subtitle {
+    font-size: 14px; color: var(--rock); text-align: center; line-height: 1.5;
+    max-width: 260px; margin-bottom: 28px;
+    animation: textFade 0.5s ease-out 0.4s backwards;
+  }
+  @keyframes textFade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Bento stats */
+  .c1-stats {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    width: 100%; margin-bottom: 28px;
+    animation: textFade 0.5s ease-out 0.6s backwards;
+  }
+  .c1-stat {
+    background: var(--stone); border-radius: 16px; padding: 14px 16px;
+  }
+  .c1-stat.dark { background: var(--earth); }
+  .c1-stat-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .c1-stat.dark .c1-stat-label { color: rgba(246,245,240,0.3); }
+  .c1-stat-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .c1-stat.dark .c1-stat-val { color: var(--sand); }
+
+  .c1-btn {
+    padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: textFade 0.5s ease-out 0.8s backwards;
+  }
+  .c1-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     C2: "THE RINGS"
+     Animated concentric rings expand outward from center.
+     Title + message appear after rings settle.
+     Minimal, meditative feel. No stats — just celebration.
+     ============================================================ */
+  .c2-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; width: 100%; height: 100%;
+    padding: 0 24px; position: relative; overflow: hidden;
+  }
+
+  .c2-rings { position: relative; width: 200px; height: 200px; margin-bottom: 32px; }
+  .c2-ring {
+    position: absolute; border-radius: 50%; border: 2px solid;
+    animation: ringExpand 1s cubic-bezier(0.34,1.56,0.64,1) backwards;
+  }
+  .c2-ring.r1 {
+    inset: 0; border-color: rgba(52,211,153,0.08);
+    animation-delay: 0s;
+  }
+  .c2-ring.r2 {
+    inset: 20px; border-color: rgba(52,211,153,0.12);
+    animation-delay: 0.15s;
+  }
+  .c2-ring.r3 {
+    inset: 40px; border-color: rgba(52,211,153,0.18);
+    animation-delay: 0.3s;
+  }
+  .c2-ring.r4 {
+    inset: 60px; border-color: rgba(52,211,153,0.3);
+    animation-delay: 0.45s;
+  }
+  @keyframes ringExpand {
+    from { transform: scale(0.3); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* Breathing center after rings settle */
+  .c2-center-dot {
+    position: absolute; width: 56px; height: 56px; border-radius: 50%;
+    background: var(--earth); top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex; align-items: center; justify-content: center;
+    animation: dotPop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.6s backwards;
+  }
+  .c2-check { font-size: 24px; color: var(--trail); font-weight: 700; }
+
+  /* Pulse ring behind center */
+  .c2-pulse {
+    position: absolute; width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--trail); top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: pulseOut 2.4s ease-out 1s infinite;
+  }
+  @keyframes pulseOut {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+    100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+  }
+  @keyframes dotPop { from { transform: translate(-50%, -50%) scale(0); } to { transform: translate(-50%, -50%) scale(1); } }
+
+  .c2-title {
+    font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px;
+    text-align: center; margin-bottom: 6px;
+    animation: textFade 0.5s ease-out 0.8s backwards;
+  }
+  .c2-subtitle {
+    font-size: 14px; color: var(--rock); text-align: center; line-height: 1.5;
+    max-width: 260px; margin-bottom: 36px;
+    animation: textFade 0.5s ease-out 1s backwards;
+  }
+
+  .c2-btn {
+    padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: textFade 0.5s ease-out 1.2s backwards;
+  }
+  .c2-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     C3: "THE JOURNEY RECAP"
+     Dark card with workout summary. Animated count-up numbers.
+     Personal message. Timeline of what was accomplished.
+     Stats + celebration in one view.
+     ============================================================ */
+  .c3-wrap {
+    display: flex; flex-direction: column; align-items: center;
+    width: 100%; height: 100%; padding: 80px 20px 40px;
+    position: relative; overflow: hidden;
+  }
+
+  /* Starburst lines from top */
+  .c3-burst { position: absolute; top: 0; left: 50%; transform: translateX(-50%); }
+  .c3-ray {
+    position: absolute; width: 1px; height: 120px;
+    background: linear-gradient(to bottom, rgba(52,211,153,0.15), transparent);
+    transform-origin: bottom center;
+    animation: rayFade 1s ease-out backwards;
+  }
+  .c3-ray:nth-child(1) { transform: rotate(-30deg); animation-delay: 0s; }
+  .c3-ray:nth-child(2) { transform: rotate(-15deg); animation-delay: 0.1s; }
+  .c3-ray:nth-child(3) { transform: rotate(0deg); animation-delay: 0.2s; }
+  .c3-ray:nth-child(4) { transform: rotate(15deg); animation-delay: 0.3s; }
+  .c3-ray:nth-child(5) { transform: rotate(30deg); animation-delay: 0.4s; }
+  @keyframes rayFade { from { opacity: 0; height: 0; } to { opacity: 1; height: 120px; } }
+
+  .c3-title {
+    font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1px;
+    text-align: center; margin-bottom: 4px;
+    animation: textFade 0.5s ease-out 0.3s backwards;
+  }
+  .c3-subtitle {
+    font-size: 13px; color: var(--rock); text-align: center; margin-bottom: 24px;
+    animation: textFade 0.5s ease-out 0.5s backwards;
+  }
+
+  /* Dark summary card */
+  .c3-card {
+    width: 100%; background: var(--earth); border-radius: 22px;
+    padding: 22px; position: relative; overflow: hidden; margin-bottom: 20px;
+    animation: textFade 0.5s ease-out 0.6s backwards;
+  }
+  .c3-card-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .c3-card-diag:nth-child(1) { width: 100px; top: 14px; right: -6px; transform: rotate(-35deg); }
+  .c3-card-diag:nth-child(2) { width: 70px; top: 26px; right: -6px; transform: rotate(-35deg); }
+
+  .c3-card-label { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; position: relative; }
+
+  .c3-stat-row { display: flex; justify-content: space-between; margin-bottom: 16px; position: relative; }
+  .c3-stat-item { text-align: center; flex: 1; }
+  .c3-stat-num {
+    font-size: 28px; font-weight: 800; color: var(--sand); letter-spacing: -1px;
+    animation: countUp 0.8s ease-out 0.8s backwards;
+  }
+  @keyframes countUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .c3-stat-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+
+  .c3-divider { height: 1px; background: rgba(246,245,240,0.06); margin-bottom: 14px; position: relative; }
+
+  /* Journey timeline inside card */
+  .c3-journey { position: relative; padding-left: 20px; }
+  .c3-journey-line { position: absolute; left: 4px; top: 0; bottom: 0; width: 2px; background: rgba(246,245,240,0.06); }
+  .c3-journey-item {
+    display: flex; align-items: center; gap: 12px; padding: 4px 0;
+    position: relative;
+    animation: textFade 0.3s ease-out backwards;
+  }
+  .c3-journey-item:nth-child(2) { animation-delay: 1s; }
+  .c3-journey-item:nth-child(3) { animation-delay: 1.1s; }
+  .c3-journey-item:nth-child(4) { animation-delay: 1.2s; }
+  .c3-journey-item:nth-child(5) { animation-delay: 1.3s; }
+  .c3-journey-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    position: absolute; left: -20px; z-index: 1;
+  }
+  .c3-journey-dot.done { background: var(--trail); }
+  .c3-journey-dot.cool { background: rgba(99,102,241,0.6); }
+  .c3-journey-text { font-size: 12px; color: rgba(246,245,240,0.4); }
+  .c3-journey-check { font-size: 10px; color: var(--trail); margin-left: auto; }
+
+  /* Personal message */
+  .c3-message {
+    width: 100%; padding: 14px 16px; border-radius: 14px;
+    background: var(--stone); margin-bottom: 24px;
+    animation: textFade 0.5s ease-out 1.4s backwards;
+  }
+  .c3-msg-text { font-size: 12px; color: var(--rock); line-height: 1.5; text-align: center; }
+  .c3-msg-text strong { color: var(--earth); }
+
+  .c3-btn {
+    padding: 18px; border-radius: 16px; background: var(--earth);
+    text-align: center; cursor: pointer; width: 100%;
+    animation: textFade 0.5s ease-out 1.6s backwards;
+  }
+  .c3-btn-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== C1: THE SUMMIT =============== -->
+  <div>
+    <div class="col-label">C1 — THE SUMMIT</div>
+    <div class="col-desc">Mountain peak icon + confetti particles falling. Bento stat grid (exercises, duration, volume, focus). Earth-toned CTA.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="c1-wrap">
+          <!-- Confetti -->
+          <div class="c1-confetti">
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+            <div class="c1-particle"></div>
+          </div>
+
+          <!-- Mountain icon -->
+          <div class="c1-mountain">
+            <div class="c1-peak"></div>
+            <div class="c1-snow"></div>
+          </div>
+
+          <div class="c1-title">Summit Reached</div>
+          <div class="c1-subtitle">Full workout + recovery complete. You showed up and that's what matters.</div>
+
+          <!-- Stats bento -->
+          <div class="c1-stats">
+            <div class="c1-stat">
+              <div class="c1-stat-label">Exercises</div>
+              <div class="c1-stat-val">6</div>
+            </div>
+            <div class="c1-stat">
+              <div class="c1-stat-label">Duration</div>
+              <div class="c1-stat-val">47m</div>
+            </div>
+            <div class="c1-stat">
+              <div class="c1-stat-label">Volume</div>
+              <div class="c1-stat-val">8,420</div>
+            </div>
+            <div class="c1-stat dark">
+              <div class="c1-stat-label">Focus</div>
+              <div class="c1-stat-val" style="font-size: 16px;">Push Day</div>
+            </div>
+          </div>
+
+          <div class="c1-btn"><div class="c1-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== C2: THE RINGS =============== -->
+  <div>
+    <div class="col-label">C2 — THE RINGS</div>
+    <div class="col-desc">Concentric rings expand outward from center. Pulsing checkmark at core. Meditative, minimal. No stats — pure celebration.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="c2-wrap">
+
+          <!-- Expanding rings -->
+          <div class="c2-rings">
+            <div class="c2-ring r1"></div>
+            <div class="c2-ring r2"></div>
+            <div class="c2-ring r3"></div>
+            <div class="c2-ring r4"></div>
+            <div class="c2-pulse"></div>
+            <div class="c2-center-dot">
+              <span class="c2-check">✓</span>
+            </div>
+          </div>
+
+          <div class="c2-title">Recovery Complete</div>
+          <div class="c2-subtitle">Great session. Your muscles will thank you tomorrow. Rest well.</div>
+
+          <div class="c2-btn"><div class="c2-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== C3: THE JOURNEY RECAP =============== -->
+  <div>
+    <div class="col-label">C3 — THE JOURNEY RECAP</div>
+    <div class="col-desc">Dark summary card with animated stat numbers + mini journey timeline (warmup → exercises → cooldown). Personal message. Full recap.</div>
+    <div class="phone">
+      <div class="ps" style="display: block;">
+        <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+        <div class="c3-wrap">
+
+          <!-- Starburst rays -->
+          <div class="c3-burst">
+            <div class="c3-ray"></div>
+            <div class="c3-ray"></div>
+            <div class="c3-ray"></div>
+            <div class="c3-ray"></div>
+            <div class="c3-ray"></div>
+          </div>
+
+          <div class="c3-title">Session Complete</div>
+          <div class="c3-subtitle">Workout + Recovery done</div>
+
+          <!-- Dark summary card -->
+          <div class="c3-card">
+            <div class="c3-card-diag"></div>
+            <div class="c3-card-diag"></div>
+            <div class="c3-card-label">Today's Session</div>
+
+            <div class="c3-stat-row">
+              <div class="c3-stat-item">
+                <div class="c3-stat-num">6</div>
+                <div class="c3-stat-label">Exercises</div>
+              </div>
+              <div class="c3-stat-item">
+                <div class="c3-stat-num">47m</div>
+                <div class="c3-stat-label">Duration</div>
+              </div>
+              <div class="c3-stat-item">
+                <div class="c3-stat-num">8.4k</div>
+                <div class="c3-stat-label">Volume (kg)</div>
+              </div>
+            </div>
+
+            <div class="c3-divider"></div>
+
+            <!-- Journey timeline -->
+            <div class="c3-journey">
+              <div class="c3-journey-line"></div>
+              <div class="c3-journey-item">
+                <div class="c3-journey-dot done"></div>
+                <span class="c3-journey-text">Warm Up</span>
+                <span class="c3-journey-check">✓</span>
+              </div>
+              <div class="c3-journey-item">
+                <div class="c3-journey-dot done"></div>
+                <span class="c3-journey-text">Push Day — 6 exercises</span>
+                <span class="c3-journey-check">✓</span>
+              </div>
+              <div class="c3-journey-item">
+                <div class="c3-journey-dot cool"></div>
+                <span class="c3-journey-text">Cool Down — 5 stretches</span>
+                <span class="c3-journey-check">✓</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Personal message -->
+          <div class="c3-message">
+            <div class="c3-msg-text"><strong>Consistency wins.</strong> You've trained 3 days this week. One more and you hit your weekly goal.</div>
+          </div>
+
+          <div class="c3-btn"><div class="c3-btn-text">Done</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe R1 Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.35; } }
+
+
+  /* ============================================================
+     V1: MAGAZINE + CHECKLIST HYBRID
+     Giant name. Ingredients as tappable checklist with bento
+     aesthetic. Steps as trail timeline. Best of R1 + R3.
+     ============================================================ */
+
+  .v1-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .v1-back-icon { font-size: 18px; color: var(--earth); margin-top: -1px; }
+
+  .v1-type { padding: 56px 24px 0; text-align: right; }
+  .v1-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .v1-name { padding: 12px 24px 0; font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; animation: fadeUp 0.4s ease-out; }
+
+  .v1-meta { display: flex; align-items: center; gap: 8px; padding: 12px 24px 0; animation: fadeUp 0.4s ease-out 0.1s backwards; }
+  .v1-meta-item { font-size: 12px; color: var(--rock); }
+  .v1-meta-item strong { color: var(--earth); font-weight: 700; }
+  .v1-meta-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .v1-video { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  /* Ingredients as checklist chips */
+  .v1-ing { padding: 24px 24px 0; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .v1-ing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .v1-ing-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v1-ing-progress { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  .v1-ing-list {}
+  .v1-ing-item {
+    display: flex; align-items: center; gap: 10px; padding: 11px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer;
+  }
+  .v1-ing-item:last-child { border-bottom: none; }
+  .v1-checkbox { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .v1-ing-item.done .v1-checkbox { background: var(--trail); border-color: var(--trail); }
+  .v1-check-icon { font-size: 10px; color: #fff; font-weight: 700; display: none; }
+  .v1-ing-item.done .v1-check-icon { display: block; }
+  .v1-ing-item.done .v1-ing-name { text-decoration: line-through; opacity: 0.4; }
+  .v1-ing-item.done .v1-ing-amt { opacity: 0.3; }
+  .v1-ing-name { font-size: 14px; color: var(--earth); flex: 1; }
+  .v1-ing-amt { font-size: 12px; color: var(--rock); }
+
+  /* Steps as trail timeline */
+  .v1-steps { padding: 22px 24px 40px; animation: fadeUp 0.4s ease-out 0.3s backwards; }
+  .v1-steps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .v1-steps-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v1-steps-count { font-size: 11px; color: var(--rock); }
+
+  .v1-tl { position: relative; padding-left: 32px; }
+  .v1-tl-line { position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--stone); }
+
+  .v1-step { position: relative; margin-bottom: 14px; }
+  .v1-step-dot { position: absolute; left: -32px; top: 4px; width: 16px; height: 16px; border-radius: 8px; z-index: 1; display: flex; align-items: center; justify-content: center; }
+  .v1-step-dot.active { background: var(--earth); }
+  .v1-step-dot.inactive { background: var(--stone); }
+  .v1-step-num { font-size: 8px; font-weight: 700; }
+  .v1-step-dot.active .v1-step-num { color: var(--sand); }
+  .v1-step-dot.inactive .v1-step-num { color: var(--rock); }
+
+  .v1-step-card { background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.04); }
+  .v1-step-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .v1-step-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; }
+  .v1-step-time { font-size: 9px; color: var(--rock); opacity: 0.5; }
+  .v1-step-text { font-size: 13px; color: var(--earth); line-height: 1.5; }
+
+
+  /* ============================================================
+     V2: MAGAZINE + BENTO COMPACT
+     Giant name. Ingredients in a tighter bento chip grid with
+     quantities integrated. Steps as numbered vertical cards
+     with alternating stone/white backgrounds. Compact, clean.
+     ============================================================ */
+
+  .v2-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .v2-back-icon { font-size: 18px; color: var(--earth); margin-top: -1px; }
+
+  .v2-type { padding: 56px 24px 0; text-align: right; }
+  .v2-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .v2-name { padding: 12px 24px 0; font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; }
+
+  .v2-meta { display: flex; align-items: center; gap: 6px; padding: 12px 24px 0; }
+  .v2-pill { padding: 5px 10px; border-radius: 8px; background: var(--stone); }
+  .v2-pill-text { font-size: 11px; font-weight: 600; color: var(--earth); }
+  .v2-video-pill { padding: 5px 12px; border-radius: 8px; background: var(--earth); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .v2-video-tri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+  .v2-video-text { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+  /* Ingredients — bento chips with amounts inline */
+  .v2-ing { padding: 24px 24px 0; }
+  .v2-ing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .v2-ing-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v2-ing-count { font-size: 11px; color: var(--rock); }
+
+  .v2-ing-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .v2-ing-chip {
+    padding: 8px 12px; border-radius: 12px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); display: flex; align-items: center; gap: 6px;
+  }
+  .v2-chip-dot { width: 6px; height: 6px; border-radius: 3px; background: var(--trail); opacity: 0.5; flex-shrink: 0; }
+  .v2-chip-name { font-size: 12px; font-weight: 600; color: var(--earth); }
+  .v2-chip-amt { font-size: 10px; color: var(--rock); }
+
+  /* Steps as alternating cards */
+  .v2-steps { padding: 22px 24px 40px; }
+  .v2-steps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .v2-steps-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v2-steps-count { font-size: 11px; color: var(--rock); }
+
+  .v2-step {
+    border-radius: 16px; padding: 16px; margin-bottom: 8px;
+    display: flex; gap: 14px; align-items: flex-start;
+  }
+  .v2-step.dark { background: var(--earth); }
+  .v2-step.light { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .v2-step-num-wrap {
+    width: 28px; height: 28px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .v2-step.dark .v2-step-num-wrap { background: rgba(246,245,240,0.08); }
+  .v2-step.light .v2-step-num-wrap { background: var(--stone); }
+  .v2-step-number { font-size: 12px; font-weight: 700; }
+  .v2-step.dark .v2-step-number { color: var(--sand); }
+  .v2-step.light .v2-step-number { color: var(--earth); }
+
+  .v2-step-content { flex: 1; }
+  .v2-step-text { font-size: 13px; line-height: 1.5; }
+  .v2-step.dark .v2-step-text { color: rgba(246,245,240,0.7); }
+  .v2-step.light .v2-step-text { color: var(--earth); }
+  .v2-step-time { font-size: 10px; margin-top: 4px; }
+  .v2-step.dark .v2-step-time { color: rgba(246,245,240,0.2); }
+  .v2-step.light .v2-step-time { color: var(--rock); opacity: 0.5; }
+
+
+  /* ============================================================
+     V3: MAGAZINE + INTERACTIVE STEPS
+     Giant name. Ingredients as a clean numbered list.
+     Steps as an interactive single-card stepper — one step
+     at a time with prev/next. Progress ring shows which step.
+     Focused cooking experience.
+     ============================================================ */
+
+  .v3-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .v3-back-icon { font-size: 18px; color: var(--earth); margin-top: -1px; }
+
+  .v3-type { padding: 56px 24px 0; text-align: right; }
+  .v3-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .v3-name { padding: 12px 24px 0; font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; }
+
+  .v3-meta { display: flex; align-items: center; gap: 8px; padding: 12px 24px 0; }
+  .v3-meta-item { font-size: 12px; color: var(--rock); }
+  .v3-meta-item strong { color: var(--earth); font-weight: 700; }
+  .v3-meta-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .v3-video { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  /* Ingredients — clean numbered list */
+  .v3-ing { padding: 24px 24px 0; }
+  .v3-ing-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .v3-ing-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .v3-ing-count { font-size: 11px; color: var(--rock); }
+
+  .v3-ing-row {
+    display: flex; align-items: center; gap: 10px; padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+  }
+  .v3-ing-row:last-child { border-bottom: none; }
+  .v3-ing-num { width: 22px; height: 22px; border-radius: 11px; background: var(--earth); display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 10px; font-weight: 700; color: var(--sand); }
+  .v3-ing-name { font-size: 14px; color: var(--earth); flex: 1; }
+  .v3-ing-amt { font-size: 12px; color: var(--rock); }
+
+  /* Steps — interactive single card */
+  .v3-steps { padding: 24px 24px 40px; }
+  .v3-steps-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .v3-steps-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+
+  /* Step ring + dots */
+  .v3-step-dots { display: flex; gap: 4px; }
+  .v3-sdot { width: 8px; height: 8px; border-radius: 4px; background: var(--stone); }
+  .v3-sdot.done { background: var(--trail); }
+  .v3-sdot.active { background: var(--earth); }
+
+  .v3-step-card {
+    background: var(--earth); border-radius: 22px; padding: 24px;
+    position: relative; overflow: hidden; min-height: 200px;
+    display: flex; flex-direction: column;
+  }
+  .v3-step-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .v3-step-diag:nth-child(1) { width: 100px; top: 18px; right: -8px; transform: rotate(-35deg); }
+  .v3-step-diag:nth-child(2) { width: 70px; top: 30px; right: -8px; transform: rotate(-35deg); }
+
+  .v3-step-top { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .v3-step-label { font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 0.5px; }
+  .v3-step-time { font-size: 10px; color: rgba(246,245,240,0.2); }
+
+  .v3-step-watermark { position: absolute; right: 0; bottom: 40px; font-size: 100px; font-weight: 800; color: rgba(246,245,240,0.03); line-height: 1; }
+
+  .v3-step-text { font-size: 15px; color: rgba(246,245,240,0.7); line-height: 1.6; margin-top: auto; position: relative; }
+
+  .v3-step-nav { display: flex; gap: 10px; margin-top: 16px; }
+  .v3-nav-btn { flex: 1; padding: 14px; border-radius: 14px; text-align: center; cursor: pointer; }
+  .v3-nav-prev { background: rgba(246,245,240,0.06); }
+  .v3-nav-prev-text { font-size: 13px; font-weight: 600; color: rgba(246,245,240,0.4); }
+  .v3-nav-next { background: var(--sand); }
+  .v3-nav-next-text { font-size: 13px; font-weight: 600; color: var(--earth); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== V1: MAGAZINE + CHECKLIST =============== -->
+  <div>
+    <div class="col-label">V1 — MAGAZINE + CHECKLIST</div>
+    <div class="col-desc">Giant name + tappable ingredient checklist (check off as you prep, progress counter). Steps as trail timeline with white cards.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="v1-back"><span class="v1-back-icon">‹</span></div>
+        <div class="v1-type"><span class="v1-type-text">Breakfast · Recipe</span></div>
+        <div class="v1-name">Black Bean<br>Burrito Bowl</div>
+
+        <div class="v1-meta">
+          <span class="v1-meta-item"><strong>5</strong> min prep</span>
+          <span class="v1-meta-sep"></span>
+          <span class="v1-meta-item"><strong>10</strong> min cook</span>
+          <span class="v1-meta-sep"></span>
+          <span class="v1-meta-item"><strong>Easy</strong></span>
+          <span class="v1-video">▶ Video</span>
+        </div>
+
+        <div class="v1-ing">
+          <div class="v1-ing-header">
+            <span class="v1-ing-title">Ingredients</span>
+            <span class="v1-ing-progress">2 / 6 ready</span>
+          </div>
+          <div class="v1-ing-list">
+            <div class="v1-ing-item done"><div class="v1-checkbox"><span class="v1-check-icon">✓</span></div><span class="v1-ing-name">Black beans</span><span class="v1-ing-amt">1/2 can</span></div>
+            <div class="v1-ing-item done"><div class="v1-checkbox"><span class="v1-check-icon">✓</span></div><span class="v1-ing-name">White rice</span><span class="v1-ing-amt">1 cup</span></div>
+            <div class="v1-ing-item"><div class="v1-checkbox"></div><span class="v1-ing-name">Corn</span><span class="v1-ing-amt">1/4 cup</span></div>
+            <div class="v1-ing-item"><div class="v1-checkbox"></div><span class="v1-ing-name">Avocado</span><span class="v1-ing-amt">1/2</span></div>
+            <div class="v1-ing-item"><div class="v1-checkbox"></div><span class="v1-ing-name">Salsa</span><span class="v1-ing-amt">3 tbsp</span></div>
+            <div class="v1-ing-item"><div class="v1-checkbox"></div><span class="v1-ing-name">Sour cream</span><span class="v1-ing-amt">1 tbsp</span></div>
+          </div>
+        </div>
+
+        <div class="v1-steps">
+          <div class="v1-steps-header">
+            <span class="v1-steps-title">Steps</span>
+            <span class="v1-steps-count">4 steps</span>
+          </div>
+          <div class="v1-tl">
+            <div class="v1-tl-line"></div>
+            <div class="v1-step"><div class="v1-step-dot active"><span class="v1-step-num">1</span></div><div class="v1-step-card"><div class="v1-step-top"><span class="v1-step-label">Step 1</span><span class="v1-step-time">~2 min</span></div><div class="v1-step-text">Cook rice according to package directions.</div></div></div>
+            <div class="v1-step"><div class="v1-step-dot inactive"><span class="v1-step-num">2</span></div><div class="v1-step-card"><div class="v1-step-top"><span class="v1-step-label">Step 2</span><span class="v1-step-time">~3 min</span></div><div class="v1-step-text">Heat black beans in a small pot. Season with cumin and salt.</div></div></div>
+            <div class="v1-step"><div class="v1-step-dot inactive"><span class="v1-step-num">3</span></div><div class="v1-step-card"><div class="v1-step-top"><span class="v1-step-label">Step 3</span><span class="v1-step-time">~2 min</span></div><div class="v1-step-text">Slice avocado and prep toppings.</div></div></div>
+            <div class="v1-step"><div class="v1-step-dot inactive"><span class="v1-step-num">4</span></div><div class="v1-step-card"><div class="v1-step-top"><span class="v1-step-label">Step 4</span><span class="v1-step-time">~1 min</span></div><div class="v1-step-text">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V2: MAGAZINE + BENTO COMPACT =============== -->
+  <div>
+    <div class="col-label">V2 — MAGAZINE + ALTERNATING STEPS</div>
+    <div class="col-desc">Giant name. Ingredients as flowing chips with green dots. Steps as vertical cards alternating dark/light. Compact, rhythmic.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="v2-back"><span class="v2-back-icon">‹</span></div>
+        <div class="v2-type"><span class="v2-type-text">Breakfast · Recipe</span></div>
+        <div class="v2-name">Black Bean<br>Burrito Bowl</div>
+
+        <div class="v2-meta">
+          <div class="v2-pill"><span class="v2-pill-text">5 min prep</span></div>
+          <div class="v2-pill"><span class="v2-pill-text">10 min cook</span></div>
+          <div class="v2-pill"><span class="v2-pill-text">Easy</span></div>
+          <div class="v2-video-pill"><div class="v2-video-tri"></div><span class="v2-video-text">Video</span></div>
+        </div>
+
+        <div class="v2-ing">
+          <div class="v2-ing-header">
+            <span class="v2-ing-title">Ingredients</span>
+            <span class="v2-ing-count">6 items</span>
+          </div>
+          <div class="v2-ing-grid">
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">Black beans</span><span class="v2-chip-amt">1/2 can</span></div>
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">White rice</span><span class="v2-chip-amt">1 cup</span></div>
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">Corn</span><span class="v2-chip-amt">1/4 cup</span></div>
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">Avocado</span><span class="v2-chip-amt">1/2</span></div>
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">Salsa</span><span class="v2-chip-amt">3 tbsp</span></div>
+            <div class="v2-ing-chip"><span class="v2-chip-dot"></span><span class="v2-chip-name">Sour cream</span><span class="v2-chip-amt">1 tbsp</span></div>
+          </div>
+        </div>
+
+        <div class="v2-steps">
+          <div class="v2-steps-header">
+            <span class="v2-steps-title">Steps</span>
+            <span class="v2-steps-count">4 steps</span>
+          </div>
+          <div class="v2-step dark">
+            <div class="v2-step-num-wrap"><span class="v2-step-number">1</span></div>
+            <div class="v2-step-content"><div class="v2-step-text">Cook rice according to package directions.</div><div class="v2-step-time">~2 min</div></div>
+          </div>
+          <div class="v2-step light">
+            <div class="v2-step-num-wrap"><span class="v2-step-number">2</span></div>
+            <div class="v2-step-content"><div class="v2-step-text">Heat black beans in a small pot. Season with cumin and salt.</div><div class="v2-step-time">~3 min</div></div>
+          </div>
+          <div class="v2-step dark">
+            <div class="v2-step-num-wrap"><span class="v2-step-number">3</span></div>
+            <div class="v2-step-content"><div class="v2-step-text">Slice avocado and prep toppings.</div><div class="v2-step-time">~2 min</div></div>
+          </div>
+          <div class="v2-step light">
+            <div class="v2-step-num-wrap"><span class="v2-step-number">4</span></div>
+            <div class="v2-step-content"><div class="v2-step-text">Assemble: rice base, beans, corn, avocado, salsa, sour cream.</div><div class="v2-step-time">~1 min</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== V3: MAGAZINE + STEPPER =============== -->
+  <div>
+    <div class="col-label">V3 — MAGAZINE + DARK STEPPER</div>
+    <div class="col-desc">Giant name. Numbered ingredient list. Steps as a single dark card you step through (prev/next). Progress dots. Focused cooking mode.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="v3-back"><span class="v3-back-icon">‹</span></div>
+        <div class="v3-type"><span class="v3-type-text">Breakfast · Recipe</span></div>
+        <div class="v3-name">Black Bean<br>Burrito Bowl</div>
+
+        <div class="v3-meta">
+          <span class="v3-meta-item"><strong>5</strong> min prep</span>
+          <span class="v3-meta-sep"></span>
+          <span class="v3-meta-item"><strong>10</strong> min cook</span>
+          <span class="v3-meta-sep"></span>
+          <span class="v3-meta-item"><strong>Easy</strong></span>
+          <span class="v3-video">▶ Video</span>
+        </div>
+
+        <div class="v3-ing">
+          <div class="v3-ing-header">
+            <span class="v3-ing-title">Ingredients</span>
+            <span class="v3-ing-count">6 items</span>
+          </div>
+          <div class="v3-ing-row"><span class="v3-ing-num">1</span><span class="v3-ing-name">Black beans</span><span class="v3-ing-amt">1/2 can drained</span></div>
+          <div class="v3-ing-row"><span class="v3-ing-num">2</span><span class="v3-ing-name">White rice</span><span class="v3-ing-amt">1 cup cooked</span></div>
+          <div class="v3-ing-row"><span class="v3-ing-num">3</span><span class="v3-ing-name">Corn</span><span class="v3-ing-amt">1/4 cup</span></div>
+          <div class="v3-ing-row"><span class="v3-ing-num">4</span><span class="v3-ing-name">Avocado</span><span class="v3-ing-amt">1/2 sliced</span></div>
+          <div class="v3-ing-row"><span class="v3-ing-num">5</span><span class="v3-ing-name">Salsa</span><span class="v3-ing-amt">3 tbsp</span></div>
+          <div class="v3-ing-row"><span class="v3-ing-num">6</span><span class="v3-ing-name">Sour cream</span><span class="v3-ing-amt">1 tbsp</span></div>
+        </div>
+
+        <div class="v3-steps">
+          <div class="v3-steps-header">
+            <span class="v3-steps-title">Steps</span>
+            <div class="v3-step-dots">
+              <div class="v3-sdot done"></div>
+              <div class="v3-sdot active"></div>
+              <div class="v3-sdot"></div>
+              <div class="v3-sdot"></div>
+            </div>
+          </div>
+
+          <div class="v3-step-card">
+            <div class="v3-step-diag"></div>
+            <div class="v3-step-diag"></div>
+            <div class="v3-step-watermark">2</div>
+            <div class="v3-step-top">
+              <span class="v3-step-label">Step 2 of 4</span>
+              <span class="v3-step-time">~3 min</span>
+            </div>
+            <div class="v3-step-text">Heat black beans in a small pot. Season with cumin and salt to taste.</div>
+          </div>
+
+          <div class="v3-step-nav">
+            <div class="v3-nav-btn v3-nav-prev"><span class="v3-nav-prev-text">Previous</span></div>
+            <div class="v3-nav-btn v3-nav-next"><span class="v3-nav-next-text">Next Step</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero V3</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+  @keyframes fillRight { from { width: 0%; } }
+  @keyframes popIn { 0% { transform: scale(0.7); opacity: 0; } 60% { transform: scale(1.04); } 100% { transform: scale(1); opacity: 1; } }
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+
+  /* Placeholder list for context */
+  .ph { padding: 20px 24px 0; }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 36px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+
+  /* ============================================================
+     A4 REF: THE BASKET (kept for reference)
+     ============================================================ */
+  .a4-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .a4-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .a4-wrap { display: flex; justify-content: center; padding: 24px 0 0; animation: float 3s ease-in-out infinite; }
+  .a4-basket { width: 180px; position: relative; display: flex; flex-direction: column; align-items: center; }
+  .a4-handle { width: 80px; height: 28px; border: 4px solid var(--earth); border-bottom: none; border-radius: 40px 40px 0 0; margin-bottom: -2px; }
+  .a4-body { width: 160px; height: 90px; background: var(--earth); border-radius: 0 0 30px 30px; display: flex; flex-wrap: wrap; gap: 5px; padding: 12px 14px 16px; align-content: flex-start; justify-content: center; }
+  .a4-dot { width: 12px; height: 12px; border-radius: 6px; opacity: 0.7; }
+  .a4-dot.ck { opacity: 0.15; }
+
+  .a4-info { text-align: center; padding: 14px 0 0; }
+  .a4-total { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; }
+  .a4-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .a4-pbar { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 0 0; }
+  .a4-ptext { font-size: 11px; font-weight: 600; color: var(--trail); }
+  .a4-ptrack { width: 120px; height: 4px; border-radius: 2px; background: var(--stone); }
+  .a4-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+
+  /* ============================================================
+     A6 REF: THE PERSONAL NOTE (kept for reference)
+     ============================================================ */
+  .a6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .a6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .a6-card { margin: 16px 20px 0; padding: 24px; border-radius: 24px; background: #fff; box-shadow: 0 2px 20px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out; }
+  .a6-greet { font-size: 13px; color: var(--rock); margin-bottom: 4px; }
+  .a6-title { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; }
+  .a6-title em { font-style: italic; color: var(--trail); }
+  .a6-div { height: 1px; background: rgba(0,0,0,0.04); margin: 16px 0; }
+  .a6-stats { display: flex; justify-content: space-between; }
+  .a6-stat-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .a6-stat-label { font-size: 9px; color: var(--rock); margin-top: 1px; }
+  .a6-bar { height: 6px; border-radius: 3px; background: var(--stone); margin-top: 16px; overflow: hidden; }
+  .a6-bar-fill { height: 100%; border-radius: 3px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .a6-bar-row { display: flex; justify-content: space-between; margin-top: 6px; }
+  .a6-bar-text { font-size: 9px; color: var(--rock); }
+  .a6-cats { display: flex; gap: 4px; margin-top: 14px; }
+  .a6-cat { height: 4px; border-radius: 2px; }
+
+
+  /* ============================================================
+     B1: "THE BASKET REFINED"
+     Same basket concept but cleaner — smaller basket, beside
+     it the stats in a compact column. Less centered, more
+     editorial side-by-side layout.
+     ============================================================ */
+  .b1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .b1-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .b1-hero { display: flex; align-items: center; gap: 20px; padding: 20px 24px 0; animation: fadeUp 0.4s ease-out; }
+
+  .b1-basket { animation: float 3s ease-in-out infinite; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .b1-handle { width: 56px; height: 20px; border: 3px solid var(--earth); border-bottom: none; border-radius: 28px 28px 0 0; margin-bottom: -1px; }
+  .b1-body { width: 110px; height: 70px; background: var(--earth); border-radius: 0 0 22px 22px; display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; align-content: flex-start; justify-content: center; }
+  .b1-dot { width: 10px; height: 10px; border-radius: 5px; opacity: 0.7; }
+  .b1-dot.ck { opacity: 0.15; }
+
+  .b1-info { flex: 1; }
+  .b1-title { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; }
+  .b1-total { font-size: 28px; font-weight: 800; color: var(--trail); letter-spacing: -1.5px; margin-top: 6px; }
+  .b1-meta { font-size: 11px; color: var(--rock); margin-top: 4px; }
+
+  .b1-bar { margin: 14px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); }
+  .b1-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .b1-bar-row { display: flex; justify-content: space-between; padding: 4px 24px 0; }
+  .b1-bar-text { font-size: 9px; color: var(--rock); }
+
+
+  /* ============================================================
+     B2: "THE DONUT"
+     Donut/pie chart showing category breakdown by proportion.
+     Total in center. Legend beside it. Visual, graphical,
+     instantly readable.
+     ============================================================ */
+  .b2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b2-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .b2-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .b2-hero { display: flex; align-items: center; gap: 24px; padding: 24px 24px 0; animation: fadeUp 0.4s ease-out; }
+
+  /* Donut chart via conic-gradient */
+  .b2-donut {
+    width: 130px; height: 130px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%,
+      #EF4444 28% 50%,
+      #F59E0B 50% 67%,
+      #6366F1 67% 83%,
+      #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out;
+  }
+  .b2-donut-hole {
+    width: 86px; height: 86px; border-radius: 50%; background: var(--sand);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .b2-donut-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .b2-donut-label { font-size: 8px; color: var(--rock); margin-top: 2px; }
+
+  .b2-legend { flex: 1; }
+  .b2-legend-title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-bottom: 10px; }
+  .b2-legend-item { display: flex; align-items: center; gap: 6px; padding: 4px 0; }
+  .b2-legend-dot { width: 8px; height: 8px; border-radius: 4px; flex-shrink: 0; }
+  .b2-legend-name { font-size: 12px; color: var(--earth); flex: 1; }
+  .b2-legend-count { font-size: 11px; color: var(--rock); font-weight: 600; }
+
+  .b2-bar { margin: 16px 24px 0; display: flex; align-items: center; gap: 8px; }
+  .b2-bar-text { font-size: 11px; font-weight: 600; color: var(--trail); white-space: nowrap; }
+  .b2-bar-track { flex: 1; height: 4px; border-radius: 2px; background: var(--stone); }
+  .b2-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+  .b2-bar-total { font-size: 11px; font-weight: 600; color: var(--rock); white-space: nowrap; }
+
+
+  /* ============================================================
+     B3: "THE NOTE + BASKET COMBO"
+     Personal note card (A6 style) but with a mini basket
+     graphic inside the card instead of plain stats. Merges
+     the warmth of A6 with the visual fun of A4.
+     ============================================================ */
+  .b3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .b3-card {
+    margin: 16px 20px 0; padding: 22px; border-radius: 24px; background: #fff;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out;
+  }
+  .b3-greet { font-size: 12px; color: var(--rock); margin-bottom: 4px; }
+  .b3-title { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.8px; line-height: 1.1; }
+  .b3-title em { font-style: italic; color: var(--trail); }
+
+  .b3-row { display: flex; align-items: center; gap: 16px; margin-top: 16px; }
+
+  /* Mini basket */
+  .b3-mini-basket { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; animation: float 3s ease-in-out infinite; }
+  .b3-mini-handle { width: 44px; height: 16px; border: 3px solid var(--earth); border-bottom: none; border-radius: 22px 22px 0 0; margin-bottom: -1px; }
+  .b3-mini-body { width: 80px; height: 52px; background: var(--earth); border-radius: 0 0 18px 18px; display: flex; flex-wrap: wrap; gap: 3px; padding: 8px; align-content: flex-start; justify-content: center; }
+  .b3-mini-dot { width: 8px; height: 8px; border-radius: 4px; opacity: 0.7; }
+  .b3-mini-dot.ck { opacity: 0.15; }
+
+  .b3-stats { flex: 1; }
+  .b3-stat-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .b3-stat-row:last-child { border-bottom: none; }
+  .b3-stat-name { font-size: 12px; color: var(--rock); }
+  .b3-stat-val { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .b3-stat-val.green { color: var(--trail); }
+
+  .b3-bar { height: 5px; border-radius: 3px; background: var(--stone); margin-top: 14px; overflow: hidden; }
+  .b3-bar-fill { height: 100%; border-radius: 3px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+
+  /* ============================================================
+     B4: "THE CATEGORY RINGS"
+     Each category as a small ring showing completion %.
+     Horizontal scroll of rings. Title + total above.
+     Gamified, visual, satisfying when rings fill.
+     ============================================================ */
+  .b4-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .b4-header { padding: 16px 24px 0; display: flex; justify-content: space-between; align-items: flex-end; animation: fadeUp 0.4s ease-out; }
+  .b4-title { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; }
+  .b4-total-wrap { text-align: right; }
+  .b4-total { font-size: 24px; font-weight: 800; color: var(--trail); letter-spacing: -1px; }
+  .b4-total-label { font-size: 9px; color: var(--rock); }
+
+  /* Rings scroll */
+  .b4-rings { display: flex; gap: 14px; padding: 20px 24px; overflow-x: auto; scrollbar-width: none; animation: fadeUp 0.4s ease-out 0.1s backwards; }
+  .b4-rings::-webkit-scrollbar { display: none; }
+
+  .b4-ring-item { display: flex; flex-direction: column; align-items: center; gap: 6px; flex-shrink: 0; }
+  .b4-ring { width: 56px; height: 56px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .b4-ring-track { position: absolute; inset: 0; border-radius: 50%; border: 4px solid var(--stone); }
+  /* Fill states via border trick */
+  .b4-ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 4px solid transparent; }
+  .b4-ring-fill.q1 { border-top-color: var(--fill-color); transform: rotate(-45deg); }
+  .b4-ring-fill.q2 { border-top-color: var(--fill-color); border-right-color: var(--fill-color); transform: rotate(-45deg); }
+  .b4-ring-fill.q3 { border-top-color: var(--fill-color); border-right-color: var(--fill-color); border-bottom-color: var(--fill-color); transform: rotate(-45deg); }
+  .b4-ring-fill.full { border-color: var(--fill-color); }
+
+  .b4-ring-inner { font-size: 13px; font-weight: 800; color: var(--earth); z-index: 1; }
+  .b4-ring-label { font-size: 9px; color: var(--rock); font-weight: 600; }
+  .b4-ring-sub { font-size: 8px; color: var(--rock); opacity: 0.5; }
+
+  .b4-meta { padding: 0 24px; font-size: 11px; color: var(--rock); animation: fadeUp 0.4s ease-out 0.2s backwards; }
+
+
+  /* ============================================================
+     B5: "THE DARK NOTE"
+     Dark card with personal message + basket inside. Like A6
+     but on dark bg. Diagonal accents. Stats row. The basket
+     dots glow slightly. Premium, moody.
+     ============================================================ */
+  .b5-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .b5-lbl { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .b5-card {
+    margin: 14px 20px 0; padding: 22px; border-radius: 24px; background: var(--earth);
+    position: relative; overflow: hidden; animation: fadeUp 0.4s ease-out;
+  }
+  .b5-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .b5-breath { position: absolute; top: 20px; right: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s infinite; }
+
+  .b5-greeting { font-size: 12px; color: rgba(246,245,240,0.25); margin-bottom: 4px; position: relative; }
+  .b5-title { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.15; position: relative; }
+  .b5-title em { font-style: italic; color: var(--trail); }
+
+  .b5-middle { display: flex; align-items: center; gap: 16px; margin-top: 16px; position: relative; }
+
+  .b5-mini-basket { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; animation: float 3s ease-in-out infinite; }
+  .b5-mini-handle { width: 40px; height: 14px; border: 2.5px solid rgba(246,245,240,0.15); border-bottom: none; border-radius: 20px 20px 0 0; margin-bottom: -1px; }
+  .b5-mini-body { width: 72px; height: 48px; background: rgba(246,245,240,0.06); border-radius: 0 0 16px 16px; display: flex; flex-wrap: wrap; gap: 3px; padding: 7px; align-content: flex-start; justify-content: center; }
+  .b5-mini-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+  .b5-stats { flex: 1; }
+  .b5-stat-row { display: flex; justify-content: space-between; padding: 5px 0; }
+  .b5-stat-name { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .b5-stat-val { font-size: 13px; font-weight: 700; color: var(--sand); }
+  .b5-stat-val.green { color: var(--trail); }
+
+  .b5-bar { height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); margin-top: 14px; position: relative; }
+  .b5-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+
+  /* ============================================================
+     B6: "THE SPLIT GRAPHIC"
+     Left: donut chart (small). Right: personal note text +
+     total. Below: category legend as inline colored pills.
+     Balanced, graphical + editorial in one.
+     ============================================================ */
+  .b6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .b6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .b6-card {
+    margin: 16px 20px 0; padding: 22px; border-radius: 24px; background: #fff;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out;
+  }
+
+  .b6-row { display: flex; align-items: center; gap: 18px; }
+
+  .b6-donut {
+    width: 100px; height: 100px; border-radius: 50%; flex-shrink: 0;
+    background: conic-gradient(
+      #34D399 0% 28%,
+      #EF4444 28% 50%,
+      #F59E0B 50% 67%,
+      #6366F1 67% 83%,
+      #8E8E7A 83% 100%
+    );
+    display: flex; align-items: center; justify-content: center;
+    animation: popIn 0.5s ease-out;
+  }
+  .b6-donut-hole {
+    width: 66px; height: 66px; border-radius: 50%; background: #fff;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .b6-donut-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .b6-donut-sub { font-size: 7px; color: var(--rock); margin-top: 1px; }
+
+  .b6-info { flex: 1; }
+  .b6-greet { font-size: 11px; color: var(--rock); margin-bottom: 2px; }
+  .b6-title { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; line-height: 1.15; }
+  .b6-title em { font-style: italic; color: var(--trail); }
+  .b6-meta { font-size: 11px; color: var(--rock); margin-top: 6px; }
+
+  .b6-pills { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 14px; }
+  .b6-pill { display: flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 100px; background: var(--sand); }
+  .b6-pill-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .b6-pill-text { font-size: 9px; font-weight: 600; color: var(--earth); }
+
+  .b6-bar { height: 4px; border-radius: 2px; background: var(--stone); margin-top: 14px; overflow: hidden; }
+  .b6-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); animation: fillRight 0.8s ease-out; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== A4 REF: THE BASKET =============== -->
+  <div>
+    <div class="col-label">A4 — THE BASKET (KEPT)</div>
+    <div class="col-desc">Floating basket with colored item dots. Total below. Progress bar. Fun, physical, unique.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a4-top"><div class="a4-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="a4-lbl">Grocery List</span></div>
+        <div class="a4-wrap"><div class="a4-basket"><div class="a4-handle"></div><div class="a4-body">
+          <div class="a4-dot" style="background:#34D399;"></div><div class="a4-dot" style="background:#34D399;"></div><div class="a4-dot ck" style="background:#34D399;"></div>
+          <div class="a4-dot" style="background:#EF4444;"></div><div class="a4-dot" style="background:#EF4444;"></div><div class="a4-dot ck" style="background:#EF4444;"></div>
+          <div class="a4-dot" style="background:#F59E0B;"></div><div class="a4-dot" style="background:#F59E0B;"></div><div class="a4-dot" style="background:#6366F1;"></div>
+          <div class="a4-dot" style="background:#6366F1;"></div><div class="a4-dot ck" style="background:#8E8E7A;"></div><div class="a4-dot" style="background:#8E8E7A;"></div>
+          <div class="a4-dot ck" style="background:#34D399;"></div><div class="a4-dot" style="background:#EF4444;"></div><div class="a4-dot ck" style="background:#F59E0B;"></div>
+          <div class="a4-dot" style="background:#6366F1;"></div><div class="a4-dot" style="background:#34D399;"></div><div class="a4-dot" style="background:#8E8E7A;"></div>
+        </div></div></div>
+        <div class="a4-info"><div class="a4-total">$47.82</div><div class="a4-sub">18 items · 5 checked</div></div>
+        <div class="a4-pbar"><span class="a4-ptext">28%</span><div class="a4-ptrack"><div class="a4-pfill" style="width:28%;"></div></div></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== A6 REF: THE PERSONAL NOTE =============== -->
+  <div>
+    <div class="col-label">A6 — THE PERSONAL NOTE (KEPT)</div>
+    <div class="col-desc">White card. "Your weekly shop is ready." Stats, progress bar, category strip. Warm, personal.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="a6-top"><div class="a6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div></div>
+        <div class="a6-card">
+          <div class="a6-greet">Week of March 26</div>
+          <div class="a6-title">Your weekly<br>shop is <em>ready</em></div>
+          <div class="a6-div"></div>
+          <div class="a6-stats">
+            <div><div class="a6-stat-val">18</div><div class="a6-stat-label">Items</div></div>
+            <div><div class="a6-stat-val" style="color:var(--trail);">$47</div><div class="a6-stat-label">Estimated</div></div>
+            <div><div class="a6-stat-val">5</div><div class="a6-stat-label">Checked</div></div>
+            <div><div class="a6-stat-val">13</div><div class="a6-stat-label">Remaining</div></div>
+          </div>
+          <div class="a6-bar"><div class="a6-bar-fill" style="width:28%;"></div></div>
+          <div class="a6-bar-row"><span class="a6-bar-text">28% complete</span><span class="a6-bar-text">13 to go</span></div>
+          <div class="a6-cats"><div class="a6-cat" style="background:#34D399;flex:5;"></div><div class="a6-cat" style="background:#EF4444;flex:4;"></div><div class="a6-cat" style="background:#F59E0B;flex:3;"></div><div class="a6-cat" style="background:#6366F1;flex:3;"></div><div class="a6-cat" style="background:#8E8E7A;flex:3;"></div></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== B1: BASKET REFINED =============== -->
+  <div>
+    <div class="col-label">B1 — BASKET + SIDE STATS</div>
+    <div class="col-desc">Smaller basket to the left, stats beside it. Title + total + meta. Less centered, more editorial. Progress bar below.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="b1-top"><div class="b1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="b1-lbl">Grocery List</span></div>
+        <div class="b1-hero">
+          <div class="b1-basket"><div class="b1-handle"></div><div class="b1-body">
+            <div class="b1-dot" style="background:#34D399;"></div><div class="b1-dot" style="background:#34D399;"></div><div class="b1-dot ck" style="background:#34D399;"></div>
+            <div class="b1-dot" style="background:#EF4444;"></div><div class="b1-dot ck" style="background:#EF4444;"></div>
+            <div class="b1-dot" style="background:#F59E0B;"></div><div class="b1-dot" style="background:#6366F1;"></div>
+            <div class="b1-dot" style="background:#8E8E7A;"></div><div class="b1-dot ck" style="background:#34D399;"></div>
+            <div class="b1-dot" style="background:#EF4444;"></div><div class="b1-dot" style="background:#F59E0B;"></div>
+          </div></div>
+          <div class="b1-info">
+            <div class="b1-title">Your Weekly<br>Groceries</div>
+            <div class="b1-total">$47.82</div>
+            <div class="b1-meta">5 of 18 items checked</div>
+          </div>
+        </div>
+        <div class="b1-bar"><div class="b1-bar-fill" style="width:28%;"></div></div>
+        <div class="b1-bar-row"><span class="b1-bar-text">28% complete</span><span class="b1-bar-text">Week of Mar 26</span></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== B2: THE DONUT =============== -->
+  <div>
+    <div class="col-label">B2 — THE DONUT CHART</div>
+    <div class="col-desc">Donut chart showing category proportions. Total inside. Legend beside with item counts. Graphical, instantly readable.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="b2-top"><div class="b2-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="b2-lbl">Grocery List</span></div>
+        <div class="b2-hero">
+          <div class="b2-donut"><div class="b2-donut-hole"><div class="b2-donut-val">$47</div><div class="b2-donut-label">est. total</div></div></div>
+          <div class="b2-legend">
+            <div class="b2-legend-title">18 items</div>
+            <div class="b2-legend-item"><div class="b2-legend-dot" style="background:#34D399;"></div><span class="b2-legend-name">Produce</span><span class="b2-legend-count">5</span></div>
+            <div class="b2-legend-item"><div class="b2-legend-dot" style="background:#EF4444;"></div><span class="b2-legend-name">Protein</span><span class="b2-legend-count">4</span></div>
+            <div class="b2-legend-item"><div class="b2-legend-dot" style="background:#F59E0B;"></div><span class="b2-legend-name">Dairy</span><span class="b2-legend-count">3</span></div>
+            <div class="b2-legend-item"><div class="b2-legend-dot" style="background:#6366F1;"></div><span class="b2-legend-name">Grains</span><span class="b2-legend-count">3</span></div>
+            <div class="b2-legend-item"><div class="b2-legend-dot" style="background:#8E8E7A;"></div><span class="b2-legend-name">Pantry</span><span class="b2-legend-count">3</span></div>
+          </div>
+        </div>
+        <div class="b2-bar"><span class="b2-bar-text">5 / 18</span><div class="b2-bar-track"><div class="b2-bar-fill" style="width:28%;"></div></div><span class="b2-bar-total">$47.82</span></div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== B3: NOTE + BASKET COMBO =============== -->
+  <div>
+    <div class="col-label">B3 — NOTE + MINI BASKET</div>
+    <div class="col-desc">White card with personal text + floating mini basket inside. Stats as rows. Progress bar. Best of A4 + A6 merged.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="b3-top"><div class="b3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div></div>
+        <div class="b3-card">
+          <div class="b3-greet">Week of March 26</div>
+          <div class="b3-title">Your weekly<br>shop is <em>ready</em></div>
+          <div class="b3-row">
+            <div class="b3-mini-basket"><div class="b3-mini-handle"></div><div class="b3-mini-body">
+              <div class="b3-mini-dot" style="background:#34D399;"></div><div class="b3-mini-dot" style="background:#34D399;"></div><div class="b3-mini-dot ck" style="background:#34D399;"></div>
+              <div class="b3-mini-dot" style="background:#EF4444;"></div><div class="b3-mini-dot ck" style="background:#EF4444;"></div>
+              <div class="b3-mini-dot" style="background:#F59E0B;"></div><div class="b3-mini-dot" style="background:#6366F1;"></div>
+              <div class="b3-mini-dot" style="background:#8E8E7A;"></div><div class="b3-mini-dot" style="background:#EF4444;"></div>
+              <div class="b3-mini-dot" style="background:#34D399;"></div><div class="b3-mini-dot ck" style="background:#F59E0B;"></div>
+            </div></div>
+            <div class="b3-stats">
+              <div class="b3-stat-row"><span class="b3-stat-name">Items</span><span class="b3-stat-val">18</span></div>
+              <div class="b3-stat-row"><span class="b3-stat-name">Estimated</span><span class="b3-stat-val green">$47.82</span></div>
+              <div class="b3-stat-row"><span class="b3-stat-name">Checked</span><span class="b3-stat-val">5</span></div>
+              <div class="b3-stat-row"><span class="b3-stat-name">Remaining</span><span class="b3-stat-val">13</span></div>
+            </div>
+          </div>
+          <div class="b3-bar"><div class="b3-bar-fill" style="width:28%;"></div></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =============== B6: SPLIT GRAPHIC =============== -->
+  <div>
+    <div class="col-label">B6 — DONUT + PERSONAL NOTE</div>
+    <div class="col-desc">Small donut left, personal text right. Category pills below. Progress bar. Graphical + editorial merged in a white card.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="b6-top"><div class="b6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div></div>
+        <div class="b6-card">
+          <div class="b6-row">
+            <div class="b6-donut"><div class="b6-donut-hole"><div class="b6-donut-val">$47</div><div class="b6-donut-sub">est.</div></div></div>
+            <div class="b6-info">
+              <div class="b6-greet">Week of March 26</div>
+              <div class="b6-title">Your weekly<br>shop is <em>ready</em></div>
+              <div class="b6-meta">5 of 18 items checked</div>
+            </div>
+          </div>
+          <div class="b6-pills">
+            <div class="b6-pill"><span class="b6-pill-dot" style="background:#34D399;"></span><span class="b6-pill-text">Produce 5</span></div>
+            <div class="b6-pill"><span class="b6-pill-dot" style="background:#EF4444;"></span><span class="b6-pill-text">Protein 4</span></div>
+            <div class="b6-pill"><span class="b6-pill-dot" style="background:#F59E0B;"></span><span class="b6-pill-text">Dairy 3</span></div>
+            <div class="b6-pill"><span class="b6-pill-dot" style="background:#6366F1;"></span><span class="b6-pill-text">Grains 3</span></div>
+            <div class="b6-pill"><span class="b6-pill-dot" style="background:#8E8E7A;"></span><span class="b6-pill-text">Pantry 3</span></div>
+          </div>
+          <div class="b6-bar"><div class="b6-bar-fill" style="width:28%;"></div></div>
+        </div>
+        <div class="ph"><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:75%;"></div><div class="ph-sm"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

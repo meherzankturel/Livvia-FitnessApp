@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Animated Heroes</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Placeholder for content below */
+  .ph { padding: 20px 24px 0; }
+  .ph-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .ph-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .ph-sub { font-size: 11px; color: var(--rock); }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 40px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+
+  /* ============================================================
+     C1: "THE STEAMING POT"
+     View-based pot icon with animated steam rising.
+     Recipe name below. Warm, cooking feel.
+     ============================================================ */
+
+  .c1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c1-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c1-pot-wrap { display: flex; justify-content: center; padding: 28px 0 0; }
+  .c1-pot { position: relative; width: 100px; height: 80px; }
+
+  /* Pot body — rounded rect */
+  .c1-pot-body {
+    width: 80px; height: 50px; background: var(--earth); border-radius: 6px 6px 20px 20px;
+    position: absolute; bottom: 0; left: 10px;
+  }
+  /* Pot handles */
+  .c1-handle-l { position: absolute; left: 0; top: 24px; width: 14px; height: 14px; border: 3px solid var(--earth); border-radius: 50%; border-right-color: transparent; }
+  .c1-handle-r { position: absolute; right: 0; top: 24px; width: 14px; height: 14px; border: 3px solid var(--earth); border-radius: 50%; border-left-color: transparent; }
+  /* Lid */
+  .c1-lid { position: absolute; top: 14px; left: 6px; width: 88px; height: 8px; background: var(--earth); border-radius: 4px; }
+  .c1-lid-knob { position: absolute; top: 6px; left: 44px; width: 12px; height: 8px; background: var(--earth); border-radius: 4px 4px 0 0; }
+
+  /* Steam lines — animated */
+  @keyframes steam { 0% { opacity: 0; transform: translateY(0) scaleY(0.5); } 40% { opacity: 0.5; } 100% { opacity: 0; transform: translateY(-40px) scaleY(1.2); } }
+
+  .c1-steam { position: absolute; width: 3px; border-radius: 2px; background: var(--rock); opacity: 0; }
+  .c1-steam:nth-child(1) { height: 18px; left: 30px; top: -4px; animation: steam 2s ease-out infinite; }
+  .c1-steam:nth-child(2) { height: 22px; left: 46px; top: -6px; animation: steam 2s ease-out 0.5s infinite; }
+  .c1-steam:nth-child(3) { height: 16px; left: 62px; top: -2px; animation: steam 2s ease-out 1s infinite; }
+
+  .c1-name { padding: 18px 24px 0; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; text-align: center; animation: fadeUp 0.4s ease-out 0.3s backwards; }
+
+  .c1-meta { display: flex; justify-content: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.35s ease-out 0.4s backwards; }
+  .c1-pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .c1-video { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+
+  /* ============================================================
+     C2: "THE SIZZLE PAN"
+     Frying pan icon with sizzle particle dots bubbling up.
+     Name left-aligned below. Energetic cooking vibe.
+     ============================================================ */
+
+  .c2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c2-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c2-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c2-pan-wrap { display: flex; justify-content: center; padding: 28px 0 0; }
+  .c2-pan { position: relative; width: 140px; height: 70px; }
+
+  /* Pan body — circle */
+  .c2-pan-body { width: 90px; height: 90px; border-radius: 50%; background: var(--earth); position: absolute; bottom: -10px; left: 0; }
+  .c2-pan-inner { width: 70px; height: 70px; border-radius: 50%; background: rgba(246,245,240,0.06); position: absolute; bottom: 0px; left: 10px; }
+  /* Handle */
+  .c2-pan-handle { position: absolute; right: 0; top: 30px; width: 50px; height: 10px; background: var(--earth); border-radius: 5px; }
+
+  /* Sizzle particles */
+  @keyframes sizzle { 0% { opacity: 0; transform: translateY(0) scale(0.5); } 30% { opacity: 0.7; } 100% { opacity: 0; transform: translateY(-36px) scale(0.2); } }
+
+  .c2-spark { position: absolute; width: 5px; height: 5px; border-radius: 50%; background: var(--trail); opacity: 0; }
+  .c2-spark:nth-child(1) { left: 20px; top: -8px; animation: sizzle 1.5s ease-out infinite; }
+  .c2-spark:nth-child(2) { left: 35px; top: -12px; animation: sizzle 1.5s ease-out 0.3s infinite; }
+  .c2-spark:nth-child(3) { left: 50px; top: -6px; animation: sizzle 1.5s ease-out 0.6s infinite; }
+  .c2-spark:nth-child(4) { left: 28px; top: -10px; animation: sizzle 1.5s ease-out 0.9s infinite; }
+  .c2-spark:nth-child(5) { left: 42px; top: -8px; animation: sizzle 1.5s ease-out 1.2s infinite; }
+  .c2-spark:nth-child(6) { left: 58px; top: -10px; animation: sizzle 1.5s ease-out 0.4s infinite; }
+
+  .c2-name { padding: 22px 24px 0; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; text-align: center; animation: fadeUp 0.4s ease-out 0.3s backwards; }
+  .c2-meta { display: flex; justify-content: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.35s ease-out 0.4s backwards; }
+  .c2-pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .c2-video { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+
+  /* ============================================================
+     C3: "THE WHISK"
+     Animated whisk rotating gently. Dots scatter outward
+     like mixing. Name beside the whisk. Playful, unique.
+     ============================================================ */
+
+  .c3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c3-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c3-hero { display: flex; align-items: center; gap: 20px; padding: 24px 24px 0; }
+
+  .c3-whisk-wrap { position: relative; width: 80px; height: 100px; flex-shrink: 0; }
+
+  /* Whisk — handle + wires */
+  @keyframes wobble { 0%,100% { transform: rotate(-5deg); } 50% { transform: rotate(5deg); } }
+
+  .c3-whisk { animation: wobble 2s ease-in-out infinite; transform-origin: 50% 20%; }
+  .c3-whisk-handle { width: 8px; height: 40px; background: var(--earth); border-radius: 4px; margin: 0 auto; }
+  .c3-whisk-head { position: relative; width: 50px; height: 55px; margin: -2px auto 0; }
+  .c3-wire { position: absolute; width: 40px; height: 50px; border: 2.5px solid var(--earth); border-top: none; border-radius: 0 0 20px 20px; }
+  .c3-wire:nth-child(1) { left: 5px; }
+  .c3-wire:nth-child(2) { left: 5px; width: 30px; height: 45px; border-radius: 0 0 15px 15px; margin-left: 5px; }
+  .c3-wire:nth-child(3) { left: 5px; width: 20px; height: 40px; border-radius: 0 0 10px 10px; margin-left: 10px; }
+
+  /* Mix dots */
+  @keyframes mixDot { 0% { opacity: 0; transform: translate(0,0) scale(0.5); } 50% { opacity: 0.5; } 100% { opacity: 0; } }
+  .c3-mix-dot { position: absolute; width: 4px; height: 4px; border-radius: 50%; background: var(--trail); opacity: 0; }
+  .c3-mix-dot:nth-child(4) { bottom: 10px; left: 0; animation: mixDot 1.8s ease-out infinite; }
+  .c3-mix-dot:nth-child(5) { bottom: 5px; right: 5px; animation: mixDot 1.8s ease-out 0.4s infinite; }
+  .c3-mix-dot:nth-child(6) { bottom: 15px; right: 0; animation: mixDot 1.8s ease-out 0.8s infinite; }
+  .c3-mix-dot:nth-child(7) { bottom: 8px; left: 10px; animation: mixDot 1.8s ease-out 1.2s infinite; }
+
+  .c3-info { flex: 1; }
+  .c3-name { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .c3-meta { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; animation: fadeUp 0.35s ease-out 0.3s backwards; }
+  .c3-pill { padding: 4px 10px; border-radius: 8px; background: var(--stone); font-size: 10px; font-weight: 600; color: var(--earth); }
+  .c3-video { padding: 4px 12px; border-radius: 8px; background: var(--earth); font-size: 10px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+
+  /* ============================================================
+     C4: "THE KITCHEN TIMER"
+     Animated circular timer icon (like a kitchen egg timer)
+     with the cook time displayed. Name below. Time-focused.
+     ============================================================ */
+
+  .c4-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c4-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c4-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c4-timer-wrap { display: flex; justify-content: center; padding: 24px 0 0; }
+
+  @keyframes tick { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  @keyframes timerPulse { 0%,100% { box-shadow: 0 0 0 0 rgba(52,211,153,0.1); } 50% { box-shadow: 0 0 0 12px rgba(52,211,153,0.05); } }
+
+  .c4-timer {
+    width: 110px; height: 110px; border-radius: 50%;
+    border: 5px solid var(--earth); position: relative;
+    display: flex; align-items: center; justify-content: center;
+    animation: timerPulse 2.4s ease-in-out infinite;
+  }
+  /* Tick marks */
+  .c4-tick { position: absolute; width: 2px; height: 8px; background: var(--stone); top: 4px; left: 50%; transform-origin: 50% 47px; }
+  .c4-tick:nth-child(1) { transform: rotate(0deg); }
+  .c4-tick:nth-child(2) { transform: rotate(90deg); }
+  .c4-tick:nth-child(3) { transform: rotate(180deg); }
+  .c4-tick:nth-child(4) { transform: rotate(270deg); }
+
+  /* Rotating hand */
+  .c4-hand {
+    position: absolute; width: 2px; height: 32px; background: var(--trail);
+    border-radius: 1px; top: 18px; left: 50%; margin-left: -1px;
+    transform-origin: 50% 100%; animation: tick 8s linear infinite;
+  }
+  /* Center dot */
+  .c4-center-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--earth); position: absolute; }
+  /* Timer knob at top */
+  .c4-knob { position: absolute; top: -10px; left: 50%; margin-left: -6px; width: 12px; height: 12px; border-radius: 50%; background: var(--earth); }
+
+  .c4-time-display { text-align: center; padding: 12px 0 0; }
+  .c4-time-big { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .c4-time-label { font-size: 9px; color: var(--rock); margin-top: 1px; }
+
+  .c4-name { padding: 14px 24px 0; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; text-align: center; animation: fadeUp 0.4s ease-out 0.3s backwards; }
+  .c4-meta-row { display: flex; justify-content: center; gap: 8px; padding: 8px 24px 0; animation: fadeUp 0.35s ease-out 0.4s backwards; }
+  .c4-meta-item { font-size: 12px; color: var(--rock); }
+  .c4-meta-item strong { color: var(--earth); font-weight: 700; }
+  .c4-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .c4-video-link { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+
+  /* ============================================================
+     C5: "THE FLAME DOTS"
+     Animated flame-like dots rising from bottom. Dark bg card.
+     Name inside. Creates a "heat" cooking atmosphere.
+     ============================================================ */
+
+  .c5-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c5-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c5-card {
+    margin: 14px 20px 0; padding: 24px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+    min-height: 180px; display: flex; flex-direction: column; justify-content: flex-end;
+  }
+
+  /* Flame dots rising */
+  @keyframes flame { 0% { opacity: 0; transform: translateY(0) scale(1); } 30% { opacity: 0.6; } 100% { opacity: 0; transform: translateY(-120px) scale(0.3); } }
+
+  .c5-flame { position: absolute; border-radius: 50%; opacity: 0; }
+  .c5-flame:nth-child(1) { width: 6px; height: 6px; background: #F59E0B; left: 20%; bottom: 10px; animation: flame 2.5s ease-out infinite; }
+  .c5-flame:nth-child(2) { width: 8px; height: 8px; background: #EF4444; left: 35%; bottom: 8px; animation: flame 2.5s ease-out 0.4s infinite; }
+  .c5-flame:nth-child(3) { width: 5px; height: 5px; background: #F59E0B; left: 55%; bottom: 12px; animation: flame 2.5s ease-out 0.8s infinite; }
+  .c5-flame:nth-child(4) { width: 7px; height: 7px; background: #EF4444; left: 70%; bottom: 6px; animation: flame 2.5s ease-out 1.2s infinite; }
+  .c5-flame:nth-child(5) { width: 4px; height: 4px; background: #F59E0B; left: 45%; bottom: 14px; animation: flame 2.5s ease-out 1.6s infinite; }
+  .c5-flame:nth-child(6) { width: 6px; height: 6px; background: #EF4444; left: 80%; bottom: 10px; animation: flame 2.5s ease-out 2s infinite; }
+
+  .c5-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .c5-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; position: relative; }
+  .c5-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; line-height: 1.1; position: relative; }
+  .c5-pills { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .c5-pill { padding: 4px 10px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 10px; font-weight: 600; color: rgba(246,245,240,0.45); }
+  .c5-video { padding: 4px 12px; border-radius: 100px; background: rgba(52,211,153,0.1); font-size: 10px; font-weight: 600; color: var(--trail); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .c5-vtri { width: 0; height: 0; border-left: 4px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+
+
+  /* ============================================================
+     C6: "THE CHOPPING BOARD"
+     View-based cutting board shape. Name "engraved" on it.
+     Knife beside it with subtle rocking animation. Warm wood feel.
+     ============================================================ */
+
+  .c6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .c6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .c6-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .c6-board-wrap { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 24px 24px 0; }
+
+  /* Cutting board — rounded rect with wood grain */
+  .c6-board {
+    width: 200px; padding: 20px 16px; border-radius: 16px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  /* Wood grain lines */
+  .c6-grain { position: absolute; height: 1px; background: rgba(246,245,240,0.03); width: 100%; }
+  .c6-grain:nth-child(1) { top: 20%; }
+  .c6-grain:nth-child(2) { top: 40%; }
+  .c6-grain:nth-child(3) { top: 60%; }
+  .c6-grain:nth-child(4) { top: 80%; }
+
+  .c6-board-label { font-size: 8px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; position: relative; }
+  .c6-board-name { font-size: 18px; font-weight: 700; color: var(--sand); letter-spacing: -0.3px; line-height: 1.15; position: relative; }
+
+  /* Knife */
+  @keyframes chop { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-12deg); } }
+  .c6-knife { display: flex; flex-direction: column; align-items: center; animation: chop 1.5s ease-in-out infinite; transform-origin: bottom center; }
+  .c6-knife-blade { width: 6px; height: 50px; background: var(--stone); border-radius: 3px 3px 1px 1px; }
+  .c6-knife-handle { width: 12px; height: 24px; background: var(--earth); border-radius: 4px; margin-top: -2px; }
+
+  .c6-meta { display: flex; justify-content: center; gap: 8px; padding: 16px 24px 0; animation: fadeUp 0.35s ease-out 0.2s backwards; }
+  .c6-pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .c6-video { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- C1: STEAMING POT -->
+  <div>
+    <div class="col-label">C1 — THE STEAMING POT</div>
+    <div class="col-desc">View-based pot with animated steam lines rising. Recipe name centered below. Meta pills. Warm, homey cooking feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="c1-top"><div class="c1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c1-type">Breakfast · Recipe</span></div>
+      <div class="c1-pot-wrap"><div class="c1-pot">
+        <div class="c1-steam"></div><div class="c1-steam"></div><div class="c1-steam"></div>
+        <div class="c1-lid-knob"></div><div class="c1-lid"></div><div class="c1-pot-body"></div>
+        <div class="c1-handle-l"></div><div class="c1-handle-r"></div>
+      </div></div>
+      <div class="c1-name">Black Bean<br>Burrito Bowl</div>
+      <div class="c1-meta"><span class="c1-pill">5 min prep</span><span class="c1-pill">10 min cook</span><span class="c1-pill">Easy</span><span class="c1-video">▶ Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- C2: SIZZLE PAN -->
+  <div>
+    <div class="col-label">C2 — THE SIZZLE PAN</div>
+    <div class="col-desc">Frying pan with green sizzle particles bubbling up. Name centered below. Energetic, cooking-in-action feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="c2-top"><div class="c2-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c2-type">Breakfast · Recipe</span></div>
+      <div class="c2-pan-wrap"><div class="c2-pan">
+        <div class="c2-spark"></div><div class="c2-spark"></div><div class="c2-spark"></div><div class="c2-spark"></div><div class="c2-spark"></div><div class="c2-spark"></div>
+        <div class="c2-pan-body"></div><div class="c2-pan-inner"></div><div class="c2-pan-handle"></div>
+      </div></div>
+      <div class="c2-name">Black Bean<br>Burrito Bowl</div>
+      <div class="c2-meta"><span class="c2-pill">5 min prep</span><span class="c2-pill">10 min cook</span><span class="c2-pill">Easy</span><span class="c2-video">▶ Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- C3: WHISK -->
+  <div>
+    <div class="col-label">C3 — THE WHISK</div>
+    <div class="col-desc">Wobbling whisk with scatter dots. Name beside it. Side-by-side layout. Playful, cooking-in-progress.</div>
+    <div class="phone"><div class="ps">
+      <div class="c3-top"><div class="c3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c3-type">Breakfast · Recipe</span></div>
+      <div class="c3-hero">
+        <div class="c3-whisk-wrap"><div class="c3-whisk">
+          <div class="c3-whisk-handle"></div>
+          <div class="c3-whisk-head"><div class="c3-wire"></div><div class="c3-wire"></div><div class="c3-wire"></div>
+            <div class="c3-mix-dot"></div><div class="c3-mix-dot"></div><div class="c3-mix-dot"></div><div class="c3-mix-dot"></div>
+          </div>
+        </div></div>
+        <div class="c3-info">
+          <div class="c3-name">Black Bean Burrito Bowl</div>
+          <div class="c3-meta"><span class="c3-pill">5 min</span><span class="c3-pill">10 min</span><span class="c3-pill">Easy</span><span class="c3-video">▶ Video</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top:0;">
+
+  <!-- C4: KITCHEN TIMER -->
+  <div>
+    <div class="col-label">C4 — THE KITCHEN TIMER</div>
+    <div class="col-desc">Animated clock/timer with rotating hand + pulse glow. Cook time displayed. Name below. Time-focused cooking mood.</div>
+    <div class="phone"><div class="ps">
+      <div class="c4-top"><div class="c4-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c4-type">Breakfast · Recipe</span></div>
+      <div class="c4-timer-wrap"><div class="c4-timer">
+        <div class="c4-tick"></div><div class="c4-tick"></div><div class="c4-tick"></div><div class="c4-tick"></div>
+        <div class="c4-hand"></div><div class="c4-center-dot"></div><div class="c4-knob"></div>
+      </div></div>
+      <div class="c4-time-display"><div class="c4-time-big">15 min</div><div class="c4-time-label">total cook time</div></div>
+      <div class="c4-name">Black Bean<br>Burrito Bowl</div>
+      <div class="c4-meta-row"><span class="c4-meta-item"><strong>5</strong> prep</span><span class="c4-sep"></span><span class="c4-meta-item"><strong>10</strong> cook</span><span class="c4-sep"></span><span class="c4-meta-item"><strong>Easy</strong></span><span class="c4-video-link">▶ Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- C5: FLAME DOTS -->
+  <div>
+    <div class="col-label">C5 — THE FLAME CARD</div>
+    <div class="col-desc">Dark card with animated flame/heat dots rising from bottom. Name inside. Creates a "cooking heat" atmosphere. Moody, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="c5-top"><div class="c5-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c5-type">Breakfast · Recipe</span></div>
+      <div class="c5-card">
+        <div class="c5-flame"></div><div class="c5-flame"></div><div class="c5-flame"></div><div class="c5-flame"></div><div class="c5-flame"></div><div class="c5-flame"></div>
+        <div class="c5-diag" style="width:90px;top:14px;right:-4px;transform:rotate(-35deg);"></div>
+        <div class="c5-diag" style="width:65px;top:24px;right:-4px;transform:rotate(-35deg);"></div>
+        <div class="c5-label">Breakfast Recipe</div>
+        <div class="c5-name">Black Bean<br>Burrito Bowl</div>
+        <div class="c5-pills"><span class="c5-pill">5 min prep</span><span class="c5-pill">10 min cook</span><span class="c5-pill">Easy</span><div class="c5-video"><div class="c5-vtri"></div>Video</div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- C6: CHOPPING BOARD -->
+  <div>
+    <div class="col-label">C6 — THE CHOPPING BOARD</div>
+    <div class="col-desc">Dark cutting board with wood grain lines + name "engraved". Animated rocking knife beside it. Artisanal, kitchen craft feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="c6-top"><div class="c6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="c6-type">Breakfast · Recipe</span></div>
+      <div class="c6-board-wrap">
+        <div class="c6-board">
+          <div class="c6-grain"></div><div class="c6-grain"></div><div class="c6-grain"></div><div class="c6-grain"></div>
+          <div class="c6-board-label">Breakfast</div>
+          <div class="c6-board-name">Black Bean<br>Burrito Bowl</div>
+        </div>
+        <div class="c6-knife"><div class="c6-knife-blade"></div><div class="c6-knife-handle"></div></div>
+      </div>
+      <div class="c6-meta"><span class="c6-pill">5 min prep</span><span class="c6-pill">10 min cook</span><span class="c6-pill">Easy</span><span class="c6-video">▶ Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

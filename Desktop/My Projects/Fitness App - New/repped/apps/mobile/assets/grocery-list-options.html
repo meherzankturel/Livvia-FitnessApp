@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Shopping List Options</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Hero placeholder */
+.hero-ph{margin:56px 18px 0;height:120px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5,#E8E4DB,#F2EFE8,#DDD8CE);display:flex;align-items:center;justify-content:center;opacity:0.5}
+.hero-ph-text{font-size:9px;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px}
+
+/* Shared section head */
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.s-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s-meta{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   L1: DOTTED RECEIPT — Category headers + dotted price rows
+   Checkboxes. Checked items strikethrough + fade.
+   ============================================================ */
+.l1{padding:20px 24px 40px}
+.l1-cat{display:flex;align-items:center;gap:6px;padding:14px 0 6px}
+.l1-cat:first-child{padding-top:0}
+.l1-cat-dot{width:6px;height:6px;border-radius:3px;flex-shrink:0}
+.l1-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+.l1-cat-count{font-size:9px;color:var(--rock);opacity:0.5;margin-left:auto}
+
+.l1-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l1-row:last-child{border-bottom:none}
+.l1-cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.l1-cb.on{background:var(--trail);border-color:var(--trail)}
+.l1-ck{font-size:10px;color:#fff;font-weight:700}
+.l1-name{font-size:14px;font-weight:500;color:var(--earth);flex-shrink:0}
+.l1-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.l1-price{font-size:12px;font-weight:600;color:var(--rock);min-width:44px;text-align:right}
+.l1-row.done .l1-name{text-decoration:line-through;opacity:0.3}
+.l1-row.done .l1-dots{opacity:0.1}
+.l1-row.done .l1-price{opacity:0.3}
+
+
+/* ============================================================
+   L2: CARD PER CATEGORY — Each category in a white card
+   Items inside. Compact. Clean grouped feel.
+   ============================================================ */
+.l2{padding:20px 20px 40px}
+.l2-card{background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.02)}
+.l2-card-head{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l2-card-dot{width:7px;height:7px;border-radius:4px;flex-shrink:0}
+.l2-card-name{font-size:11px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:0.8px;flex:1}
+.l2-card-count{font-size:9px;color:var(--rock)}
+
+.l2-row{display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:0.5px solid rgba(0,0,0,0.03)}
+.l2-row:last-child{border-bottom:none}
+.l2-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.l2-cb.on{background:var(--trail);border-color:var(--trail)}
+.l2-ck{font-size:9px;color:#fff;font-weight:700}
+.l2-name{font-size:13px;font-weight:500;color:var(--earth);flex:1}
+.l2-qty{font-size:11px;color:var(--rock)}
+.l2-price{font-size:11px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+.l2-row.done{opacity:0.3}
+.l2-row.done .l2-name{text-decoration:line-through}
+
+
+/* ============================================================
+   L3: SWIPE CARDS — Each item as its own floating card
+   Name left, qty + price right. Checkbox. Premium floating.
+   ============================================================ */
+.l3{padding:20px 20px 40px}
+.l3-cat{display:flex;align-items:center;gap:6px;padding:10px 4px 6px}
+.l3-cat:first-child{padding-top:0}
+.l3-cat-dot{width:6px;height:6px;border-radius:3px}
+.l3-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+
+.l3-card{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#fff;border-radius:14px;margin-bottom:6px;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.l3-cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.l3-cb.on{background:var(--trail);border-color:var(--trail)}
+.l3-ck{font-size:10px;color:#fff;font-weight:700}
+.l3-name{font-size:13px;font-weight:600;color:var(--earth);flex:1;letter-spacing:-0.2px}
+.l3-right{display:flex;align-items:center;gap:8px}
+.l3-qty{font-size:10px;color:var(--rock)}
+.l3-price{font-size:11px;font-weight:700;color:var(--earth)}
+.l3-card.done{opacity:0.3}
+.l3-card.done .l3-name{text-decoration:line-through}
+
+
+/* ============================================================
+   L4: CLEAN ROWS — No category headers. Just flat list with
+   colored left accent per category. Minimal.
+   ============================================================ */
+.l4{padding:20px 24px 40px}
+.l4-row{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l4-row:last-child{border-bottom:none}
+.l4-accent{width:3px;height:24px;border-radius:2px;flex-shrink:0;opacity:0.4}
+.l4-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.l4-cb.on{background:var(--trail);border-color:var(--trail)}
+.l4-ck{font-size:9px;color:#fff;font-weight:700}
+.l4-info{flex:1}
+.l4-name{font-size:14px;font-weight:500;color:var(--earth)}
+.l4-qty{font-size:10px;color:var(--rock);margin-top:1px}
+.l4-price{font-size:12px;font-weight:600;color:var(--rock)}
+.l4-row.done{opacity:0.3}
+.l4-row.done .l4-name{text-decoration:line-through}
+
+
+/* ============================================================
+   L5: ALTERNATING ROWS — Zebra stripe (sand/stone alternating).
+   Category headers. Clean, easy to scan.
+   ============================================================ */
+.l5{padding:20px 20px 40px}
+.l5-cat{display:flex;align-items:center;gap:6px;padding:12px 4px 6px}
+.l5-cat:first-child{padding-top:0}
+.l5-cat-dot{width:6px;height:6px;border-radius:3px}
+.l5-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+
+.l5-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border-radius:12px;margin-bottom:2px}
+.l5-row.even{background:var(--stone)}
+.l5-row.odd{background:transparent}
+.l5-cb{width:18px;height:18px;border-radius:6px;border:2px solid rgba(0,0,0,0.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.l5-row.even .l5-cb{border-color:rgba(0,0,0,0.06)}
+.l5-cb.on{background:var(--trail);border-color:var(--trail)}
+.l5-ck{font-size:9px;color:#fff;font-weight:700}
+.l5-name{font-size:13px;font-weight:500;color:var(--earth);flex:1}
+.l5-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.15;letter-spacing:2px;white-space:nowrap}
+.l5-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+.l5-row.done{opacity:0.3}
+.l5-row.done .l5-name{text-decoration:line-through}
+
+
+/* ============================================================
+   L6: NUMBERED — Numbers instead of checkboxes. Check appears
+   as green overlay on the number. Dotted prices. Clean.
+   ============================================================ */
+.l6{padding:20px 24px 40px}
+.l6-cat{display:flex;align-items:center;gap:6px;padding:14px 0 6px}
+.l6-cat:first-child{padding-top:0}
+.l6-cat-dot{width:6px;height:6px;border-radius:3px}
+.l6-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+
+.l6-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.l6-row:last-child{border-bottom:none}
+.l6-num{width:24px;height:24px;border-radius:12px;background:var(--stone);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;color:var(--earth);cursor:pointer}
+.l6-num.on{background:var(--trail);color:#fff}
+.l6-name{font-size:14px;font-weight:500;color:var(--earth);flex-shrink:0}
+.l6-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.l6-price{font-size:12px;font-weight:600;color:var(--rock);min-width:44px;text-align:right}
+.l6-row.done .l6-name{text-decoration:line-through;opacity:0.3}
+.l6-row.done .l6-price{opacity:0.3}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- L1: DOTTED RECEIPT -->
+  <div>
+    <div class="col-label">L1 — DOTTED RECEIPT</div>
+    <div class="col-desc">Category headers + dotted price rows. Checkboxes. Checked items fade. Receipt feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l1"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l1-cat"><div class="l1-cat-dot" style="background:#34D399"></div><span class="l1-cat-name">Produce</span><span class="l1-cat-count">5 items</span></div>
+        <div class="l1-row done"><div class="l1-cb on"><span class="l1-ck">✓</span></div><span class="l1-name">Avocado</span><span class="l1-dots">·······························</span><span class="l1-price">$1.99</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Spinach</span><span class="l1-dots">·······························</span><span class="l1-price">$3.49</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Banana</span><span class="l1-dots">·······························</span><span class="l1-price">$0.69</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Tomato</span><span class="l1-dots">·······························</span><span class="l1-price">$1.49</span></div>
+        <div class="l1-cat"><div class="l1-cat-dot" style="background:#EF4444"></div><span class="l1-cat-name">Protein</span><span class="l1-cat-count">4 items</span></div>
+        <div class="l1-row done"><div class="l1-cb on"><span class="l1-ck">✓</span></div><span class="l1-name">Chicken breast</span><span class="l1-dots">·······························</span><span class="l1-price">$8.99</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Eggs</span><span class="l1-dots">·······························</span><span class="l1-price">$4.99</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Salmon</span><span class="l1-dots">·······························</span><span class="l1-price">$12.99</span></div>
+        <div class="l1-cat"><div class="l1-cat-dot" style="background:#F59E0B"></div><span class="l1-cat-name">Dairy</span><span class="l1-cat-count">3 items</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Greek yogurt</span><span class="l1-dots">·······························</span><span class="l1-price">$5.99</span></div>
+        <div class="l1-row"><div class="l1-cb"></div><span class="l1-name">Butter</span><span class="l1-dots">·······························</span><span class="l1-price">$4.49</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- L2: CARD PER CATEGORY -->
+  <div>
+    <div class="col-label">L2 — CATEGORY CARDS</div>
+    <div class="col-desc">Each category in its own white card. Items nested inside. Grouped, organized, iOS feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l2"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l2-card">
+          <div class="l2-card-head"><div class="l2-card-dot" style="background:#34D399"></div><span class="l2-card-name">Produce</span><span class="l2-card-count">5</span></div>
+          <div class="l2-row done"><div class="l2-cb on"><span class="l2-ck">✓</span></div><span class="l2-name">Avocado</span><span class="l2-qty">3 pcs</span><span class="l2-price">$5.97</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Spinach</span><span class="l2-qty">200g</span><span class="l2-price">$3.49</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Banana</span><span class="l2-qty">6 pcs</span><span class="l2-price">$4.14</span></div>
+        </div>
+        <div class="l2-card">
+          <div class="l2-card-head"><div class="l2-card-dot" style="background:#EF4444"></div><span class="l2-card-name">Protein</span><span class="l2-card-count">4</span></div>
+          <div class="l2-row done"><div class="l2-cb on"><span class="l2-ck">✓</span></div><span class="l2-name">Chicken breast</span><span class="l2-qty">500g</span><span class="l2-price">$8.99</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Eggs</span><span class="l2-qty">12 pk</span><span class="l2-price">$4.99</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Salmon</span><span class="l2-qty">300g</span><span class="l2-price">$12.99</span></div>
+        </div>
+        <div class="l2-card">
+          <div class="l2-card-head"><div class="l2-card-dot" style="background:#F59E0B"></div><span class="l2-card-name">Dairy</span><span class="l2-card-count">3</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Greek yogurt</span><span class="l2-qty">500g</span><span class="l2-price">$5.99</span></div>
+          <div class="l2-row"><div class="l2-cb"></div><span class="l2-name">Butter</span><span class="l2-qty">250g</span><span class="l2-price">$4.49</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- L3: FLOATING CARDS -->
+  <div>
+    <div class="col-label">L3 — FLOATING CARDS</div>
+    <div class="col-desc">Each item as its own floating white card with shadow. Category headers between. Premium tactile.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l3"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l3-cat"><div class="l3-cat-dot" style="background:#34D399"></div><span class="l3-cat-name">Produce</span></div>
+        <div class="l3-card done"><div class="l3-cb on"><span class="l3-ck">✓</span></div><span class="l3-name">Avocado</span><div class="l3-right"><span class="l3-qty">3 pcs</span><span class="l3-price">$5.97</span></div></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Spinach</span><div class="l3-right"><span class="l3-qty">200g</span><span class="l3-price">$3.49</span></div></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Banana</span><div class="l3-right"><span class="l3-qty">6 pcs</span><span class="l3-price">$4.14</span></div></div>
+        <div class="l3-cat"><div class="l3-cat-dot" style="background:#EF4444"></div><span class="l3-cat-name">Protein</span></div>
+        <div class="l3-card done"><div class="l3-cb on"><span class="l3-ck">✓</span></div><span class="l3-name">Chicken breast</span><div class="l3-right"><span class="l3-qty">500g</span><span class="l3-price">$8.99</span></div></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Eggs</span><div class="l3-right"><span class="l3-qty">12 pk</span><span class="l3-price">$4.99</span></div></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Salmon</span><div class="l3-right"><span class="l3-qty">300g</span><span class="l3-price">$12.99</span></div></div>
+        <div class="l3-cat"><div class="l3-cat-dot" style="background:#F59E0B"></div><span class="l3-cat-name">Dairy</span></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Greek yogurt</span><div class="l3-right"><span class="l3-qty">500g</span><span class="l3-price">$5.99</span></div></div>
+        <div class="l3-card"><div class="l3-cb"></div><span class="l3-name">Butter</span><div class="l3-right"><span class="l3-qty">250g</span><span class="l3-price">$4.49</span></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- L4: ACCENT BARS -->
+  <div>
+    <div class="col-label">L4 — ACCENT BAR ROWS</div>
+    <div class="col-desc">No category headers. Colored left accent bar per item shows category. Two-line (name + qty). Minimal.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l4"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l4-row done"><div class="l4-accent" style="background:#34D399"></div><div class="l4-cb on"><span class="l4-ck">✓</span></div><div class="l4-info"><div class="l4-name">Avocado</div><div class="l4-qty">3 pieces</div></div><span class="l4-price">$5.97</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#34D399"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Spinach</div><div class="l4-qty">200g bag</div></div><span class="l4-price">$3.49</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#34D399"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Banana</div><div class="l4-qty">6 pieces</div></div><span class="l4-price">$4.14</span></div>
+        <div class="l4-row done"><div class="l4-accent" style="background:#EF4444"></div><div class="l4-cb on"><span class="l4-ck">✓</span></div><div class="l4-info"><div class="l4-name">Chicken breast</div><div class="l4-qty">500g</div></div><span class="l4-price">$8.99</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#EF4444"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Eggs</div><div class="l4-qty">12 pack</div></div><span class="l4-price">$4.99</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#EF4444"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Salmon</div><div class="l4-qty">300g fillet</div></div><span class="l4-price">$12.99</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#F59E0B"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Greek yogurt</div><div class="l4-qty">500g</div></div><span class="l4-price">$5.99</span></div>
+        <div class="l4-row"><div class="l4-accent" style="background:#F59E0B"></div><div class="l4-cb"></div><div class="l4-info"><div class="l4-name">Butter</div><div class="l4-qty">250g</div></div><span class="l4-price">$4.49</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- L5: ZEBRA ROWS -->
+  <div>
+    <div class="col-label">L5 — ZEBRA STRIPE</div>
+    <div class="col-desc">Alternating sand/stone rows. Category headers. Dotted prices. Easy to scan down.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l5"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l5-cat"><div class="l5-cat-dot" style="background:#34D399"></div><span class="l5-cat-name">Produce</span></div>
+        <div class="l5-row even done"><div class="l5-cb on"><span class="l5-ck">✓</span></div><span class="l5-name" style="text-decoration:line-through;opacity:0.3">Avocado</span><span class="l5-dots">·······················</span><span class="l5-price">$1.99</span></div>
+        <div class="l5-row odd"><div class="l5-cb"></div><span class="l5-name">Spinach</span><span class="l5-dots">·······················</span><span class="l5-price">$3.49</span></div>
+        <div class="l5-row even"><div class="l5-cb"></div><span class="l5-name">Banana</span><span class="l5-dots">·······················</span><span class="l5-price">$0.69</span></div>
+        <div class="l5-row odd"><div class="l5-cb"></div><span class="l5-name">Tomato</span><span class="l5-dots">·······················</span><span class="l5-price">$1.49</span></div>
+        <div class="l5-cat"><div class="l5-cat-dot" style="background:#EF4444"></div><span class="l5-cat-name">Protein</span></div>
+        <div class="l5-row even done"><div class="l5-cb on"><span class="l5-ck">✓</span></div><span class="l5-name" style="text-decoration:line-through;opacity:0.3">Chicken breast</span><span class="l5-dots">·······················</span><span class="l5-price">$8.99</span></div>
+        <div class="l5-row odd"><div class="l5-cb"></div><span class="l5-name">Eggs</span><span class="l5-dots">·······················</span><span class="l5-price">$4.99</span></div>
+        <div class="l5-row even"><div class="l5-cb"></div><span class="l5-name">Salmon</span><span class="l5-dots">·······················</span><span class="l5-price">$12.99</span></div>
+        <div class="l5-cat"><div class="l5-cat-dot" style="background:#F59E0B"></div><span class="l5-cat-name">Dairy</span></div>
+        <div class="l5-row odd"><div class="l5-cb"></div><span class="l5-name">Greek yogurt</span><span class="l5-dots">·······················</span><span class="l5-price">$5.99</span></div>
+        <div class="l5-row even"><div class="l5-cb"></div><span class="l5-name">Butter</span><span class="l5-dots">·······················</span><span class="l5-price">$4.49</span></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- L6: NUMBERED -->
+  <div>
+    <div class="col-label">L6 — NUMBERED LIST</div>
+    <div class="col-desc">Numbers instead of checkboxes — turns green when checked. Dotted prices. Category headers.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-ph"><span class="hero-ph-text">↑ Hero Card ↑</span></div>
+      <div class="l6"><div class="s-head"><div><span class="s-title">Shopping List</span><div class="s-accent"></div></div><span class="s-meta">18 items</span></div>
+        <div class="l6-cat"><div class="l6-cat-dot" style="background:#34D399"></div><span class="l6-cat-name">Produce</span></div>
+        <div class="l6-row done"><div class="l6-num on">✓</div><span class="l6-name">Avocado</span><span class="l6-dots">·······························</span><span class="l6-price">$1.99</span></div>
+        <div class="l6-row"><div class="l6-num">2</div><span class="l6-name">Spinach</span><span class="l6-dots">·······························</span><span class="l6-price">$3.49</span></div>
+        <div class="l6-row"><div class="l6-num">3</div><span class="l6-name">Banana</span><span class="l6-dots">·······························</span><span class="l6-price">$0.69</span></div>
+        <div class="l6-row"><div class="l6-num">4</div><span class="l6-name">Tomato</span><span class="l6-dots">·······························</span><span class="l6-price">$1.49</span></div>
+        <div class="l6-cat"><div class="l6-cat-dot" style="background:#EF4444"></div><span class="l6-cat-name">Protein</span></div>
+        <div class="l6-row done"><div class="l6-num on">✓</div><span class="l6-name">Chicken breast</span><span class="l6-dots">·······························</span><span class="l6-price">$8.99</span></div>
+        <div class="l6-row"><div class="l6-num">6</div><span class="l6-name">Eggs</span><span class="l6-dots">·······························</span><span class="l6-price">$4.99</span></div>
+        <div class="l6-row"><div class="l6-num">7</div><span class="l6-name">Salmon</span><span class="l6-dots">·······························</span><span class="l6-price">$12.99</span></div>
+        <div class="l6-cat"><div class="l6-cat-dot" style="background:#F59E0B"></div><span class="l6-cat-name">Dairy</span></div>
+        <div class="l6-row"><div class="l6-num">8</div><span class="l6-name">Greek yogurt</span><span class="l6-dots">·······························</span><span class="l6-price">$5.99</span></div>
+        <div class="l6-row"><div class="l6-num">9</div><span class="l6-name">Butter</span><span class="l6-dots">·······························</span><span class="l6-price">$4.49</span></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

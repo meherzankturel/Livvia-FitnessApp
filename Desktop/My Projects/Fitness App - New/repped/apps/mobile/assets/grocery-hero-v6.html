@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero V6</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fraunces:wght@700;800&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:13px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+/* Dollar icon shared */
+.dollar-icon{height:42px;width:42px;object-fit:contain;margin-right:4px;flex-shrink:0}
+.dollar-icon-dark{height:42px;width:42px;object-fit:contain;margin-right:4px;flex-shrink:0;filter:brightness(10)}
+
+/* Cart placeholder area — right side middle */
+.cart-area{width:70px;height:70px;border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.cart-area-light{background:rgba(0,0,0,0.03)}
+.cart-area-dark{background:rgba(246,245,240,0.04)}
+.cart-placeholder{font-size:28px;opacity:0.4}
+
+
+/* ============================================================
+   C1: WARM — DM Serif. 3-row layout: label top, total+cart mid, save bottom-right
+   ============================================================ */
+.c1-card{margin:16px 18px 0;border-radius:22px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden;padding:20px 20px 16px}
+.c1-card::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.c1-top-row{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:12px}
+.c1-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.c1-meta{font-size:10px;color:var(--rock)}
+
+/* Middle: total left, cart center-right */
+.c1-mid{display:flex;align-items:center;position:relative}
+.c1-total-wrap{flex:1}
+.c1-total{display:flex;align-items:center}
+.c1-amount{font-family:'DM Serif Display',serif;font-size:46px;color:var(--earth);line-height:1;letter-spacing:-0.5px}
+.c1-est{font-size:9px;color:var(--rock);margin-top:3px}
+.c1-checked{font-size:10px;color:var(--rock);margin-top:2px}
+.c1-checked b{color:var(--trail);font-weight:800}
+
+/* Bottom row: progress left, save right */
+.c1-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:14px;position:relative}
+.c1-prog{flex:1;margin-right:14px}
+.c1-prog-bar{height:3px;border-radius:2px;background:rgba(0,0,0,0.04)}
+.c1-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+.c1-prog-text{font-size:8px;color:var(--rock);margin-top:3px}
+
+.c1-save{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;background:rgba(0,0,0,0.04);cursor:pointer;flex-shrink:0}
+.c1-save-text{font-size:9px;font-weight:600;color:var(--earth);letter-spacing:0.2px}
+.c1-save-arrow{font-size:10px;color:var(--rock);opacity:0.4}
+
+
+/* ============================================================
+   C2: DARK — Fraunces. Same layout. Dark colors.
+   ============================================================ */
+.c2-card{margin:16px 18px 0;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 40%,#33312B 70%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden;padding:20px 20px 16px}
+.c2-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.c2-top-row{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:12px}
+.c2-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.c2-meta{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.c2-mid{display:flex;align-items:center;position:relative}
+.c2-total-wrap{flex:1}
+.c2-total{display:flex;align-items:center}
+.c2-amount{font-family:'Fraunces',serif;font-size:46px;font-weight:700;color:var(--sand);line-height:1;letter-spacing:-0.5px}
+.c2-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:3px}
+.c2-checked{font-size:10px;color:rgba(246,245,240,0.3);margin-top:2px}
+.c2-checked b{color:var(--trail);font-weight:800}
+
+.c2-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:14px;position:relative}
+.c2-prog{flex:1;margin-right:14px}
+.c2-prog-bar{height:3px;border-radius:2px;background:rgba(246,245,240,0.06)}
+.c2-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+.c2-prog-text{font-size:8px;color:rgba(246,245,240,0.2);margin-top:3px}
+
+.c2-save{display:flex;align-items:center;gap:5px;padding:6px 12px;border-radius:10px;background:rgba(246,245,240,0.04);cursor:pointer;flex-shrink:0}
+.c2-save-text{font-size:9px;font-weight:600;color:rgba(246,245,240,0.5);letter-spacing:0.2px}
+.c2-save-arrow{font-size:10px;color:rgba(246,245,240,0.2)}
+
+
+/* ============================================================
+   C3: WARM — Playfair. Cart in a subtle circle. Save as text link.
+   ============================================================ */
+.c3-card{margin:16px 18px 0;border-radius:22px;background:linear-gradient(155deg,#D8D3C9 0%,#EAE6DD 30%,#F4F1EA 60%,#DFD9CF 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden;padding:20px 20px 16px}
+.c3-card::before{content:'';position:absolute;top:-30px;right:-10px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.c3-top-row{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:12px}
+.c3-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.c3-meta{font-size:10px;color:var(--rock)}
+
+.c3-mid{display:flex;align-items:center;position:relative}
+.c3-total-wrap{flex:1}
+.c3-total{display:flex;align-items:center}
+.c3-amount{font-family:'Playfair Display',serif;font-size:48px;font-weight:800;color:var(--earth);line-height:1;letter-spacing:-1px}
+.c3-est{font-size:9px;color:var(--rock);margin-top:3px}
+.c3-checked{font-size:10px;color:var(--rock);margin-top:2px}
+.c3-checked b{color:var(--trail);font-weight:800}
+
+/* Cart in a subtle stone circle */
+.c3-cart-circle{width:72px;height:72px;border-radius:50%;background:rgba(0,0,0,0.025);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+
+.c3-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:12px;position:relative}
+.c3-prog{flex:1;margin-right:14px}
+.c3-prog-bar{height:3px;border-radius:2px;background:rgba(0,0,0,0.04)}
+.c3-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+.c3-prog-text{font-size:8px;color:var(--rock);margin-top:3px}
+
+/* Save as minimal text link */
+.c3-save{display:flex;align-items:center;gap:4px;cursor:pointer;flex-shrink:0}
+.c3-save-text{font-size:9px;font-weight:600;color:var(--trail);letter-spacing:0.2px}
+.c3-save-arrow{font-size:10px;color:var(--trail);opacity:0.5}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- C1: WARM -->
+  <div>
+    <div class="col-label">C1 — WARM · DM SERIF</div>
+    <div class="col-desc">Big dollar icon + amount left. Cart placeholder center-right. Minimal save bottom-right. Progress bar.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="c1-card">
+        <div class="c1-top-row"><span class="c1-label">Weekly Shop</span><span class="c1-meta">18 items</span></div>
+        <div class="c1-mid">
+          <div class="c1-total-wrap">
+            <div class="c1-total"><img class="dollar-icon" src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png"><span class="c1-amount">47.82</span></div>
+            <div class="c1-est">estimated total</div>
+            <div class="c1-checked"><b>5</b> / 18 checked</div>
+          </div>
+          <div class="cart-area cart-area-light"><span class="cart-placeholder">🛒</span></div>
+        </div>
+        <div class="c1-bottom">
+          <div class="c1-prog"><div class="c1-prog-bar"><div class="c1-prog-fill" style="width:28%"></div></div><div class="c1-prog-text">28% complete</div></div>
+          <div class="c1-save"><span class="c1-save-text">Save Tips</span><span class="c1-save-arrow">›</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">···················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- C2: DARK -->
+  <div>
+    <div class="col-label">C2 — DARK · FRAUNCES</div>
+    <div class="col-desc">Same layout on dark. White dollar icon. Cart placeholder. Subtle save. Diagonal accents.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="c2-card">
+        <div class="c2-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="c2-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="c2-top-row"><span class="c2-label">Weekly Shop</span><span class="c2-meta">18 items</span></div>
+        <div class="c2-mid">
+          <div class="c2-total-wrap">
+            <div class="c2-total"><img class="dollar-icon-dark" src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png"><span class="c2-amount">47.82</span></div>
+            <div class="c2-est">estimated total</div>
+            <div class="c2-checked"><b>5</b> / 18 checked</div>
+          </div>
+          <div class="cart-area cart-area-dark"><span class="cart-placeholder">🛒</span></div>
+        </div>
+        <div class="c2-bottom">
+          <div class="c2-prog"><div class="c2-prog-bar"><div class="c2-prog-fill" style="width:28%"></div></div><div class="c2-prog-text">28% complete</div></div>
+          <div class="c2-save"><span class="c2-save-text">Save Tips</span><span class="c2-save-arrow">›</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">···················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- C3: WARM CIRCLE CART -->
+  <div>
+    <div class="col-label">C3 — WARM · PLAYFAIR · CIRCLE CART</div>
+    <div class="col-desc">Cart in a subtle stone circle. Save as minimal green text link. Playfair 48px total.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="c3-card">
+        <div class="c3-top-row"><span class="c3-label">Weekly Shop</span><span class="c3-meta">18 items</span></div>
+        <div class="c3-mid">
+          <div class="c3-total-wrap">
+            <div class="c3-total"><img class="dollar-icon" src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png"><span class="c3-amount">47.82</span></div>
+            <div class="c3-est">estimated total</div>
+            <div class="c3-checked"><b>5</b> / 18 checked</div>
+          </div>
+          <div class="c3-cart-circle"><span class="cart-placeholder">🛒</span></div>
+        </div>
+        <div class="c3-bottom">
+          <div class="c3-prog"><div class="c3-prog-bar"><div class="c3-prog-fill" style="width:28%"></div></div><div class="c3-prog-text">28% complete</div></div>
+          <div class="c3-save"><span class="c3-save-text">Save Tips</span><span class="c3-save-arrow">›</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">···················</span><span class="ph-price">$4.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

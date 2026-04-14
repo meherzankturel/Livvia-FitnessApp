@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Hero Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+
+  /* Placeholder list below heroes */
+  .ph { padding: 24px 24px 0; }
+  .ph-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .ph-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .ph-sub { font-size: 11px; color: var(--rock); }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 40px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+
+  /* ============================================================
+     H1: PURE EDITORIAL
+     Giant name. Inline meta as text. Video as green text link.
+     Nothing else. Maximum whitespace. Elegant.
+     ============================================================ */
+  .h1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .h1-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .h1-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .h1-name { padding: 16px 24px 0; font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; animation: fadeUp 0.4s ease-out; }
+
+  .h1-meta { display: flex; align-items: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.35s ease-out 0.08s backwards; }
+  .h1-item { font-size: 12px; color: var(--rock); }
+  .h1-item strong { color: var(--earth); font-weight: 700; }
+  .h1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .h1-video { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+
+  /* ============================================================
+     H2: DARK HERO CARD
+     Full dark card with diagonal accents, breathing dot.
+     Name + pills inside. Video button bottom-right.
+     Consistent with terrain language.
+     ============================================================ */
+  .h2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .h2-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .h2-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+  .h2-card {
+    margin: 14px 20px 0; padding: 20px; border-radius: 22px;
+    background: var(--earth); position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease-out;
+  }
+  .h2-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h2-breath { position: absolute; top: 18px; left: 20px; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s infinite; }
+
+  .h2-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; position: relative; }
+  .h2-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.7px; line-height: 1.1; position: relative; }
+
+  .h2-bottom { display: flex; align-items: center; gap: 6px; margin-top: 14px; position: relative; }
+  .h2-pill { padding: 5px 11px; border-radius: 100px; background: rgba(246,245,240,0.06); }
+  .h2-pill-text { font-size: 11px; font-weight: 600; color: rgba(246,245,240,0.45); }
+  .h2-video { padding: 5px 12px; border-radius: 100px; background: rgba(52,211,153,0.1); display: flex; align-items: center; gap: 4px; cursor: pointer; margin-left: auto; }
+  .h2-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+  .h2-vtext { font-size: 10px; font-weight: 600; color: var(--trail); }
+
+
+  /* ============================================================
+     H3: BENTO TILES
+     Name in dark tile (large). Prep/cook as stone tiles (small).
+     Video + difficulty as smaller tiles. Dashboard grid.
+     ============================================================ */
+  .h3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .h3-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .h3-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .h3-grid { display: flex; flex-direction: column; gap: 8px; padding: 14px 20px 0; animation: fadeUp 0.4s ease-out; }
+  .h3-row { display: flex; gap: 8px; }
+
+  .h3-tile { border-radius: 20px; padding: 16px; overflow: hidden; position: relative; }
+  .h3-tile.dark { background: var(--earth); }
+  .h3-tile.stone { background: var(--stone); }
+
+  .h3-tile-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h3-name-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; position: relative; }
+  .h3-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.1; position: relative; }
+
+  .h3-time-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; text-align: center; }
+  .h3-time-label { font-size: 9px; color: var(--rock); text-align: center; margin-top: 2px; }
+
+  .h3-video-tile { display: flex; align-items: center; justify-content: center; gap: 6px; cursor: pointer; }
+  .h3-vtri { width: 0; height: 0; border-left: 7px solid var(--trail); border-top: 4px solid transparent; border-bottom: 4px solid transparent; }
+  .h3-vtext { font-size: 12px; font-weight: 600; color: var(--trail); }
+
+  .h3-diff { display: flex; align-items: center; justify-content: center; }
+  .h3-diff-text { font-size: 14px; font-weight: 700; color: var(--earth); }
+
+
+  /* ============================================================
+     H4: FULL BLEED DARK
+     Entire top 35% dark. Name centered. Pills below name.
+     Contour circles in bg. Cinematic, dramatic.
+     ============================================================ */
+  .h4-dark {
+    background: var(--earth); padding: 56px 24px 24px;
+    border-radius: 0 0 28px 28px; position: relative; overflow: hidden;
+    min-height: 240px; display: flex; flex-direction: column;
+  }
+  .h4-contour { position: absolute; border: 1px solid rgba(246,245,240,0.02); border-radius: 50%; }
+  .h4-c1 { width: 350px; height: 280px; top: -80px; right: -100px; }
+  .h4-c2 { width: 250px; height: 200px; bottom: -50px; left: -60px; }
+
+  .h4-top { display: flex; align-items: center; position: relative; z-index: 1; }
+  .h4-back { width: 32px; height: 32px; border-radius: 16px; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .h4-type { font-size: 10px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .h4-center { flex: 1; display: flex; flex-direction: column; justify-content: center; position: relative; z-index: 1; padding: 20px 0; }
+  .h4-name { font-size: 30px; font-weight: 800; color: var(--sand); letter-spacing: -1.2px; line-height: 1.05; }
+
+  .h4-pills { display: flex; gap: 6px; margin-top: 12px; }
+  .h4-pill { padding: 5px 12px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 11px; font-weight: 600; color: rgba(246,245,240,0.45); }
+  .h4-video { padding: 5px 14px; border-radius: 100px; background: rgba(52,211,153,0.1); font-size: 11px; font-weight: 600; color: var(--trail); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .h4-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+
+
+  /* ============================================================
+     H5: WHITE CARD CONTAINED
+     Everything in a white card on sand. Name + meta pills +
+     video button. Clean card with soft shadow.
+     ============================================================ */
+  .h5-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .h5-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .h5-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .h5-card {
+    margin: 14px 20px 0; padding: 22px; border-radius: 24px; background: #fff;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04); animation: fadeUp 0.4s ease-out;
+  }
+  .h5-name { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.1; }
+  .h5-meta { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .h5-pill { padding: 5px 12px; border-radius: 10px; background: var(--sand); }
+  .h5-pill-text { font-size: 11px; font-weight: 600; color: var(--earth); }
+  .h5-video-pill { padding: 5px 14px; border-radius: 10px; background: var(--earth); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .h5-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+  .h5-vtext { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+
+  /* ============================================================
+     H6: SPLIT — NAME LEFT, META RIGHT
+     Big name left-aligned. Right column: stacked time/difficulty
+     values. Video as floating pill below. Asymmetric, editorial.
+     ============================================================ */
+  .h6-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .h6-back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .h6-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+
+  .h6-hero { display: flex; gap: 16px; padding: 16px 24px 0; animation: fadeUp 0.4s ease-out; }
+  .h6-left { flex: 1; }
+  .h6-name { font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; }
+
+  .h6-right { display: flex; flex-direction: column; gap: 6px; align-items: flex-end; padding-top: 4px; }
+  .h6-stat { text-align: right; }
+  .h6-stat-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .h6-stat-label { font-size: 9px; color: var(--rock); margin-top: 1px; }
+  .h6-diff { padding: 4px 10px; border-radius: 8px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+
+  .h6-video { display: inline-flex; align-items: center; gap: 5px; padding: 6px 14px; border-radius: 100px; background: var(--earth); margin: 12px 0 0 24px; cursor: pointer; animation: fadeUp 0.35s ease-out 0.1s backwards; }
+  .h6-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+  .h6-vtext { font-size: 11px; font-weight: 600; color: var(--sand); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== H1: PURE EDITORIAL =============== -->
+  <div>
+    <div class="col-label">H1 — PURE EDITORIAL</div>
+    <div class="col-desc">Giant 34px name on sand. Inline text meta. Video as green link. Maximum whitespace. Most elegant, least chrome.</div>
+    <div class="phone"><div class="ps">
+      <div class="h1-top"><div class="h1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="h1-type">Breakfast · Recipe</span></div>
+      <div class="h1-name">Black Bean<br>Burrito Bowl</div>
+      <div class="h1-meta"><span class="h1-item"><strong>5</strong> min prep</span><span class="h1-sep"></span><span class="h1-item"><strong>10</strong> min cook</span><span class="h1-sep"></span><span class="h1-item"><strong>Easy</strong></span><span class="h1-video">▶ Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- =============== H2: DARK HERO CARD =============== -->
+  <div>
+    <div class="col-label">H2 — DARK HERO CARD</div>
+    <div class="col-desc">Dark card with diagonal accents + breathing dot. Name + pills inside. Video pill bottom-right. Terrain-consistent.</div>
+    <div class="phone"><div class="ps">
+      <div class="h2-top"><div class="h2-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="h2-type">Breakfast · Recipe</span></div>
+      <div class="h2-card">
+        <div class="h2-diag" style="width:90px;top:12px;right:-4px;transform:rotate(-35deg);"></div>
+        <div class="h2-diag" style="width:65px;top:22px;right:-4px;transform:rotate(-35deg);"></div>
+        <div class="h2-breath"></div>
+        <div class="h2-label">Breakfast Recipe</div>
+        <div class="h2-name">Black Bean<br>Burrito Bowl</div>
+        <div class="h2-bottom">
+          <div class="h2-pill"><span class="h2-pill-text">5 min prep</span></div>
+          <div class="h2-pill"><span class="h2-pill-text">10 min cook</span></div>
+          <div class="h2-pill"><span class="h2-pill-text">Easy</span></div>
+          <div class="h2-video"><div class="h2-vtri"></div><span class="h2-vtext">Video</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- =============== H3: BENTO TILES =============== -->
+  <div>
+    <div class="col-label">H3 — BENTO TILES</div>
+    <div class="col-desc">Name in dark tile (2/3 width). Time as stone tiles stacked (1/3). Video + difficulty as small tiles below. Dashboard grid.</div>
+    <div class="phone"><div class="ps">
+      <div class="h3-top"><div class="h3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="h3-type">Breakfast · Recipe</span></div>
+      <div class="h3-grid">
+        <div class="h3-row">
+          <div class="h3-tile dark" style="flex:2;">
+            <div class="h3-tile-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="h3-tile-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="h3-name-label">Breakfast</div>
+            <div class="h3-name">Black Bean Burrito Bowl</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;flex:1;">
+            <div class="h3-tile stone" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div class="h3-time-val">5</div><div class="h3-time-label">min prep</div></div>
+            <div class="h3-tile stone" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;"><div class="h3-time-val">10</div><div class="h3-time-label">min cook</div></div>
+          </div>
+        </div>
+        <div class="h3-row">
+          <div class="h3-tile stone h3-video-tile" style="flex:1;"><div class="h3-vtri"></div><span class="h3-vtext">Video</span></div>
+          <div class="h3-tile stone h3-diff" style="flex:1;"><span class="h3-diff-text">Easy</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<div class="grid" style="margin-top:0;">
+
+  <!-- =============== H4: FULL BLEED DARK =============== -->
+  <div>
+    <div class="col-label">H4 — FULL BLEED DARK</div>
+    <div class="col-desc">Entire top 35% dark earth with contour circles. Name large on dark. Pills below. Cinematic, dramatic.</div>
+    <div class="phone"><div class="ps">
+      <div class="h4-dark">
+        <div class="h4-contour h4-c1"></div>
+        <div class="h4-contour h4-c2"></div>
+        <div class="h4-top"><div class="h4-back"><span style="font-size:18px;color:var(--sand);margin-top:-1px;">‹</span></div><span class="h4-type">Breakfast · Recipe</span></div>
+        <div class="h4-center"><div class="h4-name">Black Bean<br>Burrito Bowl</div></div>
+        <div class="h4-pills"><span class="h4-pill">5 min prep</span><span class="h4-pill">10 min cook</span><span class="h4-pill">Easy</span><div class="h4-video"><div class="h4-vtri"></div>Video</div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- =============== H5: WHITE CARD =============== -->
+  <div>
+    <div class="col-label">H5 — WHITE CARD</div>
+    <div class="col-desc">Everything in a white card with soft shadow. Name + sand meta pills + dark video button. Self-contained, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="h5-top"><div class="h5-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="h5-type">Breakfast · Recipe</span></div>
+      <div class="h5-card">
+        <div class="h5-name">Black Bean<br>Burrito Bowl</div>
+        <div class="h5-meta">
+          <div class="h5-pill"><span class="h5-pill-text">5 min prep</span></div>
+          <div class="h5-pill"><span class="h5-pill-text">10 min cook</span></div>
+          <div class="h5-pill"><span class="h5-pill-text">Easy</span></div>
+          <div class="h5-video-pill"><div class="h5-vtri"></div><span class="h5-vtext">Video</span></div>
+        </div>
+      </div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+  <!-- =============== H6: SPLIT ASYMMETRIC =============== -->
+  <div>
+    <div class="col-label">H6 — SPLIT ASYMMETRIC</div>
+    <div class="col-desc">Big name left. Stacked time numbers right-aligned. Difficulty as a tag. Video as dark pill below. Editorial, balanced.</div>
+    <div class="phone"><div class="ps">
+      <div class="h6-top"><div class="h6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="h6-type">Breakfast · Recipe</span></div>
+      <div class="h6-hero">
+        <div class="h6-left"><div class="h6-name">Black Bean<br>Burrito Bowl</div></div>
+        <div class="h6-right">
+          <div class="h6-stat"><div class="h6-stat-val">5</div><div class="h6-stat-label">min prep</div></div>
+          <div class="h6-stat"><div class="h6-stat-val">10</div><div class="h6-stat-label">min cook</div></div>
+          <span class="h6-diff">Easy</span>
+        </div>
+      </div>
+      <div class="h6-video"><div class="h6-vtri"></div><span class="h6-vtext">Watch Video</span></div>
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%;"></div><div class="ph-sm"></div></div><div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

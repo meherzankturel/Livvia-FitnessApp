@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player List Views</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+
+  /* ============================================================
+     L1: TRAIL TIMELINE
+     Vertical line with waypoint dots. Current set is expanded
+     with inputs. Done sets show logged values. Future sets are
+     ghost dots. Matches warmup screen language.
+     ============================================================ */
+  .l1 { background: var(--sand); }
+
+  .l1-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .l1-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .l1-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .l1-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .l1-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .l1-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Exercise header */
+  .l1-header { padding: 20px 24px 0; }
+  .l1-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.7px; }
+  .l1-meta { display: flex; align-items: center; gap: 8px; margin-top: 5px; }
+  .l1-muscle { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .l1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .l1-link { font-size: 11px; font-weight: 600; cursor: pointer; }
+  .l1-link.swap { color: var(--trail); }
+  .l1-link.video { color: var(--rock); }
+
+  /* Timeline */
+  .l1-timeline { padding: 24px 24px 0; position: relative; }
+
+  /* The vertical line */
+  .l1-line {
+    position: absolute; left: 38px; top: 24px; bottom: 0;
+    width: 2px; background: var(--stone);
+  }
+  .l1-line-fill {
+    width: 100%; background: var(--trail); border-radius: 1px;
+    transition: height 0.4s;
+  }
+
+  /* Set item */
+  .l1-set {
+    display: flex; gap: 16px; padding-bottom: 6px; position: relative;
+  }
+
+  /* Dot */
+  .l1-dot-col { width: 30px; display: flex; justify-content: center; padding-top: 2px; flex-shrink: 0; }
+  .l1-dot {
+    width: 12px; height: 12px; border-radius: 50%; background: var(--stone);
+    position: relative; z-index: 1; transition: all 0.3s;
+  }
+  .l1-dot.done { background: var(--trail); }
+  .l1-dot.done::after {
+    content: '✓'; position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 7px; color: #fff; font-weight: 700;
+  }
+  .l1-dot.active {
+    width: 14px; height: 14px; background: var(--earth);
+    box-shadow: 0 0 0 4px rgba(52,211,153,0.12);
+    margin-top: -1px;
+  }
+  .l1-dot.future { background: var(--stone); opacity: 0.5; }
+
+  /* Content area */
+  .l1-content { flex: 1; min-width: 0; }
+
+  /* Done set — compact row */
+  .l1-done-content {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 4px 0 16px;
+  }
+  .l1-done-label { font-size: 11px; font-weight: 600; color: var(--rock); }
+  .l1-done-vals { font-size: 14px; font-weight: 700; color: var(--earth); }
+
+  /* Active set — expanded card */
+  .l1-active-content {
+    background: #fff; border-radius: 18px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+    border: 1.5px solid rgba(52,211,153,0.08);
+    margin-bottom: 12px;
+  }
+  .l1-active-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .l1-active-label { font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 0.5px; }
+  .l1-active-prev { font-size: 11px; color: var(--rock); }
+
+  .l1-active-inputs { display: flex; gap: 10px; margin-top: 10px; }
+  .l1-active-group { flex: 1; text-align: center; }
+  .l1-active-input {
+    width: 100%; padding: 14px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 30px; font-weight: 800;
+    color: var(--earth); outline: none; letter-spacing: -0.5px;
+  }
+  .l1-active-input:focus { border-color: var(--trail); background: #fff; }
+  .l1-active-unit { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 4px; }
+
+  .l1-active-log {
+    margin-top: 12px; padding: 14px; border-radius: 12px;
+    background: var(--earth); text-align: center; cursor: pointer;
+  }
+  .l1-active-log-text { font-size: 14px; font-weight: 700; color: var(--sand); }
+
+  /* Future set — subtle */
+  .l1-future-content { padding: 4px 0 16px; }
+  .l1-future-label { font-size: 11px; color: var(--rock); opacity: 0.4; }
+  .l1-future-hint { font-size: 10px; color: var(--rock); opacity: 0.25; margin-top: 2px; }
+
+  /* Focus cue */
+  .l1-cue { margin: 8px 24px 40px; display: flex; align-items: center; gap: 6px; }
+  .l1-cue-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); animation: l1p 2.4s infinite; }
+  @keyframes l1p { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .l1-cue-text { font-size: 11px; color: var(--rock); }
+
+
+  /* ============================================================
+     L2: ACCORDION LIST
+     All sets visible as rows. Current set row EXPANDS with
+     inputs. Done rows show values inline. Clean dividers.
+     Tap any future row to jump to it.
+     ============================================================ */
+  .l2 { background: var(--sand); }
+
+  .l2-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .l2-timer { font-size: 14px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .l2-of { font-size: 12px; color: var(--rock); margin-left: 8px; }
+  .l2-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .l2-bar { margin: 12px 24px 0; height: 3px; border-radius: 2px; background: var(--stone); }
+  .l2-bar-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Dark hero */
+  .l2-hero {
+    margin: 16px 20px 0; padding: 18px 20px; border-radius: 20px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .l2-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .l2-ha:nth-child(1) { width: 80px; top: 10px; right: -4px; transform: rotate(-35deg); }
+  .l2-ha:nth-child(2) { width: 55px; top: 20px; right: -4px; transform: rotate(-35deg); }
+  .l2-hero-row { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .l2-hero-name { font-size: 20px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; line-height: 1.15; }
+  .l2-hero-actions { display: flex; gap: 10px; flex-shrink: 0; margin-top: 2px; }
+  .l2-hero-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .l2-hero-link.swap { color: var(--trail); opacity: 0.7; }
+  .l2-hero-link.video { color: rgba(246,245,240,0.25); }
+  .l2-hero-sub { display: flex; align-items: center; gap: 6px; margin-top: 5px; position: relative; }
+  .l2-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+  .l2-hero-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .l2-hero-cue { font-size: 10px; color: rgba(246,245,240,0.2); }
+  .l2-cue-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: var(--trail); margin-right: 4px; animation: l2p 2.4s infinite; vertical-align: middle; }
+  @keyframes l2p { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+  /* Set list */
+  .l2-list { padding: 16px 20px 0; }
+
+  .l2-row {
+    border-radius: 16px; margin-bottom: 8px; transition: all 0.3s;
+    overflow: hidden;
+  }
+
+  /* Done row */
+  .l2-row.done {
+    background: var(--stone); padding: 14px 16px;
+    display: flex; align-items: center;
+  }
+  .l2-row-num {
+    width: 28px; height: 28px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; font-size: 11px;
+    font-weight: 700; flex-shrink: 0;
+  }
+  .l2-row.done .l2-row-num { background: var(--trail); color: #fff; }
+  .l2-row-info { margin-left: 12px; flex: 1; }
+  .l2-row-label { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; }
+  .l2-row-vals { font-size: 16px; font-weight: 700; color: var(--earth); margin-top: 1px; }
+  .l2-row-check { font-size: 11px; color: var(--trail); font-weight: 700; }
+
+  /* Active row — expanded */
+  .l2-row.active {
+    background: #fff; padding: 18px 16px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.04);
+    border: 1.5px solid rgba(52,211,153,0.1);
+  }
+  .l2-row.active .l2-row-num { background: var(--earth); color: var(--sand); }
+  .l2-active-header { display: flex; align-items: center; }
+  .l2-active-label { font-size: 11px; font-weight: 700; color: var(--trail); margin-left: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .l2-active-prev { margin-left: auto; font-size: 11px; color: var(--rock); }
+
+  .l2-active-inputs { display: flex; gap: 10px; margin-top: 14px; }
+  .l2-active-group { flex: 1; text-align: center; }
+  .l2-active-input {
+    width: 100%; padding: 16px 8px; border-radius: 14px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 32px; font-weight: 800;
+    color: var(--earth); outline: none;
+  }
+  .l2-active-input:focus { border-color: var(--trail); background: #fff; }
+  .l2-active-unit { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; margin-top: 4px; }
+
+  .l2-active-log {
+    margin-top: 14px; padding: 14px; border-radius: 12px;
+    background: var(--earth); text-align: center; cursor: pointer;
+  }
+  .l2-active-log-text { font-size: 14px; font-weight: 700; color: var(--sand); }
+
+  /* Future row */
+  .l2-row.future {
+    background: transparent; padding: 14px 16px;
+    display: flex; align-items: center; opacity: 0.35;
+    border: 1.5px dashed var(--stone);
+  }
+  .l2-row.future .l2-row-num { background: var(--stone); color: var(--rock); }
+  .l2-row.future .l2-row-label { color: var(--rock); }
+
+
+  /* ============================================================
+     L3: SPLIT LIST
+     Exercise as full-bleed dark header. Below: a clean list
+     where each set is a row with inline KG × REPS. Current
+     set has editable fields right in the row. Minimal chrome.
+     The table reimagined as a beautiful list.
+     ============================================================ */
+  .l3 { background: var(--sand); }
+
+  /* Full-bleed dark header */
+  .l3-dark {
+    background: var(--earth); padding: 56px 24px 20px;
+    position: relative; overflow: hidden;
+  }
+  .l3-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .l3-ha:nth-child(1) { width: 100px; top: 52px; right: -6px; transform: rotate(-35deg); }
+  .l3-ha:nth-child(2) { width: 70px; top: 64px; right: -6px; transform: rotate(-35deg); }
+
+  .l3-top { display: flex; align-items: center; position: relative; }
+  .l3-timer { font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .l3-of { font-size: 12px; color: rgba(246,245,240,0.25); margin-left: 8px; }
+  .l3-exit { font-size: 12px; color: rgba(246,245,240,0.2); margin-left: auto; }
+
+  .l3-progress { margin: 10px 0 0; height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); position: relative; }
+  .l3-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  .l3-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.7px; margin-top: 14px; line-height: 1.1; position: relative; }
+  .l3-sub { display: flex; align-items: center; gap: 8px; margin-top: 6px; position: relative; }
+  .l3-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+  .l3-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .l3-link { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .l3-link.swap { color: var(--trail); opacity: 0.7; }
+  .l3-link.video { color: rgba(246,245,240,0.25); }
+
+  .l3-cue { margin-top: 10px; display: flex; align-items: center; gap: 5px; position: relative; }
+  .l3-cue-d { width: 5px; height: 5px; border-radius: 50%; background: var(--trail); animation: l3p 2.4s infinite; }
+  @keyframes l3p { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+  .l3-cue-t { font-size: 10px; color: rgba(246,245,240,0.25); }
+
+  /* The list */
+  .l3-list { padding: 16px 20px 0; }
+
+  /* Column headers */
+  .l3-head {
+    display: flex; align-items: center; padding: 0 4px 10px;
+  }
+  .l3-th { font-size: 9px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .l3-th.set { width: 40px; }
+  .l3-th.kg { flex: 1; text-align: center; }
+  .l3-th.reps { flex: 1; text-align: center; }
+  .l3-th.status { width: 32px; text-align: center; }
+
+  /* Row */
+  .l3-row {
+    display: flex; align-items: center; padding: 10px 4px;
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .l3-row:last-child { border-bottom: none; }
+
+  .l3-cell { font-size: 15px; color: var(--earth); }
+  .l3-cell.set { width: 40px; font-weight: 800; font-size: 14px; }
+  .l3-cell.kg { flex: 1; text-align: center; font-weight: 600; }
+  .l3-cell.reps { flex: 1; text-align: center; font-weight: 600; }
+  .l3-cell.status { width: 32px; display: flex; justify-content: center; }
+
+  /* Done row */
+  .l3-row.done .l3-cell.set { color: var(--trail); }
+  .l3-check { width: 20px; height: 20px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 9px; color: #fff; font-weight: 700; }
+
+  /* Active row — highlighted with inputs */
+  .l3-row.active {
+    background: #fff; margin: 0 -4px; padding: 12px 8px;
+    border-radius: 14px; border-bottom: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    border: 1.5px solid rgba(52,211,153,0.08);
+  }
+  .l3-row.active .l3-cell.set { color: var(--trail); font-size: 15px; }
+  .l3-inline-input {
+    width: 100%; padding: 10px 6px; border-radius: 10px;
+    background: var(--sand); border: 1.5px solid transparent;
+    text-align: center; font-size: 20px; font-weight: 800;
+    color: var(--earth); outline: none; max-width: 90px; margin: 0 auto; display: block;
+  }
+  .l3-inline-input:focus { border-color: var(--trail); background: #fff; }
+
+  .l3-empty { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--stone); }
+
+  /* Future row */
+  .l3-row.future { opacity: 0.3; }
+  .l3-row.future .l3-cell { color: var(--rock); }
+  .l3-dash { color: var(--rock); opacity: 0.3; }
+
+  /* Previous hint */
+  .l3-prev-hint {
+    padding: 6px 20px; display: flex; align-items: center; gap: 4px;
+  }
+  .l3-prev-text { font-size: 10px; color: var(--rock); opacity: 0.5; }
+
+  /* Log button */
+  .l3-log { margin: 20px 20px 40px; padding: 16px; border-radius: 14px; background: var(--earth); text-align: center; cursor: pointer; }
+  .l3-log-text { font-size: 15px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     ANIMATIONS
+     ============================================================ */
+  @keyframes fadeUp {
+    from { transform: translateY(12px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+  .l1-header, .l2-hero, .l3-dark { animation: fadeUp 0.35s ease-out; }
+
+  @keyframes expandIn {
+    from { transform: scaleY(0.95); opacity: 0; }
+    to { transform: scaleY(1); opacity: 1; }
+  }
+  .l1-active-content, .l2-row.active, .l3-row.active { animation: expandIn 0.3s ease-out; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== L1: TRAIL TIMELINE =============== -->
+  <div>
+    <div class="col-label">L1 — TRAIL TIMELINE</div>
+    <div class="col-desc">Vertical trail with waypoint dots. Current set expands into an input card. Done sets are compact values. Matches your warmup screen language.</div>
+    <div class="phone l1">
+      <div class="ps">
+
+        <div class="l1-top">
+          <span class="l1-timer">12:34</span>
+          <span class="l1-of">3 / 6</span>
+          <span class="l1-exit">End</span>
+        </div>
+        <div class="l1-bar"><div class="l1-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="l1-header">
+          <div class="l1-name">Barbell Bench Press</div>
+          <div class="l1-meta">
+            <span class="l1-muscle">Chest</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link swap">Swap</span>
+            <span class="l1-sep"></span>
+            <span class="l1-link video">▶ Video</span>
+          </div>
+        </div>
+
+        <div class="l1-timeline">
+          <div class="l1-line">
+            <div class="l1-line-fill" style="height: 25%;"></div>
+          </div>
+
+          <!-- Set 1 — Done -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot done"></div></div>
+            <div class="l1-content">
+              <div class="l1-done-content">
+                <span class="l1-done-label">Set 1</span>
+                <span class="l1-done-vals">70 kg × 10</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 2 — Active -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot active"></div></div>
+            <div class="l1-content">
+              <div class="l1-active-content">
+                <div class="l1-active-top">
+                  <span class="l1-active-label">Set 2</span>
+                  <span class="l1-active-prev">Last: 70 × 10</span>
+                </div>
+                <div class="l1-active-inputs">
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="72.5" type="text" inputmode="decimal">
+                    <div class="l1-active-unit">kg</div>
+                  </div>
+                  <div class="l1-active-group">
+                    <input class="l1-active-input" value="10" type="text" inputmode="numeric">
+                    <div class="l1-active-unit">reps</div>
+                  </div>
+                </div>
+                <div class="l1-active-log">
+                  <div class="l1-active-log-text">Log Set</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 3 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 3</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Set 4 — Future -->
+          <div class="l1-set">
+            <div class="l1-dot-col"><div class="l1-dot future"></div></div>
+            <div class="l1-content">
+              <div class="l1-future-content">
+                <div class="l1-future-label">Set 4</div>
+                <div class="l1-future-hint">Target: 10 reps</div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="l1-cue">
+          <div class="l1-cue-dot"></div>
+          <span class="l1-cue-text">Drive feet into floor — create full-body tension</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== L2: ACCORDION LIST =============== -->
+  <div>
+    <div class="col-label">L2 — ACCORDION LIST</div>
+    <div class="col-desc">Dark hero card for exercise. All sets visible as rounded rows. Current set expands with big inputs + log button. Done rows show values. Future rows are dashed.</div>
+    <div class="phone l2">
+      <div class="ps">
+
+        <div class="l2-top">
+          <span class="l2-timer">12:34</span>
+          <span class="l2-of">3 / 6</span>
+          <span class="l2-exit">End</span>
+        </div>
+        <div class="l2-bar"><div class="l2-bar-fill" style="width: 40%;"></div></div>
+
+        <div class="l2-hero">
+          <div class="l2-ha"></div>
+          <div class="l2-ha"></div>
+          <div class="l2-hero-row">
+            <div class="l2-hero-name">Barbell Bench Press</div>
+            <div class="l2-hero-actions">
+              <span class="l2-hero-link swap">Swap</span>
+              <span class="l2-hero-link video">▶ Video</span>
+            </div>
+          </div>
+          <div class="l2-hero-sub">
+            <span class="l2-muscle">Chest</span>
+            <span class="l2-hero-dot"></span>
+            <span class="l2-hero-cue"><span class="l2-cue-dot"></span>Drive feet into floor</span>
+          </div>
+        </div>
+
+        <div class="l2-list">
+          <!-- Set 1 — Done -->
+          <div class="l2-row done">
+            <div class="l2-row-num">1</div>
+            <div class="l2-row-info">
+              <div class="l2-row-label">Set 1</div>
+              <div class="l2-row-vals">70 kg × 10 reps</div>
+            </div>
+            <span class="l2-row-check">✓</span>
+          </div>
+
+          <!-- Set 2 — Active -->
+          <div class="l2-row active">
+            <div class="l2-active-header">
+              <div class="l2-row-num">2</div>
+              <div class="l2-active-label">Set 2</div>
+              <div class="l2-active-prev">Last: 70 × 10</div>
+            </div>
+            <div class="l2-active-inputs">
+              <div class="l2-active-group">
+                <input class="l2-active-input" value="72.5" type="text" inputmode="decimal">
+                <div class="l2-active-unit">kg</div>
+              </div>
+              <div class="l2-active-group">
+                <input class="l2-active-input" value="10" type="text" inputmode="numeric">
+                <div class="l2-active-unit">reps</div>
+              </div>
+            </div>
+            <div class="l2-active-log">
+              <div class="l2-active-log-text">Log Set</div>
+            </div>
+          </div>
+
+          <!-- Set 3 — Future -->
+          <div class="l2-row future">
+            <div class="l2-row-num">3</div>
+            <div class="l2-row-info">
+              <div class="l2-row-label">Set 3</div>
+            </div>
+          </div>
+
+          <!-- Set 4 — Future -->
+          <div class="l2-row future">
+            <div class="l2-row-num">4</div>
+            <div class="l2-row-info">
+              <div class="l2-row-label">Set 4</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== L3: SPLIT LIST =============== -->
+  <div>
+    <div class="col-label">L3 — SPLIT LIST</div>
+    <div class="col-desc">Full-bleed dark header with exercise info. Below: a clean columned list. Current row has inline editable inputs. The table, reimagined beautifully.</div>
+    <div class="phone l3">
+      <div class="ps">
+
+        <div class="l3-dark">
+          <div class="l3-ha"></div>
+          <div class="l3-ha"></div>
+          <div class="l3-top">
+            <span class="l3-timer">12:34</span>
+            <span class="l3-of">3 / 6</span>
+            <span class="l3-exit">End</span>
+          </div>
+          <div class="l3-progress"><div class="l3-pfill" style="width: 40%;"></div></div>
+          <div class="l3-name">Barbell Bench Press</div>
+          <div class="l3-sub">
+            <span class="l3-muscle">Chest</span>
+            <span class="l3-dot"></span>
+            <span class="l3-link swap">Swap</span>
+            <span class="l3-dot"></span>
+            <span class="l3-link video">▶ Video</span>
+          </div>
+          <div class="l3-cue">
+            <div class="l3-cue-d"></div>
+            <span class="l3-cue-t">Drive feet into floor — create full-body tension</span>
+          </div>
+        </div>
+
+        <div class="l3-list">
+          <div class="l3-head">
+            <span class="l3-th set">Set</span>
+            <span class="l3-th kg">KG</span>
+            <span class="l3-th reps">Reps</span>
+            <span class="l3-th status"></span>
+          </div>
+
+          <!-- Row 1 — Done -->
+          <div class="l3-row done">
+            <span class="l3-cell set">1</span>
+            <span class="l3-cell kg">70</span>
+            <span class="l3-cell reps">10</span>
+            <span class="l3-cell status"><span class="l3-check">✓</span></span>
+          </div>
+
+          <!-- Row 2 — Active -->
+          <div class="l3-row active">
+            <span class="l3-cell set">2</span>
+            <span class="l3-cell kg"><input class="l3-inline-input" value="72.5" type="text" inputmode="decimal"></span>
+            <span class="l3-cell reps"><input class="l3-inline-input" value="10" type="text" inputmode="numeric"></span>
+            <span class="l3-cell status"><span class="l3-empty"></span></span>
+          </div>
+
+          <!-- Row 3 — Future -->
+          <div class="l3-row future">
+            <span class="l3-cell set">3</span>
+            <span class="l3-cell kg"><span class="l3-dash">—</span></span>
+            <span class="l3-cell reps"><span class="l3-dash">—</span></span>
+            <span class="l3-cell status"><span class="l3-empty"></span></span>
+          </div>
+
+          <!-- Row 4 — Future -->
+          <div class="l3-row future">
+            <span class="l3-cell set">4</span>
+            <span class="l3-cell kg"><span class="l3-dash">—</span></span>
+            <span class="l3-cell reps"><span class="l3-dash">—</span></span>
+            <span class="l3-cell status"><span class="l3-empty"></span></span>
+          </div>
+        </div>
+
+        <div class="l3-prev-hint">
+          <span class="l3-prev-text">Last session: 70 kg × 10, 70 × 10, 65 × 8, 65 × 7</span>
+        </div>
+
+        <div class="l3-log">
+          <div class="l3-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

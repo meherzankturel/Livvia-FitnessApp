@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Warmup List More</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+  /* Shared buttons */
+  .btns { padding: 16px 24px; display: flex; gap: 10px; }
+  .btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .btn.primary { background: var(--earth); color: var(--sand); }
+  .btn.secondary { background: var(--stone); color: var(--earth); }
+
+
+  /* ============================================================
+     E1: TIMELINE STYLE — Exercises as a vertical timeline
+     (same pattern as weekly summary). Connected dots + line.
+     ============================================================ */
+
+  .e1-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e1-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e1-top { padding: 12px 24px 0; }
+  .e1-title { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.6px; }
+  .e1-sub { font-size: 12px; color: var(--rock); margin-top: 3px; }
+  .e1-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  .e1-tl { padding: 16px 24px 0; position: relative; padding-left: 52px; }
+  .e1-tl-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 14px; margin-left: -28px; }
+  .e1-line { position: absolute; left: 29px; top: 50px; bottom: 20px; width: 2px; background: var(--stone); }
+
+  .e1-ex { padding: 0 0 18px; position: relative; }
+  .e1-ex:last-child { padding-bottom: 0; }
+  .e1-dot { position: absolute; left: -27px; top: 3px; width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--stone); background: var(--sand); z-index: 1; }
+  .e1-ex:first-child .e1-dot { background: var(--trail); border-color: var(--trail); }
+
+  .e1-ex-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .e1-ex-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .e1-ex-time { font-size: 11px; color: var(--rock); }
+  .e1-ex-desc { font-size: 12px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+  .e1-ex-row { display: flex; align-items: center; gap: 6px; margin-top: 5px; }
+  .e1-tag { padding: 2px 8px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .e1-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .e1-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .e1-demo { font-size: 9px; color: var(--trail); font-weight: 600; cursor: pointer; margin-left: auto; }
+
+
+  /* ============================================================
+     E2: DARK/LIGHT ALTERNATING CARDS — Full-width cards
+     alternating dark/white. Each shows exercise clearly.
+     ============================================================ */
+
+  .e2-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e2-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e2-hero { margin: 12px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; }
+  .e2-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .e2-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .e2-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+  .e2-hero-left { position: relative; }
+  .e2-hero-title { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .e2-hero-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 3px; }
+  .e2-hero-right { text-align: right; position: relative; }
+  .e2-hero-dur { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .e2-hero-dur-label { font-size: 9px; color: rgba(246,245,240,0.2); }
+
+  .e2-cards { padding: 12px 24px 0; }
+
+  .e2-card { padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; }
+  .e2-card:nth-child(odd) { background: var(--earth); }
+  .e2-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .e2-c-num { font-size: 18px; font-weight: 900; flex-shrink: 0; width: 24px; }
+  .e2-card:nth-child(odd) .e2-c-num { color: rgba(246,245,240,0.1); }
+  .e2-card:nth-child(even) .e2-c-num { color: var(--stone); }
+
+  .e2-c-body { flex: 1; }
+  .e2-c-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .e2-c-name { font-size: 15px; font-weight: 600; }
+  .e2-card:nth-child(odd) .e2-c-name { color: var(--sand); }
+  .e2-card:nth-child(even) .e2-c-name { color: var(--earth); }
+  .e2-c-time { font-size: 11px; }
+  .e2-card:nth-child(odd) .e2-c-time { color: rgba(246,245,240,0.3); }
+  .e2-card:nth-child(even) .e2-c-time { color: var(--rock); }
+
+  .e2-c-desc { font-size: 12px; margin-top: 4px; line-height: 1.4; }
+  .e2-card:nth-child(odd) .e2-c-desc { color: rgba(246,245,240,0.35); }
+  .e2-card:nth-child(even) .e2-c-desc { color: var(--rock); }
+
+  .e2-c-bottom { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+  .e2-c-tag { padding: 2px 8px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .e2-card:nth-child(odd) .e2-c-tag.general { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .e2-card:nth-child(odd) .e2-c-tag.dynamic { background: rgba(245,158,11,0.06); color: #F59E0B; }
+  .e2-card:nth-child(even) .e2-c-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .e2-card:nth-child(even) .e2-c-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .e2-c-demo { font-size: 9px; font-weight: 600; cursor: pointer; margin-left: auto; }
+  .e2-card:nth-child(odd) .e2-c-demo { color: var(--trail); opacity: 0.5; }
+  .e2-card:nth-child(even) .e2-c-demo { color: var(--trail); }
+
+
+  /* ============================================================
+     E3: MINIMAL ROWS — No cards. Just clean rows on sand.
+     Number, name, tag, time. Tap for description. Least visual
+     noise. Most like a checklist.
+     ============================================================ */
+
+  .e3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e3-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e3-top { padding: 12px 24px 0; }
+  .e3-title { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.6px; }
+  .e3-sub { font-size: 12px; color: var(--rock); margin-top: 3px; }
+
+  .e3-list { padding: 18px 24px 0; }
+
+  .e3-row { display: flex; align-items: center; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.03); cursor: pointer; }
+  .e3-row:last-child { border-bottom: none; }
+
+  .e3-num { width: 26px; height: 26px; border-radius: 9px; background: var(--earth); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--sand); flex-shrink: 0; }
+
+  .e3-info { flex: 1; }
+  .e3-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .e3-desc { font-size: 11px; color: var(--rock); margin-top: 2px; line-height: 1.3; display: none; }
+  .e3-row.open .e3-desc { display: block; }
+
+  .e3-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+  .e3-time { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .e3-tag { padding: 2px 7px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .e3-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .e3-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+
+  /* Expanded first row as example */
+  .e3-row.open .e3-demo { display: block; font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; cursor: pointer; }
+  .e3-demo { display: none; }
+
+
+  /* ============================================================
+     E4: HORIZONTAL PILLS — Exercises as a horizontal scroll
+     of compact pill cards. Each shows name + time + tag.
+     Tap for detail sheet below.
+     ============================================================ */
+
+  .e4-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e4-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e4-hero { margin: 12px 24px 0; padding: 22px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .e4-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .e4-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .e4-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+  .e4-hero-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; position: relative; }
+  .e4-hero-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 3px; position: relative; }
+  .e4-hero-msg { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 6px; position: relative; opacity: 0.7; }
+
+  .e4-scroll-sec { padding: 14px 0 0; }
+  .e4-scroll-head { display: flex; justify-content: space-between; padding: 0 24px; margin-bottom: 8px; }
+  .e4-scroll-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .e4-scroll-count { font-size: 10px; color: var(--rock); }
+
+  .e4-scroll { display: flex; gap: 8px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .e4-scroll::-webkit-scrollbar { display: none; }
+
+  .e4-pill { min-width: 130px; padding: 14px; border-radius: 16px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+  .e4-pill:active { transform: scale(0.96); }
+  .e4-pill:last-child { margin-right: 24px; }
+  .e4-pill:nth-child(odd) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e4-pill:nth-child(even) { background: var(--stone); }
+
+  .e4-p-name { font-size: 14px; font-weight: 600; color: var(--earth); line-height: 1.2; }
+  .e4-p-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .e4-p-tag { padding: 2px 7px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .e4-p-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .e4-p-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .e4-p-time { font-size: 11px; color: var(--rock); }
+
+  /* Detail sheet below */
+  .e4-detail { margin: 10px 24px 0; padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e4-d-name { font-size: 16px; font-weight: 700; color: var(--earth); }
+  .e4-d-desc { font-size: 12px; color: var(--rock); margin-top: 4px; line-height: 1.5; }
+  .e4-d-demo { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 6px; cursor: pointer; }
+
+
+  /* ============================================================
+     E5: SINGLE EXERCISE VIEWER — Show one exercise at a time
+     with prev/next navigation. Like recipe step-by-step.
+     ============================================================ */
+
+  .e5-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e5-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e5-top { padding: 12px 24px 0; text-align: center; }
+  .e5-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .e5-sub { font-size: 11px; color: var(--rock); margin-top: 3px; }
+
+  .e5-card { margin: 16px 24px 0; padding: 28px 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; min-height: 300px; display: flex; flex-direction: column; }
+  .e5-c-counter { font-size: 10px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+  .e5-c-wm { font-size: 100px; font-weight: 900; color: rgba(246,245,240,0.03); letter-spacing: -5px; line-height: 1; position: absolute; top: -8px; right: 4px; pointer-events: none; }
+  .e5-c-name { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 8px; position: relative; }
+  .e5-c-time { font-size: 14px; color: rgba(246,245,240,0.3); margin-top: 4px; position: relative; }
+  .e5-c-desc { font-size: 15px; color: rgba(246,245,240,0.5); line-height: 1.6; margin-top: auto; position: relative; }
+  .e5-c-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 14px; position: relative; }
+  .e5-c-tag { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .e5-c-tag.general { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .e5-c-demo { font-size: 10px; color: var(--trail); font-weight: 600; opacity: 0.6; cursor: pointer; }
+
+  .e5-dots { display: flex; justify-content: center; gap: 5px; padding: 12px 0; }
+  .e5-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .e5-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+  .e5-nav { display: flex; gap: 10px; padding: 0 24px; }
+  .e5-nav-btn { flex: 1; padding: 14px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .e5-nav-btn.prev { background: var(--stone); color: var(--earth); }
+  .e5-nav-btn.next { background: var(--earth); color: var(--sand); }
+
+
+  /* ============================================================
+     E6: BENTO TILES — Exercises as a 2-column bento grid.
+     Each exercise is a tile. Alternating colors.
+     ============================================================ */
+
+  .e6-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .e6-hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .e6-top { padding: 12px 24px 0; }
+  .e6-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .e6-sub { font-size: 12px; color: var(--rock); margin-top: 3px; }
+
+  .e6-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .e6-tile { padding: 16px; border-radius: 18px; min-height: 100px; display: flex; flex-direction: column; }
+  .e6-tile:nth-child(1) { background: var(--earth); }
+  .e6-tile:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e6-tile:nth-child(3) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e6-tile:nth-child(4) { background: var(--stone); }
+  .e6-tile:nth-child(5) { background: var(--stone); }
+  .e6-tile:nth-child(6) { background: var(--earth); }
+
+  .e6-t-name { font-size: 14px; font-weight: 600; line-height: 1.2; }
+  .e6-tile:nth-child(odd):not(:nth-child(3)):not(:nth-child(5)) .e6-t-name { color: var(--sand); }
+  .e6-tile:nth-child(1) .e6-t-name, .e6-tile:nth-child(6) .e6-t-name { color: var(--sand); }
+  .e6-tile:nth-child(2) .e6-t-name, .e6-tile:nth-child(3) .e6-t-name { color: var(--earth); }
+  .e6-tile:nth-child(4) .e6-t-name, .e6-tile:nth-child(5) .e6-t-name { color: var(--earth); }
+
+  .e6-t-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 8px; }
+  .e6-t-tag { padding: 2px 7px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .e6-tile:nth-child(1) .e6-t-tag, .e6-tile:nth-child(6) .e6-t-tag { background: rgba(52,211,153,0.08); color: var(--trail); }
+  .e6-tile:nth-child(2) .e6-t-tag, .e6-tile:nth-child(3) .e6-t-tag { background: rgba(245,158,11,0.06); color: #92400E; }
+  .e6-tile:nth-child(4) .e6-t-tag, .e6-tile:nth-child(5) .e6-t-tag { background: rgba(52,211,153,0.06); color: #047857; }
+  .e6-t-time { font-size: 11px; }
+  .e6-tile:nth-child(1) .e6-t-time, .e6-tile:nth-child(6) .e6-t-time { color: rgba(246,245,240,0.3); }
+  .e6-tile:nth-child(2) .e6-t-time, .e6-tile:nth-child(3) .e6-t-time, .e6-tile:nth-child(4) .e6-t-time, .e6-tile:nth-child(5) .e6-t-time { color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- E1 -->
+<div>
+  <div class="col-label">E1 — Timeline</div>
+  <div class="col-desc">Exercises as a vertical timeline with connected line + dots. First exercise dot is green (start here). Same pattern as weekly summary days.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e1-hdr"><div class="back">←</div><span class="e1-hdr-t">Warm Up</span></div>
+    <div class="e1-top"><div class="e1-title">Get Ready</div><div class="e1-sub">4 minutes · 6 dynamic exercises</div><div class="e1-msg">💡 Dynamic stretches prep your muscles</div></div>
+    <div class="e1-tl"><div class="e1-tl-title">Exercises</div><div class="e1-line"></div>
+      <div class="e1-ex"><div class="e1-dot"></div><div class="e1-ex-top"><span class="e1-ex-name">Jumping Jacks</span><span class="e1-ex-time">1 min</span></div><div class="e1-ex-desc">Jump feet wide while raising arms overhead.</div><div class="e1-ex-row"><span class="e1-tag general">General</span><span class="e1-demo">▶ Demo</span></div></div>
+      <div class="e1-ex"><div class="e1-dot"></div><div class="e1-ex-top"><span class="e1-ex-name">Cat-Cow Stretch</span><span class="e1-ex-time">40s</span></div><div class="e1-ex-desc">Arch and round your back alternately.</div><div class="e1-ex-row"><span class="e1-tag dynamic">Dynamic</span><span class="e1-demo">▶ Demo</span></div></div>
+      <div class="e1-ex"><div class="e1-dot"></div><div class="e1-ex-top"><span class="e1-ex-name">Thoracic Rotations</span><span class="e1-ex-time">30s</span></div><div class="e1-ex-desc">Rotate chest toward ceiling then floor.</div><div class="e1-ex-row"><span class="e1-tag dynamic">Dynamic</span><span class="e1-demo">▶ Demo</span></div></div>
+      <div class="e1-ex"><div class="e1-dot"></div><div class="e1-ex-top"><span class="e1-ex-name">Shoulder Dislocates</span><span class="e1-ex-time">30s</span></div><div class="e1-ex-desc">Pass band over and behind your head.</div><div class="e1-ex-row"><span class="e1-tag dynamic">Dynamic</span><span class="e1-demo">▶ Demo</span></div></div>
+      <div class="e1-ex"><div class="e1-dot"></div><div class="e1-ex-top"><span class="e1-ex-name">Arm Circles</span><span class="e1-ex-time">30s</span></div><div class="e1-ex-desc">Small to large circles, forward then back.</div><div class="e1-ex-row"><span class="e1-tag general">General</span><span class="e1-demo">▶ Demo</span></div></div>
+    </div>
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- E2 -->
+<div>
+  <div class="col-label">E2 — Alternating Cards</div>
+  <div class="col-desc">Compact dark hero with duration. Full-width dark/white alternating exercise cards. Number left, content right. Clean visual rhythm.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e2-hdr"><div class="back">←</div><span class="e2-hdr-t">Warm Up</span></div>
+    <div class="e2-hero"><div class="e2-ha"></div><div class="e2-ha"></div><div class="e2-hero-left"><div class="e2-hero-title">Get Ready</div><div class="e2-hero-sub">Dynamic stretches · Prevents injury</div></div><div class="e2-hero-right"><div class="e2-hero-dur">4</div><div class="e2-hero-dur-label">minutes</div></div></div>
+
+    <div class="e2-cards">
+      <div class="e2-card"><div class="e2-c-num">01</div><div class="e2-c-body"><div class="e2-c-top"><span class="e2-c-name">Jumping Jacks</span><span class="e2-c-time">1 min</span></div><div class="e2-c-desc">Jump feet wide while raising arms overhead.</div><div class="e2-c-bottom"><span class="e2-c-tag general">General</span><span class="e2-c-demo">▶ Demo</span></div></div></div>
+      <div class="e2-card"><div class="e2-c-num">02</div><div class="e2-c-body"><div class="e2-c-top"><span class="e2-c-name">Cat-Cow Stretch</span><span class="e2-c-time">40s</span></div><div class="e2-c-desc">Arch and round your back alternately.</div><div class="e2-c-bottom"><span class="e2-c-tag dynamic">Dynamic</span><span class="e2-c-demo">▶ Demo</span></div></div></div>
+      <div class="e2-card"><div class="e2-c-num">03</div><div class="e2-c-body"><div class="e2-c-top"><span class="e2-c-name">Thoracic Rotations</span><span class="e2-c-time">30s</span></div><div class="e2-c-desc">Rotate chest toward ceiling then floor.</div><div class="e2-c-bottom"><span class="e2-c-tag dynamic">Dynamic</span><span class="e2-c-demo">▶ Demo</span></div></div></div>
+      <div class="e2-card"><div class="e2-c-num">04</div><div class="e2-c-body"><div class="e2-c-top"><span class="e2-c-name">Shoulder Dislocates</span><span class="e2-c-time">30s</span></div><div class="e2-c-desc">Pass band over and behind your head.</div><div class="e2-c-bottom"><span class="e2-c-tag dynamic">Dynamic</span><span class="e2-c-demo">▶ Demo</span></div></div></div>
+      <div class="e2-card"><div class="e2-c-num">05</div><div class="e2-c-body"><div class="e2-c-top"><span class="e2-c-name">Arm Circles</span><span class="e2-c-time">30s</span></div><div class="e2-c-desc">Small to large circles, forward then back.</div><div class="e2-c-bottom"><span class="e2-c-tag general">General</span><span class="e2-c-demo">▶ Demo</span></div></div></div>
+    </div>
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- E3 -->
+<div>
+  <div class="col-label">E3 — Minimal Rows</div>
+  <div class="col-desc">No cards. Numbered badge + name + tag + time. Clean rows on sand. First row expanded to show description. Tap any to expand. Like a checklist.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e3-hdr"><div class="back">←</div><span class="e3-hdr-t">Warm Up</span></div>
+    <div class="e3-top"><div class="e3-title">Get Ready</div><div class="e3-sub">4 minutes · 6 dynamic exercises</div></div>
+
+    <div class="e3-list">
+      <div class="e3-row open"><div class="e3-num">1</div><div class="e3-info"><div class="e3-name">Jumping Jacks</div><div class="e3-desc">Jump feet wide while raising arms overhead. Keep a steady pace.</div><div class="e3-demo">▶ Watch Demo</div></div><div class="e3-meta"><span class="e3-time">1 min</span><span class="e3-tag general">General</span></div></div>
+      <div class="e3-row"><div class="e3-num">2</div><div class="e3-info"><div class="e3-name">Cat-Cow Stretch</div></div><div class="e3-meta"><span class="e3-time">40s</span><span class="e3-tag dynamic">Dynamic</span></div></div>
+      <div class="e3-row"><div class="e3-num">3</div><div class="e3-info"><div class="e3-name">Thoracic Rotations</div></div><div class="e3-meta"><span class="e3-time">30s</span><span class="e3-tag dynamic">Dynamic</span></div></div>
+      <div class="e3-row"><div class="e3-num">4</div><div class="e3-info"><div class="e3-name">Shoulder Dislocates</div></div><div class="e3-meta"><span class="e3-time">30s</span><span class="e3-tag dynamic">Dynamic</span></div></div>
+      <div class="e3-row"><div class="e3-num">5</div><div class="e3-info"><div class="e3-name">Arm Circles</div></div><div class="e3-meta"><span class="e3-time">30s</span><span class="e3-tag general">General</span></div></div>
+      <div class="e3-row"><div class="e3-num">6</div><div class="e3-info"><div class="e3-name">Bodyweight Squats</div></div><div class="e3-meta"><span class="e3-time">30s</span><span class="e3-tag general">General</span></div></div>
+    </div>
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- E4 -->
+<div>
+  <div class="col-label">E4 — Horizontal Pills + Detail</div>
+  <div class="col-desc">Dark hero. Exercises as compact horizontal scrollable pills. Tap any = detail sheet appears below showing description + demo. Like nutrition action sheet.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e4-hdr"><div class="back">←</div><span class="e4-hdr-t">Warm Up</span></div>
+    <div class="e4-hero"><div class="e4-ha"></div><div class="e4-ha"></div><div class="e4-hero-title">Get Ready</div><div class="e4-hero-sub">4 minutes · 6 dynamic exercises</div><div class="e4-hero-msg">Dynamic stretches prep your muscles</div></div>
+
+    <div class="e4-scroll-sec"><div class="e4-scroll-head"><span class="e4-scroll-title">Exercises</span><span class="e4-scroll-count">6 total</span></div>
+      <div class="e4-scroll">
+        <div class="e4-pill"><div class="e4-p-name">Jumping Jacks</div><div class="e4-p-bottom"><span class="e4-p-tag general">General</span><span class="e4-p-time">1 min</span></div></div>
+        <div class="e4-pill"><div class="e4-p-name">Cat-Cow Stretch</div><div class="e4-p-bottom"><span class="e4-p-tag dynamic">Dynamic</span><span class="e4-p-time">40s</span></div></div>
+        <div class="e4-pill"><div class="e4-p-name">Thoracic Rotations</div><div class="e4-p-bottom"><span class="e4-p-tag dynamic">Dynamic</span><span class="e4-p-time">30s</span></div></div>
+        <div class="e4-pill"><div class="e4-p-name">Shoulder Dislocates</div><div class="e4-p-bottom"><span class="e4-p-tag dynamic">Dynamic</span><span class="e4-p-time">30s</span></div></div>
+        <div class="e4-pill"><div class="e4-p-name">Arm Circles</div><div class="e4-p-bottom"><span class="e4-p-tag general">General</span><span class="e4-p-time">30s</span></div></div>
+      </div>
+    </div>
+
+    <div class="e4-detail"><div class="e4-d-name">Jumping Jacks</div><div class="e4-d-desc">Jump feet wide while raising arms overhead. Keep a steady pace. Great for warming up the whole body.</div><div class="e4-d-demo">▶ Watch Demo</div></div>
+
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- E5 -->
+<div>
+  <div class="col-label">E5 — Single Exercise Viewer</div>
+  <div class="col-desc">One exercise at a time in a big dark card with watermark number. Swipe or use prev/next. Same pattern as recipe step-by-step. Most focused.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e5-hdr"><div class="back">←</div><span class="e5-hdr-t">Warm Up</span></div>
+    <div class="e5-top"><div class="e5-title">Get Ready</div><div class="e5-sub">4 minutes · 6 exercises</div></div>
+
+    <div class="e5-card"><div class="e5-c-wm">01</div><div class="e5-c-counter">Exercise 1 of 6</div><div class="e5-c-name">Jumping Jacks</div><div class="e5-c-time">1 minute</div><div class="e5-c-desc">Jump feet wide while raising arms overhead. Keep a steady pace throughout.</div><div class="e5-c-bottom"><span class="e5-c-tag general">General</span><span class="e5-c-demo">▶ Watch Demo</span></div></div>
+
+    <div class="e5-dots"><div class="e5-dot"></div><div class="e5-dot"></div><div class="e5-dot"></div><div class="e5-dot"></div><div class="e5-dot"></div><div class="e5-dot"></div></div>
+    <div class="e5-nav"><div class="e5-nav-btn prev" style="opacity:0.3;">Previous</div><div class="e5-nav-btn next">Next</div></div>
+
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- E6 -->
+<div>
+  <div class="col-label">E6 — Bento Tiles</div>
+  <div class="col-desc">Exercises as a 2-column bento grid. Alternating dark/white/stone. Each tile: name + tag + time. Visual mosaic. Quick to scan.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="e6-hdr"><div class="back">←</div><span class="e6-hdr-t">Warm Up</span></div>
+    <div class="e6-top"><div class="e6-title">Get Ready</div><div class="e6-sub">4 minutes · 6 dynamic exercises</div></div>
+
+    <div class="e6-grid">
+      <div class="e6-tile"><div class="e6-t-name">Jumping Jacks</div><div class="e6-t-bottom"><span class="e6-t-tag">General</span><span class="e6-t-time">1 min</span></div></div>
+      <div class="e6-tile"><div class="e6-t-name">Cat-Cow Stretch</div><div class="e6-t-bottom"><span class="e6-t-tag">Dynamic</span><span class="e6-t-time">40s</span></div></div>
+      <div class="e6-tile"><div class="e6-t-name">Thoracic Rotations</div><div class="e6-t-bottom"><span class="e6-t-tag">Dynamic</span><span class="e6-t-time">30s</span></div></div>
+      <div class="e6-tile"><div class="e6-t-name">Shoulder Dislocates</div><div class="e6-t-bottom"><span class="e6-t-tag">Dynamic</span><span class="e6-t-time">30s</span></div></div>
+      <div class="e6-tile"><div class="e6-t-name">Arm Circles</div><div class="e6-t-bottom"><span class="e6-t-tag">General</span><span class="e6-t-time">30s</span></div></div>
+      <div class="e6-tile"><div class="e6-t-name">Bodyweight Squats</div><div class="e6-t-bottom"><span class="e6-t-tag">General</span><span class="e6-t-time">30s</span></div></div>
+    </div>
+
+    <div class="btns"><div class="btn primary">Start Warm-up</div><div class="btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Steps Focus</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 16px 0; overflow: hidden; position: relative; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 400px; height: 320px; top: -80px; left: -80px; }
+
+
+  /* ============================================================
+     S1: HORIZONTAL SWIPE CARDS (the current O4 — kept as reference)
+     ============================================================ */
+
+  .s1-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s1-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s1-count { font-size: 10px; color: var(--rock); }
+
+  .s1-scroll { display: flex; gap: 10px; padding: 0 0 0 20px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .s1-scroll::-webkit-scrollbar { display: none; }
+
+  .s1-card {
+    min-width: 260px; max-width: 260px; border-radius: 22px; padding: 22px;
+    min-height: 220px; display: flex; flex-direction: column;
+    flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+  }
+  .s1-card:last-child { margin-right: 20px; }
+  .s1-card:nth-child(odd) { background: var(--earth); }
+  .s1-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .s1-wm { font-size: 100px; font-weight: 900; letter-spacing: -5px; line-height: 1; position: absolute; top: -8px; right: 0; pointer-events: none; }
+  .s1-card:nth-child(odd) .s1-wm { color: rgba(246,245,240,0.03); }
+  .s1-card:nth-child(even) .s1-wm { color: rgba(45,42,36,0.025); }
+
+  .s1-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .s1-card:nth-child(odd) .s1-label { color: rgba(246,245,240,0.25); }
+  .s1-card:nth-child(even) .s1-label { color: var(--rock); }
+
+  .s1-text { font-size: 17px; font-weight: 600; line-height: 1.5; margin-top: auto; position: relative; }
+  .s1-card:nth-child(odd) .s1-text { color: var(--sand); }
+  .s1-card:nth-child(even) .s1-text { color: var(--earth); }
+
+  .s1-time { font-size: 9px; margin-top: 10px; position: relative; }
+  .s1-card:nth-child(odd) .s1-time { color: rgba(246,245,240,0.2); }
+  .s1-card:nth-child(even) .s1-time { color: var(--rock); }
+
+  .s1-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0 0; }
+  .s1-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .s1-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+
+  /* ============================================================
+     S2: ALTERNATING FULL-WIDTH CARDS
+     Steps stack vertically. Dark/white alternating. Bold number.
+     No horizontal scroll. Everything visible.
+     ============================================================ */
+
+  .s2-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s2-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s2-count { font-size: 10px; color: var(--rock); }
+
+  .s2-cards { padding: 0 20px; }
+  .s2-card { padding: 18px; border-radius: 20px; margin-bottom: 10px; display: flex; gap: 14px; align-items: flex-start; }
+  .s2-card:nth-child(odd) { background: var(--earth); }
+  .s2-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .s2-num { font-size: 22px; font-weight: 900; flex-shrink: 0; width: 30px; letter-spacing: -0.5px; }
+  .s2-card:nth-child(odd) .s2-num { color: rgba(246,245,240,0.12); }
+  .s2-card:nth-child(even) .s2-num { color: var(--stone); }
+
+  .s2-text { font-size: 14px; line-height: 1.55; }
+  .s2-card:nth-child(odd) .s2-text { color: var(--sand); }
+  .s2-card:nth-child(even) .s2-text { color: var(--earth); }
+
+
+  /* ============================================================
+     S3: NUMBERED ROWS — Matches I4 ingredient style.
+     Same visual language: dark number badge + text row.
+     Consistent with the ingredient list above.
+     ============================================================ */
+
+  .s3-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s3-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s3-count { font-size: 10px; color: var(--rock); }
+
+  .s3-list { padding: 0 20px; }
+  .s3-row { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.03); align-items: flex-start; }
+  .s3-row:last-child { border-bottom: none; }
+
+  .s3-num {
+    width: 26px; height: 26px; border-radius: 9px; background: var(--earth);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: var(--sand); flex-shrink: 0; margin-top: 1px;
+  }
+  .s3-text { font-size: 15px; color: var(--earth); line-height: 1.55; }
+  .s3-time { font-size: 9px; color: var(--rock); margin-top: 4px; }
+
+
+  /* ============================================================
+     S4: SINGLE CARD VIEWER — One step at a time inside a
+     single white card. Prev/Next navigation. Ghost number.
+     Progress pips. Focused reading.
+     ============================================================ */
+
+  .s4-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s4-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+
+  .s4-card {
+    margin: 0 20px; padding: 24px; border-radius: 22px; background: #fff;
+    border: 1px solid rgba(0,0,0,0.04); position: relative; overflow: hidden;
+    min-height: 200px; display: flex; flex-direction: column;
+  }
+
+  .s4-counter { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .s4-ghost { font-size: 64px; font-weight: 900; color: rgba(45,42,36,0.03); letter-spacing: -3px; line-height: 1; margin-top: 4px; }
+  .s4-text { font-size: 18px; color: var(--earth); line-height: 1.6; font-weight: 500; margin-top: 8px; }
+  .s4-time { font-size: 9px; color: var(--rock); margin-top: 8px; }
+
+  .s4-pips { display: flex; gap: 4px; margin-top: 16px; }
+  .s4-pip { height: 4px; flex: 1; border-radius: 2px; }
+  .s4-pip.cur { background: var(--earth); }
+  .s4-pip.pen { background: var(--stone); }
+  .s4-pip.done { background: var(--trail); }
+
+  .s4-nav { display: flex; gap: 8px; margin: 12px 20px 0; }
+  .s4-btn { flex: 1; padding: 14px; border-radius: 14px; text-align: center; font-size: 13px; font-weight: 600; cursor: pointer; transition: transform 0.15s; }
+  .s4-btn:active { transform: scale(0.96); }
+  .s4-btn.prev { background: var(--stone); color: var(--earth); }
+  .s4-btn.next { background: var(--earth); color: var(--sand); }
+
+
+  /* ============================================================
+     S5: DARK BLOCK — All steps in one dark earth card.
+     Each step separated by thin lines. Green step numbers.
+     Ingredient-card style but dark. Compact.
+     ============================================================ */
+
+  .s5-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s5-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s5-count { font-size: 10px; color: var(--rock); }
+
+  .s5-card { margin: 0 20px; padding: 18px 20px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .s5-ring { position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.03); }
+
+  .s5-row { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; align-items: flex-start; }
+  .s5-row:last-child { border-bottom: none; }
+  .s5-num { font-size: 11px; font-weight: 700; color: var(--trail); opacity: 0.6; flex-shrink: 0; width: 18px; margin-top: 3px; }
+  .s5-text { font-size: 14px; color: var(--sand); line-height: 1.5; }
+
+
+  /* ============================================================
+     S6: TIMELINE DOTS — Minimal vertical timeline.
+     Small dots connected by a thin line. Step text beside each.
+     Active dot is green. Clean, airy.
+     ============================================================ */
+
+  .s6-head { display: flex; justify-content: space-between; padding: 0 20px; margin-bottom: 10px; }
+  .s6-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .s6-count { font-size: 10px; color: var(--rock); }
+
+  .s6-timeline { padding: 0 20px; position: relative; padding-left: 48px; }
+  .s6-line { position: absolute; left: 29px; top: 4px; bottom: 4px; width: 2px; background: var(--stone); }
+
+  .s6-step { padding: 10px 0; position: relative; }
+  .s6-dot {
+    position: absolute; left: -27px; top: 14px;
+    width: 10px; height: 10px; border-radius: 50%;
+    border: 2px solid var(--stone); background: var(--sand);
+    z-index: 1;
+  }
+  .s6-step.active .s6-dot { border-color: var(--trail); background: var(--trail); box-shadow: 0 0 8px rgba(52,211,153,0.25); }
+
+  .s6-num { font-size: 9px; color: var(--rock); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .s6-text { font-size: 15px; color: var(--earth); line-height: 1.55; margin-top: 3px; }
+  .s6-time { font-size: 9px; color: var(--rock); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- S1 -->
+<div>
+  <div class="col-label">S1 — Swipe Cards (current)</div>
+  <div class="col-desc">Dark/light alternating horizontal cards with watermark numbers. Dots below. The one you had before — kept for reference.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s1-head"><span class="s1-title">Steps</span><span class="s1-count">4 steps</span></div>
+    <div class="s1-scroll">
+      <div class="s1-card"><div class="s1-wm">01</div><div class="s1-label">Step 1 of 4</div><div class="s1-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden.</div><div class="s1-time">~4 min</div></div>
+      <div class="s1-card"><div class="s1-wm">02</div><div class="s1-label">Step 2 of 4</div><div class="s1-text">Remove tofu. Add broccoli, pepper, snap peas, garlic. Stir-fry 3-4 min.</div><div class="s1-time">~3 min</div></div>
+      <div class="s1-card"><div class="s1-wm">03</div><div class="s1-label">Step 3 of 4</div><div class="s1-text">Return tofu. Add teriyaki sauce and toss to coat.</div><div class="s1-time">~2 min</div></div>
+      <div class="s1-card"><div class="s1-wm">04</div><div class="s1-label">Step 4 of 4</div><div class="s1-text">Serve over rice. Garnish with sesame seeds.</div><div class="s1-time">~1 min</div></div>
+    </div>
+    <div class="s1-dots"><div class="s1-dot"></div><div class="s1-dot"></div><div class="s1-dot"></div><div class="s1-dot"></div></div>
+  </div>
+</div>
+
+<!-- S2 -->
+<div>
+  <div class="col-label">S2 — Alternating Stacked Cards</div>
+  <div class="col-desc">Full-width dark/white cards stacked vertically. Bold ghost number left. All steps visible at once. No swiping needed.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s2-head"><span class="s2-title">Steps</span><span class="s2-count">4 steps</span></div>
+    <div class="s2-cards">
+      <div class="s2-card"><div class="s2-num">01</div><div class="s2-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="s2-card"><div class="s2-num">02</div><div class="s2-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div></div>
+      <div class="s2-card"><div class="s2-num">03</div><div class="s2-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div></div>
+      <div class="s2-card"><div class="s2-num">04</div><div class="s2-text">Serve over rice. Garnish with sesame seeds.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 -->
+<div>
+  <div class="col-label">S3 — Numbered Rows</div>
+  <div class="col-desc">Same visual language as I4 ingredients. Dark number badges + text rows. Consistent design across both sections. Clean dividers.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s3-head"><span class="s3-title">Steps</span><span class="s3-count">4 steps</span></div>
+    <div class="s3-list">
+      <div class="s3-row"><div class="s3-num">1</div><div><div class="s3-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="s3-time">~4 min</div></div></div>
+      <div class="s3-row"><div class="s3-num">2</div><div><div class="s3-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div><div class="s3-time">~3 min</div></div></div>
+      <div class="s3-row"><div class="s3-num">3</div><div><div class="s3-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div><div class="s3-time">~2 min</div></div></div>
+      <div class="s3-row"><div class="s3-num">4</div><div><div class="s3-text">Serve over rice. Garnish with sesame seeds.</div><div class="s3-time">~1 min</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 -->
+<div>
+  <div class="col-label">S4 — Single Card Viewer</div>
+  <div class="col-desc">One step at a time in a white card. Ghost number. Progress pips. Prev/Next buttons. Focused reading for cooking. Click Next to try.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s4-head"><span class="s4-title">Steps</span></div>
+    <div class="s4-card" id="s4Card">
+      <div class="s4-counter">Step <span id="s4Cur">1</span> of 4</div>
+      <div class="s4-ghost" id="s4Ghost">01</div>
+      <div class="s4-text" id="s4Text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div>
+      <div class="s4-time" id="s4Time">~4 min</div>
+      <div class="s4-pips"><div class="s4-pip cur" id="s4p0"></div><div class="s4-pip pen" id="s4p1"></div><div class="s4-pip pen" id="s4p2"></div><div class="s4-pip pen" id="s4p3"></div></div>
+    </div>
+    <div class="s4-nav"><div class="s4-btn prev" id="s4Prev" onclick="s4Nav(-1)">Previous</div><div class="s4-btn next" onclick="s4Nav(1)">Next</div></div>
+  </div>
+</div>
+
+<!-- S5 -->
+<div>
+  <div class="col-label">S5 — Dark Card Block</div>
+  <div class="col-desc">All steps inside one dark earth card. Green step numbers. Thin dividers. Decorative ring. Matches the hero card aesthetic.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s5-head"><span class="s5-title">Steps</span><span class="s5-count">4 steps</span></div>
+    <div class="s5-card"><div class="s5-ring"></div>
+      <div class="s5-row"><div class="s5-num">01</div><div class="s5-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div></div>
+      <div class="s5-row"><div class="s5-num">02</div><div class="s5-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.</div></div>
+      <div class="s5-row"><div class="s5-num">03</div><div class="s5-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div></div>
+      <div class="s5-row"><div class="s5-num">04</div><div class="s5-text">Serve over rice. Garnish with sesame seeds.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 -->
+<div>
+  <div class="col-label">S6 — Timeline Dots</div>
+  <div class="col-desc">Minimal vertical timeline. Small dots connected by a thin line. Active step has a glowing green dot. Clean, airy, reads naturally.</div>
+  <div class="block"><div class="topo"><div class="tc"></div></div>
+    <div class="s6-head"><span class="s6-title">Steps</span><span class="s6-count">4 steps</span></div>
+    <div class="s6-timeline">
+      <div class="s6-line"></div>
+      <div class="s6-step active"><div class="s6-dot"></div><div class="s6-num">Step 1</div><div class="s6-text">Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.</div><div class="s6-time">~4 min</div></div>
+      <div class="s6-step"><div class="s6-dot"></div><div class="s6-num">Step 2</div><div class="s6-text">Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 min.</div><div class="s6-time">~3 min</div></div>
+      <div class="s6-step"><div class="s6-dot"></div><div class="s6-num">Step 3</div><div class="s6-text">Return tofu. Pour teriyaki sauce and toss to coat evenly.</div><div class="s6-time">~2 min</div></div>
+      <div class="s6-step"><div class="s6-dot"></div><div class="s6-num">Step 4</div><div class="s6-text">Serve over rice. Garnish with sesame seeds.</div><div class="s6-time">~1 min</div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+const s4Steps = [
+  { text: 'Press tofu and cut into cubes. Pan-fry in sesame oil until golden on all sides.', time: '~4 min' },
+  { text: 'Remove tofu. Add broccoli, pepper, snap peas and garlic. Stir-fry 3-4 minutes.', time: '~3 min' },
+  { text: 'Return tofu. Pour teriyaki sauce and toss to coat evenly.', time: '~2 min' },
+  { text: 'Serve over rice. Garnish with sesame seeds.', time: '~1 min' },
+];
+let s4Idx = 0;
+function s4Nav(dir) {
+  s4Idx = Math.max(0, Math.min(3, s4Idx + dir));
+  document.getElementById('s4Cur').textContent = s4Idx + 1;
+  document.getElementById('s4Ghost').textContent = String(s4Idx + 1).padStart(2, '0');
+  document.getElementById('s4Text').textContent = s4Steps[s4Idx].text;
+  document.getElementById('s4Time').textContent = s4Steps[s4Idx].time;
+  document.getElementById('s4Prev').style.opacity = s4Idx === 0 ? '0.3' : '1';
+  for (let i = 0; i < 4; i++) {
+    document.getElementById('s4p' + i).className = 's4-pip ' + (i < s4Idx ? 'done' : i === s4Idx ? 'cur' : 'pen');
+  }
+}
+</script>
+
+</body>
+</html>

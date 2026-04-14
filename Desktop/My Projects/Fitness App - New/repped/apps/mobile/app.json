@@ -1,0 +1,38 @@
+{
+  "expo": {
+    "name": "Livvia",
+    "slug": "livvia",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "livvia",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": false,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.livvia.app",
+      "infoPlist": {
+        "LSApplicationQueriesSchemes": [
+          "youtube",
+          "vnd.youtube",
+          "ubereats",
+          "doordash",
+          "comgooglemaps",
+          "maps"
+        ]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#000000"
+      },
+      "package": "com.livvia.app"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static"
+    },
+    "plugins": [
+      ["expo-router", { "root": "./app" }]
+    ]
+  }
+}

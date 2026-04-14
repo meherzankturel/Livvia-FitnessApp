@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — R4 Ring Score Variants</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; }
+
+
+  /* ============================================================
+     A: ORIGINAL R4 — Reference
+     ============================================================ */
+  .a-center { text-align: center; }
+  .a-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .a-title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+
+  .a-ring-area { display: flex; justify-content: center; padding: 16px 0 8px; }
+  .a-ring { width: 140px; height: 140px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .a-track { position: absolute; inset: 0; border-radius: 50%; border: 8px solid var(--stone); }
+  .a-fill { position: absolute; inset: 0; border-radius: 50%; border: 8px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .a-inner { text-align: center; position: relative; z-index: 1; }
+  .a-score { font-size: 42px; font-weight: 900; color: var(--earth); letter-spacing: -2px; line-height: 1; }
+  .a-score-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .a-msg { text-align: center; font-size: 13px; color: var(--trail); font-weight: 600; }
+
+  .a-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .a-st { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .a-st:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .a-st:nth-child(2) { background: var(--stone); }
+  .a-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .a-stv { font-size: 20px; font-weight: 800; }
+  .a-st:nth-child(1) .a-stv { color: #047857; }
+  .a-st:nth-child(2) .a-stv { color: var(--earth); }
+  .a-st:nth-child(3) .a-stv { color: #92400E; }
+  .a-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+  .a-vol { margin-top: 10px; display: flex; align-items: baseline; gap: 5px; justify-content: center; }
+  .a-vv { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .a-vu { font-size: 11px; color: var(--rock); }
+  .a-vt { font-size: 9px; color: var(--trail); font-weight: 600; margin-left: 4px; }
+
+
+  /* ============================================================
+     B: RING + SIDE STATS — Ring on left, stats stacked on right.
+     More compact, horizontal layout.
+     ============================================================ */
+
+  .b-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center; }
+  .b-title { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; text-align: center; }
+
+  .b-hero { display: flex; gap: 20px; align-items: center; margin-top: 14px; }
+
+  .b-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .b-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid var(--stone); }
+  .b-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .b-inner { text-align: center; position: relative; z-index: 1; }
+  .b-score { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .b-score-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .b-side { flex: 1; }
+  .b-msg { font-size: 13px; color: var(--trail); font-weight: 600; }
+
+  .b-stat-rows {}
+  .b-sr { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .b-sr:last-child { border-bottom: none; }
+  .b-sr-name { font-size: 12px; color: var(--rock); }
+  .b-sr-val { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .b-sr-val.green { color: #047857; }
+  .b-sr-val.amber { color: #92400E; }
+
+
+  /* ============================================================
+     C: DARK RING — Ring on a dark card. Glows. Stats inside
+     the dark card below the ring. Most premium.
+     ============================================================ */
+
+  .c-card { padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; text-align: center; }
+  .c-accent { position: absolute; top: 0; right: 0; width: 80px; height: 80px; }
+  .c-al { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .c-al:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .c-al:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .c-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .c-title { font-size: 20px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 2px; position: relative; }
+
+  .c-ring-area { display: flex; justify-content: center; padding: 16px 0 6px; position: relative; }
+  .c-ring { width: 130px; height: 130px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .c-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid rgba(246,245,240,0.06); }
+  .c-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  /* Glow behind ring */
+  .c-glow { position: absolute; inset: -10px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.06) 40%, transparent 70%); }
+  .c-inner { text-align: center; position: relative; z-index: 1; }
+  .c-score { font-size: 38px; font-weight: 900; color: var(--sand); letter-spacing: -1.5px; line-height: 1; }
+  .c-score-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .c-msg { font-size: 13px; color: var(--trail); font-weight: 600; position: relative; }
+
+  .c-stats { display: flex; gap: 6px; margin-top: 14px; position: relative; }
+  .c-st { flex: 1; padding: 10px 8px; border-radius: 12px; text-align: center; }
+  .c-st:nth-child(1) { background: rgba(246,245,240,0.04); }
+  .c-st:nth-child(2) { background: rgba(52,211,153,0.04); }
+  .c-st:nth-child(3) { background: rgba(245,158,11,0.03); }
+  .c-stv { font-size: 18px; font-weight: 800; }
+  .c-st:nth-child(1) .c-stv { color: var(--sand); }
+  .c-st:nth-child(2) .c-stv { color: var(--trail); }
+  .c-st:nth-child(3) .c-stv { color: #F59E0B; }
+  .c-stl { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .c-st:nth-child(1) .c-stl { color: rgba(246,245,240,0.15); }
+  .c-st:nth-child(2) .c-stl { color: rgba(52,211,153,0.3); }
+  .c-st:nth-child(3) .c-stl { color: rgba(245,158,11,0.25); }
+
+  .c-vol { margin-top: 12px; display: flex; align-items: baseline; gap: 5px; justify-content: center; position: relative; }
+  .c-vv { font-size: 20px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .c-vu { font-size: 11px; color: rgba(246,245,240,0.25); }
+  .c-vt { font-size: 9px; color: var(--trail); font-weight: 600; margin-left: 4px; opacity: 0.6; }
+
+
+  /* ============================================================
+     D: RING ABOVE TITLE — Ring at the very top, centered.
+     Title + message below ring. Stats as pills. Volume inline.
+     Ring is the first thing you see.
+     ============================================================ */
+
+  .d-ring-area { display: flex; justify-content: center; padding: 4px 0 8px; }
+  .d-ring { width: 110px; height: 110px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; }
+  .d-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid var(--stone); }
+  .d-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .d-inner { text-align: center; position: relative; z-index: 1; }
+  .d-score { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .d-score-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .d-center { text-align: center; }
+  .d-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .d-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .d-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .d-vol { margin-top: 10px; display: flex; align-items: baseline; gap: 5px; justify-content: center; }
+  .d-vv { font-size: 24px; font-weight: 900; color: var(--earth); letter-spacing: -0.5px; }
+  .d-vu { font-size: 11px; color: var(--rock); }
+  .d-vt { font-size: 9px; color: var(--trail); font-weight: 600; margin-left: 4px; }
+
+  .d-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .d-st { flex: 1; padding: 12px 8px; border-radius: 14px; text-align: center; }
+  .d-st:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .d-st:nth-child(2) { background: var(--stone); }
+  .d-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .d-stv { font-size: 18px; font-weight: 800; }
+  .d-st:nth-child(1) .d-stv { color: #047857; }
+  .d-st:nth-child(2) .d-stv { color: var(--earth); }
+  .d-st:nth-child(3) .d-stv { color: #92400E; }
+  .d-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     E: RING + VOLUME BIG — Ring left, giant volume right.
+     Stats below as color tiles. Balanced hero.
+     ============================================================ */
+
+  .e-hero { display: flex; gap: 16px; align-items: center; }
+
+  .e-ring { width: 110px; height: 110px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .e-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid var(--stone); }
+  .e-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .e-inner { text-align: center; position: relative; z-index: 1; }
+  .e-score { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .e-score-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .e-right { flex: 1; }
+  .e-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .e-title { font-size: 18px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; margin-top: 2px; }
+  .e-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .e-vol-row { display: flex; align-items: baseline; gap: 4px; margin-top: 8px; }
+  .e-vv { font-size: 28px; font-weight: 900; color: var(--earth); letter-spacing: -1px; }
+  .e-vu { font-size: 11px; color: var(--rock); }
+  .e-vt { font-size: 9px; color: var(--trail); font-weight: 600; margin-left: 4px; }
+
+  .e-stats { display: flex; gap: 8px; margin-top: 14px; }
+  .e-st { flex: 1; padding: 10px 8px; border-radius: 12px; text-align: center; }
+  .e-st:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .e-st:nth-child(2) { background: var(--stone); }
+  .e-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .e-stv { font-size: 18px; font-weight: 800; }
+  .e-st:nth-child(1) .e-stv { color: #047857; }
+  .e-st:nth-child(2) .e-stv { color: var(--earth); }
+  .e-st:nth-child(3) .e-stv { color: #92400E; }
+  .e-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     F: MINIMAL RING — Smaller ring, bigger emphasis on
+     the message and volume. Ring is accent, not hero.
+     ============================================================ */
+
+  .f-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .f-left {}
+  .f-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .f-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .f-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .f-ring { width: 72px; height: 72px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .f-track { position: absolute; inset: 0; border-radius: 50%; border: 5px solid var(--stone); }
+  .f-fill { position: absolute; inset: 0; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .f-inner { text-align: center; position: relative; z-index: 1; }
+  .f-score { font-size: 18px; font-weight: 900; color: var(--earth); letter-spacing: -0.5px; line-height: 1; }
+  .f-score-label { font-size: 6px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+  .f-vol { margin-top: 14px; display: flex; align-items: baseline; gap: 5px; }
+  .f-vv { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; }
+  .f-vu { font-size: 12px; color: var(--rock); }
+  .f-vt { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; }
+
+  .f-stats { display: flex; gap: 8px; margin-top: 12px; }
+  .f-st { flex: 1; padding: 10px 8px; border-radius: 12px; text-align: center; }
+  .f-st:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .f-st:nth-child(2) { background: var(--stone); }
+  .f-st:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .f-stv { font-size: 18px; font-weight: 800; }
+  .f-st:nth-child(1) .f-stv { color: #047857; }
+  .f-st:nth-child(2) .f-stv { color: var(--earth); }
+  .f-st:nth-child(3) .f-stv { color: #92400E; }
+  .f-stl { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- A -->
+<div>
+  <div class="col-label">A — Original R4 (reference)</div>
+  <div class="col-desc">Centered ring, title above, message below, stats as tinted tiles, volume inline. The one you picked.</div>
+  <div class="block">
+    <div class="a-center"><div class="a-date">Mar 18 – 24</div><div class="a-title">This Week</div></div>
+    <div class="a-ring-area"><div class="a-ring"><div class="a-track"></div><div class="a-fill"></div><div class="a-inner"><div class="a-score">80%</div><div class="a-score-label">Complete</div></div></div></div>
+    <div class="a-msg">Crushing it! 💪</div>
+    <div class="a-vol"><span class="a-vv">2.4</span><span class="a-vu">tons</span><span class="a-vt">▲ 12%</span></div>
+    <div class="a-stats"><div class="a-st"><div class="a-stv">4</div><div class="a-stl">Workouts</div></div><div class="a-st"><div class="a-stv">80%</div><div class="a-stl">Complete</div></div><div class="a-st"><div class="a-stv">12d</div><div class="a-stl">Streak</div></div></div>
+  </div>
+</div>
+
+<!-- B -->
+<div>
+  <div class="col-label">B — Ring + Side Stats</div>
+  <div class="col-desc">Ring on left, stats as clean rows on right. Message inline. Volume in a row. Horizontal, compact.</div>
+  <div class="block">
+    <div class="b-date">Mar 18 – 24</div><div class="b-title">This Week</div>
+    <div class="b-hero">
+      <div class="b-ring"><div class="b-track"></div><div class="b-fill"></div><div class="b-inner"><div class="b-score">80%</div><div class="b-score-label">Complete</div></div></div>
+      <div class="b-side"><div class="b-msg">Crushing it! 💪</div><div class="b-stat-rows"><div class="b-sr"><span class="b-sr-name">Volume</span><span class="b-sr-val">2.4 tons</span></div><div class="b-sr"><span class="b-sr-name">Workouts</span><span class="b-sr-val">4</span></div><div class="b-sr"><span class="b-sr-name">Streak</span><span class="b-sr-val amber">12 days</span></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- C -->
+<div>
+  <div class="col-label">C — Dark Ring Card</div>
+  <div class="col-desc">Ring inside a dark earth card with green glow behind. Color-tinted stat tiles. Volume below. Most premium, most contrast.</div>
+  <div class="block">
+    <div class="c-card"><div class="c-accent"><div class="c-al"></div><div class="c-al"></div></div><div class="c-date">Mar 18 – 24</div><div class="c-title">This Week</div>
+      <div class="c-ring-area"><div class="c-ring"><div class="c-glow"></div><div class="c-track"></div><div class="c-fill"></div><div class="c-inner"><div class="c-score">80%</div><div class="c-score-label">Complete</div></div></div></div>
+      <div class="c-msg">Crushing it! 💪</div>
+      <div class="c-stats"><div class="c-st"><div class="c-stv">4</div><div class="c-stl">Workouts</div></div><div class="c-st"><div class="c-stv">80%</div><div class="c-stl">Complete</div></div><div class="c-st"><div class="c-stv">12d</div><div class="c-stl">Streak</div></div></div>
+      <div class="c-vol"><span class="c-vv">2.4</span><span class="c-vu">tons</span><span class="c-vt">▲ 12%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- D -->
+<div>
+  <div class="col-label">D — Ring First</div>
+  <div class="col-desc">Ring at the very top before the title. Title + message below. Volume centered. Stats as tiles. Ring is the first thing you see.</div>
+  <div class="block">
+    <div class="d-ring-area"><div class="d-ring"><div class="d-track"></div><div class="d-fill"></div><div class="d-inner"><div class="d-score">80%</div><div class="d-score-label">Complete</div></div></div></div>
+    <div class="d-center"><div class="d-date">Mar 18 – 24</div><div class="d-title">This Week</div><div class="d-msg">Crushing it! 💪</div></div>
+    <div class="d-vol"><span class="d-vv">2.4</span><span class="d-vu">tons</span><span class="d-vt">▲ 12%</span></div>
+    <div class="d-stats"><div class="d-st"><div class="d-stv">4</div><div class="d-stl">Workouts</div></div><div class="d-st"><div class="d-stv">80%</div><div class="d-stl">Complete</div></div><div class="d-st"><div class="d-stv">12d</div><div class="d-stl">Streak</div></div></div>
+  </div>
+</div>
+
+<!-- E -->
+<div>
+  <div class="col-label">E — Ring + Big Volume</div>
+  <div class="col-desc">Ring on left with score. Right: title, message, big 28px volume. Stats as tinted tiles below. Balanced — both ring and volume get attention.</div>
+  <div class="block">
+    <div class="e-hero">
+      <div class="e-ring"><div class="e-track"></div><div class="e-fill"></div><div class="e-inner"><div class="e-score">80%</div><div class="e-score-label">Complete</div></div></div>
+      <div class="e-right"><div class="e-date">Mar 18 – 24</div><div class="e-title">This Week</div><div class="e-msg">Crushing it! 💪</div><div class="e-vol-row"><span class="e-vv">2.4</span><span class="e-vu">tons</span><span class="e-vt">▲ 12%</span></div></div>
+    </div>
+    <div class="e-stats"><div class="e-st"><div class="e-stv">4</div><div class="e-stl">Workouts</div></div><div class="e-st"><div class="e-stv">80%</div><div class="e-stl">Complete</div></div><div class="e-st"><div class="e-stv">12d</div><div class="e-stl">Streak</div></div></div>
+  </div>
+</div>
+
+<!-- F -->
+<div>
+  <div class="col-label">F — Title Hero + Mini Ring</div>
+  <div class="col-desc">Title and message are big on the left. Small 72px ring sits top-right as an accent. Volume is bold below. Ring is a complement, not the hero.</div>
+  <div class="block">
+    <div class="f-top">
+      <div class="f-left"><div class="f-date">Mar 18 – 24</div><div class="f-title">This Week</div><div class="f-msg">Crushing it! 💪</div></div>
+      <div class="f-ring"><div class="f-track"></div><div class="f-fill"></div><div class="f-inner"><div class="f-score">80%</div><div class="f-score-label">Done</div></div></div>
+    </div>
+    <div class="f-vol"><span class="f-vv">2.4</span><span class="f-vu">tons lifted</span><span class="f-vt">▲ 12%</span></div>
+    <div class="f-stats"><div class="f-st"><div class="f-stv">4</div><div class="f-stl">Workouts</div></div><div class="f-st"><div class="f-stv">80%</div><div class="f-stl">Complete</div></div><div class="f-st"><div class="f-stv">12d</div><div class="f-stl">Streak</div></div></div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

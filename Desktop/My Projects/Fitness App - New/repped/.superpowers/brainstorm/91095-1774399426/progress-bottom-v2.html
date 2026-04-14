@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Bottom Elements v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .hero-ph { margin: 56px 24px 0; padding: 18px; border-radius: 20px; background: var(--stone); text-align: center; font-size: 10px; color: var(--rock); }
+  .sec { padding: 16px 24px 0; }
+  .sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+  .links { display: flex; gap: 8px; padding: 18px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); }
+
+
+  /* ============================================================
+     D: HORIZONTAL SECTIONS — Every section scrolls sideways.
+     Weight, 1RM, PRs all as horizontal card groups.
+     Consistent with nutrition meal card pattern.
+     ============================================================ */
+
+  .d-scroll { display: flex; gap: 10px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .d-scroll::-webkit-scrollbar { display: none; }
+
+  /* Weight + Volume as swipeable cards */
+  .d-body-card { min-width: 200px; padding: 20px; border-radius: 20px; flex-shrink: 0; position: relative; overflow: hidden; }
+  .d-body-card:last-child { margin-right: 24px; }
+  .d-body-card.dark { background: var(--earth); }
+  .d-body-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .d-body-card.stone { background: var(--stone); }
+
+  .d-bc-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .d-body-card.dark .d-bc-label { color: rgba(246,245,240,0.25); }
+  .d-body-card.white .d-bc-label, .d-body-card.stone .d-bc-label { color: var(--rock); }
+
+  .d-bc-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
+  .d-body-card.dark .d-bc-val { color: var(--sand); }
+  .d-body-card.white .d-bc-val, .d-body-card.stone .d-bc-val { color: var(--earth); }
+  .d-bc-val span { font-size: 12px; font-weight: 500; }
+  .d-body-card.dark .d-bc-val span { color: rgba(246,245,240,0.3); }
+  .d-body-card.white .d-bc-val span, .d-body-card.stone .d-bc-val span { color: var(--rock); }
+
+  .d-bc-trend { font-size: 10px; font-weight: 600; margin-top: 3px; }
+  .d-bc-trend.green { color: var(--trail); }
+  .d-body-card.dark .d-bc-trend { color: var(--trail); }
+
+  .d-bc-btn { margin-top: 10px; padding: 7px 16px; border-radius: 10px; font-size: 10px; font-weight: 600; display: inline-block; cursor: pointer; }
+  .d-body-card.dark .d-bc-btn { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .d-body-card.white .d-bc-btn { background: var(--stone); color: var(--earth); }
+
+  /* 1RM cards */
+  .d-rm-card { min-width: 140px; padding: 18px; border-radius: 18px; flex-shrink: 0; }
+  .d-rm-card:last-child { margin-right: 24px; }
+  .d-rm-card:nth-child(odd) { background: var(--earth); }
+  .d-rm-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .d-rm-name { font-size: 11px; font-weight: 600; }
+  .d-rm-card:nth-child(odd) .d-rm-name { color: rgba(246,245,240,0.35); }
+  .d-rm-card:nth-child(even) .d-rm-name { color: var(--rock); }
+  .d-rm-val { font-size: 24px; font-weight: 800; letter-spacing: -0.5px; margin-top: 6px; }
+  .d-rm-card:nth-child(odd) .d-rm-val { color: var(--sand); }
+  .d-rm-card:nth-child(even) .d-rm-val { color: var(--earth); }
+  .d-rm-val span { font-size: 10px; font-weight: 500; }
+  .d-rm-card:nth-child(odd) .d-rm-val span { color: rgba(246,245,240,0.3); }
+  .d-rm-card:nth-child(even) .d-rm-val span { color: var(--rock); }
+  .d-rm-level { font-size: 9px; font-weight: 600; color: var(--trail); margin-top: 4px; }
+  .d-rm-card:nth-child(odd) .d-rm-level { opacity: 0.6; }
+
+  /* PR cards horizontal */
+  .d-pr-card { min-width: 160px; padding: 16px; border-radius: 16px; flex-shrink: 0; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .d-pr-card:last-child { margin-right: 24px; }
+  .d-pr-icon { font-size: 16px; }
+  .d-pr-name { font-size: 12px; color: var(--earth); font-weight: 600; margin-top: 6px; }
+  .d-pr-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .d-pr-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .d-pr-type { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  /* Body measurements horizontal */
+  .d-bm-card { min-width: 80px; padding: 14px 12px; border-radius: 14px; flex-shrink: 0; text-align: center; }
+  .d-bm-card:last-child { margin-right: 24px; }
+  .d-bm-card:nth-child(odd) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .d-bm-card:nth-child(even) { background: var(--stone); }
+  .d-bm-val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .d-bm-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     E: TABBED SECTIONS — Weight/Volume as bento.
+     Strength + PRs in one tab. Body in another.
+     Reduces scroll. Shows what's relevant.
+     ============================================================ */
+
+  /* Bento duo */
+  .e-duo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .e-card { padding: 18px; border-radius: 20px; }
+  .e-card.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e-card.dark { background: var(--earth); position: relative; overflow: hidden; }
+  .e-card-accent { position: absolute; bottom: -12px; right: -12px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+
+  .e-c-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .e-card.white .e-c-label { color: var(--rock); }
+  .e-card.dark .e-c-label { color: rgba(246,245,240,0.25); position: relative; }
+  .e-c-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-top: 4px; }
+  .e-card.white .e-c-val { color: var(--earth); }
+  .e-card.dark .e-c-val { color: var(--sand); position: relative; }
+  .e-c-val span { font-size: 12px; font-weight: 500; }
+  .e-card.white .e-c-val span { color: var(--rock); }
+  .e-card.dark .e-c-val span { color: rgba(246,245,240,0.3); }
+  .e-c-trend { font-size: 10px; font-weight: 600; color: var(--trail); margin-top: 2px; }
+  .e-card.dark .e-c-trend { position: relative; }
+  .e-c-btn { margin-top: 8px; padding: 6px 14px; border-radius: 8px; font-size: 9px; font-weight: 600; display: inline-block; cursor: pointer; }
+  .e-card.white .e-c-btn { background: var(--stone); color: var(--earth); }
+
+  /* Tabs */
+  .e-tabs { display: flex; background: var(--stone); border-radius: 14px; padding: 3px; margin-bottom: 12px; }
+  .e-tab { flex: 1; padding: 10px; border-radius: 11px; text-align: center; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .e-tab.on { background: var(--earth); color: var(--sand); }
+  .e-tab.off { color: var(--rock); }
+
+  .e-panel { display: none; }
+  .e-panel.vis { display: block; animation: eFade 0.3s ease; }
+  @keyframes eFade { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+  /* Strength panel */
+  .e-lift { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .e-lift:last-child { border-bottom: none; }
+  .e-lift-icon { width: 36px; height: 36px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .e-lift:nth-child(odd) .e-lift-icon { background: var(--earth); }
+  .e-lift:nth-child(even) .e-lift-icon { background: var(--stone); }
+  .e-lift-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .e-lift-level { font-size: 9px; color: var(--trail); font-weight: 600; }
+  .e-lift-val { font-size: 20px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-left: auto; }
+  .e-lift-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+
+  .e-pr-label { font-size: 11px; font-weight: 700; color: var(--earth); margin: 12px 0 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.03); }
+  .e-pr { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .e-pr-badge { font-size: 11px; }
+  .e-pr-name { font-size: 13px; color: var(--earth); flex: 1; }
+  .e-pr-val { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .e-pr-val span { font-size: 9px; color: var(--rock); }
+
+  /* Body panel */
+  .e-body-card { padding: 18px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 10px; }
+  .e-body-top { display: flex; justify-content: space-between; align-items: center; }
+  .e-body-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .e-body-val { font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -1px; margin-top: 4px; }
+  .e-body-val span { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .e-body-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .e-meas-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .e-meas { padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .e-meas-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .e-meas-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     F: SINGLE DARK CARD — Everything below heatmap lives
+     inside ONE big dark card. Sections separated by thin lines.
+     Minimal, contained, premium.
+     ============================================================ */
+
+  .f-card { margin: 16px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .f-accent { position: absolute; bottom: -20px; right: -20px; width: 80px; height: 80px; border-radius: 50%; border: 6px solid rgba(246,245,240,0.03); }
+
+  .f-section { padding: 14px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .f-section:first-child { padding-top: 0; }
+  .f-section:last-child { border-bottom: none; padding-bottom: 0; }
+
+  .f-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
+
+  /* Weight inside dark */
+  .f-w-row { display: flex; justify-content: space-between; align-items: center; }
+  .f-w-val { font-size: 28px; font-weight: 800; color: var(--sand); letter-spacing: -1px; }
+  .f-w-val span { font-size: 12px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .f-w-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .f-w-btn { padding: 8px 16px; border-radius: 10px; background: rgba(246,245,240,0.06); font-size: 10px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  /* Volume inside dark */
+  .f-vol-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .f-vol-val { font-size: 22px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .f-vol-val span { font-size: 10px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .f-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; }
+
+  /* 1RM inside dark */
+  .f-rm { display: flex; justify-content: space-between; padding: 6px 0; }
+  .f-rm-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .f-rm-right { display: flex; align-items: baseline; gap: 6px; }
+  .f-rm-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .f-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+  .f-rm-level { font-size: 8px; color: var(--trail); font-weight: 600; opacity: 0.6; }
+
+  /* PRs inside dark */
+  .f-pr { display: flex; align-items: center; gap: 8px; padding: 5px 0; }
+  .f-pr-icon { font-size: 11px; }
+  .f-pr-name { font-size: 12px; color: var(--sand); font-weight: 500; flex: 1; opacity: 0.7; }
+  .f-pr-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .f-pr-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  /* Body inside dark */
+  .f-body-row { display: flex; gap: 8px; }
+  .f-bm { flex: 1; text-align: center; padding: 8px 4px; border-radius: 10px; background: rgba(246,245,240,0.04); }
+  .f-bm-val { font-size: 14px; font-weight: 800; color: var(--sand); }
+  .f-bm-label { font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.2px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== D: HORIZONTAL EVERYTHING ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">D — Horizontal Sections</div>
+  <div class="dsc">Every section scrolls sideways. Weight/Volume as swipeable metric cards. 1RM as dark/white alternating cards. PRs as green-tinted cards. Body as small pill cards. Consistent swipe pattern.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero + Heatmap above ↑</div>
+
+    <div class="sec"><div class="sec-title">Body & Volume</div>
+      <div class="d-scroll">
+        <div class="d-body-card dark"><div class="d-bc-label">Weight</div><div class="d-bc-val">74.2 <span>kg</span></div><div class="d-bc-trend">▼ 0.8kg this month</div><div class="d-bc-btn">+ Log</div></div>
+        <div class="d-body-card white"><div class="d-bc-label">Volume</div><div class="d-bc-val">2.4 <span>tons</span></div><div class="d-bc-trend green">▲ 12% vs last wk</div></div>
+        <div class="d-body-card stone"><div class="d-bc-label">Body Fat</div><div class="d-bc-val">18 <span>%</span></div><div class="d-bc-trend green">▼ 0.5%</div></div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-title">Estimated 1RM</div>
+      <div class="d-scroll">
+        <div class="d-rm-card"><div class="d-rm-name">Bench Press</div><div class="d-rm-val">80 <span>kg</span></div><div class="d-rm-level">Intermediate</div></div>
+        <div class="d-rm-card"><div class="d-rm-name">Squat</div><div class="d-rm-val">100 <span>kg</span></div><div class="d-rm-level">Intermediate</div></div>
+        <div class="d-rm-card"><div class="d-rm-name">Deadlift</div><div class="d-rm-val">120 <span>kg</span></div><div class="d-rm-level">Novice</div></div>
+        <div class="d-rm-card"><div class="d-rm-name">OHP</div><div class="d-rm-val">50 <span>kg</span></div><div class="d-rm-level">Novice</div></div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-title">Recent PRs</div>
+      <div class="d-scroll">
+        <div class="d-pr-card"><div class="d-pr-icon">🏆</div><div class="d-pr-name">Bench Press</div><div class="d-pr-val">80 <span>kg</span></div><div class="d-pr-type">Weight PR</div></div>
+        <div class="d-pr-card"><div class="d-pr-icon">🏆</div><div class="d-pr-name">Squat</div><div class="d-pr-val">105 <span>kg</span></div><div class="d-pr-type">Est. 1RM</div></div>
+        <div class="d-pr-card"><div class="d-pr-icon">🏆</div><div class="d-pr-name">Deadlift</div><div class="d-pr-val">120 <span>kg</span></div><div class="d-pr-type">Weight PR</div></div>
+      </div>
+    </div>
+
+    <div class="sec"><div class="sec-title">Measurements</div>
+      <div class="d-scroll">
+        <div class="d-bm-card"><div class="d-bm-val">102</div><div class="d-bm-label">Chest</div></div>
+        <div class="d-bm-card"><div class="d-bm-val">82</div><div class="d-bm-label">Waist</div></div>
+        <div class="d-bm-card"><div class="d-bm-val">96</div><div class="d-bm-label">Hips</div></div>
+        <div class="d-bm-card"><div class="d-bm-val">36</div><div class="d-bm-label">Bicep</div></div>
+        <div class="d-bm-card"><div class="d-bm-val">58</div><div class="d-bm-label">Thigh</div></div>
+        <div class="d-bm-card"><div class="d-bm-val">18%</div><div class="d-bm-label">Fat</div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== E: TABBED ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">E — Bento + Tabs</div>
+  <div class="dsc">Weight/Volume as bento duo at top. Then tabs: Strength (lifts with icons + PRs) and Body (weight detail + measurement grid). Reduces scroll dramatically. Click tabs.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero + Heatmap above ↑</div>
+
+    <div class="sec">
+      <div class="e-duo">
+        <div class="e-card white"><div class="e-c-label">Weight</div><div class="e-c-val">74.2 <span>kg</span></div><div class="e-c-trend">▼ 0.8kg</div><div class="e-c-btn">+ Log</div></div>
+        <div class="e-card dark"><div class="e-card-accent"></div><div class="e-c-label">Volume</div><div class="e-c-val">2.4 <span>t</span></div><div class="e-c-trend">▲ 12%</div></div>
+      </div>
+    </div>
+
+    <div class="sec">
+      <div class="e-tabs"><div class="e-tab on" id="et1" onclick="eTab(1)">Strength</div><div class="e-tab off" id="et2" onclick="eTab(2)">Body</div></div>
+
+      <div class="e-panel vis" id="ep1">
+        <div class="e-lift"><div class="e-lift-icon">🏋️</div><div><div class="e-lift-name">Bench Press</div><div class="e-lift-level">Intermediate</div></div><div class="e-lift-val">80 <span>kg</span></div></div>
+        <div class="e-lift"><div class="e-lift-icon">🦵</div><div><div class="e-lift-name">Squat</div><div class="e-lift-level">Intermediate</div></div><div class="e-lift-val">100 <span>kg</span></div></div>
+        <div class="e-lift"><div class="e-lift-icon">💪</div><div><div class="e-lift-name">Deadlift</div><div class="e-lift-level">Novice</div></div><div class="e-lift-val">120 <span>kg</span></div></div>
+        <div class="e-lift"><div class="e-lift-icon">🙌</div><div><div class="e-lift-name">OHP</div><div class="e-lift-level">Novice</div></div><div class="e-lift-val">50 <span>kg</span></div></div>
+
+        <div class="e-pr-label">Recent PRs</div>
+        <div class="e-pr"><span class="e-pr-badge">🏆</span><span class="e-pr-name">Bench Press</span><span class="e-pr-val">80 <span>kg</span></span></div>
+        <div class="e-pr"><span class="e-pr-badge">🏆</span><span class="e-pr-name">Squat</span><span class="e-pr-val">105 <span>kg</span></span></div>
+      </div>
+
+      <div class="e-panel" id="ep2">
+        <div class="e-body-card"><div class="e-body-top"><span class="e-body-label">Weight</span></div><div class="e-body-val">74.2 <span>kg</span></div><div class="e-body-trend">▼ 0.8kg from last month</div></div>
+        <div class="e-meas-grid">
+          <div class="e-meas"><div class="e-meas-val">102</div><div class="e-meas-label">Chest</div></div>
+          <div class="e-meas"><div class="e-meas-val">82</div><div class="e-meas-label">Waist</div></div>
+          <div class="e-meas"><div class="e-meas-val">96</div><div class="e-meas-label">Hips</div></div>
+          <div class="e-meas"><div class="e-meas-val">36</div><div class="e-meas-label">Bicep</div></div>
+          <div class="e-meas"><div class="e-meas-val">58</div><div class="e-meas-label">Thigh</div></div>
+          <div class="e-meas"><div class="e-meas-val">18%</div><div class="e-meas-label">Body Fat</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== F: SINGLE DARK CARD ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">F — One Dark Card</div>
+  <div class="dsc">EVERYTHING below the heatmap lives inside ONE dark earth card. Sections separated by thin lines. Weight, volume, 1RM, PRs, measurements — all contained. Most premium, most minimal.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hero-ph">↑ Hero + Heatmap above ↑</div>
+
+    <div class="f-card"><div class="f-accent"></div>
+      <div class="f-section"><div class="f-label">Weight</div><div class="f-w-row"><div><div class="f-w-val">74.2 <span>kg</span></div><div class="f-w-trend">▼ 0.8kg this month</div></div><div class="f-w-btn">+ Log</div></div></div>
+
+      <div class="f-section"><div class="f-label">Volume This Week</div><div class="f-vol-row"><div class="f-vol-val">2.4 <span>tons</span></div><div class="f-vol-trend">▲ 12%</div></div></div>
+
+      <div class="f-section"><div class="f-label">Estimated 1RM</div>
+        <div class="f-rm"><span class="f-rm-name">Bench Press</span><div class="f-rm-right"><span class="f-rm-level">Inter.</span><span class="f-rm-val">80 <span>kg</span></span></div></div>
+        <div class="f-rm"><span class="f-rm-name">Squat</span><div class="f-rm-right"><span class="f-rm-level">Inter.</span><span class="f-rm-val">100 <span>kg</span></span></div></div>
+        <div class="f-rm"><span class="f-rm-name">Deadlift</span><div class="f-rm-right"><span class="f-rm-level">Novice</span><span class="f-rm-val">120 <span>kg</span></span></div></div>
+        <div class="f-rm"><span class="f-rm-name">OHP</span><div class="f-rm-right"><span class="f-rm-level">Novice</span><span class="f-rm-val">50 <span>kg</span></span></div></div>
+      </div>
+
+      <div class="f-section"><div class="f-label">Recent PRs</div>
+        <div class="f-pr"><span class="f-pr-icon">🏆</span><span class="f-pr-name">Bench Press</span><span class="f-pr-val">80 <span>kg</span></span></div>
+        <div class="f-pr"><span class="f-pr-icon">🏆</span><span class="f-pr-name">Squat</span><span class="f-pr-val">105 <span>kg</span></span></div>
+        <div class="f-pr"><span class="f-pr-icon">🏆</span><span class="f-pr-name">Deadlift</span><span class="f-pr-val">120 <span>kg</span></span></div>
+      </div>
+
+      <div class="f-section"><div class="f-label">Measurements</div>
+        <div class="f-body-row"><div class="f-bm"><div class="f-bm-val">102</div><div class="f-bm-label">Chest</div></div><div class="f-bm"><div class="f-bm-val">82</div><div class="f-bm-label">Waist</div></div><div class="f-bm"><div class="f-bm-val">96</div><div class="f-bm-label">Hips</div></div><div class="f-bm"><div class="f-bm-val">36</div><div class="f-bm-label">Bicep</div></div><div class="f-bm"><div class="f-bm-val">58</div><div class="f-bm-label">Thigh</div></div><div class="f-bm"><div class="f-bm-val">18%</div><div class="f-bm-label">Fat</div></div></div>
+      </div>
+    </div>
+
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function eTab(n) {
+  document.getElementById('et1').className = n===1 ? 'e-tab on' : 'e-tab off';
+  document.getElementById('et2').className = n===2 ? 'e-tab on' : 'e-tab off';
+  document.getElementById('ep1').className = n===1 ? 'e-panel vis' : 'e-panel';
+  document.getElementById('ep2').className = n===2 ? 'e-panel vis' : 'e-panel';
+}
+</script>
+
+</body>
+</html>

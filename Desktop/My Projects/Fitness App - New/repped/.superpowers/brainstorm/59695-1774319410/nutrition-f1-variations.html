@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — F1 Filter Variations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 20px; padding: 12px 12px 60px; justify-content: center; flex-wrap: wrap; }
+
+  .block { background: var(--sand); border-radius: 24px; padding: 20px; width: 345px; overflow: hidden; position: relative; }
+  .block-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-align: center; margin-bottom: 8px; }
+  .block-desc { font-size: 9px; color: #555; text-align: center; margin-bottom: 12px; line-height: 1.4; }
+
+
+  /* ============================================================
+     V1: LARGE FLAG CARDS — Bigger tiles, flag as full background
+     ============================================================ */
+  .v1-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .v1-scroll::-webkit-scrollbar { display: none; }
+
+  .v1-tile {
+    min-width: 100px; height: 72px; border-radius: 18px; flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .v1-tile:active { transform: scale(0.93); }
+
+  .v1-tile.on { background: var(--earth); box-shadow: 0 4px 16px rgba(45,42,36,0.12); transform: scale(1.02); }
+  .v1-tile.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .v1-tile .flag { font-size: 32px; transition: transform 0.3s; }
+  .v1-tile.on .flag { transform: scale(1.1); }
+  .v1-tile .name { font-size: 10px; font-weight: 600; margin-top: 4px; }
+  .v1-tile.on .name { color: var(--sand); }
+  .v1-tile.off .name { color: var(--earth); }
+
+  /* Active indicator */
+  .v1-tile.on::after { content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%); width: 5px; height: 5px; border-radius: 50%; background: var(--trail); }
+
+
+  /* ============================================================
+     V2: PILL CHIPS WITH FLAG INLINE — compact, elegant
+     ============================================================ */
+  .v2-scroll { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; flex-wrap: wrap; }
+  .v2-scroll::-webkit-scrollbar { display: none; }
+
+  .v2-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 8px 14px; border-radius: 100px;
+    cursor: pointer; transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+    flex-shrink: 0;
+  }
+  .v2-chip:active { transform: scale(0.94); }
+
+  .v2-chip.on { background: var(--earth); }
+  .v2-chip.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .v2-chip .flag { font-size: 16px; }
+  .v2-chip .name { font-size: 11px; font-weight: 600; }
+  .v2-chip.on .name { color: var(--sand); }
+  .v2-chip.off .name { color: var(--earth); }
+
+  /* Checkmark appears when on */
+  .v2-chip.on::after { content: '✓'; font-size: 10px; color: var(--trail); font-weight: 700; margin-left: 2px; }
+
+
+  /* ============================================================
+     V3: STACKED LIST — Vertical list with toggle switches
+     ============================================================ */
+  .v3-list { display: flex; flex-direction: column; gap: 4px; }
+
+  .v3-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-radius: 14px;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .v3-row:active { background: rgba(45,42,36,0.02); }
+
+  .v3-row .flag { font-size: 22px; flex-shrink: 0; }
+  .v3-row .info { flex: 1; }
+  .v3-row .name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .v3-row .dishes { font-size: 10px; color: var(--rock); margin-top: 1px; }
+
+  /* Toggle switch */
+  .v3-toggle { width: 40px; height: 22px; border-radius: 11px; position: relative; flex-shrink: 0; cursor: pointer; transition: background 0.3s; }
+  .v3-toggle.on { background: var(--trail); }
+  .v3-toggle.off { background: var(--stone); }
+  .v3-toggle::after { content: ''; position: absolute; top: 2px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: left 0.3s cubic-bezier(0.34,1.56,0.64,1); }
+  .v3-toggle.on::after { left: 20px; }
+  .v3-toggle.off::after { left: 2px; }
+
+
+  /* ============================================================
+     V4: ICON BUBBLES — Circular bubbles, selected ones glow
+     ============================================================ */
+  .v4-scroll { display: flex; gap: 12px; overflow-x: auto; scrollbar-width: none; padding: 6px 0; }
+  .v4-scroll::-webkit-scrollbar { display: none; }
+
+  .v4-bubble {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    cursor: pointer; flex-shrink: 0; transition: transform 0.25s;
+  }
+  .v4-bubble:active { transform: scale(0.9); }
+
+  .v4-circle {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative;
+  }
+  .v4-bubble.on .v4-circle { background: var(--earth); box-shadow: 0 0 0 3px var(--trail), 0 4px 12px rgba(45,42,36,0.1); transform: scale(1.08); }
+  .v4-bubble.off .v4-circle { background: #fff; border: 1px solid rgba(0,0,0,0.06); }
+
+  .v4-bubble .name { font-size: 9px; font-weight: 600; color: var(--earth); }
+  .v4-bubble.on .name { color: var(--earth); font-weight: 700; }
+  .v4-bubble.off .name { color: var(--rock); }
+
+
+  /* ============================================================
+     V5: MINI CARDS WITH DISH PREVIEW — shows what you'll eat
+     ============================================================ */
+  .v5-scroll { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+  .v5-scroll::-webkit-scrollbar { display: none; }
+
+  .v5-card {
+    min-width: 110px; border-radius: 18px; padding: 14px 12px; flex-shrink: 0;
+    cursor: pointer; transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    position: relative; overflow: hidden;
+  }
+  .v5-card:active { transform: scale(0.94); }
+
+  .v5-card.on { background: var(--earth); }
+  .v5-card.off { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .v5-card .top-row { display: flex; justify-content: space-between; align-items: center; }
+  .v5-card .flag { font-size: 22px; }
+  .v5-card.on .check { width: 16px; height: 16px; border-radius: 50%; background: rgba(52,211,153,0.2); display: flex; align-items: center; justify-content: center; font-size: 8px; color: var(--trail); font-weight: 700; }
+  .v5-card.off .check { display: none; }
+  .v5-card .name { font-size: 12px; font-weight: 700; margin-top: 8px; }
+  .v5-card.on .name { color: var(--sand); }
+  .v5-card.off .name { color: var(--earth); }
+  .v5-card .dish { font-size: 9px; margin-top: 3px; line-height: 1.3; }
+  .v5-card.on .dish { color: rgba(246,245,240,0.4); }
+  .v5-card.off .dish { color: var(--rock); }
+
+
+  /* ============================================================
+     V6: SEGMENTED BAR — like iOS segmented control but prettier
+     ============================================================ */
+  .v6-wrap { background: var(--stone); border-radius: 14px; padding: 4px; display: flex; gap: 3px; overflow-x: auto; scrollbar-width: none; }
+  .v6-wrap::-webkit-scrollbar { display: none; }
+
+  .v6-seg {
+    flex: 1; min-width: 60px; padding: 10px 6px; border-radius: 11px;
+    text-align: center; cursor: pointer; flex-shrink: 0;
+    transition: all 0.25s cubic-bezier(0.34,1.56,0.64,1);
+  }
+  .v6-seg.on { background: var(--earth); box-shadow: 0 2px 8px rgba(45,42,36,0.1); }
+  .v6-seg.off { background: transparent; }
+
+  .v6-seg .flag { font-size: 18px; display: block; }
+  .v6-seg .name { font-size: 8px; font-weight: 600; margin-top: 3px; }
+  .v6-seg.on .name { color: var(--sand); }
+  .v6-seg.off .name { color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- V1 -->
+<div>
+  <div class="block-label" style="color:var(--trail);">V1 — Large Flag Tiles</div>
+  <div class="block-desc">Bigger tiles, flag is the hero. Scale-up on select. Trail dot indicator. Horizontal scroll.</div>
+  <div class="block">
+    <div class="v1-scroll">
+      <div class="v1-tile on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇳</span><span class="name">Indian</span></div>
+      <div class="v1-tile on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇹</span><span class="name">Italian</span></div>
+      <div class="v1-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇲🇽</span><span class="name">Mexican</span></div>
+      <div class="v1-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇯🇵</span><span class="name">Japanese</span></div>
+      <div class="v1-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇺🇸</span><span class="name">American</span></div>
+      <div class="v1-tile off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇹🇭</span><span class="name">Thai</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- V2 -->
+<div>
+  <div class="block-label" style="color:#818CF8;">V2 — Inline Pill Chips</div>
+  <div class="block-desc">Flag + name in a compact pill. Wrapping flex. Checkmark on active. Minimal footprint.</div>
+  <div class="block">
+    <div class="v2-scroll">
+      <div class="v2-chip on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇳</span><span class="name">Indian</span></div>
+      <div class="v2-chip on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇹</span><span class="name">Italian</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇲🇽</span><span class="name">Mexican</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇯🇵</span><span class="name">Japanese</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇺🇸</span><span class="name">American</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇹🇭</span><span class="name">Thai</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇬🇷</span><span class="name">Greek</span></div>
+      <div class="v2-chip off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇰🇷</span><span class="name">Korean</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- V3 -->
+<div>
+  <div class="block-label" style="color:#F59E0B;">V3 — Toggle List</div>
+  <div class="block-desc">Vertical list with dish hints and iOS-style toggle switches. Green = active. Shows exactly what's on/off.</div>
+  <div class="block">
+    <div class="v3-list">
+      <div class="v3-row" onclick="let t=this.querySelector('.v3-toggle');t.classList.toggle('on');t.classList.toggle('off');"><span class="flag">🇮🇳</span><div class="info"><div class="name">Indian</div><div class="dishes">Curry, Dal, Butter Chicken</div></div><div class="v3-toggle on"></div></div>
+      <div class="v3-row" onclick="let t=this.querySelector('.v3-toggle');t.classList.toggle('on');t.classList.toggle('off');"><span class="flag">🇮🇹</span><div class="info"><div class="name">Italian</div><div class="dishes">Pasta, Risotto, Grilled Fish</div></div><div class="v3-toggle on"></div></div>
+      <div class="v3-row" onclick="let t=this.querySelector('.v3-toggle');t.classList.toggle('on');t.classList.toggle('off');"><span class="flag">🇲🇽</span><div class="info"><div class="name">Mexican</div><div class="dishes">Burrito, Tacos, Rice Bowl</div></div><div class="v3-toggle off"></div></div>
+      <div class="v3-row" onclick="let t=this.querySelector('.v3-toggle');t.classList.toggle('on');t.classList.toggle('off');"><span class="flag">🇯🇵</span><div class="info"><div class="name">Japanese</div><div class="dishes">Sushi, Teriyaki, Ramen</div></div><div class="v3-toggle off"></div></div>
+      <div class="v3-row" onclick="let t=this.querySelector('.v3-toggle');t.classList.toggle('on');t.classList.toggle('off');"><span class="flag">🇺🇸</span><div class="info"><div class="name">American</div><div class="dishes">Grills, Salads, Bowls</div></div><div class="v3-toggle off"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- V4 -->
+<div>
+  <div class="block-label" style="color:var(--trail);">V4 — Icon Bubbles</div>
+  <div class="block-desc">Circular avatars. Selected = dark circle with trail green ring glow + scale-up. Horizontal scroll. Name below each.</div>
+  <div class="block">
+    <div class="v4-scroll">
+      <div class="v4-bubble on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇮🇳</div><span class="name">Indian</span></div>
+      <div class="v4-bubble on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇮🇹</div><span class="name">Italian</span></div>
+      <div class="v4-bubble off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇲🇽</div><span class="name">Mexican</span></div>
+      <div class="v4-bubble off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇯🇵</div><span class="name">Japanese</span></div>
+      <div class="v4-bubble off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇺🇸</div><span class="name">American</span></div>
+      <div class="v4-bubble off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇹🇭</div><span class="name">Thai</span></div>
+      <div class="v4-bubble off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="v4-circle">🇬🇷</div><span class="name">Greek</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- V5 -->
+<div>
+  <div class="block-label" style="color:#818CF8;">V5 — Mini Cards + Dish</div>
+  <div class="block-desc">Wider tiles showing flag, name AND sample dishes. Green checkmark badge on selected. You see what each cuisine offers.</div>
+  <div class="block">
+    <div class="v5-scroll">
+      <div class="v5-card on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="top-row"><span class="flag">🇮🇳</span><span class="check">✓</span></div><span class="name">Indian</span><span class="dish">Curry, Dal, Paneer, Roti</span></div>
+      <div class="v5-card on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="top-row"><span class="flag">🇮🇹</span><span class="check">✓</span></div><span class="name">Italian</span><span class="dish">Pasta, Risotto, Grilled</span></div>
+      <div class="v5-card off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="top-row"><span class="flag">🇲🇽</span><span class="check">✓</span></div><span class="name">Mexican</span><span class="dish">Burrito, Tacos, Bowls</span></div>
+      <div class="v5-card off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="top-row"><span class="flag">🇯🇵</span><span class="check">✓</span></div><span class="name">Japanese</span><span class="dish">Sushi, Teriyaki, Ramen</span></div>
+      <div class="v5-card off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><div class="top-row"><span class="flag">🇺🇸</span><span class="check">✓</span></div><span class="name">American</span><span class="dish">Grills, Salads, Bowls</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- V6 -->
+<div>
+  <div class="block-label" style="color:#F59E0B;">V6 — Segmented Bar</div>
+  <div class="block-desc">Stone track with sliding dark segments. Like an iOS segmented control but with flags. Compact, fits many in a row.</div>
+  <div class="block">
+    <div class="v6-wrap">
+      <div class="v6-seg on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇳</span><span class="name">Indian</span></div>
+      <div class="v6-seg on" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇮🇹</span><span class="name">Italian</span></div>
+      <div class="v6-seg off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇲🇽</span><span class="name">Mexican</span></div>
+      <div class="v6-seg off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇯🇵</span><span class="name">Japanese</span></div>
+      <div class="v6-seg off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇺🇸</span><span class="name">American</span></div>
+      <div class="v6-seg off" onclick="this.classList.toggle('on');this.classList.toggle('off');"><span class="flag">🇹🇭</span><span class="name">Thai</span></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

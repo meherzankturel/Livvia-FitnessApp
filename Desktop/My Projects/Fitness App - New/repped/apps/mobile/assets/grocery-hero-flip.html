@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Card Flip</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+.hint{text-align:center;padding:8px 0 0;font-size:9px;color:var(--rock);opacity:0.5}
+
+/* ============================================================
+   FLIP CARD CONTAINER
+   ============================================================ */
+.flip-container{
+  margin:16px 18px 0;
+  perspective:1000px;
+  height:185px;
+}
+
+.flip-card{
+  position:relative;
+  width:100%;
+  height:100%;
+  transition:transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+  transform-style:preserve-3d;
+  will-change:transform;
+}
+
+.flip-card.flipped{
+  transform:rotateY(180deg);
+}
+
+/* Both faces */
+.flip-front,.flip-back{
+  position:absolute;
+  width:100%;
+  height:100%;
+  backface-visibility:hidden;
+  -webkit-backface-visibility:hidden;
+  border-radius:22px;
+  overflow:hidden;
+  transform:translateZ(0);
+}
+
+
+/* ============================================================
+   FRONT FACE — Main grocery card
+   ============================================================ */
+.flip-front{
+  background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);
+  box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  padding:14px 18px 18px;
+}
+.flip-front::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.f-top{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:4px}
+.f-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.f-meta{font-size:10px;color:var(--rock)}
+
+.f-mid{display:flex;align-items:center;position:relative}
+.f-total-wrap{flex:1}
+.f-total{display:flex;align-items:center}
+.f-dollar{font-family:'DM Serif Display',serif;font-size:48px;color:#2E7D32;line-height:1;opacity:0.7;margin-right:8px}
+.f-amount{font-family:'DM Serif Display',serif;font-size:48px;color:var(--earth);line-height:1;letter-spacing:-0.5px}
+.f-est{font-size:9px;color:var(--rock);margin-top:3px}
+.f-cart{width:120px;height:120px;flex-shrink:0;margin-right:-10px;margin-top:-10px;margin-bottom:-10px}
+
+.f-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:8px;position:relative}
+
+/* Neumorphism save button */
+.save-btn{
+  display:flex;align-items:center;gap:5px;
+  padding:8px 16px;border-radius:12px;
+  background:linear-gradient(145deg,#C8C3B9,#B8B3A9);
+  cursor:pointer;flex-shrink:0;
+  box-shadow:4px 4px 10px rgba(0,0,0,0.08),-4px -4px 10px rgba(255,255,255,0.6);
+  transition:all 0.15s ease;
+}
+.save-btn:active{box-shadow:inset 2px 2px 6px rgba(0,0,0,0.08),inset -2px -2px 6px rgba(255,255,255,0.5)}
+.save-text{font-size:9px;font-weight:700;color:var(--earth);letter-spacing:0.3px}
+
+
+/* ============================================================
+   BACK FACE — Smart Save Tips
+   ============================================================ */
+.flip-back{
+  background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);
+  box-shadow:0 4px 20px rgba(0,0,0,0.06);
+  padding:16px 18px 18px;
+  transform:rotateY(180deg);
+}
+.flip-back::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.b-top{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px;padding-bottom:8px;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.b-title{font-size:10px;font-weight:700;color:var(--earth);text-transform:uppercase;letter-spacing:1.5px}
+.b-close{font-size:9px;font-weight:600;color:var(--rock);cursor:pointer;padding:5px 12px;border-radius:10px;background:linear-gradient(145deg,#C8C3B9,#B8B3A9);box-shadow:3px 3px 8px rgba(0,0,0,0.06),-3px -3px 8px rgba(255,255,255,0.5)}
+
+/* Tips list */
+.b-tips{position:relative}
+.b-tip{display:flex;align-items:flex-start;gap:8px;padding:6px 0;border-bottom:0.5px solid rgba(0,0,0,0.03)}
+.b-tip:last-child{border-bottom:none}
+.b-tip-icon{width:22px;height:22px;border-radius:8px;background:rgba(0,0,0,0.03);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;margin-top:1px}
+.b-tip-content{flex:1}
+.b-tip-text{font-size:10px;font-weight:500;color:var(--earth);line-height:1.4;letter-spacing:-0.1px}
+.b-tip-save{font-size:9px;font-weight:700;color:#2E7D32;margin-top:1px}
+
+
+/* ============================================================
+   LIST BELOW
+   ============================================================ */
+.list{padding:20px 24px 0}
+.list-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.list-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.list-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.list-sub{font-size:10px;color:var(--rock)}
+.list-cat{display:flex;align-items:center;gap:6px;padding:12px 0 4px}
+.list-cat-dot{width:6px;height:6px;border-radius:3px}
+.list-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+.list-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.list-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0}
+.list-name{font-size:13px;font-weight:500;color:var(--earth);flex-shrink:0}
+.list-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.list-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+</style>
+</head>
+<body>
+
+<div class="phone"><div class="ps">
+
+  <div class="top">
+    <div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div>
+    <span class="title">Grocery List</span>
+    <span class="week">Mar 30</span>
+  </div>
+
+  <!-- FLIP CARD -->
+  <div class="flip-container">
+    <div class="flip-card" id="flipCard">
+
+      <!-- FRONT -->
+      <div class="flip-front">
+        <div class="f-top"><span class="f-label">Weekly Shop</span><span class="f-meta">18 items</span></div>
+        <div class="f-mid">
+          <div class="f-total-wrap">
+            <div class="f-total"><span class="f-dollar">$</span><span class="f-amount">47.82</span></div>
+            <div class="f-est">estimated total</div>
+          </div>
+          <div id="cart-anim" class="f-cart"></div>
+        </div>
+        <div class="f-bottom">
+          <div></div>
+          <div class="save-btn" onclick="document.getElementById('flipCard').classList.add('flipped')">
+            <span class="save-text">💡 Save Tips</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- BACK — Smart Save Tips -->
+      <div class="flip-back">
+        <div class="b-top">
+          <span class="b-title">💡 Smart Save Tips</span>
+          <span class="b-close" onclick="document.getElementById('flipCard').classList.remove('flipped')">✕ Close</span>
+        </div>
+
+        <div class="b-tips">
+          <div class="b-tip">
+            <div class="b-tip-icon">🥦</div>
+            <div class="b-tip-content">
+              <div class="b-tip-text">Seasonal spinach & avocado are cheaper this week</div>
+              <div class="b-tip-save">Save ~$2.40</div>
+            </div>
+          </div>
+          <div class="b-tip">
+            <div class="b-tip-icon">🧊</div>
+            <div class="b-tip-content">
+              <div class="b-tip-text">Frozen salmon — 40% cheaper, same nutrients</div>
+              <div class="b-tip-save">Save ~$5.20</div>
+            </div>
+          </div>
+          <div class="b-tip">
+            <div class="b-tip-icon">📦</div>
+            <div class="b-tip-content">
+              <div class="b-tip-text">Buy oats & rice in bulk — lasts 3 weeks</div>
+              <div class="b-tip-save">Save ~$3.50</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- LIST -->
+  <div class="list">
+    <div class="list-head"><div><span class="list-title">Shopping List</span><div class="list-accent"></div></div><span class="list-sub">18 items</span></div>
+
+    <div class="list-cat"><div class="list-cat-dot" style="background:#34D399"></div><span class="list-cat-name">Produce</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Avocado</span><span class="list-dots">·······························</span><span class="list-price">$1.99</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Spinach</span><span class="list-dots">·······························</span><span class="list-price">$3.49</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Banana</span><span class="list-dots">·······························</span><span class="list-price">$0.69</span></div>
+
+    <div class="list-cat"><div class="list-cat-dot" style="background:#EF4444"></div><span class="list-cat-name">Protein</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Chicken breast</span><span class="list-dots">·······························</span><span class="list-price">$8.99</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Eggs</span><span class="list-dots">·······························</span><span class="list-price">$4.99</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Salmon</span><span class="list-dots">·······························</span><span class="list-price">$12.99</span></div>
+
+    <div class="list-cat"><div class="list-cat-dot" style="background:#F59E0B"></div><span class="list-cat-name">Dairy</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Greek yogurt</span><span class="list-dots">·······························</span><span class="list-price">$5.99</span></div>
+    <div class="list-row"><div class="list-cb"></div><span class="list-name">Butter</span><span class="list-dots">·······························</span><span class="list-price">$4.49</span></div>
+  </div>
+
+</div></div>
+
+<script>
+lottie.loadAnimation({
+  container: document.getElementById('cart-anim'),
+  renderer: 'svg',
+  loop: true,
+  autoplay: true,
+  path: '/shopping-cart.json'
+});
+</script>
+</body>
+</html>

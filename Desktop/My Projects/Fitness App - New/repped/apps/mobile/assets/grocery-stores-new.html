@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Glass Store Cards</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* List placeholder */
+.ph{padding:56px 24px 0}
+.ph-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--stone);flex-shrink:0}
+.ph-bar{height:10px;border-radius:5px;background:var(--stone);flex:1;opacity:0.25}
+.ph-sm{width:30px;height:8px;border-radius:4px;background:var(--stone);opacity:0.2}
+
+/* Section head */
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.s-title{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--earth);letter-spacing:-0.2px}
+.s-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s-meta{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   STORES — Glass cards with warm terrain gradient texture
+   ============================================================ */
+.stores{padding:20px 20px 50px}
+
+/* Store card — frosted glass with warm gradient */
+.store-card{
+  background:linear-gradient(155deg,
+    rgba(255,255,255,0.65) 0%,
+    rgba(237,235,229,0.5) 30%,
+    rgba(246,245,240,0.55) 60%,
+    rgba(255,255,255,0.6) 100%
+  );
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border:1px solid rgba(255,255,255,0.5);
+  border-radius:18px;
+  padding:14px 16px;
+  margin-bottom:10px;
+  cursor:pointer;
+  transition:all 0.15s;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 2px 12px rgba(0,0,0,0.03);
+}
+.store-card.pressing{transform:scale(0.98)}
+
+/* Subtle inner glow */
+.store-card::before{
+  content:'';position:absolute;top:-20px;right:-20px;
+  width:80px;height:80px;border-radius:50%;
+  background:rgba(52,211,153,0.04);
+}
+
+/* Closest store — slightly stronger green tint */
+.store-card.closest{
+  background:linear-gradient(155deg,
+    rgba(52,211,153,0.08) 0%,
+    rgba(255,255,255,0.6) 25%,
+    rgba(237,235,229,0.5) 50%,
+    rgba(246,245,240,0.55) 75%,
+    rgba(52,211,153,0.05) 100%
+  );
+  border-color:rgba(52,211,153,0.15);
+}
+.store-card.closest::before{background:rgba(52,211,153,0.06)}
+
+/* Top row: icon + name + rating */
+.store-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;position:relative}
+
+/* Store logo */
+.store-logo{
+  width:38px;height:38px;border-radius:10px;
+  background:#fff;
+  object-fit:contain;
+  flex-shrink:0;
+  box-shadow:0 1px 4px rgba(0,0,0,0.04);
+  padding:4px;
+}
+
+.store-info{flex:1}
+.store-name{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--earth);letter-spacing:-0.2px}
+.store-address{font-family:'Inter',sans-serif;font-size:10px;color:var(--rock);margin-top:1px}
+
+.store-rating{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.store-star{font-size:12px}
+.store-rating-val{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--earth)}
+
+/* Bottom row: distance + walk + open badge */
+.store-bottom{display:flex;align-items:center;gap:6px;position:relative}
+.walk-icon{width:16px;height:16px;object-fit:contain;opacity:0.75;flex-shrink:0}
+.store-dist{font-family:'Inter',sans-serif;font-size:12px;font-weight:700;color:var(--earth)}
+.store-card.closest .store-dist{color:var(--trail)}
+.store-dot{width:3px;height:3px;border-radius:50%;background:var(--rock);opacity:0.3}
+.store-walk{font-size:11px;color:var(--rock)}
+
+.store-badge{
+  margin-left:auto;padding:3px 10px;border-radius:100px;
+  font-size:9px;font-weight:700;
+}
+.store-badge.open{background:rgba(52,211,153,0.1);color:var(--trail)}
+.store-badge.closed{background:rgba(239,68,68,0.06);color:#EF4444}
+
+/* Navigate pill */
+.nav-pill{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:11px;border-radius:14px;
+  background:var(--earth);
+  cursor:pointer;margin-top:4px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.08);
+}
+.nav-text{font-size:11px;font-weight:600;color:var(--sand)}
+.nav-arrow{font-size:12px;color:var(--trail)}
+
+/* Directions panel — hidden by default, slides open on click */
+.store-directions{
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(0.25,0.46,0.45,0.94),
+             padding 0.4s cubic-bezier(0.25,0.46,0.45,0.94),
+             opacity 0.3s ease;
+  opacity:0;padding:0 0;
+  border-top:0px solid rgba(0,0,0,0.04);
+}
+.store-card.expanded .store-directions{
+  max-height:120px;opacity:1;
+  padding:10px 0 0;margin-top:10px;
+  border-top-width:0.5px;
+}
+
+.dir-row{display:flex;gap:8px}
+.dir-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+  padding:10px 14px;border-radius:14px;cursor:pointer;
+  transition:all 0.15s;
+  background:linear-gradient(155deg,rgba(255,255,255,0.5),rgba(237,235,229,0.4),rgba(246,245,240,0.45));
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.45);
+  box-shadow:0 1px 6px rgba(0,0,0,0.03);
+}
+.dir-btn:active{transform:scale(0.96);box-shadow:inset 0 1px 4px rgba(0,0,0,0.04)}
+
+.dir-btn-icon{font-size:13px}
+.dir-btn-text{font-family:'Inter',sans-serif;font-size:10px;font-weight:600;color:var(--earth);letter-spacing:0.2px}
+
+</style>
+</head>
+<body>
+
+<div class="phone">
+
+<!-- Toast — fixed at top center inside the phone -->
+<div id="copyToast" style="
+  position:absolute;top:50px;left:50%;z-index:200;
+  transform:translateX(-50%) translateY(-20px);
+  padding:10px 20px;border-radius:14px;
+  background:rgba(45,42,36,0.9);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  display:flex;align-items:center;gap:8px;
+  opacity:0;pointer-events:none;
+  transition:all 0.3s cubic-bezier(0.25,0.46,0.45,0.94);
+  box-shadow:0 4px 16px rgba(0,0,0,0.15);
+">
+  <span style="font-size:14px;color:#34D399">✓</span>
+  <span style="font-family:Inter,sans-serif;font-size:12px;font-weight:600;color:#F6F5F0">Copied to clipboard</span>
+</div>
+
+<div class="ps">
+
+  <!-- List placeholder -->
+  <div class="ph">
+    <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%"></div><div class="ph-sm"></div></div>
+    <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:65%"></div><div class="ph-sm"></div></div>
+    <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:40%"></div><div class="ph-sm"></div></div>
+    <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%"></div><div class="ph-sm"></div></div>
+  </div>
+
+  <!-- Nearby Stores -->
+  <div class="stores">
+    <div class="s-head">
+      <div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div>
+      <span class="s-meta">3 found</span>
+    </div>
+
+    <!-- Closest store — green tinted glass -->
+    <div class="store-card closest" onclick="toggleCard(event, this)">
+      <div class="store-top">
+        
+        <div class="store-info">
+          <div class="store-name">No Frills</div>
+          <div class="store-address">245 Queen St W</div>
+        </div>
+        <div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.3/5</span></div>
+      </div>
+      <div class="store-bottom">
+        <img class="walk-icon" src="/walking.png">
+        <span class="store-dist">172m</span>
+        <span class="store-dot"></span>
+        <span class="store-walk">2 min</span>
+        <span class="store-badge open">Open</span>
+      </div>
+      <div class="store-directions">
+        <div class="dir-row">
+          <div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div>
+          <div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Store 2 -->
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top">
+        
+        <div class="store-info">
+          <div class="store-name">Walmart Supercentre</div>
+          <div class="store-address">900 Dufferin St</div>
+        </div>
+        <div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">3.8/5</span></div>
+      </div>
+      <div class="store-bottom">
+        <img class="walk-icon" src="/walking.png">
+        <span class="store-dist">1.2 km</span>
+        <span class="store-dot"></span>
+        <span class="store-walk">14 min</span>
+        <span class="store-badge open">Open</span>
+      </div>
+    </div>
+
+    <!-- Store 3 -->
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top">
+        
+        <div class="store-info">
+          <div class="store-name">Loblaws</div>
+          <div class="store-address">396 St. Clair Ave W</div>
+        </div>
+        <div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.5/5</span></div>
+      </div>
+      <div class="store-bottom">
+        <img class="walk-icon" src="/walking.png">
+        <span class="store-dist">1.8 km</span>
+        <span class="store-dot"></span>
+        <span class="store-walk">22 min</span>
+        <span class="store-badge closed">Closed</span>
+      </div>
+      <div class="store-directions">
+        <div class="dir-row">
+          <div class="dir-btn" onclick="event.stopPropagation()"><span class="dir-btn-icon">📍</span><span class="dir-btn-text">Get Directions</span></div>
+          <div class="dir-btn copy-btn" onclick="event.stopPropagation();copyAddress(this)"><span class="dir-btn-icon">📋</span><span class="dir-btn-text">Copy Address</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Store 4 -->
+    <div class="store-card" onclick="toggleCard(event, this)">
+      <div class="store-top">
+        
+        <div class="store-info">
+          <div class="store-name">Metro</div>
+          <div class="store-address">925 Wilson Ave</div>
+        </div>
+        <div class="store-rating"><span class="store-star">⭐</span><span class="store-rating-val">4.1/5</span></div>
+      </div>
+      <div class="store-bottom">
+        <img class="walk-icon" src="/walking.png">
+        <span class="store-dist">2.3 km</span>
+        <span class="store-dot"></span>
+        <span class="store-walk">28 min</span>
+        <span class="store-badge open">Open</span>
+      </div>
+    </div>
+
+  </div>
+
+</div></div>
+
+<script>
+function copyAddress(btn) {
+  var card = btn.closest('.store-card');
+  var address = card.querySelector('.store-address').textContent;
+
+  // Copy to clipboard
+  navigator.clipboard.writeText(address).catch(function(){});
+
+  // Show toast at top of screen (standard Android/iOS style)
+  var toast = document.getElementById('copyToast');
+  toast.style.opacity = '1';
+  toast.style.transform = 'translateX(-50%) translateY(0)';
+
+  setTimeout(function(){
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateX(-50%) translateY(-20px)';
+  }, 2000);
+}
+
+function toggleCard(e, card) {
+  // Don't toggle if clicking on direction buttons
+  if (e.target.closest('.store-directions')) return;
+
+  // Close all other cards first
+  document.querySelectorAll('.store-card.expanded').forEach(c => {
+    if (c !== card) c.classList.remove('expanded');
+  });
+  // Toggle this card
+  card.classList.toggle('expanded');
+
+  // Press effect only on the card area (not buttons)
+  card.classList.add('pressing');
+  setTimeout(() => card.classList.remove('pressing'), 150);
+}
+</script>
+</body>
+</html>

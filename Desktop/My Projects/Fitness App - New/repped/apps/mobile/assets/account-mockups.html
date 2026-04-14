@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Account Screen Mockups</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0c;padding:30px 20px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--amber:#F59E0B}
+.phones{display:flex;justify-content:center;gap:50px;flex-wrap:wrap}
+.phone-col{display:flex;flex-direction:column;align-items:center;gap:12px}
+.phone-label{font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5)}
+.phone-desc{font-size:10px;color:rgba(255,255,255,0.25);max-width:393px;text-align:center}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+
+/* ═══════════════════════════════════════════════════════
+   A1 — CENTERED PROFILE
+   Avatar centered at top, name below, stats row,
+   then grouped settings lists. Clean, iOS-like.
+   ═══════════════════════════════════════════════════════ */
+.a1{padding:48px 20px 40px;background:var(--sand)}
+
+/* Centered avatar area */
+.a1-avatar-area{display:flex;flex-direction:column;align-items:center;margin-bottom:20px}
+.a1-avatar{width:72px;height:72px;border-radius:36px;background:rgba(52,211,153,0.1);display:flex;align-items:center;justify-content:center;position:relative}
+.a1-avatar-text{font-family:'DM Serif Display',serif;font-size:30px;color:var(--trail)}
+.a1-avatar-ring{position:absolute;inset:-4px;border-radius:50%;border:2px solid rgba(52,211,153,0.15)}
+.a1-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--earth);margin-top:10px}
+.a1-email{font-size:11px;color:var(--rock);margin-top:2px}
+.a1-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 12px;border-radius:10px;background:rgba(52,211,153,0.08);margin-top:8px}
+.a1-badge-text{font-size:9px;font-weight:700;color:var(--trail);text-transform:uppercase;letter-spacing:0.5px}
+
+/* Stats row */
+.a1-stats{display:flex;gap:8px;margin-bottom:20px}
+.a1-stat{flex:1;padding:12px 8px;border-radius:14px;background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4));border:1px solid rgba(255,255,255,0.4);text-align:center}
+.a1-stat-val{font-family:'DM Serif Display',serif;font-size:18px;color:var(--earth);line-height:1}
+.a1-stat-label{font-size:7px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:3px}
+
+/* Settings groups */
+.a1-group{background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.03)}
+.a1-group-title{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;padding:16px 16px 6px}
+.a1-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.a1-row:last-child{border-bottom:none}
+.a1-row-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.a1-row-text{flex:1;font-size:13px;font-weight:600;color:var(--earth)}
+.a1-row-arrow{font-size:14px;color:var(--stone)}
+.a1-row-meta{font-size:11px;color:var(--rock)}
+
+/* Sign out */
+.a1-signout{text-align:center;margin-top:16px;font-size:13px;font-weight:600;color:#EF4444;opacity:0.5;cursor:pointer;padding:12px}
+/* Version */
+.a1-version{text-align:center;font-size:9px;color:var(--rock);opacity:0.4;margin-top:8px}
+
+
+/* ═══════════════════════════════════════════════════════
+   A2 — DARK HERO CARD
+   Dark card at top with avatar + info + stats.
+   Below: light grouped actions. Current style but polished.
+   ═══════════════════════════════════════════════════════ */
+.a2{padding:48px 18px 40px;background:var(--sand)}
+.a2-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--earth);margin-bottom:14px;padding:0 2px}
+
+/* Dark card */
+.a2-card{border-radius:22px;padding:22px;background:linear-gradient(155deg,#3B3730,#2D2A24,#24221D);position:relative;overflow:hidden;margin-bottom:16px;box-shadow:0 4px 20px rgba(0,0,0,0.1)}
+.a2-card::before{content:'';position:absolute;top:-25px;right:-20px;width:100px;height:100px;border-radius:50%;background:rgba(52,211,153,0.05)}
+.a2-card-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.a2-avatar{width:52px;height:52px;border-radius:26px;background:rgba(52,211,153,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+.a2-avatar-text{font-family:'DM Serif Display',serif;font-size:22px;color:var(--trail)}
+.a2-avatar-ring{position:absolute;inset:-3px;border-radius:50%;border:1.5px solid rgba(52,211,153,0.15)}
+.a2-info{flex:1}
+.a2-name{font-size:15px;font-weight:700;color:#EDEBE5}
+.a2-email{font-size:10px;color:rgba(237,235,229,0.4);margin-top:1px}
+.a2-badges{display:flex;gap:6px;margin-top:6px}
+.a2-badge{padding:3px 10px;border-radius:8px;font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px}
+.a2-badge.goal{background:rgba(52,211,153,0.08);color:var(--trail)}
+.a2-badge.level{background:rgba(245,158,11,0.08);color:var(--amber)}
+/* Edit button */
+.a2-edit{width:32px;height:32px;border-radius:16px;background:rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;cursor:pointer}
+
+/* Stats inside card */
+.a2-stats{display:flex;gap:6px}
+.a2-stat{flex:1;padding:10px 6px;border-radius:12px;background:rgba(255,255,255,0.04);text-align:center}
+.a2-stat-val{font-family:'DM Serif Display',serif;font-size:16px;color:#EDEBE5;line-height:1}
+.a2-stat-label{font-size:7px;font-weight:600;color:rgba(237,235,229,0.35);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+
+/* Light groups below */
+.a2-group{background:#fff;border-radius:16px;margin-bottom:10px;overflow:hidden;border:1px solid rgba(0,0,0,0.03)}
+.a2-row{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.a2-row:last-child{border-bottom:none}
+.a2-row-icon{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.a2-row-text{flex:1;font-size:13px;font-weight:600;color:var(--earth)}
+.a2-row-arrow{font-size:14px;color:var(--stone)}
+.a2-row-meta{font-size:11px;color:var(--rock)}
+
+.a2-signout{text-align:center;margin-top:14px;font-size:13px;font-weight:600;color:#EF4444;opacity:0.5;cursor:pointer;padding:12px}
+.a2-version{text-align:center;font-size:9px;color:var(--rock);opacity:0.4;margin-top:6px}
+
+
+/* ═══════════════════════════════════════════════════════
+   A3 — GLASS PROFILE + BENTO SETTINGS
+   Warm glass profile card at top.
+   Settings as a 2-column bento grid of icon tiles.
+   More visual, more unique spatial layout.
+   ═══════════════════════════════════════════════════════ */
+.a3{padding:48px 18px 40px;background:var(--sand)}
+.a3-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--earth);margin-bottom:14px;padding:0 2px}
+
+/* Glass profile card */
+.a3-card{border-radius:22px;padding:20px;background:linear-gradient(155deg,#D4CFC5 0%,#E2DDD4 25%,#EAE6DE 50%,#F0ECE4 75%,#DDD8CE 100%);border:1px solid rgba(255,255,255,0.45);position:relative;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 4px rgba(0,0,0,0.03),0 8px 20px rgba(0,0,0,0.04)}
+.a3-card::before{content:'';position:absolute;top:-20px;right:-15px;width:80px;height:80px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.a3-card::after{content:'';position:absolute;inset:0;border-radius:22px;background:radial-gradient(ellipse at 25% 25%,rgba(255,255,255,0.2),transparent 50%);pointer-events:none}
+
+.a3-card-top{display:flex;align-items:center;gap:14px;position:relative;z-index:1}
+.a3-avatar{width:56px;height:56px;border-radius:28px;background:rgba(52,211,153,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;border:2px solid rgba(255,255,255,0.4)}
+.a3-avatar-text{font-family:'DM Serif Display',serif;font-size:24px;color:var(--trail)}
+.a3-info{flex:1}
+.a3-name{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--earth)}
+.a3-email{font-size:10px;color:var(--rock);margin-top:1px}
+.a3-badges{display:flex;gap:5px;margin-top:6px}
+.a3-badge{padding:3px 10px;border-radius:8px;font-size:8px;font-weight:700;letter-spacing:0.5px;text-transform:uppercase;background:rgba(255,255,255,0.5);color:var(--earth)}
+.a3-badge.hl{background:rgba(52,211,153,0.12);color:var(--trail)}
+
+/* Stats row in card */
+.a3-stats{display:flex;gap:6px;margin-top:14px;position:relative;z-index:1}
+.a3-stat{flex:1;padding:10px 6px;border-radius:12px;background:rgba(255,255,255,0.45);text-align:center}
+.a3-stat-val{font-family:'DM Serif Display',serif;font-size:16px;color:var(--earth);line-height:1}
+.a3-stat-label{font-size:7px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:0.5px;margin-top:2px}
+
+/* Bento settings grid */
+.a3-bento{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.a3-tile{padding:16px 14px;border-radius:16px;background:#fff;border:1px solid rgba(0,0,0,0.03);cursor:pointer;display:flex;flex-direction:column;gap:8px}
+.a3-tile:active{transform:scale(0.98)}
+.a3-tile-icon{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.a3-tile-text{font-size:12px;font-weight:600;color:var(--earth)}
+.a3-tile-sub{font-size:9px;color:var(--rock);margin-top:-4px}
+
+/* Full-width tiles */
+.a3-wide{grid-column:span 2;flex-direction:row;align-items:center;padding:14px 16px}
+.a3-wide .a3-tile-text{flex:1}
+.a3-wide .a3-tile-arrow{font-size:14px;color:var(--stone)}
+
+.a3-signout{text-align:center;margin-top:14px;font-size:13px;font-weight:600;color:#EF4444;opacity:0.5;cursor:pointer;padding:12px}
+.a3-version{text-align:center;font-size:9px;color:var(--rock);opacity:0.4;margin-top:6px}
+
+</style>
+</head>
+<body>
+
+<div class="phones">
+
+<!-- ══════ A1 — CENTERED PROFILE ══════ -->
+<div class="phone-col">
+<span class="phone-label">A1 — Centered Profile</span>
+<span class="phone-desc">Avatar + name centered. Stats row. Grouped settings lists. Clean iOS feel.</span>
+<div class="phone"><div class="ps">
+  <div class="a1">
+    <div class="a1-avatar-area">
+      <div class="a1-avatar"><div class="a1-avatar-ring"></div><span class="a1-avatar-text">M</span></div>
+      <div class="a1-name">Meherzan</div>
+      <div class="a1-email">meherzan@email.com</div>
+      <div class="a1-badge"><span style="font-size:10px">🔥</span><span class="a1-badge-text">Beginner</span></div>
+    </div>
+
+    <div class="a1-stats">
+      <div class="a1-stat"><div class="a1-stat-val">2,100</div><div class="a1-stat-label">Cal / Day</div></div>
+      <div class="a1-stat"><div class="a1-stat-val">5</div><div class="a1-stat-label">Days / Wk</div></div>
+      <div class="a1-stat"><div class="a1-stat-val">Home</div><div class="a1-stat-label">Equipment</div></div>
+    </div>
+
+    <div class="a1-group">
+      <div class="a1-group-title">Training</div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(52,211,153,0.08)">🔄</div><div class="a1-row-text">Regenerate Plan</div><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(245,158,11,0.08)">📋</div><div class="a1-row-text">Weekly Check-in</div><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(99,102,241,0.08)">🏆</div><div class="a1-row-text">Achievements</div><span class="a1-row-meta">4 earned</span><span class="a1-row-arrow">›</span></div>
+    </div>
+
+    <div class="a1-group">
+      <div class="a1-group-title">Profile</div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">⚙️</div><div class="a1-row-text">Edit Profile</div><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">🎯</div><div class="a1-row-text">Goals & Preferences</div><span class="a1-row-meta">Lose weight</span><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">🔔</div><div class="a1-row-text">Notifications</div><span class="a1-row-arrow">›</span></div>
+    </div>
+
+    <div class="a1-group">
+      <div class="a1-group-title">Support</div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">❓</div><div class="a1-row-text">Help & FAQ</div><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">💬</div><div class="a1-row-text">Send Feedback</div><span class="a1-row-arrow">›</span></div>
+      <div class="a1-row"><div class="a1-row-icon" style="background:rgba(45,42,36,0.04)">📜</div><div class="a1-row-text">Privacy Policy</div><span class="a1-row-arrow">›</span></div>
+    </div>
+
+    <div class="a1-signout">Sign Out</div>
+    <div class="a1-version">Repped v1.0.0</div>
+  </div>
+</div></div>
+</div>
+
+
+<!-- ══════ A2 — DARK HERO CARD ══════ -->
+<div class="phone-col">
+<span class="phone-label">A2 — Dark Hero Card</span>
+<span class="phone-desc">Dark earth profile card with badges + stats. Light settings below. Premium.</span>
+<div class="phone"><div class="ps">
+  <div class="a2">
+    <div class="a2-title">Account</div>
+
+    <div class="a2-card">
+      <div class="a2-card-top">
+        <div class="a2-avatar"><div class="a2-avatar-ring"></div><span class="a2-avatar-text">M</span></div>
+        <div class="a2-info">
+          <div class="a2-name">Meherzan</div>
+          <div class="a2-email">meherzan@email.com</div>
+          <div class="a2-badges"><span class="a2-badge goal">Lose Weight</span><span class="a2-badge level">Beginner</span></div>
+        </div>
+        <div class="a2-edit">✏️</div>
+      </div>
+      <div class="a2-stats">
+        <div class="a2-stat"><div class="a2-stat-val">2,100</div><div class="a2-stat-label">Cal / Day</div></div>
+        <div class="a2-stat"><div class="a2-stat-val">5</div><div class="a2-stat-label">Days / Wk</div></div>
+        <div class="a2-stat"><div class="a2-stat-val">Home</div><div class="a2-stat-label">Equipment</div></div>
+      </div>
+    </div>
+
+    <div class="a2-group">
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(52,211,153,0.08)">🔄</div><div class="a2-row-text">Regenerate Plan</div><span class="a2-row-arrow">›</span></div>
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(245,158,11,0.08)">📋</div><div class="a2-row-text">Weekly Check-in</div><span class="a2-row-arrow">›</span></div>
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(99,102,241,0.08)">🏆</div><div class="a2-row-text">Achievements</div><span class="a2-row-meta">4 earned</span><span class="a2-row-arrow">›</span></div>
+    </div>
+
+    <div class="a2-group">
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(45,42,36,0.04)">🎯</div><div class="a2-row-text">Goals & Preferences</div><span class="a2-row-arrow">›</span></div>
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(45,42,36,0.04)">🔔</div><div class="a2-row-text">Notifications</div><span class="a2-row-arrow">›</span></div>
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(45,42,36,0.04)">❓</div><div class="a2-row-text">Help & FAQ</div><span class="a2-row-arrow">›</span></div>
+      <div class="a2-row"><div class="a2-row-icon" style="background:rgba(45,42,36,0.04)">💬</div><div class="a2-row-text">Send Feedback</div><span class="a2-row-arrow">›</span></div>
+    </div>
+
+    <div class="a2-signout">Sign Out</div>
+    <div class="a2-version">Repped v1.0.0</div>
+  </div>
+</div></div>
+</div>
+
+
+<!-- ══════ A3 — GLASS + BENTO ══════ -->
+<div class="phone-col">
+<span class="phone-label">A3 — Glass + Bento</span>
+<span class="phone-desc">Warm glass profile card. Settings as a 2-column icon tile grid. Unique layout.</span>
+<div class="phone"><div class="ps">
+  <div class="a3">
+    <div class="a3-title">Account</div>
+
+    <div class="a3-card">
+      <div class="a3-card-top">
+        <div class="a3-avatar"><span class="a3-avatar-text">M</span></div>
+        <div class="a3-info">
+          <div class="a3-name">Meherzan</div>
+          <div class="a3-email">meherzan@email.com</div>
+          <div class="a3-badges"><span class="a3-badge hl">Lose Weight</span><span class="a3-badge">Beginner</span></div>
+        </div>
+      </div>
+      <div class="a3-stats">
+        <div class="a3-stat"><div class="a3-stat-val">2,100</div><div class="a3-stat-label">Cal / Day</div></div>
+        <div class="a3-stat"><div class="a3-stat-val">5</div><div class="a3-stat-label">Days / Wk</div></div>
+        <div class="a3-stat"><div class="a3-stat-val">Home</div><div class="a3-stat-label">Equipment</div></div>
+      </div>
+    </div>
+
+    <div class="a3-bento">
+      <div class="a3-tile"><div class="a3-tile-icon" style="background:rgba(52,211,153,0.08)">🔄</div><div class="a3-tile-text">Regenerate Plan</div><div class="a3-tile-sub">Update your workout</div></div>
+      <div class="a3-tile"><div class="a3-tile-icon" style="background:rgba(245,158,11,0.08)">📋</div><div class="a3-tile-text">Weekly Check-in</div><div class="a3-tile-sub">Rate your week</div></div>
+      <div class="a3-tile"><div class="a3-tile-icon" style="background:rgba(99,102,241,0.08)">🏆</div><div class="a3-tile-text">Achievements</div><div class="a3-tile-sub">4 earned</div></div>
+      <div class="a3-tile"><div class="a3-tile-icon" style="background:rgba(45,42,36,0.04)">🎯</div><div class="a3-tile-text">Goals</div><div class="a3-tile-sub">Lose weight</div></div>
+      <div class="a3-tile a3-wide"><div class="a3-tile-icon" style="background:rgba(45,42,36,0.04)">🔔</div><div class="a3-tile-text">Notifications</div><span class="a3-tile-arrow">›</span></div>
+      <div class="a3-tile a3-wide"><div class="a3-tile-icon" style="background:rgba(45,42,36,0.04)">❓</div><div class="a3-tile-text">Help & FAQ</div><span class="a3-tile-arrow">›</span></div>
+      <div class="a3-tile a3-wide"><div class="a3-tile-icon" style="background:rgba(45,42,36,0.04)">💬</div><div class="a3-tile-text">Send Feedback</div><span class="a3-tile-arrow">›</span></div>
+    </div>
+
+    <div class="a3-signout">Sign Out</div>
+    <div class="a3-version">Repped v1.0.0</div>
+  </div>
+</div></div>
+</div>
+
+</div>
+</body>
+</html>

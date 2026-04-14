@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player M-Series</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+
+  /* ============================================================
+     M1: "THE SCOREBOARD"
+     One set fills the ENTIRE screen. Giant weight + reps numbers.
+     Exercise is tiny at top. Like a sports scoreboard in the gym.
+     Previous data is ghost text behind inputs.
+     ============================================================ */
+  .m1 { background: var(--sand); }
+
+  /* Top bar */
+  .m1-top { padding: 56px 24px 0; display: flex; align-items: center; justify-content: space-between; }
+  .m1-timer { font-size: 13px; font-weight: 700; color: var(--earth); font-variant-numeric: tabular-nums; letter-spacing: 0.5px; }
+  .m1-exit { font-size: 12px; color: var(--rock); cursor: pointer; }
+
+  /* Progress dots */
+  .m1-dots { display: flex; gap: 4px; padding: 16px 24px 0; justify-content: center; }
+  .m1-dot { height: 4px; border-radius: 2px; background: var(--stone); flex: 1; max-width: 40px; transition: all 0.3s; }
+  .m1-dot.active { background: var(--trail); }
+  .m1-dot.done { background: var(--earth); }
+
+  /* Exercise identity — minimal */
+  .m1-exercise { text-align: center; padding: 20px 24px 0; }
+  .m1-ex-name { font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .m1-ex-meta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 6px; }
+  .m1-muscle { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .m1-actions { display: flex; gap: 12px; }
+  .m1-action { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .m1-action.swap { color: var(--trail); }
+  .m1-action.video { color: var(--rock); }
+
+  /* THE SCOREBOARD — giant numbers zone */
+  .m1-score-zone {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 30px 24px 0; flex: 1;
+  }
+
+  .m1-set-label {
+    font-size: 11px; font-weight: 700; color: var(--trail); text-transform: uppercase;
+    letter-spacing: 1.5px; margin-bottom: 6px;
+  }
+
+  /* Previous ghost hint */
+  .m1-ghost { font-size: 12px; color: var(--rock); opacity: 0.5; margin-bottom: 4px; }
+
+  .m1-number-row {
+    display: flex; align-items: center; gap: 20px; width: 100%;
+    justify-content: center; margin-top: 8px;
+  }
+
+  .m1-input-group { text-align: center; }
+  .m1-input-wrap {
+    position: relative; width: 140px; height: 100px; border-radius: 20px;
+    background: #fff; border: 2px solid var(--stone);
+    display: flex; align-items: center; justify-content: center;
+    transition: border-color 0.2s;
+  }
+  .m1-input-wrap:focus-within { border-color: var(--trail); box-shadow: 0 0 0 4px rgba(52,211,153,0.08); }
+  .m1-input-val {
+    font-size: 44px; font-weight: 800; color: var(--earth); text-align: center;
+    border: none; background: none; outline: none; width: 100%;
+    letter-spacing: -1px;
+  }
+  .m1-input-label {
+    font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase;
+    letter-spacing: 0.5px; margin-top: 6px;
+  }
+  .m1-x { font-size: 24px; font-weight: 300; color: var(--rock); opacity: 0.3; margin-top: -8px; }
+
+  /* Completed sets — compact pills below */
+  .m1-history {
+    display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    padding: 24px 24px 0;
+  }
+  .m1-done-pill {
+    padding: 8px 16px; border-radius: 12px; background: var(--earth);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .m1-done-num { font-size: 10px; font-weight: 700; color: var(--trail); }
+  .m1-done-val { font-size: 12px; font-weight: 600; color: var(--sand); }
+
+  /* Set dots */
+  .m1-set-dots { display: flex; gap: 6px; justify-content: center; padding: 16px 0 0; }
+  .m1-sdot {
+    width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--stone);
+    transition: all 0.3s;
+  }
+  .m1-sdot.done { background: var(--trail); border-color: var(--trail); }
+  .m1-sdot.active { border-color: var(--trail); background: rgba(52,211,153,0.15); }
+
+  /* Log button */
+  .m1-log {
+    margin: 24px 24px 40px; padding: 20px; border-radius: 18px;
+    background: var(--earth); text-align: center; cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .m1-log:active { transform: scale(0.97); }
+  .m1-log-text { font-size: 17px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     M2: "THE CARD STACK"
+     Each set is a card. Current set is the front card with big inputs.
+     Completed sets peek from behind. Swipe metaphor.
+     Exercise info as a thin dark strip at top.
+     ============================================================ */
+  .m2 { background: var(--stone); }
+
+  /* Dark strip header */
+  .m2-header {
+    background: var(--earth); padding: 56px 24px 16px;
+    border-radius: 0 0 28px 28px; position: relative; overflow: hidden;
+  }
+  .m2-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .m2-ha:nth-child(1) { width: 100px; top: 54px; right: -8px; transform: rotate(-35deg); }
+  .m2-ha:nth-child(2) { width: 70px; top: 66px; right: -8px; transform: rotate(-35deg); }
+
+  .m2-top { display: flex; align-items: center; position: relative; }
+  .m2-timer { font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .m2-of { font-size: 12px; color: rgba(246,245,240,0.3); margin-left: 8px; }
+  .m2-exit { font-size: 12px; color: rgba(246,245,240,0.2); margin-left: auto; }
+
+  .m2-ex-name { font-size: 22px; font-weight: 700; color: var(--sand); margin-top: 10px; letter-spacing: -0.5px; position: relative; }
+  .m2-ex-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; position: relative; }
+  .m2-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 0.5px; }
+  .m2-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .m2-action { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .m2-action.swap { color: var(--trail); opacity: 0.7; }
+  .m2-action.video { color: rgba(246,245,240,0.25); }
+
+  .m2-progress { margin: 12px 0 0; height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); overflow: hidden; }
+  .m2-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Card stack area */
+  .m2-stack { padding: 20px 24px 0; position: relative; min-height: 420px; }
+
+  /* Stacked cards behind (completed) */
+  .m2-behind {
+    position: absolute; left: 28px; right: 28px; top: 24px;
+    height: 380px; border-radius: 24px; background: var(--sand);
+    opacity: 0.5; transform: scale(0.94) translateY(-8px);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .m2-behind-2 {
+    position: absolute; left: 32px; right: 32px; top: 28px;
+    height: 380px; border-radius: 24px; background: var(--sand);
+    opacity: 0.3; transform: scale(0.88) translateY(-16px);
+    border: 1px solid rgba(0,0,0,0.03);
+  }
+
+  /* Front card */
+  .m2-card {
+    position: relative; z-index: 2;
+    background: #fff; border-radius: 24px; padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 2px 8px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .m2-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .m2-card-set { font-size: 12px; font-weight: 700; color: var(--trail); text-transform: uppercase; letter-spacing: 1px; }
+  .m2-card-prev { font-size: 11px; color: var(--rock); }
+  .m2-card-prev strong { color: var(--earth); }
+
+  .m2-card-inputs { display: flex; gap: 14px; margin-top: 16px; }
+  .m2-card-group { flex: 1; text-align: center; }
+  .m2-card-input {
+    width: 100%; padding: 20px 8px; border-radius: 18px;
+    background: var(--sand); border: 2px solid transparent;
+    text-align: center; font-size: 36px; font-weight: 800;
+    color: var(--earth); outline: none; letter-spacing: -0.5px;
+    transition: all 0.2s;
+  }
+  .m2-card-input:focus { border-color: var(--trail); background: #fff; }
+  .m2-card-input-label { font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; margin-top: 6px; }
+
+  /* Focus cue inside card */
+  .m2-card-cue {
+    margin-top: 16px; padding: 10px 14px; border-radius: 12px;
+    background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.06);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .m2-cue-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: m2pulse 2.4s infinite; }
+  @keyframes m2pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .m2-cue-text { font-size: 11px; color: var(--rock); }
+  .m2-cue-text strong { color: var(--earth); }
+
+  /* Completed pills below stack */
+  .m2-done-row { display: flex; gap: 6px; justify-content: center; padding: 16px 24px 0; }
+  .m2-done {
+    width: 36px; height: 36px; border-radius: 12px; background: var(--earth);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .m2-done-kg { font-size: 9px; font-weight: 700; color: var(--sand); }
+  .m2-done-r { font-size: 7px; color: rgba(246,245,240,0.4); }
+  .m2-empty { width: 36px; height: 36px; border-radius: 12px; border: 1.5px dashed var(--stone); }
+
+  /* Log button */
+  .m2-log {
+    margin: 20px 24px 40px; padding: 18px; border-radius: 18px;
+    background: var(--earth); text-align: center; cursor: pointer;
+  }
+  .m2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     M3: "THE INSTRUMENT"
+     Inspired by music production / DJ interfaces.
+     Two big circular knobs for weight & reps.
+     Exercise as a slim top banner. Set progress as a ring.
+     Premium, unique, nothing like a spreadsheet.
+     ============================================================ */
+  .m3 { background: var(--earth); }
+
+  /* Top */
+  .m3-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .m3-timer { font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .m3-of { font-size: 12px; color: rgba(246,245,240,0.25); margin-left: 8px; }
+  .m3-exit { font-size: 12px; color: rgba(246,245,240,0.2); margin-left: auto; }
+
+  /* Progress bar */
+  .m3-progress { margin: 10px 24px 0; height: 3px; border-radius: 2px; background: rgba(246,245,240,0.06); }
+  .m3-pfill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+  /* Exercise banner */
+  .m3-banner { padding: 16px 24px 0; text-align: center; }
+  .m3-ex-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .m3-ex-meta { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 4px; }
+  .m3-muscle { font-size: 9px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .m3-dot { width: 3px; height: 3px; border-radius: 50%; background: rgba(246,245,240,0.1); }
+  .m3-action { font-size: 10px; font-weight: 600; cursor: pointer; }
+  .m3-action.swap { color: var(--trail); opacity: 0.7; }
+  .m3-action.video { color: rgba(246,245,240,0.25); }
+
+  /* Set indicator — centered ring */
+  .m3-set-ring-wrap { display: flex; justify-content: center; padding: 20px 0 0; }
+  .m3-set-ring {
+    width: 80px; height: 80px; border-radius: 50%; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .m3-ring-track {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 4px solid rgba(246,245,240,0.06);
+  }
+  .m3-ring-fill {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 4px solid var(--trail);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    transform: rotate(-45deg);
+  }
+  .m3-ring-fill.half {
+    border-bottom-color: var(--trail);
+  }
+  .m3-set-num { font-size: 24px; font-weight: 800; color: var(--sand); }
+  .m3-set-total { font-size: 10px; color: rgba(246,245,240,0.3); }
+  .m3-set-label { font-size: 8px; font-weight: 600; color: var(--trail); text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  /* Ghost previous */
+  .m3-ghost { text-align: center; margin-top: 8px; font-size: 11px; color: rgba(246,245,240,0.2); }
+  .m3-ghost strong { color: rgba(246,245,240,0.35); }
+
+  /* THE INSTRUMENT — two big dials */
+  .m3-dials {
+    display: flex; gap: 20px; justify-content: center; align-items: center;
+    padding: 24px 24px 0;
+  }
+
+  .m3-dial {
+    width: 150px; height: 150px; border-radius: 50%;
+    background: rgba(246,245,240,0.03); position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    border: 2px solid rgba(246,245,240,0.06);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .m3-dial:hover, .m3-dial.active {
+    border-color: var(--trail);
+    background: rgba(52,211,153,0.03);
+    box-shadow: 0 0 30px rgba(52,211,153,0.06);
+  }
+  .m3-dial-marks {
+    position: absolute; inset: -6px; border-radius: 50%;
+  }
+  .m3-dial-mark {
+    position: absolute; width: 2px; height: 8px; border-radius: 1px;
+    background: rgba(246,245,240,0.08); top: 0; left: 50%;
+    transform-origin: 50% 81px;
+  }
+  .m3-dial-val { font-size: 40px; font-weight: 800; color: var(--sand); letter-spacing: -1px; z-index: 1; }
+  .m3-dial-unit { font-size: 10px; font-weight: 600; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.5px; z-index: 1; }
+
+  /* Completed sets row */
+  .m3-done-row { display: flex; gap: 8px; justify-content: center; padding: 24px 24px 0; }
+  .m3-done {
+    padding: 8px 14px; border-radius: 10px; background: rgba(246,245,240,0.04);
+    border: 1px solid rgba(246,245,240,0.04);
+  }
+  .m3-done-text { font-size: 11px; color: rgba(246,245,240,0.4); font-weight: 600; }
+
+  /* Focus cue */
+  .m3-cue {
+    margin: 20px 24px 0; padding: 10px 14px; border-radius: 12px;
+    background: rgba(52,211,153,0.03); border: 1px solid rgba(52,211,153,0.04);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .m3-cue-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: m3pulse 2.4s infinite; }
+  @keyframes m3pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  .m3-cue-text { font-size: 11px; color: rgba(246,245,240,0.3); }
+
+  /* Log button */
+  .m3-log {
+    margin: 24px 24px 40px; padding: 18px; border-radius: 18px;
+    background: var(--trail); text-align: center; cursor: pointer;
+  }
+  .m3-log-text { font-size: 16px; font-weight: 700; color: var(--earth); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== M1: THE SCOREBOARD =============== -->
+  <div>
+    <div class="col-label">M1 — THE SCOREBOARD</div>
+    <div class="col-desc">One set fills the screen. Giant weight × reps like a sports display. Exercise is minimal. Completed sets collapse into pills.</div>
+    <div class="phone m1">
+      <div class="ps">
+        <!-- Top bar -->
+        <div class="m1-top">
+          <span class="m1-timer">12:34</span>
+          <span class="m1-exit">End</span>
+        </div>
+
+        <!-- Exercise progress dots -->
+        <div class="m1-dots">
+          <div class="m1-dot done"></div>
+          <div class="m1-dot done"></div>
+          <div class="m1-dot active"></div>
+          <div class="m1-dot"></div>
+          <div class="m1-dot"></div>
+          <div class="m1-dot"></div>
+        </div>
+
+        <!-- Exercise identity -->
+        <div class="m1-exercise">
+          <div class="m1-ex-name">Barbell Bench Press</div>
+          <div class="m1-ex-meta">
+            <span class="m1-muscle">Chest</span>
+            <div class="m1-actions">
+              <span class="m1-action swap">Swap</span>
+              <span class="m1-action video">▶ Video</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Set label -->
+        <div style="text-align: center; padding-top: 28px;">
+          <span class="m1-set-label">Set 2 of 4</span>
+        </div>
+
+        <!-- Previous ghost -->
+        <div style="text-align: center; padding-top: 4px;">
+          <span class="m1-ghost">Last time: 70 × 10</span>
+        </div>
+
+        <!-- THE SCOREBOARD -->
+        <div class="m1-number-row" style="margin-top: 12px;">
+          <div class="m1-input-group">
+            <div class="m1-input-wrap">
+              <input class="m1-input-val" value="72.5" type="text" inputmode="decimal">
+            </div>
+            <div class="m1-input-label">kg</div>
+          </div>
+          <span class="m1-x">×</span>
+          <div class="m1-input-group">
+            <div class="m1-input-wrap">
+              <input class="m1-input-val" value="10" type="text" inputmode="numeric">
+            </div>
+            <div class="m1-input-label">reps</div>
+          </div>
+        </div>
+
+        <!-- Set dots -->
+        <div class="m1-set-dots">
+          <div class="m1-sdot done"></div>
+          <div class="m1-sdot active"></div>
+          <div class="m1-sdot"></div>
+          <div class="m1-sdot"></div>
+        </div>
+
+        <!-- Completed sets -->
+        <div class="m1-history">
+          <div class="m1-done-pill">
+            <span class="m1-done-num">1</span>
+            <span class="m1-done-val">70 × 10</span>
+          </div>
+        </div>
+
+        <!-- Log -->
+        <div class="m1-log">
+          <div class="m1-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== M2: THE CARD STACK =============== -->
+  <div>
+    <div class="col-label">M2 — THE CARD STACK</div>
+    <div class="col-desc">Each set is a card. Current set floats in front with big inputs. Completed sets peek behind. Focus cue integrated.</div>
+    <div class="phone m2">
+      <div class="ps">
+        <!-- Dark header strip -->
+        <div class="m2-header">
+          <div class="m2-ha"></div>
+          <div class="m2-ha"></div>
+          <div class="m2-top">
+            <span class="m2-timer">12:34</span>
+            <span class="m2-of">3 / 6</span>
+            <span class="m2-exit">End</span>
+          </div>
+          <div class="m2-ex-name">Barbell Bench Press</div>
+          <div class="m2-ex-row">
+            <span class="m2-muscle">Chest</span>
+            <span class="m2-dot"></span>
+            <span class="m2-action swap">Swap</span>
+            <span class="m2-dot"></span>
+            <span class="m2-action video">▶ Video</span>
+          </div>
+          <div class="m2-progress"><div class="m2-pfill" style="width: 40%;"></div></div>
+        </div>
+
+        <!-- Card stack -->
+        <div class="m2-stack">
+          <div class="m2-behind-2"></div>
+          <div class="m2-behind"></div>
+          <div class="m2-card">
+            <div class="m2-card-top">
+              <span class="m2-card-set">Set 2 of 4</span>
+              <span class="m2-card-prev">Last: <strong>70 × 10</strong></span>
+            </div>
+
+            <div class="m2-card-inputs">
+              <div class="m2-card-group">
+                <input class="m2-card-input" value="72.5" type="text" inputmode="decimal">
+                <div class="m2-card-input-label">kg</div>
+              </div>
+              <div class="m2-card-group">
+                <input class="m2-card-input" value="10" type="text" inputmode="numeric">
+                <div class="m2-card-input-label">reps</div>
+              </div>
+            </div>
+
+            <div class="m2-card-cue">
+              <div class="m2-cue-dot"></div>
+              <div class="m2-cue-text"><strong>Drive feet into floor</strong> — create full-body tension</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Done set pills -->
+        <div class="m2-done-row">
+          <div class="m2-done">
+            <span class="m2-done-kg">70</span>
+            <span class="m2-done-r">×10</span>
+          </div>
+          <div class="m2-empty"></div>
+          <div class="m2-empty"></div>
+          <div class="m2-empty"></div>
+        </div>
+
+        <!-- Log -->
+        <div class="m2-log">
+          <div class="m2-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== M3: THE INSTRUMENT =============== -->
+  <div>
+    <div class="col-label">M3 — THE INSTRUMENT</div>
+    <div class="col-desc">Full dark mode. Two circular dials for weight & reps like music production knobs. Set progress as a ring. Unique, nothing like a spreadsheet.</div>
+    <div class="phone m3">
+      <div class="ps">
+        <!-- Top -->
+        <div class="m3-top">
+          <span class="m3-timer">12:34</span>
+          <span class="m3-of">3 / 6</span>
+          <span class="m3-exit">End</span>
+        </div>
+
+        <!-- Progress -->
+        <div class="m3-progress"><div class="m3-pfill" style="width: 40%;"></div></div>
+
+        <!-- Exercise banner -->
+        <div class="m3-banner">
+          <div class="m3-ex-name">Barbell Bench Press</div>
+          <div class="m3-ex-meta">
+            <span class="m3-muscle">Chest</span>
+            <span class="m3-dot"></span>
+            <span class="m3-action swap">Swap</span>
+            <span class="m3-dot"></span>
+            <span class="m3-action video">▶ Video</span>
+          </div>
+        </div>
+
+        <!-- Set ring -->
+        <div class="m3-set-ring-wrap">
+          <div class="m3-set-ring">
+            <div class="m3-ring-track"></div>
+            <div class="m3-ring-fill"></div>
+            <div style="text-align: center;">
+              <div class="m3-set-num">2</div>
+              <div class="m3-set-label">of 4</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ghost previous -->
+        <div class="m3-ghost">Last: <strong>70 × 10</strong></div>
+
+        <!-- Two dials -->
+        <div class="m3-dials">
+          <div class="m3-dial active">
+            <!-- Tick marks -->
+            <div class="m3-dial-marks">
+              <div class="m3-dial-mark" style="transform: rotate(0deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(30deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(60deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(90deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(120deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(150deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(180deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(210deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(240deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(270deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(300deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(330deg);"></div>
+            </div>
+            <div class="m3-dial-val">72.5</div>
+            <div class="m3-dial-unit">kg</div>
+          </div>
+          <div class="m3-dial">
+            <div class="m3-dial-marks">
+              <div class="m3-dial-mark" style="transform: rotate(0deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(30deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(60deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(90deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(120deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(150deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(180deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(210deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(240deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(270deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(300deg);"></div>
+              <div class="m3-dial-mark" style="transform: rotate(330deg);"></div>
+            </div>
+            <div class="m3-dial-val">10</div>
+            <div class="m3-dial-unit">reps</div>
+          </div>
+        </div>
+
+        <!-- Done sets -->
+        <div class="m3-done-row">
+          <div class="m3-done"><span class="m3-done-text">70 × 10</span></div>
+        </div>
+
+        <!-- Focus cue -->
+        <div class="m3-cue">
+          <div class="m3-cue-dot"></div>
+          <span class="m3-cue-text">Drive feet into floor — create full-body tension</span>
+        </div>
+
+        <!-- Log -->
+        <div class="m3-log">
+          <div class="m3-log-text">Log Set</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Creative Progress</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+  .links { display: flex; gap: 8px; padding: 16px 24px; }
+  .link { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; font-size: 11px; font-weight: 600; color: var(--earth); cursor: pointer; }
+
+
+  /* ============================================================
+     X1: TRIPLE RINGS — 3 concentric rings tell the whole story.
+     Completion (outer), Streak health (middle), Volume (inner).
+     Below: what each ring means. Then clean detail sections.
+     ============================================================ */
+
+  .x1-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; text-align: center; }
+  .x1-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 0 0; text-align: center; }
+
+  /* Triple rings — centered, beautiful */
+  .x1-rings { display: flex; justify-content: center; padding: 24px 0 8px; position: relative; }
+  .x1-ring-container { width: 180px; height: 180px; position: relative; }
+  .x1-ring-container svg { position: absolute; inset: 0; }
+
+  /* Outer ring — completion */
+  .x1-outer { width: 180px; height: 180px; transform: rotate(-90deg); }
+  .x1-outer-track { fill: none; stroke: var(--stone); stroke-width: 7; }
+  .x1-outer-fill { fill: none; stroke: var(--trail); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 502; stroke-dashoffset: 502; animation: x1Outer 1.5s cubic-bezier(0.16,1,0.3,1) 0.3s forwards; }
+  @keyframes x1Outer { to { stroke-dashoffset: 125; } }
+
+  /* Middle ring — streak */
+  .x1-mid { width: 140px; height: 140px; transform: rotate(-90deg); position: absolute; top: 20px; left: 20px; }
+  .x1-mid-track { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .x1-mid-fill { fill: none; stroke: var(--earth); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 377; stroke-dashoffset: 377; animation: x1Mid 1.5s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes x1Mid { to { stroke-dashoffset: 75; } }
+
+  /* Inner ring — volume */
+  .x1-inner { width: 100px; height: 100px; transform: rotate(-90deg); position: absolute; top: 40px; left: 40px; }
+  .x1-inner-track { fill: none; stroke: rgba(45,42,36,0.04); stroke-width: 7; }
+  .x1-inner-fill { fill: none; stroke: #F59E0B; stroke-width: 7; stroke-linecap: round; opacity: 0.6; stroke-dasharray: 251; stroke-dashoffset: 251; animation: x1Inner 1.5s cubic-bezier(0.16,1,0.3,1) 0.7s forwards; }
+  @keyframes x1Inner { to { stroke-dashoffset: 88; } }
+
+  /* Ring legend — 3 items below */
+  .x1-legend { display: flex; gap: 6px; padding: 0 24px; justify-content: center; }
+  .x1-leg { display: flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 12px; }
+  .x1-leg:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .x1-leg:nth-child(2) { background: rgba(45,42,36,0.03); }
+  .x1-leg:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .x1-leg-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .x1-leg:nth-child(1) .x1-leg-dot { background: var(--trail); }
+  .x1-leg:nth-child(2) .x1-leg-dot { background: var(--earth); }
+  .x1-leg:nth-child(3) .x1-leg-dot { background: #F59E0B; opacity: 0.6; }
+  .x1-leg-text {}
+  .x1-leg-val { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .x1-leg-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+  /* Clean sections below */
+  .x1-sec { padding: 16px 24px 0; }
+  .x1-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  .x1-heat { padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .x1-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .x1-hc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; }
+  .x1-hc.empty { background: var(--stone); }
+  .x1-hc.done { background: var(--earth); }
+  .x1-hc.today { background: var(--trail); }
+
+  /* Weight — simple inline */
+  .x1-weight { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .x1-wl { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .x1-wv { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .x1-wv span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .x1-wt { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .x1-wb { padding: 10px 18px; border-radius: 12px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  /* 1RM — dark card */
+  .x1-rm { padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .x1-rm-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .x1-rm-title { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; position: relative; }
+  .x1-rm-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .x1-rm-row:last-child { border-bottom: none; }
+  .x1-rm-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .x1-rm-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .x1-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+
+  /* ============================================================
+     X2: ELEVATION PROFILE — Your month as a mountain range.
+     SVG shows workout intensity as peaks. Current week glows.
+     Below: clean number row + details.
+     ============================================================ */
+
+  .x2-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .x2-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  /* Elevation hero — dark card with mountain SVG */
+  .x2-elev { margin: 14px 24px 0; border-radius: 24px; background: var(--earth); padding: 22px 22px 0; position: relative; overflow: hidden; }
+  .x2-elev-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .x2-elev-title { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 4px; position: relative; }
+
+  .x2-elev-chart { height: 120px; margin-top: 14px; position: relative; }
+  .x2-elev-chart svg { width: 100%; height: 100%; }
+  .x2-e-area { fill: url(#x2Grad); opacity: 0.15; }
+  .x2-e-line { fill: none; stroke: var(--trail); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 500; stroke-dashoffset: 500; animation: x2Draw 2s cubic-bezier(0.16,1,0.3,1) 0.4s forwards; }
+  @keyframes x2Draw { to { stroke-dashoffset: 0; } }
+
+  /* Week labels */
+  .x2-weeks { display: flex; justify-content: space-between; padding: 8px 22px 16px; position: relative; }
+  .x2-week { font-size: 8px; color: rgba(246,245,240,0.2); text-align: center; font-weight: 600; }
+  .x2-week.current { color: var(--trail); }
+
+  /* Hiker dot on the elevation */
+  .x2-hiker { position: absolute; width: 10px; height: 10px; border-radius: 50%; background: var(--trail); box-shadow: 0 0 10px rgba(52,211,153,0.4); right: 42px; bottom: 66px; z-index: 2; }
+  .x2-hiker::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(52,211,153,0.2); animation: x2Ping 2s ease-in-out infinite; }
+  @keyframes x2Ping { 0%,100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.6); opacity: 0; } }
+
+  /* Stats row */
+  .x2-stats { display: flex; gap: 0; padding: 14px 24px 0; }
+  .x2-stat { flex: 1; text-align: center; padding: 14px 0; position: relative; }
+  .x2-stat::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: var(--stone); }
+  .x2-stat:last-child::after { display: none; }
+  .x2-stat-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .x2-stat-val span { font-size: 10px; color: var(--rock); font-weight: 500; }
+  .x2-stat-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  /* Rest same as X1 */
+  .x2-sec { padding: 16px 24px 0; }
+  .x2-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+
+  /* ============================================================
+     X3: PULSE LINE — A heartbeat-style visualization.
+     Dark card with an animated EKG-like line showing workout
+     frequency. Peaks = workout days. Flat = rest.
+     Below: clean minimal stats + details.
+     ============================================================ */
+
+  .x3-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 56px 24px 0; }
+  .x3-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; padding: 4px 24px 0; }
+
+  /* Pulse hero */
+  .x3-pulse { margin: 14px 24px 0; border-radius: 24px; background: var(--earth); padding: 22px; position: relative; overflow: hidden; }
+  .x3-pulse-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+
+  /* Big number overlay */
+  .x3-pulse-hero { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; position: relative; }
+  .x3-pulse-num { font-size: 48px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .x3-pulse-unit { font-size: 14px; color: rgba(246,245,240,0.3); }
+  .x3-pulse-sub { font-size: 11px; color: rgba(246,245,240,0.25); margin-top: 4px; position: relative; }
+
+  /* EKG line */
+  .x3-ekg { height: 60px; margin-top: 14px; position: relative; }
+  .x3-ekg svg { width: 100%; height: 100%; }
+  .x3-ekg-line { fill: none; stroke: var(--trail); stroke-width: 2; stroke-linecap: round; opacity: 0.5; stroke-dasharray: 600; stroke-dashoffset: 600; animation: x3Draw 2s cubic-bezier(0.16,1,0.3,1) 0.5s forwards; }
+  @keyframes x3Draw { to { stroke-dashoffset: 0; } }
+  .x3-ekg-glow { fill: none; stroke: var(--trail); stroke-width: 4; stroke-linecap: round; opacity: 0.1; filter: blur(4px); }
+  .x3-ekg-dots { position: absolute; inset: 0; }
+  .x3-ekg-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); opacity: 0; animation: x3DotIn 0.3s ease forwards; }
+
+  /* Week labels */
+  .x3-pulse-weeks { display: flex; justify-content: space-between; margin-top: 8px; position: relative; }
+  .x3-pw { font-size: 7px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+  .x3-pw.now { color: var(--trail); opacity: 0.5; }
+
+  /* Three key stats */
+  .x3-trio { display: flex; gap: 10px; padding: 14px 24px 0; }
+  .x3-tri { flex: 1; padding: 16px 12px; border-radius: 18px; text-align: center; }
+  .x3-tri:nth-child(1) { background: rgba(52,211,153,0.06); }
+  .x3-tri:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .x3-tri:nth-child(3) { background: var(--stone); }
+  .x3-tri-val { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .x3-tri:nth-child(1) .x3-tri-val { color: #047857; }
+  .x3-tri-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .x3-tri:nth-child(1) .x3-tri-label { color: #047857; opacity: 0.6; }
+
+  /* Shared detail sections */
+  .xs-sec { padding: 16px 24px 0; }
+  .xs-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  .xs-heat { padding: 14px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .xs-heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .xs-hc { aspect-ratio: 1; border-radius: 3px; max-width: 14px; }
+  .xs-hc.empty { background: var(--stone); }
+  .xs-hc.done { background: var(--earth); }
+  .xs-hc.today { background: var(--trail); }
+
+  .xs-weight { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); display: flex; justify-content: space-between; align-items: center; }
+  .xs-wl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .xs-wl-val { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .xs-wl-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+  .xs-wl-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+  .xs-w-btn { padding: 10px 18px; border-radius: 12px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--sand); cursor: pointer; }
+
+  .xs-rm { padding: 18px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .xs-rm-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+  .xs-rm-title { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; position: relative; }
+  .xs-rm-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid rgba(246,245,240,0.04); position: relative; }
+  .xs-rm-row:last-child { border-bottom: none; }
+  .xs-rm-name { font-size: 13px; color: var(--sand); font-weight: 500; }
+  .xs-rm-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .xs-rm-val span { font-size: 9px; color: rgba(246,245,240,0.3); }
+
+  .xs-pr-row { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .xs-pr-row:last-child { border-bottom: none; }
+  .xs-pr-badge { width: 24px; height: 24px; border-radius: 8px; background: rgba(52,211,153,0.06); display: flex; align-items: center; justify-content: center; font-size: 11px; }
+  .xs-pr-name { font-size: 14px; font-weight: 500; color: var(--earth); flex: 1; }
+  .xs-pr-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .xs-pr-val span { font-size: 9px; color: var(--rock); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== X1: TRIPLE RINGS ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">X1 — Triple Rings</div>
+  <div class="dsc">Three concentric animated rings tell the whole story at a glance. Green = completion. Dark = streak health. Amber = volume target. Legend below shows each value. Then clean sections.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x1-ctx">Monday, Mar 24</div>
+    <div class="x1-title">Your Journey</div>
+
+    <div class="x1-rings"><div class="x1-ring-container">
+      <svg class="x1-outer" viewBox="0 0 180 180"><circle class="x1-outer-track" cx="90" cy="90" r="80"/><circle class="x1-outer-fill" cx="90" cy="90" r="80"/></svg>
+      <svg class="x1-mid" viewBox="0 0 140 140"><circle class="x1-mid-track" cx="70" cy="70" r="60"/><circle class="x1-mid-fill" cx="70" cy="70" r="60"/></svg>
+      <svg class="x1-inner" viewBox="0 0 100 100"><circle class="x1-inner-track" cx="50" cy="50" r="40"/><circle class="x1-inner-fill" cx="50" cy="50" r="40"/></svg>
+    </div></div>
+
+    <div class="x1-legend">
+      <div class="x1-leg"><div class="x1-leg-dot"></div><div class="x1-leg-text"><div class="x1-leg-val">75%</div><div class="x1-leg-label">Complete</div></div></div>
+      <div class="x1-leg"><div class="x1-leg-dot"></div><div class="x1-leg-text"><div class="x1-leg-val">12d</div><div class="x1-leg-label">Streak</div></div></div>
+      <div class="x1-leg"><div class="x1-leg-dot"></div><div class="x1-leg-text"><div class="x1-leg-val">2.4t</div><div class="x1-leg-label">Volume</div></div></div>
+    </div>
+
+    <div class="x1-sec"><div class="x1-sec-title">Activity</div><div class="x1-heat"><div class="x1-heat-grid" id="x1Heat"></div></div></div>
+    <div class="x1-sec"><div class="x1-sec-title">Weight</div><div class="x1-weight"><div><div class="x1-wl">Current</div><div class="x1-wv">74.2 <span>kg</span></div><div class="x1-wt">▼ 0.8kg this month</div></div><div class="x1-wb">+ Log</div></div></div>
+    <div class="x1-sec"><div class="x1-sec-title">Estimated 1RM</div><div class="x1-rm"><div class="x1-rm-accent"></div><div class="x1-rm-title">Compound Lifts</div><div class="x1-rm-row"><span class="x1-rm-name">Bench Press</span><span class="x1-rm-val">80 <span>kg</span></span></div><div class="x1-rm-row"><span class="x1-rm-name">Squat</span><span class="x1-rm-val">100 <span>kg</span></span></div><div class="x1-rm-row"><span class="x1-rm-name">Deadlift</span><span class="x1-rm-val">120 <span>kg</span></span></div><div class="x1-rm-row"><span class="x1-rm-name">OHP</span><span class="x1-rm-val">50 <span>kg</span></span></div></div></div>
+    <div class="x1-sec"><div class="x1-sec-title">Recent PRs</div><div class="xs-pr-row"><div class="xs-pr-badge">🏆</div><span class="xs-pr-name">Bench Press</span><span class="xs-pr-val">80 <span>kg</span></span></div><div class="xs-pr-row"><div class="xs-pr-badge">🏆</div><span class="xs-pr-name">Squat</span><span class="xs-pr-val">105 <span>kg</span></span></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== X2: ELEVATION PROFILE ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">X2 — Elevation Profile</div>
+  <div class="dsc">Your month as a mountain range inside a dark hero card. SVG peaks = workout intensity. Trail line draws itself. Green hiker dot with ping shows "you are here." Week labels below. Clean stat row.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x2-ctx">Monday, Mar 24</div>
+    <div class="x2-title">Your Journey</div>
+
+    <div class="x2-elev">
+      <div class="x2-elev-label">4-Week Elevation</div>
+      <div class="x2-elev-title">Week 3 of 4 · Peak Week</div>
+      <div class="x2-elev-chart">
+        <div class="x2-hiker"></div>
+        <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+          <defs><linearGradient id="x2Grad" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="var(--trail)"/><stop offset="100%" stop-color="var(--earth)"/></linearGradient></defs>
+          <path class="x2-e-area" d="M0,80 Q20,75 40,65 Q60,40 80,35 Q100,30 120,45 Q140,60 160,50 Q180,30 200,25 Q220,20 240,35 Q260,45 280,40 Q300,50 300,100 L0,100 Z"/>
+          <path class="x2-e-line" d="M0,80 Q20,75 40,65 Q60,40 80,35 Q100,30 120,45 Q140,60 160,50 Q180,30 200,25 Q220,20 240,35 Q260,45 280,40"/>
+        </svg>
+      </div>
+      <div class="x2-weeks"><span class="x2-week">Wk 1</span><span class="x2-week">Wk 2</span><span class="x2-week current">Wk 3</span><span class="x2-week">Wk 4</span></div>
+    </div>
+
+    <div class="x2-stats">
+      <div class="x2-stat"><div class="x2-stat-val">75<span>%</span></div><div class="x2-stat-label">Complete</div></div>
+      <div class="x2-stat"><div class="x2-stat-val">12</div><div class="x2-stat-label">Streak</div></div>
+      <div class="x2-stat"><div class="x2-stat-val">47</div><div class="x2-stat-label">Workouts</div></div>
+      <div class="x2-stat"><div class="x2-stat-val">2.4<span>t</span></div><div class="x2-stat-label">Volume</div></div>
+    </div>
+
+    <div class="xs-sec"><div class="xs-sec-title">Activity</div><div class="xs-heat"><div class="xs-heat-grid" id="x2Heat"></div></div></div>
+    <div class="xs-sec"><div class="xs-sec-title">Weight</div><div class="xs-weight"><div><div class="xs-wl-label">Current</div><div class="xs-wl-val">74.2 <span>kg</span></div><div class="xs-wl-trend">▼ 0.8kg this month</div></div><div class="xs-w-btn">+ Log</div></div></div>
+    <div class="xs-sec"><div class="xs-sec-title">Estimated 1RM</div><div class="xs-rm"><div class="xs-rm-accent"></div><div class="xs-rm-title">Compound Lifts</div><div class="xs-rm-row"><span class="xs-rm-name">Bench Press</span><span class="xs-rm-val">80 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">Squat</span><span class="xs-rm-val">100 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">Deadlift</span><span class="xs-rm-val">120 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">OHP</span><span class="xs-rm-val">50 <span>kg</span></span></div></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== X3: PULSE LINE ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">X3 — Pulse Line</div>
+  <div class="dsc">Dark hero with EKG-style pulse visualization. Peaks = workout days. Flat = rest. Line draws itself with glow. Big 48px streak number overlaid. Three tinted stat cards below. Then clean details.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="x3-ctx">Monday, Mar 24</div>
+    <div class="x3-title">Your Journey</div>
+
+    <div class="x3-pulse">
+      <div class="x3-pulse-label">Your Rhythm · 4 Weeks</div>
+      <div class="x3-pulse-hero"><div class="x3-pulse-num">12</div><div class="x3-pulse-unit">day streak</div></div>
+      <div class="x3-pulse-sub">3 of 4 workouts done this week</div>
+
+      <div class="x3-ekg">
+        <svg viewBox="0 0 300 60" preserveAspectRatio="none">
+          <!-- Glow layer -->
+          <path class="x3-ekg-glow" d="M0,40 L20,40 L25,15 L30,45 L35,30 L40,40 L80,40 L85,10 L90,50 L95,25 L100,40 L140,40 L145,20 L150,42 L155,35 L160,40 L200,40 L205,8 L210,48 L215,22 L220,40 L260,40 L265,12 L270,45 L275,28 L280,40 L300,40"/>
+          <!-- Main line -->
+          <path class="x3-ekg-line" d="M0,40 L20,40 L25,15 L30,45 L35,30 L40,40 L80,40 L85,10 L90,50 L95,25 L100,40 L140,40 L145,20 L150,42 L155,35 L160,40 L200,40 L205,8 L210,48 L215,22 L220,40 L260,40 L265,12 L270,45 L275,28 L280,40 L300,40"/>
+        </svg>
+        <div class="x3-ekg-dots">
+          <div class="x3-ekg-dot" style="left:8.3%;top:20%;animation-delay:1s;"></div>
+          <div class="x3-ekg-dot" style="left:28.3%;top:8%;animation-delay:1.2s;"></div>
+          <div class="x3-ekg-dot" style="left:48.3%;top:28%;animation-delay:1.4s;"></div>
+          <div class="x3-ekg-dot" style="left:68.3%;top:5%;animation-delay:1.6s;"></div>
+          <div class="x3-ekg-dot" style="left:88.3%;top:14%;animation-delay:1.8s;"></div>
+        </div>
+      </div>
+
+      <div class="x3-pulse-weeks">
+        <span class="x3-pw">Wk 1</span><span class="x3-pw">Wk 2</span><span class="x3-pw">Wk 3</span><span class="x3-pw now">Wk 4</span>
+      </div>
+    </div>
+
+    <div class="x3-trio">
+      <div class="x3-tri"><div class="x3-tri-val">75%</div><div class="x3-tri-label">Complete</div></div>
+      <div class="x3-tri"><div class="x3-tri-val">47</div><div class="x3-tri-label">Workouts</div></div>
+      <div class="x3-tri"><div class="x3-tri-val">2.4t</div><div class="x3-tri-label">Volume</div></div>
+    </div>
+
+    <div class="xs-sec"><div class="xs-sec-title">Activity</div><div class="xs-heat"><div class="xs-heat-grid" id="x3Heat"></div></div></div>
+    <div class="xs-sec"><div class="xs-sec-title">Weight</div><div class="xs-weight"><div><div class="xs-wl-label">Current</div><div class="xs-wl-val">74.2 <span>kg</span></div><div class="xs-wl-trend">▼ 0.8kg this month</div></div><div class="xs-w-btn">+ Log</div></div></div>
+    <div class="xs-sec"><div class="xs-sec-title">Estimated 1RM</div><div class="xs-rm"><div class="xs-rm-accent"></div><div class="xs-rm-title">Compound Lifts</div><div class="xs-rm-row"><span class="xs-rm-name">Bench Press</span><span class="xs-rm-val">80 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">Squat</span><span class="xs-rm-val">100 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">Deadlift</span><span class="xs-rm-val">120 <span>kg</span></span></div><div class="xs-rm-row"><span class="xs-rm-name">OHP</span><span class="xs-rm-val">50 <span>kg</span></span></div></div></div>
+    <div class="xs-sec"><div class="xs-sec-title">Recent PRs</div><div class="xs-pr-row"><div class="xs-pr-badge">🏆</div><span class="xs-pr-name">Bench Press</span><span class="xs-pr-val">80 <span>kg</span></span></div><div class="xs-pr-row"><div class="xs-pr-badge">🏆</div><span class="xs-pr-name">Squat</span><span class="xs-pr-val">105 <span>kg</span></span></div></div>
+    <div class="links"><div class="link">Achievements</div><div class="link">Weekly</div><div class="link">Wellness</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function genHeat(id, cls) {
+  const g = document.getElementById(id);
+  for (let i = 0; i < 84; i++) {
+    const c = document.createElement('div');
+    c.className = cls + (i === 83 ? ' today' : Math.random() < 0.45 ? ' done' : ' empty');
+    g.appendChild(c);
+  }
+}
+genHeat('x1Heat','x1-hc'); genHeat('x2Heat','xs-hc'); genHeat('x3Heat','xs-hc');
+</script>
+
+</body>
+</html>

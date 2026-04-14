@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Elements Exploration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Shared section divider */
+  .divider { margin: 0 24px; height: 1px; background: rgba(0,0,0,0.04); }
+  .section-label { padding: 4px 24px; font-size: 8px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1.5px; background: rgba(255,255,255,0.03); text-align: center; margin: 16px 0 0; }
+
+
+  /* ============================================================
+     HERO VARIANTS — 3 options for the top section
+     (name + meta + video)
+     ============================================================ */
+
+  /* H1: Pure text — giant name, inline meta, minimal */
+  .h1-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h1-back-icon { font-size: 18px; color: var(--earth); margin-top: -1px; }
+  .h1-type { padding: 56px 24px 0; text-align: right; }
+  .h1-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+  .h1-name { padding: 14px 24px 0; font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1.05; }
+  .h1-meta { display: flex; align-items: center; gap: 8px; padding: 12px 24px 0; flex-wrap: wrap; }
+  .h1-meta-item { font-size: 12px; color: var(--rock); }
+  .h1-meta-item strong { color: var(--earth); font-weight: 700; }
+  .h1-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+  .h1-video { font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; margin-left: auto; }
+
+  /* H2: Dark hero card with name + pills inside */
+  .h2-hero {
+    margin: 14px 20px 0; padding: 20px; border-radius: 22px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .h2-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h2-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h2-back-icon { font-size: 18px; color: var(--sand); margin-top: -1px; }
+  .h2-type { padding: 56px 24px 0; text-align: right; }
+  .h2-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+  .h2-name { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.7px; line-height: 1.1; position: relative; }
+  .h2-label { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; position: relative; }
+  .h2-pills { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .h2-pill { padding: 4px 10px; border-radius: 100px; background: rgba(246,245,240,0.06); font-size: 11px; font-weight: 600; color: rgba(246,245,240,0.5); }
+  .h2-video { padding: 4px 12px; border-radius: 100px; background: rgba(52,211,153,0.1); font-size: 11px; font-weight: 600; color: var(--trail); margin-left: auto; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .h2-vtri { width: 0; height: 0; border-left: 5px solid var(--trail); border-top: 3px solid transparent; border-bottom: 3px solid transparent; }
+
+  /* H3: Name with accent underline + bento meta tiles */
+  .h3-back { position: absolute; top: 54px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h3-back-icon { font-size: 18px; color: var(--earth); margin-top: -1px; }
+  .h3-type { padding: 56px 24px 0; text-align: right; }
+  .h3-type-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+  .h3-name { padding: 14px 24px 0; font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.1; }
+  .h3-accent { width: 40px; height: 3px; border-radius: 2px; background: var(--trail); margin: 10px 0 0 24px; }
+  .h3-tiles { display: flex; gap: 8px; padding: 14px 24px 0; }
+  .h3-tile { flex: 1; padding: 12px; border-radius: 14px; background: var(--stone); text-align: center; }
+  .h3-tile-val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .h3-tile-label { font-size: 9px; color: var(--rock); margin-top: 2px; }
+  .h3-tile.video { background: var(--earth); cursor: pointer; }
+  .h3-tile.video .h3-tile-val { color: var(--trail); font-size: 14px; }
+  .h3-tile.video .h3-tile-label { color: rgba(246,245,240,0.3); }
+
+
+  /* ============================================================
+     INGREDIENT VARIANTS — 3 options
+     ============================================================ */
+
+  /* I1: Checklist (already approved — shown for reference) */
+  .i1 { padding: 24px 24px 0; }
+  .i1-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .i1-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .i1-progress { font-size: 11px; color: var(--trail); font-weight: 600; }
+  .i1-item { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); cursor: pointer; }
+  .i1-item:last-child { border-bottom: none; }
+  .i1-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .i1-item.done .i1-cb { background: var(--trail); border-color: var(--trail); }
+  .i1-ck { font-size: 10px; color: #fff; font-weight: 700; display: none; }
+  .i1-item.done .i1-ck { display: block; }
+  .i1-item.done .i1-name { text-decoration: line-through; opacity: 0.4; }
+  .i1-item.done .i1-amt { opacity: 0.3; }
+  .i1-name { font-size: 14px; color: var(--earth); flex: 1; }
+  .i1-amt { font-size: 12px; color: var(--rock); }
+
+  /* I2: Flowing chips with amounts */
+  .i2 { padding: 24px 24px 0; }
+  .i2-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .i2-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .i2-count { font-size: 11px; color: var(--rock); }
+  .i2-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .i2-chip { padding: 8px 14px; border-radius: 12px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .i2-chip-text { font-size: 12px; color: var(--earth); }
+  .i2-chip-text strong { font-weight: 700; }
+  .i2-chip-text span { color: var(--rock); font-size: 10px; margin-left: 4px; }
+
+  /* I3: 2-column grid with icons */
+  .i3 { padding: 24px 24px 0; }
+  .i3-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .i3-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .i3-count { font-size: 11px; color: var(--rock); }
+  .i3-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .i3-card { padding: 12px; border-radius: 14px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .i3-card-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .i3-card-amt { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .i3-card-dot { width: 4px; height: 4px; border-radius: 2px; background: var(--trail); display: inline-block; margin-right: 4px; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== PHONE 1: HERO OPTIONS =============== -->
+  <div>
+    <div class="col-label">HERO OPTIONS</div>
+    <div class="col-desc">3 hero variants stacked. H1: Pure text. H2: Dark card. H3: Name + accent line + bento meta tiles.</div>
+    <div class="phone">
+      <div class="ps">
+
+        <!-- H1 -->
+        <div class="section-label">H1 — PURE TEXT</div>
+        <div style="position: relative; padding-bottom: 20px;">
+          <div class="h1-back"><span class="h1-back-icon">‹</span></div>
+          <div class="h1-type"><span class="h1-type-text">Breakfast · Recipe</span></div>
+          <div class="h1-name">Black Bean<br>Burrito Bowl</div>
+          <div class="h1-meta">
+            <span class="h1-meta-item"><strong>5</strong> min prep</span>
+            <span class="h1-sep"></span>
+            <span class="h1-meta-item"><strong>10</strong> min cook</span>
+            <span class="h1-sep"></span>
+            <span class="h1-meta-item"><strong>Easy</strong></span>
+            <span class="h1-video">▶ Video</span>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- H2 -->
+        <div class="section-label">H2 — DARK HERO CARD</div>
+        <div style="position: relative; padding-bottom: 20px;">
+          <div class="h2-type"><span class="h2-type-text" style="color: var(--rock);">Breakfast · Recipe</span></div>
+          <div class="h2-hero">
+            <div class="h2-diag" style="width: 90px; top: 12px; right: -4px; transform: rotate(-35deg);"></div>
+            <div class="h2-diag" style="width: 65px; top: 22px; right: -4px; transform: rotate(-35deg);"></div>
+            <div class="h2-label">Breakfast Recipe</div>
+            <div class="h2-name">Black Bean<br>Burrito Bowl</div>
+            <div class="h2-pills">
+              <span class="h2-pill">5 min prep</span>
+              <span class="h2-pill">10 min cook</span>
+              <span class="h2-pill">Easy</span>
+              <div class="h2-video"><div class="h2-vtri"></div> Video</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- H3 -->
+        <div class="section-label">H3 — NAME + ACCENT + BENTO TILES</div>
+        <div style="position: relative; padding-bottom: 20px;">
+          <div class="h3-back"><span class="h3-back-icon">‹</span></div>
+          <div class="h3-type"><span class="h3-type-text">Breakfast · Recipe</span></div>
+          <div class="h3-name">Black Bean<br>Burrito Bowl</div>
+          <div class="h3-accent"></div>
+          <div class="h3-tiles">
+            <div class="h3-tile"><div class="h3-tile-val">5</div><div class="h3-tile-label">min prep</div></div>
+            <div class="h3-tile"><div class="h3-tile-val">10</div><div class="h3-tile-label">min cook</div></div>
+            <div class="h3-tile"><div class="h3-tile-val">Easy</div><div class="h3-tile-label">difficulty</div></div>
+            <div class="h3-tile video"><div class="h3-tile-val">▶</div><div class="h3-tile-label">Video</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== PHONE 2: INGREDIENT OPTIONS =============== -->
+  <div>
+    <div class="col-label">INGREDIENT OPTIONS</div>
+    <div class="col-desc">3 ingredient variants stacked. I1: Checklist (approved ✓). I2: Flowing chips. I3: 2-column cards.</div>
+    <div class="phone">
+      <div class="ps">
+
+        <!-- I1: Checklist -->
+        <div class="section-label">I1 — CHECKLIST (LOCKED ✓)</div>
+        <div class="i1">
+          <div class="i1-header"><span class="i1-title">Ingredients</span><span class="i1-progress">2 / 6 ready</span></div>
+          <div class="i1-item done"><div class="i1-cb"><span class="i1-ck">✓</span></div><span class="i1-name">Black beans</span><span class="i1-amt">1/2 can</span></div>
+          <div class="i1-item done"><div class="i1-cb"><span class="i1-ck">✓</span></div><span class="i1-name">White rice</span><span class="i1-amt">1 cup</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Corn</span><span class="i1-amt">1/4 cup</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Avocado</span><span class="i1-amt">1/2</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Salsa</span><span class="i1-amt">3 tbsp</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Sour cream</span><span class="i1-amt">1 tbsp</span></div>
+        </div>
+
+        <div class="divider" style="margin-top: 16px;"></div>
+
+        <!-- I2: Flowing chips -->
+        <div class="section-label">I2 — FLOWING CHIPS</div>
+        <div class="i2">
+          <div class="i2-header"><span class="i2-title">Ingredients</span><span class="i2-count">6 items</span></div>
+          <div class="i2-grid">
+            <div class="i2-chip"><span class="i2-chip-text"><strong>Black beans</strong> <span>1/2 can</span></span></div>
+            <div class="i2-chip"><span class="i2-chip-text"><strong>White rice</strong> <span>1 cup</span></span></div>
+            <div class="i2-chip"><span class="i2-chip-text"><strong>Corn</strong> <span>1/4 cup</span></span></div>
+            <div class="i2-chip"><span class="i2-chip-text"><strong>Avocado</strong> <span>1/2</span></span></div>
+            <div class="i2-chip"><span class="i2-chip-text"><strong>Salsa</strong> <span>3 tbsp</span></span></div>
+            <div class="i2-chip"><span class="i2-chip-text"><strong>Sour cream</strong> <span>1 tbsp</span></span></div>
+          </div>
+        </div>
+
+        <div class="divider" style="margin-top: 16px;"></div>
+
+        <!-- I3: 2-column cards -->
+        <div class="section-label">I3 — 2-COLUMN CARDS</div>
+        <div class="i3">
+          <div class="i3-header"><span class="i3-title">Ingredients</span><span class="i3-count">6 items</span></div>
+          <div class="i3-cols">
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">Black beans</div><div class="i3-card-amt">1/2 can drained</div></div>
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">White rice</div><div class="i3-card-amt">1 cup cooked</div></div>
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">Corn</div><div class="i3-card-amt">1/4 cup</div></div>
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">Avocado</div><div class="i3-card-amt">1/2 sliced</div></div>
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">Salsa</div><div class="i3-card-amt">3 tbsp</div></div>
+            <div class="i3-card"><span class="i3-card-dot"></span><div class="i3-card-name">Sour cream</div><div class="i3-card-amt">1 tbsp</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== PHONE 3: FULL COMBOS =============== -->
+  <div>
+    <div class="col-label">BEST COMBO PREVIEW</div>
+    <div class="col-desc">H1 (pure text) + I1 (checklist) + Steps (trail timeline). The complete screen assembled.</div>
+    <div class="phone">
+      <div class="ps">
+
+        <!-- H1 hero -->
+        <div style="position: relative;">
+          <div class="h1-back"><span class="h1-back-icon">‹</span></div>
+          <div class="h1-type"><span class="h1-type-text">Breakfast · Recipe</span></div>
+          <div class="h1-name">Black Bean<br>Burrito Bowl</div>
+          <div class="h1-meta">
+            <span class="h1-meta-item"><strong>5</strong> min prep</span>
+            <span class="h1-sep"></span>
+            <span class="h1-meta-item"><strong>10</strong> min cook</span>
+            <span class="h1-sep"></span>
+            <span class="h1-meta-item"><strong>Easy</strong></span>
+            <span class="h1-video">▶ Video</span>
+          </div>
+        </div>
+
+        <!-- I1 checklist ingredients -->
+        <div class="i1">
+          <div class="i1-header"><span class="i1-title">Ingredients</span><span class="i1-progress">0 / 6 ready</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Black beans</span><span class="i1-amt">1/2 can</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">White rice</span><span class="i1-amt">1 cup</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Corn</span><span class="i1-amt">1/4 cup</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Avocado</span><span class="i1-amt">1/2</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Salsa</span><span class="i1-amt">3 tbsp</span></div>
+          <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Sour cream</span><span class="i1-amt">1 tbsp</span></div>
+        </div>
+
+        <!-- Steps trail timeline (locked) -->
+        <div style="padding: 22px 24px 40px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+            <span style="font-size: 14px; font-weight: 700; color: var(--earth);">Steps</span>
+            <span style="font-size: 11px; color: var(--rock);">4 steps</span>
+          </div>
+          <div style="position: relative; padding-left: 32px;">
+            <div style="position: absolute; left: 7px; top: 0; bottom: 0; width: 2px; background: var(--stone);"></div>
+
+            <div style="position: relative; margin-bottom: 14px;">
+              <div style="position: absolute; left: -32px; top: 4px; width: 16px; height: 16px; border-radius: 8px; background: var(--earth); display: flex; align-items: center; justify-content: center; z-index: 1;"><span style="font-size: 8px; font-weight: 700; color: var(--sand);">1</span></div>
+              <div style="background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px;">Step 1</span><span style="font-size: 9px; color: var(--rock); opacity: 0.5;">~2 min</span></div>
+                <div style="font-size: 13px; color: var(--earth); line-height: 1.5;">Cook rice according to package directions.</div>
+              </div>
+            </div>
+
+            <div style="position: relative; margin-bottom: 14px;">
+              <div style="position: absolute; left: -32px; top: 4px; width: 16px; height: 16px; border-radius: 8px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 1;"><span style="font-size: 8px; font-weight: 700; color: var(--rock);">2</span></div>
+              <div style="background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px;">Step 2</span><span style="font-size: 9px; color: var(--rock); opacity: 0.5;">~3 min</span></div>
+                <div style="font-size: 13px; color: var(--earth); line-height: 1.5;">Heat black beans. Season with cumin and salt.</div>
+              </div>
+            </div>
+
+            <div style="position: relative; margin-bottom: 14px;">
+              <div style="position: absolute; left: -32px; top: 4px; width: 16px; height: 16px; border-radius: 8px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 1;"><span style="font-size: 8px; font-weight: 700; color: var(--rock);">3</span></div>
+              <div style="background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px;">Step 3</span><span style="font-size: 9px; color: var(--rock); opacity: 0.5;">~2 min</span></div>
+                <div style="font-size: 13px; color: var(--earth); line-height: 1.5;">Slice avocado and prep toppings.</div>
+              </div>
+            </div>
+
+            <div style="position: relative;">
+              <div style="position: absolute; left: -32px; top: 4px; width: 16px; height: 16px; border-radius: 8px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 1;"><span style="font-size: 8px; font-weight: 700; color: var(--rock);">4</span></div>
+              <div style="background: #fff; border-radius: 14px; padding: 14px 16px; border: 1px solid rgba(0,0,0,0.04);">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 4px;"><span style="font-size: 9px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px;">Step 4</span><span style="font-size: 9px; color: var(--rock); opacity: 0.5;">~1 min</span></div>
+                <div style="font-size: 13px; color: var(--earth); line-height: 1.5;">Assemble: rice, beans, corn, avocado, salsa, sour cream.</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

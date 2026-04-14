@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero Custom</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--heading:'Playfair Display',Georgia,serif}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Top bar */
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer}
+.title{flex:1;font-family:var(--heading);font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+/* ============================================================
+   HERO CARD — Gradient with texture, total left, save tip right
+   ============================================================ */
+.hero-card{
+  margin:16px 18px 0;
+  padding:22px;
+  border-radius:22px;
+  position:relative;
+  overflow:hidden;
+  /* Warm gradient */
+  background:linear-gradient(155deg,#D4CFC5 0%,#E2DED5 25%,#EDE9E0 50%,#E5E1D8 75%,#D8D3C9 100%);
+  /* Shadow */
+  box-shadow:0 4px 20px rgba(0,0,0,0.06);
+}
+
+/* Subtle glow accents on card */
+.hero-card::before{
+  content:'';position:absolute;top:-40px;right:-20px;width:160px;height:160px;
+  border-radius:50%;background:rgba(52,211,153,0.06);
+}
+.hero-card::after{
+  content:'';position:absolute;bottom:-30px;left:-15px;width:120px;height:120px;
+  border-radius:50%;background:rgba(45,42,36,0.03);
+}
+
+/* Top row: label + items count */
+.card-top{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:14px}
+.card-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.card-items{font-size:10px;color:var(--rock);font-weight:500}
+
+/* Main row: total left, progress + save tip right */
+.card-main{display:flex;align-items:flex-end;justify-content:space-between;position:relative}
+
+/* Left: big total */
+.card-total-wrap{}
+.card-dollar{font-size:18px;font-weight:600;color:var(--rock);vertical-align:top;line-height:1.2}
+.card-amount{font-family:var(--heading);font-size:48px;font-weight:800;color:var(--earth);letter-spacing:-2px;line-height:1}
+.card-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+/* Right column: progress + save tip */
+.card-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px}
+
+/* Progress pill */
+.card-progress{display:flex;align-items:center;gap:8px}
+.card-prog-text{font-size:10px;font-weight:600;color:var(--rock)}
+.card-prog-ring{width:36px;height:36px;border-radius:50%;border:3px solid var(--stone);position:relative;display:flex;align-items:center;justify-content:center}
+.card-prog-ring-fill{position:absolute;inset:0;border-radius:50%;border:3px solid var(--trail);border-bottom-color:transparent;border-left-color:transparent;transform:rotate(-45deg)}
+.card-prog-val{font-size:9px;font-weight:800;color:var(--earth)}
+
+/* Save tip button */
+.save-tip{
+  display:flex;align-items:center;gap:5px;
+  padding:7px 14px;border-radius:12px;
+  background:var(--earth);cursor:pointer;
+}
+.save-tip-icon{font-size:12px}
+.save-tip-text{font-size:10px;font-weight:600;color:var(--sand)}
+
+/* Category strip */
+.card-strip{display:flex;height:4px;border-radius:2px;overflow:hidden;gap:2px;margin-top:16px;position:relative}
+.card-strip-seg{height:100%;border-radius:2px}
+
+
+/* Placeholder list */
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-cat{display:flex;align-items:center;gap:6px;padding:12px 0 4px}
+.ph-cat-dot{width:6px;height:6px;border-radius:3px}
+.ph-cat-name{font-size:10px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:0.8px}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:20px;height:20px;border-radius:7px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:14px;font-weight:500;color:var(--earth);flex:1}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+</style>
+</head>
+<body>
+
+<div class="phone"><div class="ps">
+
+  <div class="top">
+    <div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div>
+    <span class="title">Grocery List</span>
+    <span class="week">Mar 30</span>
+  </div>
+
+  <!-- HERO CARD -->
+  <div class="hero-card">
+
+    <!-- Top: label + items -->
+    <div class="card-top">
+      <span class="card-label">Weekly Shop</span>
+      <span class="card-items">18 items · 6 categories</span>
+    </div>
+
+    <!-- Main: total left, progress + save tip right -->
+    <div class="card-main">
+      <div class="card-total-wrap">
+        <div>
+          <span class="card-dollar">$</span><span class="card-amount">47.82</span>
+        </div>
+        <div class="card-est">estimated total</div>
+      </div>
+
+      <div class="card-right">
+        <!-- Progress ring -->
+        <div class="card-progress">
+          <span class="card-prog-text">5/18</span>
+          <div class="card-prog-ring">
+            <div class="card-prog-ring-fill"></div>
+            <span class="card-prog-val">28%</span>
+          </div>
+        </div>
+
+        <!-- Smart save tip button -->
+        <div class="save-tip">
+          <span class="save-tip-icon">💡</span>
+          <span class="save-tip-text">Smart Save Tips</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category color strip -->
+    <div class="card-strip">
+      <div class="card-strip-seg" style="background:#34D399;flex:5"></div>
+      <div class="card-strip-seg" style="background:#EF4444;flex:4"></div>
+      <div class="card-strip-seg" style="background:#F59E0B;flex:3"></div>
+      <div class="card-strip-seg" style="background:#6366F1;flex:3"></div>
+      <div class="card-strip-seg" style="background:#8E8E7A;flex:3"></div>
+    </div>
+
+  </div>
+
+  <!-- LIST BELOW -->
+  <div class="ph">
+    <div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div>
+
+    <div class="ph-cat"><div class="ph-cat-dot" style="background:#34D399"></div><span class="ph-cat-name">Produce</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">·······························</span><span class="ph-price">$1.99</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Spinach</span><span class="ph-dots">·······························</span><span class="ph-price">$3.49</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Banana</span><span class="ph-dots">·······························</span><span class="ph-price">$0.69</span></div>
+
+    <div class="ph-cat"><div class="ph-cat-dot" style="background:#EF4444"></div><span class="ph-cat-name">Protein</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">·······························</span><span class="ph-price">$8.99</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Eggs</span><span class="ph-dots">·······························</span><span class="ph-price">$4.99</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Salmon</span><span class="ph-dots">·······························</span><span class="ph-price">$12.99</span></div>
+
+    <div class="ph-cat"><div class="ph-cat-dot" style="background:#F59E0B"></div><span class="ph-cat-name">Dairy</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">·······························</span><span class="ph-price">$5.99</span></div>
+    <div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Butter</span><span class="ph-dots">·······························</span><span class="ph-price">$4.49</span></div>
+  </div>
+
+</div></div>
+
+</body>
+</html>

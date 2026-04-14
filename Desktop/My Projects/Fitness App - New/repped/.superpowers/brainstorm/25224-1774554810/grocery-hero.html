@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes breathe { 0%,100% { opacity: 0.15; } 50% { opacity: 0.4; } }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes countUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes ringFill { from { stroke-dashoffset: 188; } to { stroke-dashoffset: 60; } }
+  @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+
+
+  /* ============================================================
+     H1: "THE GIANT NUMBER"
+     Massive estimated total dominates the screen. Below: item
+     count + category breakdown as tiny colored dots. Week label.
+     Back button. Breathing dot. Ultra-editorial.
+     ============================================================ */
+
+  .h1-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h1-label { padding: 56px 24px 0; text-align: right; }
+  .h1-label-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .h1-total-wrap { padding: 20px 24px 0; animation: fadeUp 0.5s ease-out; }
+  .h1-dollar { font-size: 28px; font-weight: 300; color: var(--rock); vertical-align: top; letter-spacing: -1px; }
+  .h1-amount { font-size: 72px; font-weight: 800; color: var(--earth); letter-spacing: -4px; line-height: 1; }
+  .h1-cents { font-size: 28px; font-weight: 600; color: var(--rock); vertical-align: top; }
+
+  .h1-sub { padding: 8px 24px 0; font-size: 12px; color: var(--rock); animation: fadeUp 0.5s ease-out 0.1s backwards; }
+
+  .h1-cats { display: flex; align-items: center; gap: 6px; padding: 16px 24px 0; animation: fadeUp 0.5s ease-out 0.2s backwards; }
+  .h1-cat-block { height: 6px; border-radius: 3px; }
+
+  .h1-week { padding: 10px 24px 0; font-size: 11px; color: var(--rock); opacity: 0.5; animation: fadeUp 0.5s ease-out 0.3s backwards; }
+
+  /* Placeholder for list below */
+  .h1-placeholder { padding: 30px 24px 0; }
+  .h1-ph-line { height: 14px; border-radius: 7px; background: var(--stone); margin-bottom: 10px; opacity: 0.4; }
+
+
+  /* ============================================================
+     H2: "THE DARK DASHBOARD"
+     Full dark hero card with: total (big), item count, savings
+     estimate, category breakdown as mini bar chart inside card.
+     Breathing dot. Diagonal accents.
+     ============================================================ */
+
+  .h2-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h2-label { padding: 56px 24px 0; text-align: right; }
+  .h2-label-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .h2-hero {
+    margin: 14px 20px 0; padding: 22px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+    animation: fadeUp 0.4s ease-out;
+  }
+  .h2-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h2-breath { position: absolute; top: 20px; left: 22px; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s infinite; }
+
+  .h2-row1 { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .h2-title { font-size: 13px; color: rgba(246,245,240,0.3); margin-bottom: 6px; }
+  .h2-total { font-size: 42px; font-weight: 800; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .h2-total-label { font-size: 9px; color: rgba(246,245,240,0.2); margin-top: 4px; }
+
+  .h2-right-stats { text-align: right; }
+  .h2-stat { margin-bottom: 8px; }
+  .h2-stat-val { font-size: 20px; font-weight: 800; color: var(--sand); }
+  .h2-stat-label { font-size: 9px; color: rgba(246,245,240,0.2); }
+
+  /* Mini category bar chart inside hero */
+  .h2-bars { display: flex; gap: 4px; align-items: flex-end; height: 40px; margin-top: 16px; position: relative; }
+  .h2-bar { flex: 1; border-radius: 3px 3px 0 0; min-height: 6px; animation: countUp 0.5s ease-out backwards; }
+  .h2-bar:nth-child(1) { animation-delay: 0.2s; }
+  .h2-bar:nth-child(2) { animation-delay: 0.3s; }
+  .h2-bar:nth-child(3) { animation-delay: 0.4s; }
+  .h2-bar:nth-child(4) { animation-delay: 0.5s; }
+  .h2-bar:nth-child(5) { animation-delay: 0.6s; }
+  .h2-bar-label { text-align: center; font-size: 7px; color: rgba(246,245,240,0.2); margin-top: 4px; }
+
+  .h2-cats-labels { display: flex; gap: 4px; margin-top: 4px; position: relative; }
+  .h2-cat-label { flex: 1; text-align: center; font-size: 7px; color: rgba(246,245,240,0.2); text-transform: uppercase; }
+
+
+  /* ============================================================
+     H3: "THE RING PROGRESS"
+     Large progress ring (items checked / total) centered.
+     Total $ inside the ring. Category legend as colored dots
+     below. Clean, gamified, satisfying.
+     ============================================================ */
+
+  .h3-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h3-label { padding: 56px 24px 0; text-align: right; }
+  .h3-label-text { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; }
+
+  .h3-ring-wrap {
+    display: flex; justify-content: center; padding: 24px 0 0;
+    animation: fadeUp 0.5s ease-out;
+  }
+  .h3-ring {
+    width: 160px; height: 160px; position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .h3-ring-track {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 6px solid var(--stone);
+  }
+  .h3-ring-fill {
+    position: absolute; inset: 0; border-radius: 50%;
+    border: 6px solid var(--trail);
+    border-bottom-color: transparent;
+    border-left-color: transparent;
+    transform: rotate(-45deg);
+  }
+  .h3-ring-center { text-align: center; z-index: 1; }
+  .h3-ring-dollar { font-size: 10px; color: var(--rock); }
+  .h3-ring-amount { font-size: 36px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .h3-ring-sub { font-size: 10px; color: var(--rock); margin-top: 4px; }
+
+  .h3-stats { display: flex; justify-content: center; gap: 24px; padding: 16px 24px 0; animation: fadeUp 0.4s ease-out 0.15s backwards; }
+  .h3-stat { text-align: center; }
+  .h3-stat-val { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .h3-stat-label { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  .h3-cats { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; padding: 14px 24px 0; animation: fadeUp 0.4s ease-out 0.25s backwards; }
+  .h3-cat { display: flex; align-items: center; gap: 4px; }
+  .h3-cat-dot { width: 6px; height: 6px; border-radius: 3px; }
+  .h3-cat-name { font-size: 10px; color: var(--rock); }
+
+
+  /* ============================================================
+     H4: "THE SPLIT BENTO"
+     Two big bento tiles side by side: left = total (dark bg),
+     right = items checked (stone bg). Below: a slim category
+     strip as colored segments. Week label. Compact, balanced.
+     ============================================================ */
+
+  .h4-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+  .h4-header { padding: 56px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .h4-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-left: 42px; }
+  .h4-week { font-size: 11px; color: var(--rock); }
+
+  .h4-tiles { display: flex; gap: 10px; padding: 14px 20px 0; animation: fadeUp 0.4s ease-out; }
+  .h4-tile { flex: 1; border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+  .h4-tile.dark { background: var(--earth); }
+  .h4-tile.stone { background: var(--stone); }
+
+  .h4-tile-diag { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+
+  .h4-tile-label { font-size: 9px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 8px; }
+  .h4-tile.dark .h4-tile-label { color: rgba(246,245,240,0.25); }
+  .h4-tile.stone .h4-tile-label { color: var(--rock); }
+
+  .h4-tile-val { font-size: 32px; font-weight: 800; letter-spacing: -1.5px; line-height: 1; }
+  .h4-tile.dark .h4-tile-val { color: var(--trail); }
+  .h4-tile.stone .h4-tile-val { color: var(--earth); }
+
+  .h4-tile-sub { font-size: 10px; margin-top: 4px; }
+  .h4-tile.dark .h4-tile-sub { color: rgba(246,245,240,0.2); }
+  .h4-tile.stone .h4-tile-sub { color: var(--rock); }
+
+  /* Category strip */
+  .h4-strip { display: flex; height: 6px; margin: 14px 20px 0; border-radius: 3px; overflow: hidden; animation: fadeUp 0.4s ease-out 0.15s backwards; }
+  .h4-strip-seg { height: 100%; }
+
+  .h4-strip-labels { display: flex; justify-content: space-between; padding: 6px 20px 0; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .h4-strip-label { font-size: 8px; color: var(--rock); display: flex; align-items: center; gap: 3px; }
+  .h4-strip-dot { width: 4px; height: 4px; border-radius: 2px; }
+
+
+  /* ============================================================
+     H5: "THE EDITORIAL TITLE"
+     Giant "Grocery List" title with the total as a superscript
+     accent. Breathing dot. Category count as subtle chips.
+     Pure typography. Most elegant.
+     ============================================================ */
+
+  .h5-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+
+  .h5-breath { position: absolute; top: 60px; right: 24px; width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: breathe 2.4s infinite; }
+
+  .h5-hero { padding: 80px 24px 0; animation: fadeUp 0.5s ease-out; }
+  .h5-title { font-size: 38px; font-weight: 800; color: var(--earth); letter-spacing: -1.8px; line-height: 1.05; }
+  .h5-title-accent { color: var(--trail); font-weight: 800; }
+
+  .h5-meta { display: flex; align-items: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.4s ease-out 0.1s backwards; }
+  .h5-meta-text { font-size: 12px; color: var(--rock); }
+  .h5-meta-sep { width: 3px; height: 3px; border-radius: 50%; background: var(--stone); }
+
+  .h5-chips { display: flex; gap: 6px; padding: 14px 24px 0; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .h5-chip { padding: 5px 12px; border-radius: 100px; background: var(--stone); display: flex; align-items: center; gap: 5px; }
+  .h5-chip-dot { width: 5px; height: 5px; border-radius: 50%; }
+  .h5-chip-text { font-size: 10px; font-weight: 600; color: var(--earth); }
+  .h5-chip-count { font-size: 10px; color: var(--rock); }
+
+
+  /* ============================================================
+     H6: "THE RECEIPT HEADER"
+     Monospace receipt-style with a twist: clean sans-serif
+     title, but the total and item count use tabular numbers.
+     Thin dashed border. Compact. Charming.
+     ============================================================ */
+
+  .h6-back { position: absolute; top: 56px; left: 24px; width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; z-index: 2; cursor: pointer; }
+
+  .h6-card {
+    margin: 72px 20px 0; background: #fff; border-radius: 22px;
+    padding: 22px; border: 1.5px dashed rgba(0,0,0,0.06);
+    position: relative; animation: fadeUp 0.4s ease-out;
+  }
+
+  .h6-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .h6-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .h6-week { font-size: 10px; color: var(--rock); margin-top: 4px; }
+
+  .h6-total-wrap { text-align: right; }
+  .h6-total { font-size: 34px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1; font-variant-numeric: tabular-nums; }
+  .h6-total-label { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  .h6-divider { height: 1px; border-bottom: 1px dashed rgba(0,0,0,0.06); margin: 14px 0; }
+
+  .h6-stats { display: flex; justify-content: space-between; }
+  .h6-stat { }
+  .h6-stat-val { font-size: 16px; font-weight: 800; color: var(--earth); font-variant-numeric: tabular-nums; }
+  .h6-stat-label { font-size: 9px; color: var(--rock); }
+
+  .h6-progress-bar { height: 4px; border-radius: 2px; background: var(--stone); margin-top: 14px; }
+  .h6-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- =============== H1: THE GIANT NUMBER =============== -->
+  <div>
+    <div class="col-label">H1 — THE GIANT NUMBER</div>
+    <div class="col-desc">Massive $47 dominates. Category bar as colored segments below. Ultra-editorial. The price is the hero.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h1-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+        <div class="h1-label"><span class="h1-label-text">Grocery List</span></div>
+
+        <div class="h1-total-wrap">
+          <span class="h1-dollar">$</span><span class="h1-amount">47</span><span class="h1-cents">.82</span>
+        </div>
+
+        <div class="h1-sub">18 items across 6 categories</div>
+
+        <div class="h1-cats">
+          <div class="h1-cat-block" style="background:#34D399; flex: 5;"></div>
+          <div class="h1-cat-block" style="background:#EF4444; flex: 4;"></div>
+          <div class="h1-cat-block" style="background:#F59E0B; flex: 3;"></div>
+          <div class="h1-cat-block" style="background:#6366F1; flex: 3;"></div>
+          <div class="h1-cat-block" style="background:#8E8E7A; flex: 3;"></div>
+        </div>
+
+        <div class="h1-week">Week of Mar 26 · est. prices</div>
+
+        <div class="h1-placeholder">
+          <div class="h1-ph-line" style="width: 60%;"></div>
+          <div class="h1-ph-line" style="width: 85%;"></div>
+          <div class="h1-ph-line" style="width: 70%;"></div>
+          <div class="h1-ph-line" style="width: 90%;"></div>
+          <div class="h1-ph-line" style="width: 50%;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== H2: THE DARK DASHBOARD =============== -->
+  <div>
+    <div class="col-label">H2 — THE DARK DASHBOARD</div>
+    <div class="col-desc">Full dark card. Total + item count + mini category bar chart inside. Breathing dot. Diagonal accents. Data-rich but clean.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h2-label"><span class="h2-label-text">Grocery List</span></div>
+
+        <div class="h2-hero">
+          <div class="h2-diag" style="width:100px;top:16px;right:-6px;transform:rotate(-35deg);"></div>
+          <div class="h2-diag" style="width:70px;top:28px;right:-6px;transform:rotate(-35deg);"></div>
+          <div class="h2-breath"></div>
+          <div class="h2-back"><span style="font-size:18px;color:var(--sand);margin-top:-1px;">‹</span></div>
+
+          <div class="h2-row1">
+            <div>
+              <div class="h2-title">Weekly Groceries</div>
+              <div class="h2-total">$47.82</div>
+              <div class="h2-total-label">estimated total</div>
+            </div>
+            <div class="h2-right-stats">
+              <div class="h2-stat"><div class="h2-stat-val">18</div><div class="h2-stat-label">items</div></div>
+              <div class="h2-stat"><div class="h2-stat-val" style="color:var(--trail);">5</div><div class="h2-stat-label">checked</div></div>
+            </div>
+          </div>
+
+          <div class="h2-bars">
+            <div style="flex:1;text-align:center;"><div class="h2-bar" style="background:#34D399;height:36px;"></div><div class="h2-bar-label">Produce</div></div>
+            <div style="flex:1;text-align:center;"><div class="h2-bar" style="background:#EF4444;height:28px;"></div><div class="h2-bar-label">Protein</div></div>
+            <div style="flex:1;text-align:center;"><div class="h2-bar" style="background:#F59E0B;height:20px;"></div><div class="h2-bar-label">Dairy</div></div>
+            <div style="flex:1;text-align:center;"><div class="h2-bar" style="background:#6366F1;height:22px;"></div><div class="h2-bar-label">Grains</div></div>
+            <div style="flex:1;text-align:center;"><div class="h2-bar" style="background:#8E8E7A;height:16px;"></div><div class="h2-bar-label">Pantry</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== H3: THE RING PROGRESS =============== -->
+  <div>
+    <div class="col-label">H3 — THE RING PROGRESS</div>
+    <div class="col-desc">Large progress ring (items checked / total). $ inside ring. Category legend dots. Gamified — filling the ring is the goal.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h3-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+        <div class="h3-label"><span class="h3-label-text">Grocery List</span></div>
+
+        <div class="h3-ring-wrap">
+          <div class="h3-ring">
+            <div class="h3-ring-track"></div>
+            <div class="h3-ring-fill"></div>
+            <div class="h3-ring-center">
+              <div class="h3-ring-dollar">est.</div>
+              <div class="h3-ring-amount">$47</div>
+              <div class="h3-ring-sub">5 / 18 items</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="h3-stats">
+          <div class="h3-stat"><div class="h3-stat-val">18</div><div class="h3-stat-label">Items</div></div>
+          <div class="h3-stat"><div class="h3-stat-val">6</div><div class="h3-stat-label">Categories</div></div>
+          <div class="h3-stat"><div class="h3-stat-val" style="color:var(--trail);">28%</div><div class="h3-stat-label">Complete</div></div>
+        </div>
+
+        <div class="h3-cats">
+          <div class="h3-cat"><div class="h3-cat-dot" style="background:#34D399;"></div><span class="h3-cat-name">Produce</span></div>
+          <div class="h3-cat"><div class="h3-cat-dot" style="background:#EF4444;"></div><span class="h3-cat-name">Protein</span></div>
+          <div class="h3-cat"><div class="h3-cat-dot" style="background:#F59E0B;"></div><span class="h3-cat-name">Dairy</span></div>
+          <div class="h3-cat"><div class="h3-cat-dot" style="background:#6366F1;"></div><span class="h3-cat-name">Grains</span></div>
+          <div class="h3-cat"><div class="h3-cat-dot" style="background:#8E8E7A;"></div><span class="h3-cat-name">Pantry</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ROW 2 -->
+<div class="grid" style="margin-top: 0;">
+
+  <!-- =============== H4: THE SPLIT BENTO =============== -->
+  <div>
+    <div class="col-label">H4 — THE SPLIT BENTO</div>
+    <div class="col-desc">Two bento tiles: dark (total $) + stone (items count). Category strip as colored segments. Title above. Compact, balanced.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h4-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+        <div class="h4-header">
+          <span class="h4-title">Grocery List</span>
+          <span class="h4-week">Week of Mar 26</span>
+        </div>
+
+        <div class="h4-tiles">
+          <div class="h4-tile dark">
+            <div class="h4-tile-diag" style="width:70px;top:10px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="h4-tile-diag" style="width:50px;top:20px;right:-4px;transform:rotate(-35deg);"></div>
+            <div class="h4-tile-label">Estimated</div>
+            <div class="h4-tile-val">$47.82</div>
+            <div class="h4-tile-sub">est. total</div>
+          </div>
+          <div class="h4-tile stone">
+            <div class="h4-tile-label">Progress</div>
+            <div class="h4-tile-val">5/18</div>
+            <div class="h4-tile-sub">items checked</div>
+          </div>
+        </div>
+
+        <div class="h4-strip">
+          <div class="h4-strip-seg" style="background:#34D399; flex: 5;"></div>
+          <div class="h4-strip-seg" style="background:#EF4444; flex: 4;"></div>
+          <div class="h4-strip-seg" style="background:#F59E0B; flex: 3;"></div>
+          <div class="h4-strip-seg" style="background:#6366F1; flex: 3;"></div>
+          <div class="h4-strip-seg" style="background:#8E8E7A; flex: 3;"></div>
+        </div>
+
+        <div class="h4-strip-labels">
+          <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#34D399;"></span>Produce</span>
+          <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#EF4444;"></span>Protein</span>
+          <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#F59E0B;"></span>Dairy</span>
+          <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#6366F1;"></span>Grains</span>
+          <span class="h4-strip-label"><span class="h4-strip-dot" style="background:#8E8E7A;"></span>Pantry</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== H5: THE EDITORIAL TITLE =============== -->
+  <div>
+    <div class="col-label">H5 — THE EDITORIAL TITLE</div>
+    <div class="col-desc">Giant "Grocery List" with the total as green accent text inline. Breathing dot. Category chips below. Pure typography. Elegant.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h5-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+        <div class="h5-breath"></div>
+
+        <div class="h5-hero">
+          <div class="h5-title">Grocery<br>List <span class="h5-title-accent">$47</span></div>
+        </div>
+
+        <div class="h5-meta">
+          <span class="h5-meta-text">18 items</span>
+          <span class="h5-meta-sep"></span>
+          <span class="h5-meta-text">6 categories</span>
+          <span class="h5-meta-sep"></span>
+          <span class="h5-meta-text">Week of Mar 26</span>
+        </div>
+
+        <div class="h5-chips">
+          <div class="h5-chip"><span class="h5-chip-dot" style="background:#34D399;"></span><span class="h5-chip-text">Produce</span><span class="h5-chip-count">5</span></div>
+          <div class="h5-chip"><span class="h5-chip-dot" style="background:#EF4444;"></span><span class="h5-chip-text">Protein</span><span class="h5-chip-count">4</span></div>
+          <div class="h5-chip"><span class="h5-chip-dot" style="background:#F59E0B;"></span><span class="h5-chip-text">Dairy</span><span class="h5-chip-count">3</span></div>
+          <div class="h5-chip"><span class="h5-chip-dot" style="background:#6366F1;"></span><span class="h5-chip-text">Grains</span><span class="h5-chip-count">3</span></div>
+          <div class="h5-chip"><span class="h5-chip-dot" style="background:#8E8E7A;"></span><span class="h5-chip-text">Pantry</span><span class="h5-chip-count">3</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- =============== H6: THE RECEIPT CARD =============== -->
+  <div>
+    <div class="col-label">H6 — THE RECEIPT CARD</div>
+    <div class="col-desc">White card with dashed border. Title left, big total right. Stats below divider. Progress bar at bottom. Charming receipt feel.</div>
+    <div class="phone">
+      <div class="ps">
+        <div class="h6-back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div>
+
+        <div class="h6-card">
+          <div class="h6-top">
+            <div>
+              <div class="h6-title">Grocery List</div>
+              <div class="h6-week">Week of Mar 26</div>
+            </div>
+            <div class="h6-total-wrap">
+              <div class="h6-total">$47</div>
+              <div class="h6-total-label">est. total</div>
+            </div>
+          </div>
+
+          <div class="h6-divider"></div>
+
+          <div class="h6-stats">
+            <div class="h6-stat"><div class="h6-stat-val">18</div><div class="h6-stat-label">Items</div></div>
+            <div class="h6-stat"><div class="h6-stat-val">6</div><div class="h6-stat-label">Categories</div></div>
+            <div class="h6-stat"><div class="h6-stat-val" style="color:var(--trail);">5</div><div class="h6-stat-label">Checked</div></div>
+            <div class="h6-stat"><div class="h6-stat-val">13</div><div class="h6-stat-label">Remaining</div></div>
+          </div>
+
+          <div class="h6-progress-bar">
+            <div class="h6-progress-fill" style="width: 28%;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

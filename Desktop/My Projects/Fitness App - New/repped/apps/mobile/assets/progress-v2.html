@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Progress P2: Trail Map</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508;display:flex;justify-content:center;padding:20px 10px 60px}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5;--amber:#F59E0B}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* P2: TRAIL MAP — Full-width stat ticker, stacked glass cards,
+   trail timeline for PRs, embedded heatmap */
+
+/* Header — minimal */
+.top{padding:56px 24px 0}
+.top-date{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--rock);text-transform:uppercase}
+.top-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--earth);letter-spacing:-0.5px;margin-top:2px}
+
+/* Stat ticker — horizontal scroll of big numbers */
+.ticker{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;padding:20px 0 0;margin:0 -1px}
+.ticker::-webkit-scrollbar{display:none}
+.tick{flex:1;padding:16px 0;text-align:center;position:relative}
+.tick::after{content:'';position:absolute;right:0;top:20%;height:60%;width:1px;background:var(--stone)}
+.tick:last-child::after{display:none}
+.tick-num{font-family:'DM Serif Display',serif;font-size:28px;color:var(--earth);line-height:1}
+.tick-unit{font-size:10px;color:var(--rock);font-weight:500;margin-top:2px}
+.tick-label{font-size:8px;font-weight:700;letter-spacing:1.5px;color:var(--rock);text-transform:uppercase;margin-top:6px}
+.tick-trend{font-size:9px;font-weight:700;margin-top:2px}
+
+/* Divider line */
+.divider{height:1px;background:var(--stone);margin:0 24px}
+
+/* Personal message card */
+.msg-card{margin:16px 18px;padding:16px 18px;border-radius:18px;background:linear-gradient(155deg,rgba(52,211,153,0.06),rgba(255,255,255,0.5),rgba(237,235,229,0.4));border:1px solid rgba(52,211,153,0.1)}
+.msg-text{font-size:13px;color:var(--earth);line-height:1.5}
+.msg-text b{color:var(--trail);font-weight:700}
+
+/* Rings — inline compact */
+.rings-inline{display:flex;align-items:center;gap:16px;padding:0 24px;margin-top:16px}
+.ring-compact{position:relative;width:70px;height:70px}
+.rc{position:absolute;border-radius:50%;border:3px solid transparent}
+.rc-outer{inset:0;border-color:var(--trail);border-right-color:transparent;animation:sp 3s linear infinite}
+.rc-mid{inset:8px;border-color:rgba(45,42,36,0.2);border-top-color:transparent;animation:sp 4s linear infinite reverse}
+.rc-inner{inset:16px;border-color:var(--amber);border-bottom-color:transparent;animation:sp 5s linear infinite}
+.rc-center{position:absolute;inset:20px;border-radius:50%;background:rgba(52,211,153,0.06);display:flex;align-items:center;justify-content:center}
+.rc-num{font-family:'DM Serif Display',serif;font-size:16px;color:var(--trail)}
+@keyframes sp{to{transform:rotate(360deg)}}
+.ring-legend{flex:1}
+.rl-row{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.rl-dot{width:8px;height:8px;border-radius:4px}
+.rl-label{font-size:11px;color:var(--rock)}
+.rl-val{font-size:11px;font-weight:700;color:var(--earth);margin-left:auto}
+
+/* Stacked glass cards for 1RM */
+.s-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px 12px}
+.s-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--earth)}
+.s-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s-meta{font-size:10px;color:var(--rock)}
+.s-link{font-size:11px;font-weight:600;color:var(--trail)}
+
+.lift-cards{padding:0 18px}
+.lift-card{display:flex;align-items:center;gap:14px;padding:14px 16px;margin-bottom:8px;border-radius:16px;background:linear-gradient(155deg,rgba(255,255,255,0.6),rgba(237,235,229,0.45),rgba(246,245,240,0.5));border:1px solid rgba(255,255,255,0.4);position:relative;overflow:hidden}
+.lift-card::before{content:'';position:absolute;top:-10px;right:-10px;width:40px;height:40px;border-radius:50%;background:rgba(52,211,153,0.04)}
+.lift-rank{width:28px;height:28px;border-radius:14px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--earth);flex-shrink:0}
+.lift-card:first-child .lift-rank{background:rgba(52,211,153,0.12);color:var(--trail)}
+.lift-info{flex:1}
+.lift-name{font-size:13px;font-weight:600;color:var(--earth)}
+.lift-bar{height:4px;border-radius:2px;background:var(--stone);margin-top:4px}
+.lift-bar-fill{height:100%;border-radius:2px}
+.lift-val{font-family:'DM Serif Display',serif;font-size:24px;color:var(--earth);flex-shrink:0}
+.lift-unit{font-size:10px;color:var(--rock)}
+
+/* PR timeline — vertical trail */
+.pr-trail{padding:0 24px 0 48px;position:relative}
+.pr-trail-line{position:absolute;left:35px;top:0;bottom:0;width:2px;background:var(--stone);border-radius:1px}
+.pr-item{position:relative;padding:12px 0;border-bottom:0.5px solid rgba(0,0,0,0.03)}
+.pr-item:last-child{border-bottom:none}
+.pr-dot{position:absolute;left:-24px;top:14px;width:18px;height:18px;border-radius:9px;background:rgba(52,211,153,0.15);display:flex;align-items:center;justify-content:center}
+.pr-dot-inner{width:8px;height:8px;border-radius:4px;background:var(--trail)}
+.pr-row{display:flex;justify-content:space-between;align-items:baseline}
+.pr-name{font-size:13px;font-weight:600;color:var(--earth)}
+.pr-val{font-family:'DM Serif Display',serif;font-size:18px;color:var(--trail)}
+.pr-meta{font-size:10px;color:var(--rock);margin-top:1px}
+
+/* Heatmap — embedded card */
+.heat-card{margin:0 18px;padding:16px;border-radius:18px;background:linear-gradient(155deg,rgba(255,255,255,0.6),rgba(237,235,229,0.45));border:1px solid rgba(255,255,255,0.4)}
+.hm{display:flex;gap:2px}
+.hm-days{display:flex;flex-direction:column;gap:2px;margin-right:4px}
+.hm-dl{font-size:7px;color:var(--rock);height:10px;display:flex;align-items:center;width:14px}
+.hm-col{display:flex;flex-direction:column;gap:2px}
+.hm-cell{width:10px;height:10px;border-radius:2.5px;background:var(--stone)}
+.hm-cell.a{background:rgba(45,42,36,0.12)}.hm-cell.b{background:rgba(45,42,36,0.25)}.hm-cell.c{background:var(--earth)}.hm-cell.t{background:var(--trail)}
+
+/* Measurements — wide cards */
+.meas-cards{padding:0 18px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mc{padding:12px 10px;border-radius:14px;background:linear-gradient(155deg,rgba(255,255,255,0.55),rgba(237,235,229,0.4));text-align:center}
+.mc-label{font-size:8px;font-weight:700;letter-spacing:1px;color:var(--rock);text-transform:uppercase}
+.mc-val{font-family:'DM Serif Display',serif;font-size:20px;color:var(--earth);margin-top:2px}
+.mc-sub{font-size:9px;color:var(--rock)}
+.mc-trend{font-size:10px;font-weight:700;margin-top:2px}
+
+/* Achievement pills row */
+.ach-row{display:flex;gap:8px;padding:0 24px;overflow-x:auto;scrollbar-width:none;padding-bottom:8px}
+.ach-row::-webkit-scrollbar{display:none}
+.ach-pill{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:12px;flex-shrink:0}
+.ach-pill.earned{opacity:1}.ach-pill.locked{opacity:0.3}
+.ach-emoji{font-size:16px}
+.ach-info{display:flex;flex-direction:column}
+.ach-name{font-size:10px;font-weight:600;color:var(--earth)}
+.ach-tier{font-size:8px;color:var(--rock)}
+
+/* Quick links */
+.quick{display:flex;gap:8px;padding:20px 18px 60px}
+.q-pill{flex:1;padding:14px;border-radius:14px;background:var(--earth);text-align:center}
+.q-text{font-size:11px;font-weight:600;color:var(--sand)}
+</style>
+</head>
+<body>
+<div class="phone"><div class="ps">
+
+  <!-- HEADER -->
+  <div class="top">
+    <div class="top-date">Sunday, Mar 30</div>
+    <div class="top-title">Your Journey</div>
+  </div>
+
+  <!-- STAT TICKER -->
+  <div class="ticker">
+    <div class="tick"><div class="tick-num">12</div><div class="tick-label">Workouts</div></div>
+    <div class="tick"><div class="tick-num">5</div><div class="tick-label">Streak</div><div class="tick-trend" style="color:var(--trail)">Best: 9</div></div>
+    <div class="tick"><div class="tick-num">87<span style="font-size:14px">%</span></div><div class="tick-label">Complete</div></div>
+    <div class="tick"><div class="tick-num">3.2<span style="font-size:14px">t</span></div><div class="tick-label">Volume</div><div class="tick-trend" style="color:var(--trail)">+12%</div></div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- MESSAGE -->
+  <div class="msg-card">
+    <div class="msg-text">You're on a <b>5-day streak</b> — keep the momentum going! Your volume is up <b>12%</b> this week.</div>
+  </div>
+
+  <!-- RINGS + LEGEND -->
+  <div class="rings-inline">
+    <div class="ring-compact">
+      <div class="rc rc-outer"></div>
+      <div class="rc rc-mid"></div>
+      <div class="rc rc-inner"></div>
+      <div class="rc-center"><span class="rc-num">12</span></div>
+    </div>
+    <div class="ring-legend">
+      <div class="rl-row"><div class="rl-dot" style="background:var(--trail)"></div><span class="rl-label">Completion</span><span class="rl-val">87%</span></div>
+      <div class="rl-row"><div class="rl-dot" style="background:var(--earth)"></div><span class="rl-label">Streak</span><span class="rl-val">5 days</span></div>
+      <div class="rl-row"><div class="rl-dot" style="background:var(--amber)"></div><span class="rl-label">Volume</span><span class="rl-val">3.2 tons</span></div>
+    </div>
+  </div>
+
+  <!-- 1RM LIFTS -->
+  <div class="s-head">
+    <div><span class="s-title">Estimated 1RM</span><div class="s-accent"></div></div>
+  </div>
+  <div class="lift-cards">
+    <div class="lift-card"><div class="lift-rank">1</div><div class="lift-info"><div class="lift-name">Squat</div><div class="lift-bar"><div class="lift-bar-fill" style="width:100%;background:var(--trail)"></div></div></div><div><div class="lift-val">115</div><div class="lift-unit">kg</div></div></div>
+    <div class="lift-card"><div class="lift-rank">2</div><div class="lift-info"><div class="lift-name">Deadlift</div><div class="lift-bar"><div class="lift-bar-fill" style="width:92%;background:rgba(45,42,36,0.25)"></div></div></div><div><div class="lift-val">110</div><div class="lift-unit">kg</div></div></div>
+    <div class="lift-card"><div class="lift-rank">3</div><div class="lift-info"><div class="lift-name">Bench Press</div><div class="lift-bar"><div class="lift-bar-fill" style="width:82%;background:rgba(45,42,36,0.20)"></div></div></div><div><div class="lift-val">95</div><div class="lift-unit">kg</div></div></div>
+    <div class="lift-card"><div class="lift-rank">4</div><div class="lift-info"><div class="lift-name">Overhead Press</div><div class="lift-bar"><div class="lift-bar-fill" style="width:54%;background:rgba(45,42,36,0.12)"></div></div></div><div><div class="lift-val">62</div><div class="lift-unit">kg</div></div></div>
+  </div>
+
+  <!-- RECENT PRs — Trail timeline -->
+  <div class="s-head">
+    <div><span class="s-title">Recent PRs</span><div class="s-accent"></div></div>
+    <span class="s-meta">Last 30 days</span>
+  </div>
+  <div class="pr-trail">
+    <div class="pr-trail-line"></div>
+    <div class="pr-item"><div class="pr-dot"><div class="pr-dot-inner"></div></div><div class="pr-row"><span class="pr-name">Bench Press</span><span class="pr-val">95 kg</span></div><div class="pr-meta">1RM · Mar 28</div></div>
+    <div class="pr-item"><div class="pr-dot"><div class="pr-dot-inner"></div></div><div class="pr-row"><span class="pr-name">Squat</span><span class="pr-val">115 kg</span></div><div class="pr-meta">1RM · Mar 25</div></div>
+    <div class="pr-item"><div class="pr-dot"><div class="pr-dot-inner"></div></div><div class="pr-row"><span class="pr-name">Deadlift</span><span class="pr-val">3,200 kg</span></div><div class="pr-meta">Volume · Mar 22</div></div>
+  </div>
+
+  <!-- MEASUREMENTS -->
+  <div class="s-head">
+    <div><span class="s-title">Measurements</span><div class="s-accent"></div></div>
+    <span class="s-link">Update</span>
+  </div>
+  <div class="meas-cards">
+    <div class="mc"><div class="mc-label">Weight</div><div class="mc-val">72.4</div><div class="mc-sub">kg</div><div class="mc-trend" style="color:var(--trail)">↓</div></div>
+    <div class="mc"><div class="mc-label">Body Fat</div><div class="mc-val">16.2</div><div class="mc-sub">%</div><div class="mc-trend" style="color:var(--trail)">↓</div></div>
+    <div class="mc"><div class="mc-label">Chest</div><div class="mc-val">98</div><div class="mc-sub">cm</div><div class="mc-trend" style="color:var(--trail)">↑</div></div>
+    <div class="mc"><div class="mc-label">Waist</div><div class="mc-val">82</div><div class="mc-sub">cm</div><div class="mc-trend" style="color:var(--trail)">↓</div></div>
+    <div class="mc"><div class="mc-label">Arms</div><div class="mc-val">35</div><div class="mc-sub">cm</div><div class="mc-trend" style="color:var(--trail)">↑</div></div>
+    <div class="mc"><div class="mc-label">Thighs</div><div class="mc-val">58</div><div class="mc-sub">cm</div></div>
+  </div>
+
+  <!-- HEATMAP CARD -->
+  <div class="s-head">
+    <div><span class="s-title">Activity</span><div class="s-accent"></div></div>
+    <span class="s-meta">12 weeks</span>
+  </div>
+  <div class="heat-card">
+    <div class="hm">
+      <div class="hm-days"><div class="hm-dl">M</div><div class="hm-dl">T</div><div class="hm-dl">W</div><div class="hm-dl">T</div><div class="hm-dl">F</div><div class="hm-dl">S</div><div class="hm-dl">S</div></div>
+      <div class="hm-col"><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell a"></div></div>
+      <div class="hm-col"><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div></div>
+      <div class="hm-col"><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell b"></div></div>
+      <div class="hm-col"><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell a"></div></div>
+      <div class="hm-col"><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div></div>
+      <div class="hm-col"><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell b"></div><div class="hm-cell"></div><div class="hm-cell a"></div><div class="hm-cell"></div><div class="hm-cell c"></div></div>
+      <div class="hm-col"><div class="hm-cell c"></div><div class="hm-cell b"></div><div class="hm-cell c"></div><div class="hm-cell b"></div><div class="hm-cell c"></div><div class="hm-cell"></div><div class="hm-cell t"></div></div>
+    </div>
+  </div>
+
+  <!-- ACHIEVEMENTS — pill style -->
+  <div class="s-head">
+    <div><span class="s-title">Achievements</span><div class="s-accent"></div></div>
+    <span class="s-link">4 of 24 ›</span>
+  </div>
+  <div class="ach-row">
+    <div class="ach-pill earned" style="background:rgba(52,211,153,0.08)"><span class="ach-emoji">🎯</span><div class="ach-info"><span class="ach-name">First Workout</span><span class="ach-tier">Starter</span></div></div>
+    <div class="ach-pill earned" style="background:rgba(245,158,11,0.08)"><span class="ach-emoji">🔥</span><div class="ach-info"><span class="ach-name">3-Day Streak</span><span class="ach-tier">Intermediate</span></div></div>
+    <div class="ach-pill earned" style="background:rgba(99,102,241,0.08)"><span class="ach-emoji">📈</span><div class="ach-info"><span class="ach-name">First PR</span><span class="ach-tier">Starter</span></div></div>
+    <div class="ach-pill locked" style="background:var(--stone)"><span class="ach-emoji">🏆</span><div class="ach-info"><span class="ach-name">10 Workouts</span><span class="ach-tier">Locked</span></div></div>
+  </div>
+
+  <!-- QUICK LINKS -->
+  <div class="quick">
+    <div class="q-pill"><span class="q-text">Weekly Summary</span></div>
+    <div class="q-pill"><span class="q-text">Wellness</span></div>
+  </div>
+
+</div></div>
+
+<div style="text-align:center;margin-top:20px;font-size:12px;color:rgba(255,255,255,0.3)">P2 — Trail Map: Stat ticker + glass lift cards + PR timeline</div>
+</body>
+</html>

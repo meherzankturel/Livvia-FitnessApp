@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Premium Ingredients V4</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.12.2/lottie.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.top{padding:56px 24px 0;display:flex;align-items:center;position:relative}
+.bk{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;position:absolute;left:24px;z-index:2}
+.tp{font-size:12px;font-weight:600;color:var(--rock);text-transform:uppercase;letter-spacing:1.5px;text-align:center;width:100%}
+.aw{display:flex;justify-content:center;margin-top:-4px}
+.ab{width:200px;height:175px}
+.hn{padding:0 20px;font-size:26px;font-weight:800;color:var(--earth);letter-spacing:-1.2px;line-height:1;text-align:center;margin-top:-10px}
+.hs{text-align:center;padding:4px 24px 0;font-size:11px;color:var(--rock)}
+.hs strong{color:var(--earth);font-weight:700}
+.hv{display:flex;justify-content:center;padding:5px 0 0}
+.vp{padding:4px 12px;border-radius:100px;background:var(--earth);font-size:10px;font-weight:600;color:var(--trail);cursor:pointer}
+
+.sp{padding:14px 24px 0}
+.sp-h{display:flex;justify-content:space-between;margin-bottom:6px}
+.sp-t{font-size:12px;font-weight:700;color:var(--earth)}
+.sp-s{font-size:10px;color:var(--rock)}
+.sp-r{height:50px;border-radius:12px;background:var(--stone);opacity:0.12;margin-bottom:6px}
+
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.st{font-size:13px;font-weight:700;color:var(--earth)}
+.sc{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   P1: FLOATING CARDS
+   Each ingredient as its own floating white card with subtle
+   shadow. Name left bold, amount right in a stone badge.
+   Micro-gap between cards. Elevated, tactile feel.
+   ============================================================ */
+.p1{padding:14px 20px 0}
+.p1-card{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:#fff;border-radius:14px;margin-bottom:6px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.p1-name{font-size:14px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.p1-badge{padding:4px 10px;border-radius:8px;background:var(--stone);font-size:11px;font-weight:600;color:var(--earth)}
+
+
+/* ============================================================
+   P2: TIMELINE INGREDIENT
+   Vertical line left with small dots. Each ingredient is a
+   node. Like a cooking timeline — "gather these in order."
+   First dot is trail green (start), rest are stone.
+   ============================================================ */
+.p2{padding:14px 24px 0}
+.p2-tl{position:relative;padding-left:28px}
+.p2-line{position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--stone)}
+.p2-item{display:flex;align-items:center;justify-content:space-between;padding:11px 0;position:relative}
+.p2-dot{position:absolute;left:-28px;top:50%;margin-top:-5px;width:10px;height:10px;border-radius:5px;z-index:1}
+.p2-dot.first{background:var(--trail)}
+.p2-dot.rest{background:var(--stone)}
+.p2-name{font-size:14px;font-weight:500;color:var(--earth)}
+.p2-amt{font-size:12px;color:var(--rock)}
+
+
+/* ============================================================
+   P3: BENTO INGREDIENT TILES
+   2-column bento tiles. Each tile has a large number watermark,
+   name, and amount. Alternating white/stone. Dashboard feel.
+   ============================================================ */
+.p3{padding:14px 20px 0}
+.p3-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.p3-tile{padding:14px;border-radius:16px;position:relative;overflow:hidden}
+.p3-tile.white{background:#fff;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+.p3-tile.stone{background:var(--stone)}
+.p3-wm{position:absolute;right:8px;top:-2px;font-size:40px;font-weight:800;line-height:1;opacity:0.04;color:var(--earth)}
+.p3-tile-name{font-size:13px;font-weight:700;color:var(--earth);position:relative}
+.p3-tile-amt{font-size:11px;color:var(--rock);margin-top:3px;position:relative}
+
+
+/* ============================================================
+   P4: DARK ROWS WITH GLOW
+   Dark earth background list. Each row has a subtle left
+   border glow in trail green. White text. Premium dark mode.
+   ============================================================ */
+.p4-wrap{padding:14px 20px 0}
+.p4-card{background:var(--earth);border-radius:20px;padding:4px 0;position:relative;overflow:hidden}
+.p4-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.p4-head{display:flex;justify-content:space-between;align-items:center;padding:12px 18px 8px;position:relative}
+.p4-title{font-size:12px;font-weight:700;color:var(--sand)}
+.p4-badge{padding:3px 10px;border-radius:100px;background:rgba(52,211,153,0.1);font-size:9px;font-weight:700;color:var(--trail)}
+.p4-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-left:3px solid transparent;position:relative;transition:all 0.2s}
+.p4-row:hover{border-left-color:var(--trail);background:rgba(52,211,153,0.03)}
+.p4-row+.p4-row{border-top:1px solid rgba(246,245,240,0.04)}
+.p4-name{font-size:14px;font-weight:500;color:rgba(246,245,240,0.8)}
+.p4-amt{font-size:12px;color:rgba(246,245,240,0.25)}
+
+
+/* ============================================================
+   P5: STACKED PILLS
+   Each ingredient as a full-width rounded pill. Name left,
+   amount right. Alternating white/stone pills stacked.
+   Smooth, uniform, satisfying rhythm.
+   ============================================================ */
+.p5{padding:14px 20px 0}
+.p5-pill{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-radius:14px;margin-bottom:5px}
+.p5-pill.white{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.02)}
+.p5-pill.stone{background:var(--stone)}
+.p5-name{font-size:14px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.p5-amt{font-size:12px;color:var(--rock);font-weight:500}
+
+
+/* ============================================================
+   P6: GLASS CARD + CHECKMARKS
+   Frosted glass effect card (white with backdrop blur sim).
+   Rounded checkboxes. Name + amount. Progress count.
+   Softer, more modern than flat white card.
+   ============================================================ */
+.p6{padding:14px 20px 0}
+.p6-card{background:rgba(255,255,255,0.7);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px;padding:4px 0;border:1px solid rgba(255,255,255,0.5)}
+.p6-head{display:flex;justify-content:space-between;align-items:center;padding:12px 16px 8px}
+.p6-title{font-size:13px;font-weight:700;color:var(--earth)}
+.p6-count{font-size:10px;color:var(--trail);font-weight:600}
+.p6-prog{height:2px;border-radius:1px;background:rgba(0,0,0,0.04);margin:0 16px 6px;overflow:hidden}
+.p6-prog-fill{height:100%;border-radius:1px;background:var(--trail)}
+.p6-row{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid rgba(0,0,0,0.03);cursor:pointer;transition:opacity 0.15s}
+.p6-row.done{opacity:0.3}
+.p6-cb{width:22px;height:22px;border-radius:50%;border:2px solid rgba(0,0,0,0.08);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.p6-cb.on{background:var(--trail);border-color:var(--trail)}
+.p6-ck{font-size:11px;color:#fff;font-weight:700}
+.p6-name{flex:1;font-size:14px;font-weight:500;color:var(--earth);letter-spacing:-0.2px}
+.p6-row.done .p6-name{text-decoration:line-through}
+.p6-amt{font-size:12px;color:var(--rock)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- P1 -->
+  <div>
+    <div class="col-label">P1 — FLOATING CARDS</div>
+    <div class="col-desc">Each ingredient as its own white floating card with shadow. Name left, amount in stone badge right. Elevated, tactile.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a1" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p1"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="p1-card"><span class="p1-name">Black beans</span><span class="p1-badge">1/2 can</span></div>
+        <div class="p1-card"><span class="p1-name">White rice</span><span class="p1-badge">1 cup</span></div>
+        <div class="p1-card"><span class="p1-name">Corn</span><span class="p1-badge">1/4 cup</span></div>
+        <div class="p1-card"><span class="p1-name">Avocado</span><span class="p1-badge">1/2</span></div>
+        <div class="p1-card"><span class="p1-name">Salsa</span><span class="p1-badge">3 tbsp</span></div>
+        <div class="p1-card"><span class="p1-name">Sour cream</span><span class="p1-badge">1 tbsp</span></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- P2 -->
+  <div>
+    <div class="col-label">P2 — TIMELINE</div>
+    <div class="col-desc">Vertical line + dots. Ingredients as nodes on a timeline. "Gather these in order." First dot is green (start).</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a2" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p2"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="p2-tl"><div class="p2-line"></div>
+          <div class="p2-item"><div class="p2-dot first"></div><span class="p2-name">Black beans</span><span class="p2-amt">1/2 can</span></div>
+          <div class="p2-item"><div class="p2-dot rest"></div><span class="p2-name">White rice</span><span class="p2-amt">1 cup</span></div>
+          <div class="p2-item"><div class="p2-dot rest"></div><span class="p2-name">Corn</span><span class="p2-amt">1/4 cup</span></div>
+          <div class="p2-item"><div class="p2-dot rest"></div><span class="p2-name">Avocado</span><span class="p2-amt">1/2</span></div>
+          <div class="p2-item"><div class="p2-dot rest"></div><span class="p2-name">Salsa</span><span class="p2-amt">3 tbsp</span></div>
+          <div class="p2-item"><div class="p2-dot rest"></div><span class="p2-name">Sour cream</span><span class="p2-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- P3 -->
+  <div>
+    <div class="col-label">P3 — BENTO TILES</div>
+    <div class="col-desc">2-column tiles with large watermark numbers. Name + amount. White/stone alternating. Dashboard widget feel.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a3" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p3"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="p3-grid">
+          <div class="p3-tile white"><span class="p3-wm">1</span><div class="p3-tile-name">Black beans</div><div class="p3-tile-amt">1/2 can drained</div></div>
+          <div class="p3-tile stone"><span class="p3-wm">2</span><div class="p3-tile-name">White rice</div><div class="p3-tile-amt">1 cup cooked</div></div>
+          <div class="p3-tile stone"><span class="p3-wm">3</span><div class="p3-tile-name">Corn</div><div class="p3-tile-amt">1/4 cup</div></div>
+          <div class="p3-tile white"><span class="p3-wm">4</span><div class="p3-tile-name">Avocado</div><div class="p3-tile-amt">1/2 sliced</div></div>
+          <div class="p3-tile white"><span class="p3-wm">5</span><div class="p3-tile-name">Salsa</div><div class="p3-tile-amt">3 tbsp</div></div>
+          <div class="p3-tile stone"><span class="p3-wm">6</span><div class="p3-tile-name">Sour cream</div><div class="p3-tile-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- P4 -->
+  <div>
+    <div class="col-label">P4 — DARK GLOW ROWS</div>
+    <div class="col-desc">Dark earth card. Rows with left green border glow on hover. White text. Badge count. Premium dark mode.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a4" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p4-wrap"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="p4-card">
+          <div class="p4-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="p4-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="p4-head"><span class="p4-title">What you'll need</span><span class="p4-badge">6</span></div>
+          <div class="p4-row" style="border-left-color:var(--trail)"><span class="p4-name">Black beans</span><span class="p4-amt">1/2 can</span></div>
+          <div class="p4-row"><span class="p4-name">White rice</span><span class="p4-amt">1 cup</span></div>
+          <div class="p4-row"><span class="p4-name">Corn</span><span class="p4-amt">1/4 cup</span></div>
+          <div class="p4-row"><span class="p4-name">Avocado</span><span class="p4-amt">1/2</span></div>
+          <div class="p4-row"><span class="p4-name">Salsa</span><span class="p4-amt">3 tbsp</span></div>
+          <div class="p4-row"><span class="p4-name">Sour cream</span><span class="p4-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- P5 -->
+  <div>
+    <div class="col-label">P5 — STACKED PILLS</div>
+    <div class="col-desc">Full-width rounded pills stacked. Alternating white/stone. Name left, amount right. Smooth uniform rhythm.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a5" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p5"><div class="sh"><span class="st">Ingredients</span><span class="sc">6 items</span></div>
+        <div class="p5-pill white"><span class="p5-name">Black beans</span><span class="p5-amt">1/2 can</span></div>
+        <div class="p5-pill stone"><span class="p5-name">White rice</span><span class="p5-amt">1 cup</span></div>
+        <div class="p5-pill white"><span class="p5-name">Corn</span><span class="p5-amt">1/4 cup</span></div>
+        <div class="p5-pill stone"><span class="p5-name">Avocado</span><span class="p5-amt">1/2</span></div>
+        <div class="p5-pill white"><span class="p5-name">Salsa</span><span class="p5-amt">3 tbsp</span></div>
+        <div class="p5-pill stone"><span class="p5-name">Sour cream</span><span class="p5-amt">1 tbsp</span></div>
+      </div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+  <!-- P6 -->
+  <div>
+    <div class="col-label">P6 — GLASS CHECKLIST</div>
+    <div class="col-desc">Frosted glass card. Round checkboxes. Progress bar + count. Checked items fade. Soft, modern, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="bk"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="tp">Breakfast · Recipe</span></div>
+      <div class="aw"><div id="a6" class="ab"></div></div>
+      <div class="hn">Black Bean Burrito Bowl</div>
+      <div class="hs"><strong>5</strong> min prep · <strong>10</strong> min cook · <strong>Easy</strong></div>
+      <div class="hv"><span class="vp">▶ Watch Video</span></div>
+      <div class="p6"><div class="p6-card">
+        <div class="p6-head"><span class="p6-title">Ingredients</span><span class="p6-count">2 / 6</span></div>
+        <div class="p6-prog"><div class="p6-prog-fill" style="width:33%"></div></div>
+        <div class="p6-row done"><div class="p6-cb on"><span class="p6-ck">✓</span></div><span class="p6-name">Black beans</span><span class="p6-amt">1/2 can</span></div>
+        <div class="p6-row done"><div class="p6-cb on"><span class="p6-ck">✓</span></div><span class="p6-name">White rice</span><span class="p6-amt">1 cup</span></div>
+        <div class="p6-row"><div class="p6-cb"></div><span class="p6-name">Corn</span><span class="p6-amt">1/4 cup</span></div>
+        <div class="p6-row"><div class="p6-cb"></div><span class="p6-name">Avocado</span><span class="p6-amt">1/2</span></div>
+        <div class="p6-row"><div class="p6-cb"></div><span class="p6-name">Salsa</span><span class="p6-amt">3 tbsp</span></div>
+        <div class="p6-row"><div class="p6-cb"></div><span class="p6-name">Sour cream</span><span class="p6-amt">1 tbsp</span></div>
+      </div></div>
+      <div class="sp"><div class="sp-h"><span class="sp-t">Steps</span><span class="sp-s">↓</span></div><div class="sp-r"></div></div>
+    </div></div>
+  </div>
+
+</div>
+
+<script>
+['a1','a2','a3','a4','a5','a6'].forEach(function(id){
+  lottie.loadAnimation({container:document.getElementById(id),renderer:'svg',loop:true,autoplay:true,path:'/cooking-pan.json'});
+});
+</script>
+</body>
+</html>

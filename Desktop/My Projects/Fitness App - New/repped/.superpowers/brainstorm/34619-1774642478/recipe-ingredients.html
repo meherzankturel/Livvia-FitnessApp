@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Ingredient Variants</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* Placeholder for locked hero */
+.hero-placeholder{padding:56px 24px 0;text-align:center}
+.hp-label{font-size:8px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:1.5px;padding:10px 0}
+.hp-box{height:100px;border-radius:16px;background:var(--stone);opacity:0.3;display:flex;align-items:center;justify-content:center;margin:0 40px}
+.hp-box-text{font-size:9px;color:var(--rock);text-transform:uppercase;letter-spacing:1px}
+
+/* Shared section head */
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.s-title{font-size:14px;font-weight:700;color:var(--earth)}
+.s-count{font-size:11px;color:var(--trail);font-weight:600}
+.s-sub{font-size:11px;color:var(--rock)}
+
+/* Step placeholder */
+.step-ph{padding:20px 24px 0}
+.step-ph-head{display:flex;justify-content:space-between;margin-bottom:10px}
+.step-ph-title{font-size:14px;font-weight:700;color:var(--earth)}
+.step-ph-sub{font-size:11px;color:var(--rock)}
+.step-ph-row{height:60px;border-radius:14px;background:var(--stone);opacity:0.2;margin-bottom:8px}
+
+
+/* ============================================================
+   I1: TAPPABLE CHECKLIST
+   Checkboxes. Progress counter. Strikethrough on checked.
+   Interactive, satisfying. Cooking prep tracker.
+   ============================================================ */
+.i1{padding:18px 24px 0}
+.i1-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.04);cursor:pointer}
+.i1-item:last-child{border-bottom:none}
+.i1-cb{width:20px;height:20px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.i1-cb.on{background:var(--trail);border-color:var(--trail)}
+.i1-ck{font-size:10px;color:#fff;font-weight:700}
+.i1-name{font-size:14px;color:var(--earth);flex:1}
+.i1-amt{font-size:12px;color:var(--rock)}
+.i1-item.done .i1-name{text-decoration:line-through;opacity:0.35}
+.i1-item.done .i1-amt{opacity:0.3}
+
+
+/* ============================================================
+   I2: FLOWING CHIPS
+   Each ingredient as a rounded chip with name + amount.
+   Wraps naturally. Compact, scannable.
+   ============================================================ */
+.i2{padding:18px 24px 0}
+.i2-chips{display:flex;flex-wrap:wrap;gap:6px}
+.i2-chip{padding:9px 14px;border-radius:12px;background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.i2-chip-text{font-size:12px;color:var(--earth)}
+.i2-chip-text strong{font-weight:700}
+.i2-chip-text span{color:var(--rock);font-size:10px;margin-left:4px}
+
+
+/* ============================================================
+   I3: NUMBERED ROWS
+   Clean numbered list. Green trail numbers left. Name center.
+   Amount right. Simple, easy to read.
+   ============================================================ */
+.i3{padding:18px 24px 0}
+.i3-row{display:flex;align-items:center;padding:11px 0;border-bottom:1px solid rgba(0,0,0,0.04)}
+.i3-row:last-child{border-bottom:none}
+.i3-num{width:22px;height:22px;border-radius:11px;background:var(--earth);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:10px;font-weight:700;color:var(--sand);margin-right:10px}
+.i3-name{flex:1;font-size:14px;color:var(--earth)}
+.i3-amt{font-size:12px;color:var(--rock)}
+
+
+/* ============================================================
+   I4: 2-COLUMN MINI CARDS
+   Each ingredient in its own card. 2-column grid.
+   Green dot accent. Name + amount.
+   ============================================================ */
+.i4{padding:18px 24px 0}
+.i4-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.i4-card{padding:12px 14px;border-radius:14px;background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.i4-card-top{display:flex;align-items:center;gap:5px}
+.i4-dot{width:5px;height:5px;border-radius:50%;background:var(--trail);flex-shrink:0}
+.i4-card-name{font-size:13px;font-weight:600;color:var(--earth)}
+.i4-card-amt{font-size:11px;color:var(--rock);margin-top:3px;padding-left:10px}
+
+
+/* ============================================================
+   I5: DARK CARD LIST
+   Ingredients inside a dark card. White text. Green dots.
+   Amounts right-aligned. Premium, contained.
+   ============================================================ */
+.i5{padding:18px 20px 0}
+.i5-card{background:var(--earth);border-radius:20px;padding:16px 18px;position:relative;overflow:hidden}
+.i5-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.i5-item{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid rgba(246,245,240,0.04);position:relative}
+.i5-item:last-child{border-bottom:none}
+.i5-dot{width:5px;height:5px;border-radius:50%;background:var(--trail);opacity:0.5;flex-shrink:0}
+.i5-name{flex:1;font-size:13px;color:var(--sand)}
+.i5-amt{font-size:11px;color:rgba(246,245,240,0.3)}
+
+
+/* ============================================================
+   I6: HORIZONTAL SCROLL CARDS
+   Each ingredient as a swipeable card. Horizontal scroll.
+   Bigger, more visual. Good for fewer ingredients.
+   ============================================================ */
+.i6{padding:18px 0 0}
+.i6-head{padding:0 24px}
+.i6-scroll{display:flex;gap:8px;overflow-x:auto;padding:10px 24px 0;scrollbar-width:none;scroll-snap-type:x mandatory}
+.i6-scroll::-webkit-scrollbar{display:none}
+.i6-card{flex-shrink:0;width:120px;padding:16px 14px;border-radius:16px;scroll-snap-align:start;text-align:center}
+.i6-card.white{background:#fff;border:1px solid rgba(0,0,0,0.04)}
+.i6-card.stone{background:var(--stone)}
+.i6-card-num{font-size:20px;font-weight:800;color:var(--trail);margin-bottom:6px}
+.i6-card-name{font-size:12px;font-weight:700;color:var(--earth);line-height:1.2}
+.i6-card-amt{font-size:10px;color:var(--rock);margin-top:4px}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- I1: CHECKLIST -->
+  <div>
+    <div class="col-label">I1 — TAPPABLE CHECKLIST</div>
+    <div class="col-desc">Checkboxes with progress counter. Strikethrough on checked. Interactive cooking prep tracker.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i1"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-count">2/6 ready</span></div>
+        <div class="i1-item done"><div class="i1-cb on"><span class="i1-ck">✓</span></div><span class="i1-name">Black beans</span><span class="i1-amt">1/2 can</span></div>
+        <div class="i1-item done"><div class="i1-cb on"><span class="i1-ck">✓</span></div><span class="i1-name">White rice</span><span class="i1-amt">1 cup</span></div>
+        <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Corn</span><span class="i1-amt">1/4 cup</span></div>
+        <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Avocado</span><span class="i1-amt">1/2</span></div>
+        <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Salsa</span><span class="i1-amt">3 tbsp</span></div>
+        <div class="i1-item"><div class="i1-cb"></div><span class="i1-name">Sour cream</span><span class="i1-amt">1 tbsp</span></div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I2: CHIPS -->
+  <div>
+    <div class="col-label">I2 — FLOWING CHIPS</div>
+    <div class="col-desc">Rounded chips with name + amount inline. Wraps naturally. Compact, scannable at a glance.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i2"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i2-chips">
+          <div class="i2-chip"><span class="i2-chip-text"><strong>Black beans</strong> <span>1/2 can</span></span></div>
+          <div class="i2-chip"><span class="i2-chip-text"><strong>White rice</strong> <span>1 cup</span></span></div>
+          <div class="i2-chip"><span class="i2-chip-text"><strong>Corn</strong> <span>1/4 cup</span></span></div>
+          <div class="i2-chip"><span class="i2-chip-text"><strong>Avocado</strong> <span>1/2</span></span></div>
+          <div class="i2-chip"><span class="i2-chip-text"><strong>Salsa</strong> <span>3 tbsp</span></span></div>
+          <div class="i2-chip"><span class="i2-chip-text"><strong>Sour cream</strong> <span>1 tbsp</span></span></div>
+        </div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I3: NUMBERED ROWS -->
+  <div>
+    <div class="col-label">I3 — NUMBERED ROWS</div>
+    <div class="col-desc">Dark number circles left. Name center. Amount right. Clean vertical list. Easy to follow.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i3"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i3-row"><span class="i3-num">1</span><span class="i3-name">Black beans</span><span class="i3-amt">1/2 can drained</span></div>
+        <div class="i3-row"><span class="i3-num">2</span><span class="i3-name">White rice</span><span class="i3-amt">1 cup cooked</span></div>
+        <div class="i3-row"><span class="i3-num">3</span><span class="i3-name">Corn</span><span class="i3-amt">1/4 cup</span></div>
+        <div class="i3-row"><span class="i3-num">4</span><span class="i3-name">Avocado</span><span class="i3-amt">1/2 sliced</span></div>
+        <div class="i3-row"><span class="i3-num">5</span><span class="i3-name">Salsa</span><span class="i3-amt">3 tbsp</span></div>
+        <div class="i3-row"><span class="i3-num">6</span><span class="i3-name">Sour cream</span><span class="i3-amt">1 tbsp</span></div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- I4: 2-COL CARDS -->
+  <div>
+    <div class="col-label">I4 — 2-COLUMN CARDS</div>
+    <div class="col-desc">Each ingredient in its own white card. 2-column grid. Green dot accent. Visual, spatial.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i4"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i4-grid">
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">Black beans</span></div><div class="i4-card-amt">1/2 can drained</div></div>
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">White rice</span></div><div class="i4-card-amt">1 cup cooked</div></div>
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">Corn</span></div><div class="i4-card-amt">1/4 cup</div></div>
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">Avocado</span></div><div class="i4-card-amt">1/2 sliced</div></div>
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">Salsa</span></div><div class="i4-card-amt">3 tbsp</div></div>
+          <div class="i4-card"><div class="i4-card-top"><span class="i4-dot"></span><span class="i4-card-name">Sour cream</span></div><div class="i4-card-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I5: DARK CARD LIST -->
+  <div>
+    <div class="col-label">I5 — DARK CARD LIST</div>
+    <div class="col-desc">All ingredients inside one dark card. White text, green dots. Contained, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i5"><div class="s-head" style="padding:0 4px"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div>
+        <div class="i5-card">
+          <div class="i5-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="i5-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">Black beans</span><span class="i5-amt">1/2 can</span></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">White rice</span><span class="i5-amt">1 cup</span></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">Corn</span><span class="i5-amt">1/4 cup</span></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">Avocado</span><span class="i5-amt">1/2</span></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">Salsa</span><span class="i5-amt">3 tbsp</span></div>
+          <div class="i5-item"><span class="i5-dot"></span><span class="i5-name">Sour cream</span><span class="i5-amt">1 tbsp</span></div>
+        </div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+  <!-- I6: HORIZONTAL SCROLL -->
+  <div>
+    <div class="col-label">I6 — HORIZONTAL SCROLL</div>
+    <div class="col-desc">Each ingredient as a swipeable vertical card. Big number, name, amount. Swipe through.</div>
+    <div class="phone"><div class="ps">
+      <div class="hero-placeholder"><div class="hp-label">↑ Locked Hero (N5 + Pan) ↑</div><div class="hp-box"><span class="hp-box-text">Animation + Name + Meta</span></div></div>
+      <div class="i6"><div class="i6-head"><div class="s-head"><span class="s-title">Ingredients</span><span class="s-sub">6 items</span></div></div>
+        <div class="i6-scroll">
+          <div class="i6-card white"><div class="i6-card-num">1</div><div class="i6-card-name">Black beans</div><div class="i6-card-amt">1/2 can</div></div>
+          <div class="i6-card stone"><div class="i6-card-num">2</div><div class="i6-card-name">White rice</div><div class="i6-card-amt">1 cup</div></div>
+          <div class="i6-card white"><div class="i6-card-num">3</div><div class="i6-card-name">Corn</div><div class="i6-card-amt">1/4 cup</div></div>
+          <div class="i6-card stone"><div class="i6-card-num">4</div><div class="i6-card-name">Avocado</div><div class="i6-card-amt">1/2</div></div>
+          <div class="i6-card white"><div class="i6-card-num">5</div><div class="i6-card-name">Salsa</div><div class="i6-card-amt">3 tbsp</div></div>
+          <div class="i6-card stone"><div class="i6-card-num">6</div><div class="i6-card-name">Sour cream</div><div class="i6-card-amt">1 tbsp</div></div>
+        </div>
+      </div>
+      <div class="step-ph"><div class="step-ph-head"><span class="step-ph-title">Steps</span><span class="step-ph-sub">↓ next element</span></div><div class="step-ph-row"></div><div class="step-ph-row"></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Warmup List Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     W1: DARK HERO + NUMBERED EXERCISES
+     Hero card with title + duration + info. Exercises as
+     numbered rows (like recipe ingredients). Clean, consistent.
+     ============================================================ */
+
+  .w1-hdr { padding: 54px 24px 0; }
+  .w1-ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; padding: 12px 24px 0; }
+
+  .w1-hero { margin: 12px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .w1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .w1-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .w1-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+  .w1-hero-dot { position: absolute; top: 16px; right: 16px; width: 8px; height: 8px; border-radius: 50%; background: var(--trail); opacity: 0.2; }
+
+  .w1-hero-label { font-size: 9px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .w1-hero-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 4px; position: relative; }
+  .w1-hero-sub { font-size: 12px; color: rgba(246,245,240,0.3); margin-top: 4px; position: relative; }
+  .w1-hero-pills { display: flex; gap: 6px; margin-top: 12px; position: relative; }
+  .w1-hp { padding: 5px 12px; border-radius: 8px; background: rgba(246,245,240,0.04); display: flex; align-items: center; gap: 4px; }
+  .w1-hp-val { font-size: 13px; font-weight: 800; color: var(--sand); }
+  .w1-hp-label { font-size: 8px; color: rgba(246,245,240,0.2); }
+
+  /* Exercises as numbered rows */
+  .w1-list { padding: 16px 24px 0; }
+  .w1-list-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  .w1-ex { display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.03); align-items: flex-start; }
+  .w1-ex:last-child { border-bottom: none; }
+  .w1-ex-num { width: 24px; height: 24px; border-radius: 8px; background: var(--earth); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--sand); flex-shrink: 0; margin-top: 1px; }
+  .w1-ex-body { flex: 1; }
+  .w1-ex-top { display: flex; justify-content: space-between; align-items: baseline; }
+  .w1-ex-name { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .w1-ex-time { font-size: 12px; color: var(--rock); font-weight: 500; }
+  .w1-ex-desc { font-size: 12px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+  .w1-ex-tags { display: flex; gap: 6px; margin-top: 6px; align-items: center; }
+  .w1-tag { padding: 3px 8px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .w1-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .w1-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .w1-tag.specific { background: rgba(99,102,241,0.06); color: #4338CA; }
+  .w1-demo { font-size: 9px; color: var(--trail); font-weight: 600; cursor: pointer; margin-left: auto; }
+
+  /* Buttons */
+  .w1-btns { padding: 18px 24px; display: flex; gap: 10px; }
+  .w1-btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .w1-btn.primary { background: var(--earth); color: var(--sand); }
+  .w1-btn.secondary { background: var(--stone); color: var(--earth); }
+
+
+  /* ============================================================
+     W2: HORIZONTAL EXERCISE CARDS
+     Hero at top. Exercises as swipeable horizontal cards
+     (dark/light alternating). Same pattern as recipe steps.
+     ============================================================ */
+
+  .w2-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .w2-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .w2-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+  .w2-top { padding: 12px 24px 0; }
+  .w2-title { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.6px; }
+  .w2-sub { font-size: 12px; color: var(--rock); margin-top: 4px; }
+  .w2-info { margin-top: 10px; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); font-size: 11px; color: #047857; line-height: 1.4; }
+
+  .w2-scroll-section { padding: 16px 0 0; }
+  .w2-scroll-head { display: flex; justify-content: space-between; align-items: center; padding: 0 24px; margin-bottom: 10px; }
+  .w2-scroll-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .w2-scroll-count { font-size: 10px; color: var(--rock); }
+
+  .w2-scroll { display: flex; gap: 12px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .w2-scroll::-webkit-scrollbar { display: none; }
+
+  .w2-card { min-width: 280px; max-width: 280px; border-radius: 22px; padding: 22px; min-height: 200px; display: flex; flex-direction: column; flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden; }
+  .w2-card:last-child { margin-right: 24px; }
+  .w2-card:nth-child(odd) { background: var(--earth); }
+  .w2-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .w2-c-wm { font-size: 80px; font-weight: 900; letter-spacing: -4px; line-height: 1; position: absolute; top: -6px; right: 4px; pointer-events: none; }
+  .w2-card:nth-child(odd) .w2-c-wm { color: rgba(246,245,240,0.03); }
+  .w2-card:nth-child(even) .w2-c-wm { color: rgba(45,42,36,0.025); }
+
+  .w2-c-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .w2-c-name { font-size: 18px; font-weight: 700; flex: 1; letter-spacing: -0.3px; }
+  .w2-card:nth-child(odd) .w2-c-name { color: var(--sand); }
+  .w2-card:nth-child(even) .w2-c-name { color: var(--earth); }
+  .w2-c-time { font-size: 12px; font-weight: 600; flex-shrink: 0; margin-left: 8px; }
+  .w2-card:nth-child(odd) .w2-c-time { color: rgba(246,245,240,0.3); }
+  .w2-card:nth-child(even) .w2-c-time { color: var(--rock); }
+
+  .w2-c-desc { font-size: 12px; line-height: 1.5; margin-top: 8px; position: relative; }
+  .w2-card:nth-child(odd) .w2-c-desc { color: rgba(246,245,240,0.4); }
+  .w2-card:nth-child(even) .w2-c-desc { color: var(--rock); }
+
+  .w2-c-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 12px; position: relative; }
+  .w2-c-tag { padding: 3px 8px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .w2-card:nth-child(odd) .w2-c-tag.general { background: rgba(52,211,153,0.1); color: var(--trail); }
+  .w2-card:nth-child(odd) .w2-c-tag.dynamic { background: rgba(245,158,11,0.08); color: #F59E0B; }
+  .w2-card:nth-child(even) .w2-c-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .w2-card:nth-child(even) .w2-c-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .w2-c-demo { font-size: 9px; font-weight: 600; cursor: pointer; }
+  .w2-card:nth-child(odd) .w2-c-demo { color: var(--trail); opacity: 0.6; }
+  .w2-card:nth-child(even) .w2-c-demo { color: var(--trail); }
+
+  .w2-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0; }
+  .w2-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .w2-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+  .w2-btns { padding: 8px 24px; display: flex; gap: 10px; }
+  .w2-btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .w2-btn.primary { background: var(--earth); color: var(--sand); }
+  .w2-btn.secondary { background: var(--stone); color: var(--earth); }
+
+
+  /* ============================================================
+     W3: COMPACT LIST — Clean rows, no cards. Exercise name
+     + time + type tag. Tap to expand description. Minimal.
+     ============================================================ */
+
+  .w3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .w3-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .w3-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+
+  .w3-hero { margin: 12px 24px 0; padding: 22px; border-radius: 22px; background: var(--earth); position: relative; overflow: hidden; }
+  .w3-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .w3-ha:nth-child(1) { width: 100px; top: 14px; right: -8px; transform: rotate(-35deg); }
+  .w3-ha:nth-child(2) { width: 80px; top: 26px; right: -8px; transform: rotate(-35deg); }
+
+  .w3-hero-row { display: flex; justify-content: space-between; align-items: flex-end; position: relative; }
+  .w3-hero-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .w3-hero-sub { font-size: 11px; color: rgba(246,245,240,0.3); margin-top: 3px; }
+  .w3-hero-dur { text-align: right; }
+  .w3-hero-dur-val { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .w3-hero-dur-label { font-size: 9px; color: rgba(246,245,240,0.2); }
+
+  /* Compact exercise rows */
+  .w3-list { padding: 16px 24px 0; }
+  .w3-list-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 10px; }
+
+  .w3-ex { padding: 14px 16px; border-radius: 16px; margin-bottom: 8px; background: #fff; border: 1px solid rgba(0,0,0,0.04); cursor: pointer; }
+  .w3-ex-row { display: flex; align-items: center; gap: 10px; }
+  .w3-ex-num { font-size: 11px; font-weight: 800; color: var(--rock); width: 18px; flex-shrink: 0; }
+  .w3-ex-name { font-size: 15px; font-weight: 600; color: var(--earth); flex: 1; }
+  .w3-ex-meta { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+  .w3-ex-tag { padding: 2px 7px; border-radius: 100px; font-size: 8px; font-weight: 600; }
+  .w3-ex-tag.general { background: rgba(52,211,153,0.06); color: #047857; }
+  .w3-ex-tag.dynamic { background: rgba(245,158,11,0.06); color: #92400E; }
+  .w3-ex-time { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* Expanded detail (shown on first exercise as example) */
+  .w3-ex-detail { margin-top: 8px; padding-top: 8px; border-top: 1px solid rgba(0,0,0,0.03); }
+  .w3-ex-desc { font-size: 12px; color: var(--rock); line-height: 1.4; }
+  .w3-ex-demo { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; cursor: pointer; }
+
+  .w3-btns { padding: 16px 24px; display: flex; gap: 10px; }
+  .w3-btn { flex: 1; padding: 16px; border-radius: 16px; text-align: center; font-size: 14px; font-weight: 600; cursor: pointer; }
+  .w3-btn.primary { background: var(--earth); color: var(--sand); }
+  .w3-btn.secondary { background: var(--stone); color: var(--earth); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- W1: Dark Hero + Numbered Exercises -->
+<div>
+  <div class="lbl" style="color:var(--trail);">W1 — Hero + Numbered List</div>
+  <div class="dsc">Dark hero with title + duration pills. Exercises as numbered rows with name, time, description, type tag, demo link. Same I4 pattern as recipe ingredients.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w1-ctx">Before You Start</div>
+    <div class="w1-hero"><div class="w1-ha"></div><div class="w1-ha"></div><div class="w1-hero-dot"></div>
+      <div class="w1-hero-label">Warm Up</div>
+      <div class="w1-hero-title">Get Ready</div>
+      <div class="w1-hero-sub">Dynamic stretches to prevent injury</div>
+      <div class="w1-hero-pills"><div class="w1-hp"><span class="w1-hp-val">4</span><span class="w1-hp-label">min</span></div><div class="w1-hp"><span class="w1-hp-val">6</span><span class="w1-hp-label">exercises</span></div></div>
+    </div>
+
+    <div class="w1-list"><div class="w1-list-title">Exercises</div>
+      <div class="w1-ex"><div class="w1-ex-num">1</div><div class="w1-ex-body"><div class="w1-ex-top"><span class="w1-ex-name">Jumping Jacks</span><span class="w1-ex-time">1 min</span></div><div class="w1-ex-desc">Jump feet wide while raising arms overhead. Keep a steady pace.</div><div class="w1-ex-tags"><span class="w1-tag general">General</span><span class="w1-demo">▶ Demo</span></div></div></div>
+      <div class="w1-ex"><div class="w1-ex-num">2</div><div class="w1-ex-body"><div class="w1-ex-top"><span class="w1-ex-name">Cat-Cow Stretch</span><span class="w1-ex-time">40s</span></div><div class="w1-ex-desc">On all fours, arch and round your back alternately.</div><div class="w1-ex-tags"><span class="w1-tag dynamic">Dynamic</span><span class="w1-demo">▶ Demo</span></div></div></div>
+      <div class="w1-ex"><div class="w1-ex-num">3</div><div class="w1-ex-body"><div class="w1-ex-top"><span class="w1-ex-name">Thoracic Rotations</span><span class="w1-ex-time">30s</span></div><div class="w1-ex-desc">On all fours, rotate chest toward ceiling then floor.</div><div class="w1-ex-tags"><span class="w1-tag dynamic">Dynamic</span><span class="w1-demo">▶ Demo</span></div></div></div>
+      <div class="w1-ex"><div class="w1-ex-num">4</div><div class="w1-ex-body"><div class="w1-ex-top"><span class="w1-ex-name">Shoulder Dislocates</span><span class="w1-ex-time">30s</span></div><div class="w1-ex-desc">Hold band wide, pass it over and behind your head.</div><div class="w1-ex-tags"><span class="w1-tag dynamic">Dynamic</span><span class="w1-demo">▶ Demo</span></div></div></div>
+      <div class="w1-ex"><div class="w1-ex-num">5</div><div class="w1-ex-body"><div class="w1-ex-top"><span class="w1-ex-name">Arm Circles</span><span class="w1-ex-time">30s</span></div><div class="w1-ex-desc">Small to large circles, forward then backward.</div><div class="w1-ex-tags"><span class="w1-tag general">General</span><span class="w1-demo">▶ Demo</span></div></div></div>
+    </div>
+
+    <div class="w1-btns"><div class="w1-btn primary">Start Warm-up</div><div class="w1-btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- W2: Horizontal Exercise Cards -->
+<div>
+  <div class="lbl" style="color:#818CF8;">W2 — Swipe Exercise Cards</div>
+  <div class="dsc">Title + info tip at top. Exercises as horizontal swipeable cards (dark/light alternating, watermark numbers). Same pattern as recipe steps + nutrition meals.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w2-hdr"><div class="w2-back">←</div><span class="w2-hdr-title">Warm Up</span></div>
+    <div class="w2-top"><div class="w2-title">Get Ready</div><div class="w2-sub">4 minutes · 6 dynamic exercises</div><div class="w2-info">💡 Dynamic stretches prep your muscles without weakening them.</div></div>
+
+    <div class="w2-scroll-section"><div class="w2-scroll-head"><span class="w2-scroll-title">Exercises</span><span class="w2-scroll-count">6 exercises</span></div>
+      <div class="w2-scroll">
+        <div class="w2-card"><div class="w2-c-wm">01</div><div class="w2-c-top"><span class="w2-c-name">Jumping Jacks</span><span class="w2-c-time">1 min</span></div><div class="w2-c-desc">Jump feet wide while raising arms overhead. Keep a steady pace.</div><div class="w2-c-bottom"><span class="w2-c-tag general">General</span><span class="w2-c-demo">▶ Demo</span></div></div>
+        <div class="w2-card"><div class="w2-c-wm">02</div><div class="w2-c-top"><span class="w2-c-name">Cat-Cow Stretch</span><span class="w2-c-time">40s</span></div><div class="w2-c-desc">On all fours, arch and round your back alternately. Breathe deeply.</div><div class="w2-c-bottom"><span class="w2-c-tag dynamic">Dynamic</span><span class="w2-c-demo">▶ Demo</span></div></div>
+        <div class="w2-card"><div class="w2-c-wm">03</div><div class="w2-c-top"><span class="w2-c-name">Thoracic Rotations</span><span class="w2-c-time">30s</span></div><div class="w2-c-desc">On all fours, rotate chest toward ceiling then floor.</div><div class="w2-c-bottom"><span class="w2-c-tag dynamic">Dynamic</span><span class="w2-c-demo">▶ Demo</span></div></div>
+        <div class="w2-card"><div class="w2-c-wm">04</div><div class="w2-c-top"><span class="w2-c-name">Shoulder Dislocates</span><span class="w2-c-time">30s</span></div><div class="w2-c-desc">Hold band wide, pass over and behind your head.</div><div class="w2-c-bottom"><span class="w2-c-tag dynamic">Dynamic</span><span class="w2-c-demo">▶ Demo</span></div></div>
+      </div>
+      <div class="w2-dots"><div class="w2-dot"></div><div class="w2-dot"></div><div class="w2-dot"></div><div class="w2-dot"></div><div class="w2-dot"></div><div class="w2-dot"></div></div>
+    </div>
+
+    <div class="w2-btns"><div class="w2-btn primary">Start Warm-up</div><div class="w2-btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- W3: Compact List -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">W3 — Hero + Compact Cards</div>
+  <div class="dsc">Dark hero with title + big duration number. Exercises as compact white cards with number, name, tag, time. Tap to expand description. Cleanest.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w3-hdr"><div class="w3-back">←</div><span class="w3-hdr-title">Warm Up</span></div>
+
+    <div class="w3-hero"><div class="w3-ha"></div><div class="w3-ha"></div>
+      <div class="w3-hero-row"><div><div class="w3-hero-title">Get Ready</div><div class="w3-hero-sub">Dynamic stretches · Prevents injury</div></div><div class="w3-hero-dur"><div class="w3-hero-dur-val">4</div><div class="w3-hero-dur-label">minutes</div></div></div>
+    </div>
+
+    <div class="w3-list"><div class="w3-list-title">6 Exercises</div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">01</span><span class="w3-ex-name">Jumping Jacks</span><div class="w3-ex-meta"><span class="w3-ex-tag general">General</span><span class="w3-ex-time">1 min</span></div></div><div class="w3-ex-detail"><div class="w3-ex-desc">Jump feet wide while raising arms overhead. Keep a steady pace.</div><div class="w3-ex-demo">▶ Watch Demo</div></div></div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">02</span><span class="w3-ex-name">Cat-Cow Stretch</span><div class="w3-ex-meta"><span class="w3-ex-tag dynamic">Dynamic</span><span class="w3-ex-time">40s</span></div></div></div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">03</span><span class="w3-ex-name">Thoracic Rotations</span><div class="w3-ex-meta"><span class="w3-ex-tag dynamic">Dynamic</span><span class="w3-ex-time">30s</span></div></div></div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">04</span><span class="w3-ex-name">Shoulder Dislocates</span><div class="w3-ex-meta"><span class="w3-ex-tag dynamic">Dynamic</span><span class="w3-ex-time">30s</span></div></div></div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">05</span><span class="w3-ex-name">Arm Circles</span><div class="w3-ex-meta"><span class="w3-ex-tag general">General</span><span class="w3-ex-time">30s</span></div></div></div>
+      <div class="w3-ex"><div class="w3-ex-row"><span class="w3-ex-num">06</span><span class="w3-ex-name">Bodyweight Squats</span><div class="w3-ex-meta"><span class="w3-ex-tag general">General</span><span class="w3-ex-time">30s</span></div></div></div>
+    </div>
+
+    <div class="w3-btns"><div class="w3-btn primary">Start Warm-up</div><div class="w3-btn secondary">Skip</div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — All 6 Nutrition Layouts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #0a0a0f; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; --amber: #F59E0B; --indigo: #6366F1; --red: #EF4444; }
+
+  .nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; background: rgba(10,10,15,0.88); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.06); padding: 14px 20px; display: flex; align-items: center; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .nav::-webkit-scrollbar { display: none; }
+  .nav-t { font-size: 13px; font-weight: 700; color: #fff; white-space: nowrap; margin-right: 6px; flex-shrink: 0; }
+  .nb { padding: 7px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.08); background: transparent; color: rgba(255,255,255,0.5); font-size: 11px; font-weight: 600; cursor: pointer; white-space: nowrap; transition: all 0.2s; flex-shrink: 0; }
+  .nb:hover { border-color: rgba(255,255,255,0.2); color: #fff; }
+  .nb.on { background: #fff; color: #0a0a0f; border-color: #fff; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding: 70px 16px 40px; max-width: 1400px; margin: 0 auto; }
+  @media (max-width: 1300px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 880px) { .grid { grid-template-columns: 1fr; max-width: 420px; } }
+
+  .cell { display: none; }
+  .cell.vis { display: block; }
+  .show-all .cell { display: block !important; }
+
+  .label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .desc { text-align: center; font-size: 10px; color: #555; padding: 0 12px 8px; line-height: 1.5; }
+
+  .phone { width: 100%; max-width: 393px; aspect-ratio: 393/852; border-radius: 40px; overflow: hidden; position: relative; border: 2px solid rgba(255,255,255,0.06); background: var(--sand); margin: 0 auto; }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.02; }
+  .tc:nth-child(1) { width: 130%; height: 50%; top: -10%; left: -15%; }
+  .tc:nth-child(2) { width: 110%; height: 40%; bottom: -8%; right: -15%; }
+  .cnt { position: relative; z-index: 1; }
+
+  /* Shared atoms */
+  .status { padding: 48px 20px 0; display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: var(--earth); }
+  .hero { padding: 12px 20px 0; }
+  .hero .ctx { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .hero .ttl { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 3px; }
+  .grocery { margin: 8px 20px 32px; padding: 14px; border-radius: 16px; background: var(--earth); display: flex; align-items: center; justify-content: space-between; }
+  .grocery .t { font-size: 13px; font-weight: 600; color: var(--sand); }
+  .grocery .s { font-size: 10px; color: rgba(246,245,240,0.4); }
+  .grocery .arr { color: rgba(246,245,240,0.3); }
+
+  /* ===== A: FUEL GAUGE ===== */
+  .a-gauge { margin: 14px 20px 0; padding: 16px; background: var(--earth); border-radius: 20px; display: flex; gap: 16px; align-items: center; }
+  .a-ring { width: 72px; height: 72px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.1); position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .a-ring::before { content:''; position: absolute; inset: -5px; border-radius: 50%; border: 5px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); transform: rotate(-45deg); }
+  .a-ring .n { font-size: 17px; font-weight: 800; color: var(--sand); text-align: center; }
+  .a-ring .u { font-size: 7px; color: rgba(246,245,240,0.4); text-align: center; display: block; }
+  .a-macros { flex: 1; }
+  .a-mr { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; }
+  .a-mr .dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .a-mr .lbl { font-size: 10px; color: rgba(246,245,240,0.5); flex: 1; }
+  .a-mr .val { font-size: 12px; font-weight: 700; color: var(--sand); }
+  .a-tabs { display: flex; gap: 5px; padding: 14px 20px 10px; }
+  .a-tab { padding: 7px 14px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+  .a-tab.on { background: var(--earth); color: var(--sand); }
+  .a-tab.off { background: var(--stone); color: var(--rock); }
+  .a-card { margin: 0 20px 10px; background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+  .a-card-top { padding: 14px; display: flex; gap: 12px; align-items: center; }
+  .a-card-icon { width: 44px; height: 44px; border-radius: 12px; background: rgba(52,211,153,0.06); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+  .a-card-info { flex: 1; }
+  .a-card-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .a-card-meta { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .a-card-cal { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .a-card-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .a-card-acts { display: flex; border-top: 1px solid var(--stone); }
+  .a-card-act { flex: 1; padding: 10px; text-align: center; font-size: 10px; font-weight: 600; }
+  .a-card-act:not(:last-child) { border-right: 1px solid var(--stone); }
+
+  /* ===== B: TRAIL MEALS ===== */
+  .b-macros { display: flex; gap: 6px; padding: 12px 20px; }
+  .b-m { flex: 1; border-radius: 14px; padding: 10px 8px; text-align: center; }
+  .b-m.dk { background: var(--earth); }
+  .b-m.st { background: var(--stone); }
+  .b-m .v { font-size: 16px; font-weight: 800; }
+  .b-m.dk .v { color: var(--sand); }
+  .b-m.st .v { color: var(--earth); }
+  .b-m .l { font-size: 7px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 1px; }
+  .b-m.dk .l { color: rgba(246,245,240,0.35); }
+  .b-m.st .l { color: var(--rock); }
+  .b-trail { padding: 6px 20px; position: relative; }
+  .b-tl { position: absolute; left: 35px; top: 8px; bottom: 16px; width: 2px; background: #DDD9CE; }
+  .b-wp { display: flex; gap: 12px; margin-bottom: 10px; position: relative; z-index: 1; }
+  .b-dot { width: 28px; display: flex; flex-direction: column; align-items: center; padding-top: 12px; flex-shrink: 0; }
+  .b-dot .d { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #DDD9CE; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 11px; z-index: 2; }
+  .b-dot .tm { font-size: 6px; color: var(--rock); margin-top: 2px; }
+  .b-wc { flex: 1; background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); padding: 12px 14px; }
+  .b-wc-head { display: flex; justify-content: space-between; }
+  .b-wc-lbl { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .b-wc-cal { font-size: 12px; font-weight: 700; color: var(--earth); }
+  .b-wc-cal span { font-size: 8px; color: var(--rock); }
+  .b-wc-name { font-size: 13px; font-weight: 600; color: var(--earth); margin-top: 4px; }
+  .b-wc-mac { font-size: 10px; color: var(--rock); margin-top: 2px; }
+  .b-wc-acts { display: flex; gap: 4px; margin-top: 8px; }
+  .b-btn { padding: 4px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+
+  /* ===== C: PLATE ===== */
+  .c-plate-area { display: flex; justify-content: center; padding: 16px; }
+  .c-plate { width: 150px; height: 150px; border-radius: 50%; position: relative; border: 3px solid var(--stone); }
+  .c-plate-inner { position: absolute; inset: 6px; border-radius: 50%; background: conic-gradient(var(--trail) 0deg 120deg, var(--amber) 120deg 200deg, #818CF8 200deg 290deg, #EF4444 290deg 360deg); opacity: 0.1; }
+  .c-plate-center { position: absolute; inset: 25px; border-radius: 50%; background: var(--sand); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .c-plate-cal { font-size: 22px; font-weight: 800; color: var(--earth); }
+  .c-plate-u { font-size: 8px; color: var(--rock); }
+  .c-legend { display: flex; justify-content: center; gap: 12px; padding: 0 20px 6px; }
+  .c-li { display: flex; align-items: center; gap: 4px; font-size: 9px; color: var(--rock); }
+  .c-li .d { width: 6px; height: 6px; border-radius: 50%; }
+  .c-tog { display: flex; gap: 5px; padding: 4px 20px 10px; }
+  .c-t { flex: 1; padding: 8px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 600; }
+  .c-t.on { background: var(--earth); color: var(--sand); }
+  .c-t.off { background: var(--stone); color: var(--rock); }
+  .c-meals { padding: 0 20px; }
+  .c-ml { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 6px; margin-bottom: 4px; }
+  .c-m { background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); padding: 12px; margin-bottom: 8px; display: flex; gap: 10px; align-items: center; }
+  .c-mi { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .c-mb { flex: 1; }
+  .c-mn { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .c-mm { font-size: 10px; color: var(--rock); margin-top: 1px; }
+  .c-mc { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .c-mc span { font-size: 8px; color: var(--rock); display: block; }
+
+  /* ===== D: JOURNAL ===== */
+  .d-macro { margin: 12px 20px 0; padding: 14px 16px; background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); position: relative; }
+  .d-macro::before { content:''; position: absolute; left: 44px; top: 0; bottom: 0; width: 1px; background: rgba(239,68,68,0.06); }
+  .d-cal { display: flex; align-items: baseline; gap: 5px; margin-bottom: 8px; }
+  .d-cal .big { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; }
+  .d-cal .u { font-size: 11px; color: var(--rock); }
+  .d-mr { display: flex; align-items: center; margin-bottom: 3px; }
+  .d-mr .n { font-size: 11px; color: var(--rock); width: 50px; }
+  .d-mr .bar { flex: 1; height: 3px; border-radius: 2px; background: var(--stone); margin: 0 10px; overflow: hidden; }
+  .d-mr .fill { height: 100%; border-radius: 2px; }
+  .d-mr .v { font-size: 12px; font-weight: 700; color: var(--earth); width: 36px; text-align: right; }
+  .d-entries { padding: 10px 20px; }
+  .d-et { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .d-et::after { content:''; flex: 1; height: 1px; background: var(--stone); }
+  .d-e { background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); margin-bottom: 8px; overflow: hidden; }
+  .d-e-main { padding: 12px 14px; display: flex; gap: 10px; align-items: center; }
+  .d-e-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .d-e-body { flex: 1; }
+  .d-e-name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .d-e-mac { font-size: 10px; color: var(--rock); margin-top: 1px; }
+  .d-e-cal { text-align: right; flex-shrink: 0; }
+  .d-e-cal .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .d-e-cal .u { font-size: 8px; color: var(--rock); }
+  .d-e-acts { display: flex; border-top: 1px solid var(--stone); }
+  .d-e-act { flex: 1; padding: 8px; text-align: center; font-size: 9px; font-weight: 600; }
+  .d-e-act:not(:last-child) { border-right: 1px solid var(--stone); }
+
+  /* ===== E: STACK ===== */
+  .e-pills { display: flex; gap: 5px; padding: 10px 20px; flex-wrap: wrap; }
+  .e-p { padding: 5px 10px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+  .e-stack { position: relative; height: 380px; margin: 14px 20px 0; }
+  .e-c { position: absolute; left: 0; right: 0; border-radius: 22px; overflow: hidden; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .e-c:nth-child(1) { top: 0; z-index: 4; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+  .e-c:nth-child(2) { top: 8px; z-index: 3; transform: scale(0.97); opacity: 0.6; }
+  .e-c:nth-child(3) { top: 16px; z-index: 2; transform: scale(0.94); opacity: 0.35; }
+  .e-c:nth-child(4) { top: 22px; z-index: 1; transform: scale(0.91); opacity: 0.15; }
+  .e-hero { height: 130px; position: relative; display: flex; align-items: center; justify-content: center; }
+  .e-hero .bg { position: absolute; inset: 0; opacity: 0.06; }
+  .e-hero .em { font-size: 48px; position: relative; z-index: 1; }
+  .e-hero .ml { position: absolute; top: 12px; left: 12px; font-size: 9px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; background: rgba(246,245,240,0.8); padding: 3px 8px; border-radius: 100px; z-index: 2; }
+  .e-hero .cb { position: absolute; top: 12px; right: 12px; font-size: 14px; font-weight: 800; color: var(--earth); background: rgba(246,245,240,0.8); padding: 4px 10px; border-radius: 100px; z-index: 2; }
+  .e-hero .cb span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .e-body { padding: 14px; }
+  .e-name { font-size: 17px; font-weight: 700; color: var(--earth); letter-spacing: -0.3px; }
+  .e-desc { font-size: 11px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+  .e-mgrid { display: flex; gap: 6px; margin-top: 10px; }
+  .e-mg { flex: 1; padding: 8px; border-radius: 12px; background: var(--stone); text-align: center; }
+  .e-mg .v { font-size: 14px; font-weight: 800; color: var(--earth); }
+  .e-mg .l { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+  .e-acts { display: flex; gap: 6px; margin-top: 10px; }
+  .e-ab { flex: 1; padding: 10px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 600; }
+  .e-swipe { text-align: center; margin-top: 12px; font-size: 9px; color: var(--rock); }
+
+  /* ===== F: TIMELINE ===== */
+  .f-ruler { margin: 12px 0 0; padding: 0 20px; overflow-x: auto; scrollbar-width: none; }
+  .f-ruler::-webkit-scrollbar { display: none; }
+  .f-ri { display: flex; min-width: 520px; height: 48px; align-items: flex-end; position: relative; }
+  .f-h { width: 34px; text-align: center; flex-shrink: 0; }
+  .f-h .hl { font-size: 7px; color: #AEAEB2; }
+  .f-h .ht { width: 1px; height: 10px; background: #DDD9CE; margin: 3px auto 0; }
+  .f-mm { position: absolute; bottom: 16px; display: flex; flex-direction: column; align-items: center; }
+  .f-mm .line { width: 2px; height: 18px; }
+  .f-mm .dot { width: 12px; height: 12px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 7px; }
+  .f-bento { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; padding: 10px 20px; }
+  .f-bw { border-radius: 14px; padding: 10px; text-align: center; }
+  .f-bw.dk { background: var(--earth); }
+  .f-bw.st { background: var(--stone); }
+  .f-bw .v { font-size: 16px; font-weight: 800; }
+  .f-bw.dk .v { color: var(--sand); }
+  .f-bw.st .v { color: var(--earth); }
+  .f-bw .l { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+  .f-bw.dk .l { color: rgba(246,245,240,0.35); }
+  .f-bw.st .l { color: var(--rock); }
+  .f-meals { padding: 0 20px; }
+  .f-sl { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 8px; margin-bottom: 5px; }
+  .f-m { background: #fff; border-radius: 16px; border: 1px solid rgba(0,0,0,0.04); padding: 12px 14px; margin-bottom: 8px; display: flex; gap: 10px; align-items: center; position: relative; overflow: hidden; }
+  .f-m::before { content:''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; }
+  .f-m.bk::before { background: var(--amber); }
+  .f-m.lu::before { background: var(--trail); }
+  .f-m.sn::before { background: var(--indigo); }
+  .f-m.di::before { background: var(--red); }
+  .f-m .icon { font-size: 18px; flex-shrink: 0; }
+  .f-m .info { flex: 1; }
+  .f-m .name { font-size: 13px; font-weight: 600; color: var(--earth); }
+  .f-m .meta { font-size: 10px; color: var(--rock); margin-top: 1px; }
+  .f-m .cal { font-size: 14px; font-weight: 800; color: var(--earth); flex-shrink: 0; }
+  .f-m .cal span { font-size: 8px; color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="nav">
+  <span class="nav-t">Nutrition</span>
+  <button class="nb on" onclick="show('all',this)">All 6</button>
+  <button class="nb" onclick="show('a',this)">A Fuel Gauge</button>
+  <button class="nb" onclick="show('b',this)">B Trail</button>
+  <button class="nb" onclick="show('c',this)">C Plate</button>
+  <button class="nb" onclick="show('d',this)">D Journal</button>
+  <button class="nb" onclick="show('e',this)">E Stack</button>
+  <button class="nb" onclick="show('f',this)">F Timeline</button>
+</div>
+
+<div class="grid show-all" id="grid">
+
+<!-- A -->
+<div class="cell vis" id="a">
+  <div class="label" style="color:var(--trail);">A — Fuel Gauge</div>
+  <div class="desc">Dark macro ring + tabbed meal cards + action bar</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span></div>
+    <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+    <div class="a-gauge">
+      <div class="a-ring"><div><div class="n">2,180</div><div class="u">kcal</div></div></div>
+      <div class="a-macros">
+        <div class="a-mr"><div class="dot" style="background:#34D399;"></div><div class="lbl">Protein</div><div class="val">165g</div></div>
+        <div class="a-mr"><div class="dot" style="background:#F59E0B;"></div><div class="lbl">Carbs</div><div class="val">245g</div></div>
+        <div class="a-mr"><div class="dot" style="background:#818CF8;"></div><div class="lbl">Fat</div><div class="val">72g</div></div>
+      </div>
+    </div>
+    <div class="a-tabs"><span class="a-tab on">Breakfast</span><span class="a-tab off">Lunch</span><span class="a-tab off">Dinner</span><span class="a-tab off">Snack</span></div>
+    <div class="a-card"><div class="a-card-top"><div class="a-card-icon">🥣</div><div class="a-card-info"><div class="a-card-name">Greek Yogurt Power Bowl</div><div class="a-card-meta">35g P · 42g C · 12g F</div></div><div class="a-card-cal">520<span>kcal</span></div></div><div class="a-card-acts"><div class="a-card-act" style="color:var(--earth);">Recipe</div><div class="a-card-act" style="color:var(--trail);">Swap</div><div class="a-card-act" style="color:var(--amber);">Eat Out</div></div></div>
+    <div class="a-card" style="opacity:0.5;"><div class="a-card-top"><div class="a-card-icon">🍗</div><div class="a-card-info"><div class="a-card-name">Grilled Chicken & Rice</div><div class="a-card-meta">45g P · 55g C · 14g F</div></div><div class="a-card-cal">680<span>kcal</span></div></div></div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+<!-- B -->
+<div class="cell vis" id="b">
+  <div class="label" style="color:var(--amber);">B — Trail Meals</div>
+  <div class="desc">Vertical trail waypoints + emoji time markers + compact macro strip</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span></div>
+    <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+    <div class="b-macros"><div class="b-m dk"><div class="v">2,180</div><div class="l">kcal</div></div><div class="b-m st"><div class="v">165g</div><div class="l">Protein</div></div><div class="b-m st"><div class="v">245g</div><div class="l">Carbs</div></div><div class="b-m st"><div class="v">72g</div><div class="l">Fat</div></div></div>
+    <div class="b-trail"><div class="b-tl"></div>
+      <div class="b-wp"><div class="b-dot"><div class="d">🌅</div><div class="tm">8 AM</div></div><div class="b-wc"><div class="b-wc-head"><div class="b-wc-lbl">Breakfast</div><div class="b-wc-cal">520 <span>kcal</span></div></div><div class="b-wc-name">Greek Yogurt Power Bowl</div><div class="b-wc-mac">35g P · 42g C · 12g F</div><div class="b-wc-acts"><span class="b-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="b-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span><span class="b-btn" style="background:rgba(245,158,11,0.08);color:var(--amber);">Eat Out</span></div></div></div>
+      <div class="b-wp"><div class="b-dot"><div class="d">☀️</div><div class="tm">12 PM</div></div><div class="b-wc"><div class="b-wc-head"><div class="b-wc-lbl">Lunch</div><div class="b-wc-cal">680 <span>kcal</span></div></div><div class="b-wc-name">Grilled Chicken & Rice</div><div class="b-wc-mac">45g P · 55g C · 14g F</div><div class="b-wc-acts"><span class="b-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="b-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span></div></div></div>
+      <div class="b-wp"><div class="b-dot"><div class="d">🌙</div><div class="tm">7 PM</div></div><div class="b-wc"><div class="b-wc-head"><div class="b-wc-lbl">Dinner</div><div class="b-wc-cal">720 <span>kcal</span></div></div><div class="b-wc-name">Salmon & Sweet Potato</div><div class="b-wc-mac">48g P · 62g C · 22g F</div></div></div>
+      <div class="b-wp"><div class="b-dot"><div class="d">🍎</div><div class="tm">4 PM</div></div><div class="b-wc"><div class="b-wc-head"><div class="b-wc-lbl">Snack</div><div class="b-wc-cal">260 <span>kcal</span></div></div><div class="b-wc-name">Protein Shake & Almonds</div><div class="b-wc-mac">37g P · 18g C · 14g F</div></div></div>
+    </div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+<!-- C -->
+<div class="cell vis" id="c">
+  <div class="label" style="color:var(--indigo);">C — The Plate</div>
+  <div class="desc">Circular plate visualization + global cook/eatout toggle + compact rows</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span></div>
+    <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Plate</div></div>
+    <div class="c-plate-area"><div class="c-plate"><div class="c-plate-inner"></div><div class="c-plate-center"><div class="c-plate-cal">2,180</div><div class="c-plate-u">kcal target</div></div></div></div>
+    <div class="c-legend"><div class="c-li"><div class="d" style="background:#34D399;"></div>P 165g</div><div class="c-li"><div class="d" style="background:#F59E0B;"></div>C 245g</div><div class="c-li"><div class="d" style="background:#818CF8;"></div>F 72g</div></div>
+    <div class="c-tog"><div class="c-t on">🍳 Cook</div><div class="c-t off">🍽️ Eat Out</div></div>
+    <div class="c-meals">
+      <div class="c-ml">Breakfast · 8 AM</div><div class="c-m"><div class="c-mi" style="background:rgba(245,158,11,0.08);">🥣</div><div class="c-mb"><div class="c-mn">Greek Yogurt Power Bowl</div><div class="c-mm">35g P · 42g C · 12g F</div></div><div class="c-mc">520<span>kcal</span></div></div>
+      <div class="c-ml">Lunch · 12 PM</div><div class="c-m"><div class="c-mi" style="background:rgba(52,211,153,0.08);">🍗</div><div class="c-mb"><div class="c-mn">Grilled Chicken & Rice</div><div class="c-mm">45g P · 55g C · 14g F</div></div><div class="c-mc">680<span>kcal</span></div></div>
+      <div class="c-ml">Dinner · 7 PM</div><div class="c-m"><div class="c-mi" style="background:rgba(129,140,248,0.08);">🐟</div><div class="c-mb"><div class="c-mn">Salmon & Sweet Potato</div><div class="c-mm">48g P · 62g C · 22g F</div></div><div class="c-mc">720<span>kcal</span></div></div>
+      <div class="c-ml">Snack · 4 PM</div><div class="c-m"><div class="c-mi" style="background:rgba(239,68,68,0.08);">🥤</div><div class="c-mb"><div class="c-mn">Protein Shake & Almonds</div><div class="c-mm">37g P · 18g C · 14g F</div></div><div class="c-mc">260<span>kcal</span></div></div>
+    </div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+<!-- D -->
+<div class="cell vis" id="d">
+  <div class="label" style="color:var(--amber);">D — The Journal</div>
+  <div class="desc">Notebook macro strip + time-stamped entries + 4-button action bar</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span><span style="font-size:10px;color:var(--trail);">🍽️ Cuisines</span></div>
+    <div class="hero"><div class="ctx">Wednesday, Mar 19</div><div class="ttl">Today's Fuel</div></div>
+    <div class="d-macro"><div class="d-cal"><span class="big">2,180</span><span class="u">kcal target</span></div><div class="d-mr"><div class="n">Protein</div><div class="bar"><div class="fill" style="width:75%;background:#34D399;"></div></div><div class="v">165g</div></div><div class="d-mr"><div class="n">Carbs</div><div class="bar"><div class="fill" style="width:60%;background:#F59E0B;"></div></div><div class="v">245g</div></div><div class="d-mr"><div class="n">Fat</div><div class="bar"><div class="fill" style="width:55%;background:#818CF8;"></div></div><div class="v">72g</div></div></div>
+    <div class="d-entries">
+      <div class="d-et">🌅 Breakfast · 8 AM</div><div class="d-e"><div class="d-e-main"><div class="d-e-icon" style="background:rgba(245,158,11,0.08);">🥣</div><div class="d-e-body"><div class="d-e-name">Greek Yogurt Power Bowl</div><div class="d-e-mac">35g P · 42g C · 12g F</div></div><div class="d-e-cal"><div class="v">520</div><div class="u">kcal</div></div></div><div class="d-e-acts"><div class="d-e-act" style="color:var(--earth);">Recipe</div><div class="d-e-act" style="color:var(--trail);">Swap</div><div class="d-e-act" style="color:var(--amber);">Eat Out</div><div class="d-e-act" style="color:#AEAEB2;">Nah</div></div></div>
+      <div class="d-et">☀️ Lunch · 12 PM</div><div class="d-e"><div class="d-e-main"><div class="d-e-icon" style="background:rgba(52,211,153,0.08);">🍗</div><div class="d-e-body"><div class="d-e-name">Grilled Chicken & Rice</div><div class="d-e-mac">45g P · 55g C · 14g F</div></div><div class="d-e-cal"><div class="v">680</div><div class="u">kcal</div></div></div><div class="d-e-acts"><div class="d-e-act" style="color:var(--earth);">Recipe</div><div class="d-e-act" style="color:var(--trail);">Swap</div><div class="d-e-act" style="color:var(--amber);">Eat Out</div><div class="d-e-act" style="color:#AEAEB2;">Nah</div></div></div>
+      <div class="d-et">🌙 Dinner · 7 PM</div><div class="d-e"><div class="d-e-main"><div class="d-e-icon" style="background:rgba(129,140,248,0.08);">🐟</div><div class="d-e-body"><div class="d-e-name">Salmon & Sweet Potato</div><div class="d-e-mac">48g P · 62g C · 22g F</div></div><div class="d-e-cal"><div class="v">720</div><div class="u">kcal</div></div></div><div class="d-e-acts"><div class="d-e-act" style="color:var(--earth);">Recipe</div><div class="d-e-act" style="color:var(--trail);">Swap</div><div class="d-e-act" style="color:var(--amber);">Eat Out</div><div class="d-e-act" style="color:#AEAEB2;">Nah</div></div></div>
+      <div class="d-et">🍎 Snack · 4 PM</div><div class="d-e"><div class="d-e-main"><div class="d-e-icon" style="background:rgba(239,68,68,0.08);">🥤</div><div class="d-e-body"><div class="d-e-name">Protein Shake & Almonds</div><div class="d-e-mac">37g P · 18g C · 14g F</div></div><div class="d-e-cal"><div class="v">260</div><div class="u">kcal</div></div></div><div class="d-e-acts"><div class="d-e-act" style="color:var(--earth);">Recipe</div><div class="d-e-act" style="color:var(--trail);">Swap</div><div class="d-e-act" style="color:var(--amber);">Eat Out</div><div class="d-e-act" style="color:#AEAEB2;">Nah</div></div></div>
+    </div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+<!-- E -->
+<div class="cell vis" id="e">
+  <div class="label" style="color:var(--indigo);">E — The Stack</div>
+  <div class="desc">Full-screen swipeable meal cards stacked like a deck. Tinder for meals.</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span></div>
+    <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+    <div class="e-pills"><span class="e-p" style="background:var(--earth);color:var(--sand);">2,180 kcal</span><span class="e-p" style="background:rgba(52,211,153,0.08);color:#059669;">165g P</span><span class="e-p" style="background:rgba(245,158,11,0.08);color:#B45309;">245g C</span><span class="e-p" style="background:rgba(129,140,248,0.08);color:#4F46E5;">72g F</span></div>
+    <div class="e-stack">
+      <div class="e-c"><div class="e-hero"><div class="bg" style="background:#F59E0B;"></div><span class="ml">Breakfast</span><span class="cb">520 <span>kcal</span></span><div class="em">🥣</div></div><div class="e-body"><div class="e-name">Greek Yogurt Power Bowl</div><div class="e-desc">Creamy yogurt with berries, granola, honey & chia.</div><div class="e-mgrid"><div class="e-mg"><div class="v">35g</div><div class="l">Protein</div></div><div class="e-mg"><div class="v">42g</div><div class="l">Carbs</div></div><div class="e-mg"><div class="v">12g</div><div class="l">Fat</div></div></div><div class="e-acts"><span class="e-ab" style="background:var(--earth);color:var(--sand);">Recipe</span><span class="e-ab" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span><span class="e-ab" style="background:rgba(245,158,11,0.08);color:var(--amber);">Eat Out</span></div></div></div>
+      <div class="e-c"><div class="e-hero" style="height:70px;"><div class="bg" style="background:#34D399;"></div><div class="em" style="font-size:32px;">🍗</div></div></div>
+      <div class="e-c"><div class="e-hero" style="height:50px;"><div class="bg" style="background:#818CF8;"></div></div></div>
+      <div class="e-c"><div class="e-hero" style="height:30px;"><div class="bg" style="background:#EF4444;"></div></div></div>
+    </div>
+    <div class="e-swipe">Swipe to browse meals</div>
+    <div class="grocery" style="margin-top:14px;"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+<!-- F -->
+<div class="cell vis" id="f">
+  <div class="label" style="color:var(--trail);">F — The Timeline</div>
+  <div class="desc">Horizontal time ruler + color-coded meal blocks with left accent borders</div>
+  <div class="phone"><div class="ps"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="cnt">
+    <div class="status"><span>9:41</span></div>
+    <div class="hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+    <div class="f-ruler"><div class="f-ri">
+      <div class="f-h"><div class="hl">6</div><div class="ht"></div></div><div class="f-h"><div class="hl">7</div><div class="ht"></div></div>
+      <div class="f-h" style="position:relative;"><div class="hl">8</div><div class="ht"></div><div class="f-mm" style="bottom:16px;"><div class="line" style="background:var(--amber);"></div><div class="dot" style="background:rgba(245,158,11,0.15);">🌅</div></div></div>
+      <div class="f-h"><div class="hl">9</div><div class="ht"></div></div><div class="f-h"><div class="hl">10</div><div class="ht"></div></div><div class="f-h"><div class="hl">11</div><div class="ht"></div></div>
+      <div class="f-h" style="position:relative;"><div class="hl">12</div><div class="ht"></div><div class="f-mm" style="bottom:16px;"><div class="line" style="background:var(--trail);"></div><div class="dot" style="background:rgba(52,211,153,0.15);">☀️</div></div></div>
+      <div class="f-h"><div class="hl">1</div><div class="ht"></div></div><div class="f-h"><div class="hl">2</div><div class="ht"></div></div><div class="f-h"><div class="hl">3</div><div class="ht"></div></div>
+      <div class="f-h" style="position:relative;"><div class="hl">4</div><div class="ht"></div><div class="f-mm" style="bottom:16px;"><div class="line" style="background:var(--indigo);"></div><div class="dot" style="background:rgba(129,140,248,0.15);">🍎</div></div></div>
+      <div class="f-h"><div class="hl">5</div><div class="ht"></div></div><div class="f-h"><div class="hl">6</div><div class="ht"></div></div>
+      <div class="f-h" style="position:relative;"><div class="hl">7</div><div class="ht"></div><div class="f-mm" style="bottom:16px;"><div class="line" style="background:var(--red);"></div><div class="dot" style="background:rgba(239,68,68,0.15);">🌙</div></div></div>
+      <div class="f-h"><div class="hl">8</div><div class="ht"></div></div>
+    </div></div>
+    <div class="f-bento"><div class="f-bw dk"><div class="v">2,180</div><div class="l">kcal</div></div><div class="f-bw st"><div class="v">165g</div><div class="l">Protein</div></div><div class="f-bw st"><div class="v">245g</div><div class="l">Carbs</div></div><div class="f-bw st"><div class="v">72g</div><div class="l">Fat</div></div></div>
+    <div class="f-meals">
+      <div class="f-sl">Breakfast · 8 AM</div><div class="f-m bk"><div class="icon">🥣</div><div class="info"><div class="name">Greek Yogurt Power Bowl</div><div class="meta">35g P · 42g C · 12g F</div></div><div class="cal">520<span> kcal</span></div></div>
+      <div class="f-sl">Lunch · 12 PM</div><div class="f-m lu"><div class="icon">🍗</div><div class="info"><div class="name">Grilled Chicken & Rice</div><div class="meta">45g P · 55g C · 14g F</div></div><div class="cal">680<span> kcal</span></div></div>
+      <div class="f-sl">Snack · 4 PM</div><div class="f-m sn"><div class="icon">🥤</div><div class="info"><div class="name">Protein Shake & Almonds</div><div class="meta">37g P · 18g C · 14g F</div></div><div class="cal">260<span> kcal</span></div></div>
+      <div class="f-sl">Dinner · 7 PM</div><div class="f-m di"><div class="icon">🐟</div><div class="info"><div class="name">Salmon & Sweet Potato</div><div class="meta">48g P · 62g C · 22g F</div></div><div class="cal">720<span> kcal</span></div></div>
+    </div>
+    <div class="grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><div class="arr">›</div></div>
+  </div></div></div>
+</div>
+
+</div>
+
+<script>
+function show(id, btn) {
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  const g = document.getElementById('grid');
+  if (id === 'all') { g.classList.add('show-all'); document.querySelectorAll('.cell').forEach(c => c.classList.add('vis')); return; }
+  g.classList.remove('show-all');
+  document.querySelectorAll('.cell').forEach(c => c.classList.remove('vis'));
+  document.getElementById(id).classList.add('vis');
+}
+</script>
+
+</body>
+</html>

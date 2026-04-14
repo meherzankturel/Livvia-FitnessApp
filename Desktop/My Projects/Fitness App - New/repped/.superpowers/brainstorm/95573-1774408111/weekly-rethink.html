@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Rethink</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     G1: CLEAN MINIMAL — Consistent with approved app screens.
+     Dark hero (like nutrition/recipe). Clean sections below.
+     Same patterns the user already approved.
+     ============================================================ */
+
+  .g1-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .g1-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .g1-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  /* Dark hero card — same pattern as nutrition/recipe */
+  .g1-hero {
+    margin: 14px 24px 0; padding: 24px; border-radius: 24px;
+    background: var(--earth); position: relative; overflow: hidden;
+  }
+  .g1-hero-accent { position: absolute; top: 0; right: 0; width: 100px; height: 100px; }
+  .g1-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .g1-ha:nth-child(1) { width: 120px; top: 16px; right: -10px; transform: rotate(-35deg); }
+  .g1-ha:nth-child(2) { width: 100px; top: 28px; right: -10px; transform: rotate(-35deg); }
+  .g1-ha:nth-child(3) { width: 80px; top: 40px; right: -10px; transform: rotate(-35deg); }
+
+  .g1-dot { position: absolute; top: 18px; right: 18px; width: 8px; height: 8px; border-radius: 50%; background: var(--trail); opacity: 0.2; }
+
+  .g1-hero-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .g1-hero-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; line-height: 1.1; margin-top: 6px; position: relative; }
+  .g1-hero-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 6px; position: relative; }
+
+  /* Volume hero number inside */
+  .g1-hero-vol { margin-top: 18px; position: relative; }
+  .g1-vol-val { font-size: 44px; font-weight: 900; color: var(--sand); letter-spacing: -2px; line-height: 1; }
+  .g1-vol-unit { font-size: 14px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .g1-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 4px; opacity: 0.7; }
+
+  /* Stats row inside hero */
+  .g1-hero-stats { display: flex; gap: 7px; margin-top: 16px; position: relative; }
+  .g1-hs { padding: 8px 14px; border-radius: 10px; background: rgba(246,245,240,0.05); display: flex; align-items: baseline; gap: 5px; }
+  .g1-hs-val { font-size: 16px; font-weight: 800; color: var(--sand); }
+  .g1-hs-val.green { color: var(--trail); }
+  .g1-hs-val.amber { color: #F59E0B; }
+  .g1-hs-label { font-size: 8px; color: rgba(246,245,240,0.2); font-weight: 500; }
+
+  /* Sections below — clean, airy */
+  .g1-sec { padding: 20px 24px 0; }
+  .g1-sec-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .g1-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .g1-sec-meta { font-size: 10px; color: var(--rock); }
+
+  /* Highlight — white card */
+  .g1-hl { padding: 18px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g1-hl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g1-hl-val { font-size: 20px; font-weight: 700; color: var(--earth); margin-top: 6px; letter-spacing: -0.3px; }
+  .g1-hl-sub { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  /* Weight + PRs as compact rows */
+  .g1-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .g1-row:last-child { border-bottom: none; }
+  .g1-row-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+  .g1-row-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .g1-row-val.green { color: var(--trail); }
+
+  /* Wellness — tinted tiles */
+  .g1-well { display: flex; gap: 8px; }
+  .g1-wc { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .g1-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .g1-wc:nth-child(2) { background: var(--stone); }
+  .g1-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .g1-wc-val { font-size: 20px; font-weight: 800; }
+  .g1-wc:nth-child(1) .g1-wc-val { color: #047857; }
+  .g1-wc:nth-child(2) .g1-wc-val { color: var(--earth); }
+  .g1-wc:nth-child(3) .g1-wc-val { color: #92400E; }
+  .g1-wc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     G2: FULL DARK — Entire screen is dark. Clean sections
+     separated by thin lines. Premium, focused, editorial.
+     ============================================================ */
+
+  .g2-phone { background: var(--earth); }
+
+  .g2-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .g2-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(246,245,240,0.06); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--sand); cursor: pointer; }
+  .g2-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .g2-content { padding: 0 28px; }
+
+  .g2-date { font-size: 9px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 24px; }
+  .g2-title { font-size: 28px; font-weight: 700; color: var(--sand); letter-spacing: -0.8px; margin-top: 4px; }
+  .g2-msg { font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 6px; }
+
+  /* Volume — BIG */
+  .g2-vol { margin-top: 28px; }
+  .g2-vol-label { font-size: 9px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g2-vol-val { font-size: 52px; font-weight: 900; color: var(--sand); letter-spacing: -3px; line-height: 1; margin-top: 4px; }
+  .g2-vol-unit { font-size: 16px; color: rgba(246,245,240,0.25); font-weight: 500; }
+  .g2-vol-trend { font-size: 11px; color: var(--trail); font-weight: 600; margin-top: 4px; opacity: 0.6; }
+
+  .g2-div { height: 1px; background: rgba(246,245,240,0.04); margin: 24px 0; }
+
+  /* Stats — simple rows */
+  .g2-stat-row { display: flex; justify-content: space-between; align-items: baseline; padding: 10px 0; }
+  .g2-stat-name { font-size: 14px; color: rgba(246,245,240,0.35); font-weight: 400; }
+  .g2-stat-val { font-size: 18px; font-weight: 800; color: var(--sand); }
+  .g2-stat-val.green { color: var(--trail); }
+  .g2-stat-val.amber { color: #F59E0B; }
+
+  .g2-div2 { height: 1px; background: rgba(246,245,240,0.04); margin: 16px 0; }
+
+  /* Highlight */
+  .g2-hl-label { font-size: 9px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g2-hl-val { font-size: 20px; font-weight: 700; color: var(--sand); margin-top: 4px; }
+  .g2-hl-sub { font-size: 10px; color: var(--trail); opacity: 0.5; margin-top: 2px; }
+
+  .g2-div3 { height: 1px; background: rgba(246,245,240,0.04); margin: 16px 0; }
+
+  /* PRs */
+  .g2-pr { display: flex; justify-content: space-between; padding: 6px 0; }
+  .g2-pr-name { font-size: 13px; color: rgba(246,245,240,0.3); }
+  .g2-pr-val { font-size: 13px; font-weight: 700; color: var(--trail); opacity: 0.7; }
+
+  .g2-div4 { height: 1px; background: rgba(246,245,240,0.04); margin: 16px 0; }
+
+  /* Wellness */
+  .g2-well { display: flex; gap: 0; }
+  .g2-w { flex: 1; text-align: center; }
+  .g2-w-val { font-size: 18px; font-weight: 800; }
+  .g2-w:nth-child(1) .g2-w-val { color: var(--trail); opacity: 0.6; }
+  .g2-w:nth-child(2) .g2-w-val { color: var(--sand); opacity: 0.4; }
+  .g2-w:nth-child(3) .g2-w-val { color: #F59E0B; opacity: 0.4; }
+  .g2-w-label { font-size: 7px; color: rgba(246,245,240,0.12); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+
+
+  /* ============================================================
+     G3: BENTO DASHBOARD — Asymmetric grid of tiles.
+     Each metric is a tile of varying size. Volume is big.
+     Stats are small. PRs inline. Visual mosaic.
+     ============================================================ */
+
+  .g3-hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .g3-back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .g3-hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+  .g3-top { padding: 12px 24px 0; }
+  .g3-date { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .g3-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .g3-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .g3-bento { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 16px 24px 0; }
+  .g3-tile { border-radius: 20px; padding: 18px; position: relative; overflow: hidden; }
+
+  /* Volume — big, spans 2 cols */
+  .g3-vol { grid-column: span 2; background: var(--earth); }
+  .g3-vol-accent { position: absolute; bottom: -12px; right: -12px; width: 50px; height: 50px; border-radius: 50%; border: 4px solid rgba(246,245,240,0.03); }
+  .g3-vol-label { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; position: relative; }
+  .g3-vol-row { display: flex; align-items: baseline; gap: 6px; margin-top: 6px; position: relative; }
+  .g3-vol-val { font-size: 40px; font-weight: 900; color: var(--sand); letter-spacing: -2px; }
+  .g3-vol-unit { font-size: 14px; color: rgba(246,245,240,0.3); }
+  .g3-vol-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; opacity: 0.6; position: relative; }
+
+  /* Small stat tiles */
+  .g3-sm { display: flex; flex-direction: column; justify-content: center; }
+  .g3-sm.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g3-sm.stone { background: var(--stone); }
+  .g3-sm.green-tint { background: rgba(52,211,153,0.04); }
+  .g3-sm.amber-tint { background: rgba(245,158,11,0.04); }
+
+  .g3-sm-val { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .g3-sm.white .g3-sm-val { color: var(--earth); }
+  .g3-sm.stone .g3-sm-val { color: var(--earth); }
+  .g3-sm.green-tint .g3-sm-val { color: #047857; }
+  .g3-sm.amber-tint .g3-sm-val { color: #92400E; }
+  .g3-sm-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 3px; }
+
+  /* Highlight — full width */
+  .g3-hl { grid-column: span 2; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g3-hl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g3-hl-val { font-size: 20px; font-weight: 700; color: var(--earth); margin-top: 4px; letter-spacing: -0.3px; }
+  .g3-hl-sub { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+
+  /* Weight tile */
+  .g3-weight { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .g3-w-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g3-w-val { font-size: 22px; font-weight: 800; color: var(--trail); margin-top: 4px; }
+  .g3-w-val span { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* PRs tile */
+  .g3-prs { background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .g3-prs-label { font-size: 9px; color: #047857; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .g3-prs-val { font-size: 22px; font-weight: 800; color: var(--earth); margin-top: 4px; }
+  .g3-prs-sub { font-size: 9px; color: var(--rock); margin-top: 2px; }
+
+  /* Wellness — full width */
+  .g3-well { grid-column: span 2; background: var(--stone); display: flex; gap: 0; }
+  .g3-wc { flex: 1; text-align: center; padding: 4px 0; }
+  .g3-wc-val { font-size: 18px; font-weight: 800; }
+  .g3-wc:nth-child(1) .g3-wc-val { color: #047857; }
+  .g3-wc:nth-child(2) .g3-wc-val { color: var(--earth); }
+  .g3-wc:nth-child(3) .g3-wc-val { color: #92400E; }
+  .g3-wc-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- ===== G1: CLEAN MINIMAL ===== -->
+<div>
+  <div class="lbl" style="color:var(--trail);">G1 — Clean Minimal</div>
+  <div class="dsc">Same pattern as nutrition/recipe screens. Dark hero card with volume + stat pills inside. Clean white sections below. Consistent with the rest of the app.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="g1-hdr"><div class="g1-back">←</div><span class="g1-hdr-title">Weekly Summary</span></div>
+
+    <div class="g1-hero">
+      <div class="g1-hero-accent"><div class="g1-ha"></div><div class="g1-ha"></div><div class="g1-ha"></div></div>
+      <div class="g1-dot"></div>
+      <div class="g1-hero-date">Mar 18 – 24</div>
+      <div class="g1-hero-title">This Week</div>
+      <div class="g1-hero-msg">Crushing it! 💪</div>
+      <div class="g1-hero-vol">
+        <div class="g1-vol-val">2.4 <span class="g1-vol-unit">tons</span></div>
+        <div class="g1-vol-trend">▲ 12% vs last week</div>
+      </div>
+      <div class="g1-hero-stats">
+        <div class="g1-hs"><span class="g1-hs-val">4</span><span class="g1-hs-label">workouts</span></div>
+        <div class="g1-hs"><span class="g1-hs-val green">80%</span><span class="g1-hs-label">complete</span></div>
+        <div class="g1-hs"><span class="g1-hs-val amber">12d</span><span class="g1-hs-label">streak</span></div>
+      </div>
+    </div>
+
+    <div class="g1-sec">
+      <div class="g1-sec-head"><span class="g1-sec-title">Highlight</span></div>
+      <div class="g1-hl"><div class="g1-hl-label">Best Lift · Personal Record</div><div class="g1-hl-val">Bench Press — 80 kg</div><div class="g1-hl-sub">New PR!</div></div>
+    </div>
+
+    <div class="g1-sec">
+      <div class="g1-sec-head"><span class="g1-sec-title">Details</span></div>
+      <div class="g1-row"><span class="g1-row-name">Weight Change</span><span class="g1-row-val green">-0.8 kg</span></div>
+      <div class="g1-row"><span class="g1-row-name">Bench Press PR</span><span class="g1-row-val green">80 kg</span></div>
+      <div class="g1-row"><span class="g1-row-name">Squat PR</span><span class="g1-row-val green">105 kg</span></div>
+    </div>
+
+    <div class="g1-sec">
+      <div class="g1-sec-head"><span class="g1-sec-title">Wellness</span></div>
+      <div class="g1-well"><div class="g1-wc"><div class="g1-wc-val">4.5</div><div class="g1-wc-label">Sleep</div></div><div class="g1-wc"><div class="g1-wc-val">3.8</div><div class="g1-wc-label">Energy</div></div><div class="g1-wc"><div class="g1-wc-val">2.0</div><div class="g1-wc-label">Soreness</div></div></div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== G2: FULL DARK ===== -->
+<div>
+  <div class="lbl" style="color:#818CF8;">G2 — Full Dark</div>
+  <div class="dsc">Entire screen is dark earth. Big volume number. Clean stat rows with thin dividers. Everything in sand text on dark. Most editorial, most premium. Like a luxury report.</div>
+  <div class="phone g2-phone"><div class="ps"><div class="cnt">
+    <div class="g2-hdr"><div class="g2-back">←</div><span class="g2-hdr-title">Weekly Summary</span></div>
+
+    <div class="g2-content">
+      <div class="g2-date">Mar 18 – 24</div>
+      <div class="g2-title">This Week</div>
+      <div class="g2-msg">Crushing it! 💪</div>
+
+      <div class="g2-vol"><div class="g2-vol-label">Total Volume Lifted</div><div class="g2-vol-val">2.4 <span class="g2-vol-unit">tons</span></div><div class="g2-vol-trend">▲ 12% vs last week</div></div>
+
+      <div class="g2-div"></div>
+
+      <div class="g2-stat-row"><span class="g2-stat-name">Workouts</span><span class="g2-stat-val">4</span></div>
+      <div class="g2-stat-row"><span class="g2-stat-name">Completion</span><span class="g2-stat-val green">80%</span></div>
+      <div class="g2-stat-row"><span class="g2-stat-name">Streak</span><span class="g2-stat-val amber">12 days</span></div>
+      <div class="g2-stat-row"><span class="g2-stat-name">Weight Change</span><span class="g2-stat-val green">-0.8 kg</span></div>
+
+      <div class="g2-div2"></div>
+
+      <div class="g2-hl-label">Highlight of the Week</div>
+      <div class="g2-hl-val">Bench Press — 80 kg</div>
+      <div class="g2-hl-sub">New personal record</div>
+
+      <div class="g2-div3"></div>
+
+      <div style="font-size:9px;color:rgba(246,245,240,0.15);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:6px;">Personal Records</div>
+      <div class="g2-pr"><span class="g2-pr-name">Bench Press</span><span class="g2-pr-val">80 kg</span></div>
+      <div class="g2-pr"><span class="g2-pr-name">Squat</span><span class="g2-pr-val">105 kg</span></div>
+
+      <div class="g2-div4"></div>
+
+      <div class="g2-well">
+        <div class="g2-w"><div class="g2-w-val">4.5</div><div class="g2-w-label">Sleep</div></div>
+        <div class="g2-w"><div class="g2-w-val">3.8</div><div class="g2-w-label">Energy</div></div>
+        <div class="g2-w"><div class="g2-w-val">2.0</div><div class="g2-w-label">Soreness</div></div>
+      </div>
+    </div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- ===== G3: BENTO DASHBOARD ===== -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">G3 — Bento Dashboard</div>
+  <div class="dsc">Asymmetric bento grid. Dark volume tile spans full width. Stats as small tiles (white/stone/green/amber). Highlight full width. Weight + PRs tiles. Wellness bar. Visual mosaic.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="g3-hdr"><div class="g3-back">←</div><span class="g3-hdr-title">Weekly Summary</span></div>
+    <div class="g3-top"><div class="g3-date">Mar 18 – 24</div><div class="g3-title">This Week</div><div class="g3-msg">Crushing it! 💪</div></div>
+
+    <div class="g3-bento">
+      <div class="g3-tile g3-vol"><div class="g3-vol-accent"></div><div class="g3-vol-label">Volume Lifted</div><div class="g3-vol-row"><span class="g3-vol-val">2.4</span><span class="g3-vol-unit">tons</span><span class="g3-vol-trend">▲ 12%</span></div></div>
+
+      <div class="g3-tile g3-sm white"><div class="g3-sm-val">4</div><div class="g3-sm-label">Workouts</div></div>
+      <div class="g3-tile g3-sm green-tint"><div class="g3-sm-val">80%</div><div class="g3-sm-label">Completion</div></div>
+
+      <div class="g3-tile g3-sm amber-tint"><div class="g3-sm-val">12d</div><div class="g3-sm-label">Streak</div></div>
+      <div class="g3-tile g3-weight"><div class="g3-w-label">Weight</div><div class="g3-w-val">-0.8 <span>kg</span></div></div>
+
+      <div class="g3-tile g3-hl"><div class="g3-hl-label">Highlight · Best Lift</div><div class="g3-hl-val">Bench Press — 80 kg</div><div class="g3-hl-sub">New personal record!</div></div>
+
+      <div class="g3-tile g3-prs"><div class="g3-prs-label">PRs</div><div class="g3-prs-val">2</div><div class="g3-prs-sub">Bench 80 · Squat 105</div></div>
+      <div class="g3-tile g3-sm stone"><div class="g3-sm-val">47</div><div class="g3-sm-label">All-Time Workouts</div></div>
+
+      <div class="g3-tile g3-well">
+        <div class="g3-wc"><div class="g3-wc-val">4.5</div><div class="g3-wc-label">Sleep</div></div>
+        <div class="g3-wc"><div class="g3-wc-val">3.8</div><div class="g3-wc-label">Energy</div></div>
+        <div class="g3-wc"><div class="g3-wc-val">2.0</div><div class="g3-wc-label">Soreness</div></div>
+      </div>
+    </div>
+
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

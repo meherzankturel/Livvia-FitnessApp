@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .layouts { display: flex; gap: 24px; padding: 12px 16px 60px; justify-content: center; flex-wrap: wrap; }
+  .lbl { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .dsc { text-align: center; font-size: 9px; color: #555; padding: 0 10px 8px; line-height: 1.4; max-width: 400px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     W1: CLEAN MODERN — Dark exercise header card. Clean set
+     table below. Big Log Set button. Minimal, focused on input.
+     ============================================================ */
+
+  /* Top bar */
+  .w1-top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .w1-timer { padding: 5px 12px; border-radius: 100px; background: var(--earth); display: flex; align-items: center; gap: 6px; }
+  .w1-timer-val { font-size: 13px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .w1-of { font-size: 12px; color: var(--rock); }
+  .w1-exit { font-size: 13px; color: var(--rock); font-weight: 500; }
+
+  /* Progress */
+  .w1-progress { margin: 8px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .w1-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  /* Dark exercise header */
+  .w1-ex-card { margin: 14px 24px 0; padding: 18px 20px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .w1-ex-accent { position: absolute; top: 0; right: 0; width: 60px; height: 60px; }
+  .w1-ea { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .w1-ea:nth-child(1) { width: 80px; top: 10px; right: -6px; transform: rotate(-35deg); }
+  .w1-ea:nth-child(2) { width: 60px; top: 20px; right: -6px; transform: rotate(-35deg); }
+
+  .w1-ex-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; }
+  .w1-ex-name { font-size: 22px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; }
+  .w1-swap { font-size: 12px; color: var(--trail); font-weight: 600; cursor: pointer; }
+  .w1-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; position: relative; }
+  .w1-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: rgba(246,245,240,0.06); color: rgba(246,245,240,0.4); }
+  .w1-suggested { font-size: 11px; color: rgba(246,245,240,0.25); }
+
+  /* Focus cue */
+  .w1-cue { margin: 10px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .w1-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .w1-cue-text { font-size: 12px; color: var(--rock); margin-top: 4px; line-height: 1.4; display: none; }
+  .w1-cue.open .w1-cue-text { display: block; }
+
+  /* Set table */
+  .w1-table { margin: 12px 24px 0; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+
+  .w1-thead { display: flex; padding: 10px 14px; background: rgba(0,0,0,0.01); }
+  .w1-th { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .w1-th.set { width: 36px; }
+  .w1-th.prev { flex: 1; }
+  .w1-th.kg { width: 72px; text-align: center; }
+  .w1-th.reps { width: 60px; text-align: center; }
+  .w1-th.check { width: 32px; }
+
+  .w1-row { display: flex; align-items: center; padding: 12px 14px; border-top: 1px solid rgba(0,0,0,0.03); }
+  .w1-row.current { border-left: 3px solid var(--trail); padding-left: 11px; background: rgba(52,211,153,0.02); }
+  .w1-row.upcoming { opacity: 0.4; }
+  .w1-row.done { opacity: 0.5; }
+
+  .w1-td { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .w1-td.set { width: 36px; font-weight: 700; }
+  .w1-td.prev { flex: 1; font-size: 12px; color: var(--rock); font-weight: 400; }
+  .w1-td.kg { width: 72px; }
+  .w1-td.reps { width: 60px; }
+  .w1-td.check { width: 32px; display: flex; justify-content: center; }
+
+  .w1-input { width: 100%; padding: 8px 4px; border-radius: 10px; background: var(--stone); text-align: center; font-size: 14px; font-weight: 600; color: var(--earth); border: none; outline: none; }
+  .w1-dash { color: var(--rock); opacity: 0.3; text-align: center; font-size: 13px; }
+  .w1-check { width: 22px; height: 22px; border-radius: 50%; background: var(--trail); display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 700; }
+  .w1-check.empty { background: var(--stone); }
+
+  /* Log button */
+  .w1-log { margin: 16px 24px; padding: 17px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .w1-log-text { font-size: 16px; font-weight: 600; color: var(--sand); }
+
+
+  /* ============================================================
+     W2: DARK TABLE — Exercise header on sand. Table on dark card.
+     Inputs inside dark context. More contrast for gym lighting.
+     ============================================================ */
+
+  .w2-top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .w2-timer { padding: 5px 12px; border-radius: 100px; background: var(--earth); font-size: 13px; font-weight: 700; color: var(--sand); }
+  .w2-of { font-size: 12px; color: var(--rock); }
+  .w2-exit { font-size: 13px; color: var(--rock); }
+
+  .w2-progress { margin: 8px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .w2-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  /* Exercise header on sand */
+  .w2-ex { padding: 14px 24px 0; }
+  .w2-ex-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .w2-ex-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .w2-swap { font-size: 12px; color: var(--trail); font-weight: 600; }
+  .w2-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .w2-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .w2-suggested { font-size: 11px; color: var(--rock); }
+
+  /* Focus cue */
+  .w2-cue { margin: 10px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .w2-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; }
+
+  /* Dark table card */
+  .w2-table { margin: 12px 24px 0; border-radius: 20px; background: var(--earth); overflow: hidden; padding: 4px 0; }
+
+  .w2-thead { display: flex; padding: 10px 16px; }
+  .w2-th { font-size: 10px; font-weight: 700; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 0.5px; }
+  .w2-th.set { width: 36px; }
+  .w2-th.prev { flex: 1; }
+  .w2-th.kg { width: 72px; text-align: center; }
+  .w2-th.reps { width: 60px; text-align: center; }
+  .w2-th.check { width: 32px; }
+
+  .w2-row { display: flex; align-items: center; padding: 12px 16px; }
+  .w2-row.current { border-left: 3px solid var(--trail); padding-left: 13px; background: rgba(52,211,153,0.04); }
+  .w2-row.upcoming { opacity: 0.25; }
+
+  .w2-td { font-size: 15px; font-weight: 600; color: var(--sand); }
+  .w2-td.set { width: 36px; font-weight: 700; }
+  .w2-td.prev { flex: 1; font-size: 12px; color: rgba(246,245,240,0.25); font-weight: 400; }
+  .w2-td.kg { width: 72px; }
+  .w2-td.reps { width: 60px; }
+  .w2-td.check { width: 32px; display: flex; justify-content: center; }
+
+  .w2-input { width: 100%; padding: 8px 4px; border-radius: 10px; background: rgba(246,245,240,0.06); text-align: center; font-size: 14px; font-weight: 600; color: var(--sand); border: none; outline: none; }
+  .w2-dash { color: rgba(246,245,240,0.15); text-align: center; font-size: 13px; }
+
+  .w2-log { margin: 16px 24px; padding: 17px; border-radius: 16px; background: var(--trail); text-align: center; }
+  .w2-log-text { font-size: 16px; font-weight: 600; color: #fff; }
+
+
+  /* ============================================================
+     W3: COMPACT HORIZONTAL — Exercise name big. Sets shown
+     as horizontal swipeable cards (one per set). Current set
+     is focused. More visual, less table.
+     ============================================================ */
+
+  .w3-top { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .w3-timer { padding: 5px 12px; border-radius: 100px; background: var(--earth); font-size: 13px; font-weight: 700; color: var(--sand); }
+  .w3-of { font-size: 12px; color: var(--rock); }
+  .w3-exit { font-size: 13px; color: var(--rock); }
+
+  .w3-progress { margin: 8px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .w3-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .w3-ex { padding: 14px 24px 0; }
+  .w3-ex-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .w3-ex-name { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+  .w3-swap { font-size: 12px; color: var(--trail); font-weight: 600; }
+  .w3-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+  .w3-muscle { padding: 3px 10px; border-radius: 100px; font-size: 9px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .w3-suggested { font-size: 11px; color: var(--rock); }
+
+  /* Horizontal set cards */
+  .w3-sets { padding: 16px 0 0; }
+  .w3-sets-head { display: flex; justify-content: space-between; padding: 0 24px; margin-bottom: 10px; }
+  .w3-sets-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .w3-sets-count { font-size: 10px; color: var(--rock); }
+
+  .w3-scroll { display: flex; gap: 10px; padding: 0 0 0 24px; overflow-x: auto; scrollbar-width: none; }
+  .w3-scroll::-webkit-scrollbar { display: none; }
+
+  .w3-set-card { min-width: 160px; padding: 18px; border-radius: 20px; flex-shrink: 0; text-align: center; }
+  .w3-set-card:last-child { margin-right: 24px; }
+  .w3-set-card.current { background: var(--earth); }
+  .w3-set-card.upcoming { background: #fff; border: 1px solid rgba(0,0,0,0.04); opacity: 0.5; }
+  .w3-set-card.done { background: var(--stone); opacity: 0.4; }
+
+  .w3-sc-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .w3-set-card.current .w3-sc-label { color: rgba(246,245,240,0.3); }
+  .w3-set-card.upcoming .w3-sc-label, .w3-set-card.done .w3-sc-label { color: var(--rock); }
+
+  .w3-sc-inputs { margin-top: 12px; display: flex; gap: 8px; justify-content: center; }
+  .w3-sc-input-group { text-align: center; }
+  .w3-sc-input { width: 60px; padding: 10px 4px; border-radius: 12px; text-align: center; font-size: 18px; font-weight: 700; border: none; outline: none; }
+  .w3-set-card.current .w3-sc-input { background: rgba(246,245,240,0.06); color: var(--sand); }
+  .w3-sc-input-label { font-size: 8px; color: var(--rock); text-transform: uppercase; margin-top: 4px; }
+  .w3-set-card.current .w3-sc-input-label { color: rgba(246,245,240,0.2); }
+
+  .w3-sc-prev { font-size: 10px; margin-top: 8px; }
+  .w3-set-card.current .w3-sc-prev { color: rgba(246,245,240,0.2); }
+  .w3-set-card.upcoming .w3-sc-prev { color: var(--rock); }
+
+  .w3-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0; }
+  .w3-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .w3-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+  .w3-log { margin: 12px 24px; padding: 17px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .w3-log-text { font-size: 16px; font-weight: 600; color: var(--sand); }
+</style>
+</head>
+<body>
+
+<div class="layouts">
+
+<!-- W1: Clean Modern -->
+<div>
+  <div class="lbl" style="color:var(--trail);">W1 — Dark Header + White Table</div>
+  <div class="dsc">Dark card for exercise info. Clean white table for sets. Green left border on current set. Inputs in stone fields. Consistent with app's hero card pattern.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w1-top"><div class="w1-timer"><span class="w1-timer-val">0:05</span></div><span class="w1-of">1 of 8</span><span class="w1-exit">Exit</span></div>
+    <div class="w1-progress"><div class="w1-progress-fill"></div></div>
+
+    <div class="w1-ex-card"><div class="w1-ex-accent"><div class="w1-ea"></div><div class="w1-ea"></div></div><div class="w1-ex-top"><div class="w1-ex-name">Goblet Squat</div><span class="w1-swap">Swap</span></div><div class="w1-ex-meta"><span class="w1-muscle">quads</span><span class="w1-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="w1-cue open" onclick="this.classList.toggle('open')"><div class="w1-cue-label">FOCUS CUE ▾</div><div class="w1-cue-text">Drive through your heels. Keep chest up and core braced throughout the movement.</div></div>
+
+    <div class="w1-table">
+      <div class="w1-thead"><span class="w1-th set">SET</span><span class="w1-th prev">PREVIOUS</span><span class="w1-th kg">KG</span><span class="w1-th reps">REPS</span><span class="w1-th check"></span></div>
+      <div class="w1-row current"><span class="w1-td set">1</span><span class="w1-td prev">—</span><div class="w1-td kg"><input class="w1-input" value="32.5"></div><div class="w1-td reps"><input class="w1-input" value="6"></div><span class="w1-td check"><div class="w1-check empty"></div></span></div>
+      <div class="w1-row upcoming"><span class="w1-td set">2</span><span class="w1-td prev">—</span><span class="w1-td kg"><span class="w1-dash">—</span></span><span class="w1-td reps"><span class="w1-dash">—</span></span><span class="w1-td check"><div class="w1-check empty"></div></span></div>
+      <div class="w1-row upcoming"><span class="w1-td set">3</span><span class="w1-td prev">—</span><span class="w1-td kg"><span class="w1-dash">—</span></span><span class="w1-td reps"><span class="w1-dash">—</span></span><span class="w1-td check"><div class="w1-check empty"></div></span></div>
+      <div class="w1-row upcoming"><span class="w1-td set">4</span><span class="w1-td prev">—</span><span class="w1-td kg"><span class="w1-dash">—</span></span><span class="w1-td reps"><span class="w1-dash">—</span></span><span class="w1-td check"><div class="w1-check empty"></div></span></div>
+    </div>
+
+    <div class="w1-log"><span class="w1-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- W2: Dark Table -->
+<div>
+  <div class="lbl" style="color:#818CF8;">W2 — Sand Header + Dark Table</div>
+  <div class="dsc">Exercise name on sand background. Set table on a dark earth card. Inputs are subtle on dark. Green Log button. Better contrast for gym lighting.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w2-top"><div class="w2-timer">0:05</div><span class="w2-of">1 of 8</span><span class="w2-exit">Exit</span></div>
+    <div class="w2-progress"><div class="w2-progress-fill"></div></div>
+
+    <div class="w2-ex"><div class="w2-ex-top"><div class="w2-ex-name">Goblet Squat</div><span class="w2-swap">Swap</span></div><div class="w2-ex-meta"><span class="w2-muscle">quads</span><span class="w2-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="w2-cue"><div class="w2-cue-label">FOCUS CUE ▾</div></div>
+
+    <div class="w2-table">
+      <div class="w2-thead"><span class="w2-th set">SET</span><span class="w2-th prev">PREVIOUS</span><span class="w2-th kg">KG</span><span class="w2-th reps">REPS</span><span class="w2-th check"></span></div>
+      <div class="w2-row current"><span class="w2-td set">1</span><span class="w2-td prev">—</span><div class="w2-td kg"><input class="w2-input" value="32.5"></div><div class="w2-td reps"><input class="w2-input" value="6"></div><span class="w2-td check"><div class="w1-check empty"></div></span></div>
+      <div class="w2-row upcoming"><span class="w2-td set">2</span><span class="w2-td prev">—</span><span class="w2-td kg"><span class="w2-dash">—</span></span><span class="w2-td reps"><span class="w2-dash">—</span></span><span class="w2-td check"></span></div>
+      <div class="w2-row upcoming"><span class="w2-td set">3</span><span class="w2-td prev">—</span><span class="w2-td kg"><span class="w2-dash">—</span></span><span class="w2-td reps"><span class="w2-dash">—</span></span><span class="w2-td check"></span></div>
+      <div class="w2-row upcoming"><span class="w2-td set">4</span><span class="w2-td prev">—</span><span class="w2-td kg"><span class="w2-dash">—</span></span><span class="w2-td reps"><span class="w2-dash">—</span></span><span class="w2-td check"></span></div>
+    </div>
+
+    <div class="w2-log"><span class="w2-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- W3: Horizontal Sets -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">W3 — Horizontal Set Cards</div>
+  <div class="dsc">Exercise name on sand. Sets as horizontal swipeable cards. Current set is dark with big inputs. Upcoming sets are light. Same swipe pattern as nutrition/recipe. Most unique.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="w3-top"><div class="w3-timer">0:05</div><span class="w3-of">1 of 8</span><span class="w3-exit">Exit</span></div>
+    <div class="w3-progress"><div class="w3-progress-fill"></div></div>
+
+    <div class="w3-ex"><div class="w3-ex-top"><div class="w3-ex-name">Goblet Squat</div><span class="w3-swap">Swap</span></div><div class="w3-ex-meta"><span class="w3-muscle">quads</span><span class="w3-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="w3-sets"><div class="w3-sets-head"><span class="w3-sets-title">Sets</span><span class="w3-sets-count">4 sets</span></div>
+      <div class="w3-scroll">
+        <div class="w3-set-card current"><div class="w3-sc-label">Set 1</div><div class="w3-sc-inputs"><div class="w3-sc-input-group"><input class="w3-sc-input" value="32.5"><div class="w3-sc-input-label">KG</div></div><div class="w3-sc-input-group"><input class="w3-sc-input" value="6"><div class="w3-sc-input-label">REPS</div></div></div><div class="w3-sc-prev">Previous: —</div></div>
+        <div class="w3-set-card upcoming"><div class="w3-sc-label">Set 2</div><div class="w3-sc-inputs"><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">KG</div></div><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">REPS</div></div></div><div class="w3-sc-prev">Previous: —</div></div>
+        <div class="w3-set-card upcoming"><div class="w3-sc-label">Set 3</div><div class="w3-sc-inputs"><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">KG</div></div><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">REPS</div></div></div><div class="w3-sc-prev">Previous: —</div></div>
+        <div class="w3-set-card upcoming"><div class="w3-sc-label">Set 4</div><div class="w3-sc-inputs"><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">KG</div></div><div class="w3-sc-input-group"><div style="font-size:18px;font-weight:700;color:var(--rock);padding:10px;">—</div><div class="w3-sc-input-label">REPS</div></div></div><div class="w3-sc-prev">Previous: —</div></div>
+      </div>
+      <div class="w3-dots"><div class="w3-dot"></div><div class="w3-dot"></div><div class="w3-dot"></div><div class="w3-dot"></div></div>
+    </div>
+
+    <div class="w3-log"><span class="w3-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

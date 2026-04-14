@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Nutrition Atmosphere Concepts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .page-head { text-align: center; padding: 28px 24px 4px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #555; margin-top: 4px; max-width: 600px; margin-inline: auto; line-height: 1.5; }
+
+  .layouts { display: flex; gap: 28px; padding: 16px 24px 60px; justify-content: center; flex-wrap: wrap; }
+  .col { max-width: 420px; }
+  .col-label { text-align: center; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 8px 0 2px; }
+  .col-desc { text-align: center; font-size: 10px; color: #555; padding: 0 16px 10px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  /* ============================================================
+     G: THE DAYLIGHT — Scroll-driven day-to-night transition
+     ============================================================ */
+  .col-g .col-label { color: #F59E0B; }
+
+  .phone-g {
+    background: #FDF6E8;
+  }
+
+  /* The magic: gradient background that shifts as you scroll via JS */
+  .g-atmos {
+    position: sticky; top: 0; left: 0; right: 0; height: 100%; width: 100%;
+    z-index: 0; pointer-events: none;
+    transition: background 0.8s ease;
+  }
+
+  .g-content { position: relative; z-index: 1; }
+
+  /* Sun/moon element */
+  .g-celestial {
+    position: sticky; top: 60px; z-index: 0;
+    display: flex; justify-content: center; pointer-events: none;
+    margin-bottom: -60px;
+  }
+  .g-sun {
+    width: 40px; height: 40px; border-radius: 50%;
+    transition: all 1s ease;
+  }
+  .g-sun.sunrise { background: #F59E0B; box-shadow: 0 0 30px rgba(245,158,11,0.3); }
+  .g-sun.noon { background: #FBBF24; box-shadow: 0 0 40px rgba(251,191,36,0.4); }
+  .g-sun.golden { background: #F97316; box-shadow: 0 0 30px rgba(249,115,22,0.3); }
+  .g-sun.moon { background: #C4B5FD; box-shadow: 0 0 25px rgba(196,181,253,0.3); }
+
+  .g-status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .g-time { font-size: 15px; font-weight: 600; transition: color 0.8s; }
+  .g-alive { display: flex; align-items: center; gap: 6px; }
+  .g-alive-dot { width: 6px; height: 6px; border-radius: 50%; background: #34D399; }
+  .g-alive-lbl { font-size: 11px; font-weight: 600; transition: color 0.8s; }
+
+  .g-hero { padding: 16px 24px 0; }
+  .g-hero .ctx { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; transition: color 0.8s; }
+  .g-hero .ttl { font-size: 26px; font-weight: 700; letter-spacing: -0.8px; margin-top: 4px; transition: color 0.8s; }
+
+  /* Macro strip — adapts to background */
+  .g-macros { display: flex; gap: 8px; padding: 16px 24px; }
+  .g-macro { flex: 1; border-radius: 16px; padding: 12px 8px; text-align: center; transition: background 0.8s, color 0.8s; }
+  .g-macro .v { font-size: 18px; font-weight: 800; }
+  .g-macro .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  /* Meal sections — each is a zone */
+  .g-zone {
+    padding: 28px 24px; min-height: 200px;
+    transition: background 0.8s;
+  }
+  .g-zone-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 4px; transition: color 0.8s; }
+  .g-zone-time { font-size: 28px; font-weight: 800; letter-spacing: -1px; margin-bottom: 16px; transition: color 0.8s; }
+
+  .g-meal-card {
+    border-radius: 22px; padding: 18px; position: relative; overflow: hidden;
+    transition: background 0.8s, border-color 0.8s;
+  }
+  .g-meal-row { display: flex; gap: 14px; align-items: center; }
+  .g-meal-emoji { width: 52px; height: 52px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 24px; flex-shrink: 0; transition: background 0.8s; }
+  .g-meal-info { flex: 1; }
+  .g-meal-name { font-size: 17px; font-weight: 600; transition: color 0.8s; }
+  .g-meal-meta { font-size: 11px; margin-top: 3px; transition: color 0.8s; }
+  .g-meal-cal { text-align: right; flex-shrink: 0; }
+  .g-meal-cal .v { font-size: 22px; font-weight: 800; transition: color 0.8s; }
+  .g-meal-cal .u { font-size: 9px; transition: color 0.8s; }
+  .g-meal-actions { display: flex; gap: 6px; margin-top: 12px; }
+  .g-meal-btn { padding: 7px 14px; border-radius: 100px; font-size: 11px; font-weight: 600; transition: background 0.8s, color 0.8s; cursor: pointer; }
+
+  /* Grocery */
+  .g-grocery { margin: 16px 24px 40px; padding: 16px; border-radius: 18px; display: flex; justify-content: space-between; align-items: center; transition: background 0.8s; }
+  .g-grocery .t { font-size: 14px; font-weight: 600; transition: color 0.8s; }
+  .g-grocery .s { font-size: 11px; transition: color 0.8s; }
+
+  /* Time-of-day color themes */
+  .g-phone-sunrise { background: #FDF6E8; }
+  .g-phone-noon { background: #F6F5F0; }
+  .g-phone-golden { background: #FEF0E0; }
+  .g-phone-night { background: #1A1625; }
+
+
+  /* ============================================================
+     H: THE ATMOSPHERE — Full-bleed color zones per meal
+     ============================================================ */
+  .col-h .col-label { color: #818CF8; }
+
+  .phone-h { background: #F6F5F0; }
+  .h-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+
+  /* Each meal is a full-width atmospheric band */
+  .h-band {
+    padding: 32px 24px; position: relative; overflow: hidden;
+    min-height: 180px;
+  }
+  .h-band::before {
+    content: ''; position: absolute; inset: 0; opacity: 0.04;
+    background: radial-gradient(ellipse at 50% 30%, currentColor 0%, transparent 70%);
+  }
+  .h-band.sunrise { background: #FEF7E8; color: #92400E; }
+  .h-band.midday { background: #ECFDF5; color: #065F46; }
+  .h-band.golden { background: #FEF3E2; color: #9A3412; }
+  .h-band.twilight { background: #EDE9FE; color: #5B21B6; }
+
+  .h-band-time { font-size: 9px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; opacity: 0.5; }
+  .h-band-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; opacity: 0.6; margin-top: 2px; }
+  .h-band-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-top: 10px; }
+  .h-band-macros { font-size: 12px; opacity: 0.6; margin-top: 4px; }
+  .h-band-cal { font-size: 36px; font-weight: 800; letter-spacing: -2px; position: absolute; right: 24px; top: 50%; transform: translateY(-50%); opacity: 0.12; }
+
+  .h-band-actions { display: flex; gap: 6px; margin-top: 14px; }
+  .h-band-btn { padding: 7px 14px; border-radius: 100px; font-size: 10px; font-weight: 600; background: rgba(0,0,0,0.06); }
+
+  /* Macro bar between hero and meals */
+  .h-hero { padding: 12px 24px 0; background: #F6F5F0; }
+  .h-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .h-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+  .h-macros { display: flex; gap: 6px; padding: 14px 24px 20px; background: #F6F5F0; }
+  .h-m { flex: 1; border-radius: 14px; padding: 10px; text-align: center; }
+  .h-m.dk { background: var(--earth); }
+  .h-m.st { background: var(--stone); }
+  .h-m .v { font-size: 16px; font-weight: 800; }
+  .h-m.dk .v { color: var(--sand); }
+  .h-m.st .v { color: var(--earth); }
+  .h-m .l { font-size: 7px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 1px; }
+  .h-m.dk .l { color: rgba(246,245,240,0.35); }
+  .h-m.st .l { color: var(--rock); }
+
+
+  /* ============================================================
+     I: THE HORIZON — Split screen: sky gradient top, cards bottom
+     ============================================================ */
+  .col-i .col-label { color: #34D399; }
+
+  .phone-i { background: #F6F5F0; }
+
+  /* Sky section — gradient that shifts */
+  .i-sky {
+    height: 240px; position: relative; overflow: hidden;
+    background: linear-gradient(180deg, #FDE68A 0%, #FEF3C7 40%, #F6F5F0 100%);
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 0 24px 20px;
+  }
+  /* Animated sun position */
+  .i-sun { position: absolute; width: 50px; height: 50px; border-radius: 50%; background: #FBBF24; box-shadow: 0 0 40px rgba(251,191,36,0.4); top: 40px; left: 50%; transform: translateX(-50%); }
+  /* Stars for night (hidden by default) */
+  .i-star { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: rgba(255,255,255,0.6); }
+
+  .i-sky .ctx { font-size: 11px; color: rgba(45,42,36,0.4); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; position: relative; }
+  .i-sky .ttl { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; position: relative; }
+
+  /* Macro strip overlapping sky/content boundary */
+  .i-macros { display: flex; gap: 8px; padding: 0 24px; margin-top: -30px; position: relative; z-index: 2; }
+  .i-m { flex: 1; border-radius: 16px; padding: 14px 8px; text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .i-m.dk { background: var(--earth); }
+  .i-m.wh { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .i-m .v { font-size: 18px; font-weight: 800; }
+  .i-m.dk .v { color: var(--sand); }
+  .i-m.wh .v { color: var(--earth); }
+  .i-m .l { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+  .i-m.dk .l { color: rgba(246,245,240,0.35); }
+  .i-m.wh .l { color: var(--rock); }
+
+  /* Meals below as cards */
+  .i-meals { padding: 20px 24px; }
+  .i-section { font-size: 14px; font-weight: 700; color: var(--earth); margin-bottom: 12px; }
+
+  .i-meal {
+    background: #fff; border-radius: 22px; border: 1px solid rgba(0,0,0,0.04);
+    margin-bottom: 12px; overflow: hidden; position: relative;
+  }
+  /* Time-of-day accent stripe */
+  .i-meal::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .i-meal.bk::before { background: linear-gradient(90deg, #F59E0B, #FBBF24); }
+  .i-meal.lu::before { background: linear-gradient(90deg, #34D399, #6EE7B7); }
+  .i-meal.sn::before { background: linear-gradient(90deg, #818CF8, #A5B4FC); }
+  .i-meal.di::before { background: linear-gradient(90deg, #7C3AED, #A78BFA); }
+
+  .i-meal-main { padding: 16px 18px; display: flex; gap: 14px; align-items: center; }
+  .i-meal-time-col { text-align: center; flex-shrink: 0; width: 44px; }
+  .i-meal-time-emoji { font-size: 22px; }
+  .i-meal-time-label { font-size: 8px; color: var(--rock); font-weight: 600; margin-top: 2px; }
+  .i-meal-body { flex: 1; }
+  .i-meal-cat { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .i-meal-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 3px; }
+  .i-meal-mac { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .i-meal-cal { text-align: right; flex-shrink: 0; }
+  .i-meal-cal .v { font-size: 18px; font-weight: 800; color: var(--earth); }
+  .i-meal-cal .u { font-size: 9px; color: var(--rock); }
+
+  .i-meal-acts { display: flex; gap: 5px; border-top: 1px solid var(--stone); padding: 10px 18px; }
+  .i-meal-btn { padding: 5px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; }
+
+  .i-grocery { margin: 8px 24px 40px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .i-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .i-grocery .s { font-size: 11px; color: rgba(246,245,240,0.4); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Nutrition — Atmosphere Concepts</h1>
+  <p>Inspired by chimdibam.co's scroll-driven transitions. The background shifts from sunrise to night as you scroll through your meals.</p>
+</div>
+
+<div class="layouts">
+
+  <!-- ===== G: THE DAYLIGHT ===== -->
+  <div class="col col-g">
+    <div class="col-label">G — The Daylight</div>
+    <div class="col-desc">The entire screen transitions from warm sunrise to cool twilight as you scroll. Each meal lives in its time-of-day. Background, text, cards — everything shifts.</div>
+    <div class="phone phone-g" id="phone-g">
+      <div class="ps" id="g-scroll">
+        <div class="g-content">
+
+          <div class="g-status">
+            <span class="g-time" id="g-time" style="color:#92400E;">9:41</span>
+            <div class="g-alive"><div class="g-alive-dot"></div><span class="g-alive-lbl" id="g-alive" style="color:#34D399;">Fresh</span></div>
+          </div>
+
+          <div class="g-hero">
+            <div class="ctx" id="g-ctx" style="color:rgba(146,64,14,0.5);">Wednesday · Nutrition</div>
+            <div class="ttl" id="g-ttl" style="color:#92400E;">Today's Fuel</div>
+          </div>
+
+          <div class="g-macros" id="g-macros">
+            <div class="g-macro" id="gm0" style="background:#92400E;"><div class="v" style="color:#FEF7E8;">2,180</div><div class="l" style="color:rgba(254,247,232,0.5);">kcal</div></div>
+            <div class="g-macro" style="background:rgba(146,64,14,0.08);"><div class="v" style="color:#92400E;">165g</div><div class="l" style="color:rgba(146,64,14,0.5);">Protein</div></div>
+            <div class="g-macro" style="background:rgba(146,64,14,0.08);"><div class="v" style="color:#92400E;">245g</div><div class="l" style="color:rgba(146,64,14,0.5);">Carbs</div></div>
+            <div class="g-macro" style="background:rgba(146,64,14,0.08);"><div class="v" style="color:#92400E;">72g</div><div class="l" style="color:rgba(146,64,14,0.5);">Fat</div></div>
+          </div>
+
+          <!-- SUNRISE ZONE: Breakfast -->
+          <div class="g-zone" id="gz0" style="background:transparent;">
+            <div class="g-zone-label" style="color:rgba(146,64,14,0.4);">🌅 Breakfast</div>
+            <div class="g-zone-time" style="color:#92400E;">8:00 AM</div>
+            <div class="g-meal-card" style="background:#fff;border:1px solid rgba(146,64,14,0.08);">
+              <div class="g-meal-row">
+                <div class="g-meal-emoji" style="background:rgba(245,158,11,0.1);">🥣</div>
+                <div class="g-meal-info">
+                  <div class="g-meal-name" style="color:#92400E;">Greek Yogurt Power Bowl</div>
+                  <div class="g-meal-meta" style="color:rgba(146,64,14,0.5);">35g P · 42g C · 12g F</div>
+                </div>
+                <div class="g-meal-cal"><div class="v" style="color:#92400E;">520</div><div class="u" style="color:rgba(146,64,14,0.4);">kcal</div></div>
+              </div>
+              <div class="g-meal-actions">
+                <span class="g-meal-btn" style="background:#92400E;color:#FEF7E8;">Recipe</span>
+                <span class="g-meal-btn" style="background:rgba(52,211,153,0.1);color:#059669;">Swap</span>
+                <span class="g-meal-btn" style="background:rgba(245,158,11,0.1);color:#B45309;">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- NOON ZONE: Lunch -->
+          <div class="g-zone" id="gz1" style="background:transparent;">
+            <div class="g-zone-label" style="color:rgba(6,95,70,0.4);">☀️ Lunch</div>
+            <div class="g-zone-time" style="color:#065F46;">12:00 PM</div>
+            <div class="g-meal-card" style="background:#fff;border:1px solid rgba(6,95,70,0.08);">
+              <div class="g-meal-row">
+                <div class="g-meal-emoji" style="background:rgba(52,211,153,0.1);">🍗</div>
+                <div class="g-meal-info">
+                  <div class="g-meal-name" style="color:#065F46;">Grilled Chicken & Rice</div>
+                  <div class="g-meal-meta" style="color:rgba(6,95,70,0.5);">45g P · 55g C · 14g F</div>
+                </div>
+                <div class="g-meal-cal"><div class="v" style="color:#065F46;">680</div><div class="u" style="color:rgba(6,95,70,0.4);">kcal</div></div>
+              </div>
+              <div class="g-meal-actions">
+                <span class="g-meal-btn" style="background:#065F46;color:#ECFDF5;">Recipe</span>
+                <span class="g-meal-btn" style="background:rgba(52,211,153,0.1);color:#059669;">Swap</span>
+                <span class="g-meal-btn" style="background:rgba(245,158,11,0.1);color:#B45309;">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- GOLDEN HOUR: Snack -->
+          <div class="g-zone" id="gz2" style="background:transparent;">
+            <div class="g-zone-label" style="color:rgba(154,52,18,0.4);">🌇 Snack</div>
+            <div class="g-zone-time" style="color:#9A3412;">4:00 PM</div>
+            <div class="g-meal-card" style="background:#fff;border:1px solid rgba(154,52,18,0.08);">
+              <div class="g-meal-row">
+                <div class="g-meal-emoji" style="background:rgba(249,115,22,0.1);">🥤</div>
+                <div class="g-meal-info">
+                  <div class="g-meal-name" style="color:#9A3412;">Protein Shake & Almonds</div>
+                  <div class="g-meal-meta" style="color:rgba(154,52,18,0.5);">37g P · 18g C · 14g F</div>
+                </div>
+                <div class="g-meal-cal"><div class="v" style="color:#9A3412;">260</div><div class="u" style="color:rgba(154,52,18,0.4);">kcal</div></div>
+              </div>
+              <div class="g-meal-actions">
+                <span class="g-meal-btn" style="background:#9A3412;color:#FEF3E2;">Recipe</span>
+                <span class="g-meal-btn" style="background:rgba(52,211,153,0.1);color:#059669;">Swap</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TWILIGHT: Dinner -->
+          <div class="g-zone" id="gz3" style="background:transparent;">
+            <div class="g-zone-label" style="color:rgba(196,181,253,0.6);">🌙 Dinner</div>
+            <div class="g-zone-time" style="color:#C4B5FD;">7:00 PM</div>
+            <div class="g-meal-card" style="background:rgba(255,255,255,0.06);border:1px solid rgba(196,181,253,0.12);">
+              <div class="g-meal-row">
+                <div class="g-meal-emoji" style="background:rgba(129,140,248,0.12);">🐟</div>
+                <div class="g-meal-info">
+                  <div class="g-meal-name" style="color:#E9E5FF;">Salmon & Sweet Potato</div>
+                  <div class="g-meal-meta" style="color:rgba(196,181,253,0.6);">48g P · 62g C · 22g F</div>
+                </div>
+                <div class="g-meal-cal"><div class="v" style="color:#E9E5FF;">720</div><div class="u" style="color:rgba(196,181,253,0.5);">kcal</div></div>
+              </div>
+              <div class="g-meal-actions">
+                <span class="g-meal-btn" style="background:rgba(196,181,253,0.15);color:#C4B5FD;">Recipe</span>
+                <span class="g-meal-btn" style="background:rgba(52,211,153,0.1);color:#34D399;">Swap</span>
+                <span class="g-meal-btn" style="background:rgba(196,181,253,0.08);color:#A78BFA;">Eat Out</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="g-grocery" id="g-grocery" style="background:#1A1625;">
+            <div><div class="t" style="color:#E9E5FF;">Grocery List</div><div class="s" style="color:rgba(196,181,253,0.4);">14 items · ~$45</div></div>
+            <span style="color:rgba(196,181,253,0.3);">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-desc">Scroll it! Background shifts: warm amber sunrise → bright green noon → golden orange → deep purple twilight. Every element adapts — text, cards, buttons all respond to the time of day.</div>
+  </div>
+
+  <!-- ===== H: THE ATMOSPHERE ===== -->
+  <div class="col col-h">
+    <div class="col-label" style="color:#818CF8;">H — The Atmosphere</div>
+    <div class="col-desc">Each meal IS the background. Full-bleed color zones you scroll through. Giant ghost calorie number. Ambient radial glow. Like walking through rooms of light.</div>
+    <div class="phone phone-h">
+      <div class="ps">
+        <div class="h-hero">
+          <div class="ctx">Wednesday · Nutrition</div>
+          <div class="ttl">Today's Fuel</div>
+        </div>
+        <div class="h-macros">
+          <div class="h-m dk"><div class="v">2,180</div><div class="l">kcal</div></div>
+          <div class="h-m st"><div class="v">165g</div><div class="l">Protein</div></div>
+          <div class="h-m st"><div class="v">245g</div><div class="l">Carbs</div></div>
+          <div class="h-m st"><div class="v">72g</div><div class="l">Fat</div></div>
+        </div>
+
+        <div class="h-band sunrise">
+          <div class="h-band-cal">520</div>
+          <div class="h-band-time">8:00 AM</div>
+          <div class="h-band-label">Breakfast</div>
+          <div class="h-band-name">Greek Yogurt Power Bowl</div>
+          <div class="h-band-macros">35g protein · 42g carbs · 12g fat</div>
+          <div class="h-band-actions"><span class="h-band-btn">Recipe</span><span class="h-band-btn">Swap</span><span class="h-band-btn">Eat Out</span></div>
+        </div>
+
+        <div class="h-band midday">
+          <div class="h-band-cal">680</div>
+          <div class="h-band-time">12:00 PM</div>
+          <div class="h-band-label">Lunch</div>
+          <div class="h-band-name">Grilled Chicken & Rice</div>
+          <div class="h-band-macros">45g protein · 55g carbs · 14g fat</div>
+          <div class="h-band-actions"><span class="h-band-btn">Recipe</span><span class="h-band-btn">Swap</span><span class="h-band-btn">Eat Out</span></div>
+        </div>
+
+        <div class="h-band golden">
+          <div class="h-band-cal">260</div>
+          <div class="h-band-time">4:00 PM</div>
+          <div class="h-band-label">Snack</div>
+          <div class="h-band-name">Protein Shake & Almonds</div>
+          <div class="h-band-macros">37g protein · 18g carbs · 14g fat</div>
+          <div class="h-band-actions"><span class="h-band-btn">Recipe</span><span class="h-band-btn">Swap</span></div>
+        </div>
+
+        <div class="h-band twilight">
+          <div class="h-band-cal">720</div>
+          <div class="h-band-time">7:00 PM</div>
+          <div class="h-band-label">Dinner</div>
+          <div class="h-band-name">Salmon & Sweet Potato</div>
+          <div class="h-band-macros">48g protein · 62g carbs · 22g fat</div>
+          <div class="h-band-actions"><span class="h-band-btn">Recipe</span><span class="h-band-btn">Swap</span><span class="h-band-btn">Eat Out</span></div>
+        </div>
+
+        <div style="padding:16px 24px 40px;background:#F6F5F0;">
+          <div style="padding:16px;border-radius:18px;background:#2D2A24;display:flex;justify-content:space-between;align-items:center;">
+            <div><div style="font-size:14px;font-weight:600;color:#F6F5F0;">Grocery List</div><div style="font-size:11px;color:rgba(246,245,240,0.4);">14 items · ~$45</div></div>
+            <span style="color:rgba(246,245,240,0.3);">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-desc">No cards needed — each meal IS a full-width colored band. Giant transparent calorie number as watermark. Ambient glow behind content. Walking through rooms of light.</div>
+  </div>
+
+  <!-- ===== I: THE HORIZON ===== -->
+  <div class="col col-i">
+    <div class="col-label" style="color:#34D399;">I — The Horizon</div>
+    <div class="col-desc">Warm gradient sky header with sun. Macro widgets bridge sky→content. Time-of-day accent stripes on top of each meal card. Sky meets earth.</div>
+    <div class="phone phone-i">
+      <div class="ps">
+        <div class="i-sky">
+          <div class="i-sun"></div>
+          <div class="ctx">Wednesday · Nutrition</div>
+          <div class="ttl">Today's Fuel</div>
+        </div>
+
+        <div class="i-macros">
+          <div class="i-m dk"><div class="v">2,180</div><div class="l">kcal</div></div>
+          <div class="i-m wh"><div class="v">165g</div><div class="l">Protein</div></div>
+          <div class="i-m wh"><div class="v">245g</div><div class="l">Carbs</div></div>
+          <div class="i-m wh"><div class="v">72g</div><div class="l">Fat</div></div>
+        </div>
+
+        <div class="i-meals">
+          <div class="i-section">Today's Meals</div>
+
+          <div class="i-meal bk">
+            <div class="i-meal-main">
+              <div class="i-meal-time-col"><div class="i-meal-time-emoji">🌅</div><div class="i-meal-time-label">8 AM</div></div>
+              <div class="i-meal-body"><div class="i-meal-cat">Breakfast</div><div class="i-meal-name">Greek Yogurt Power Bowl</div><div class="i-meal-mac">35g P · 42g C · 12g F</div></div>
+              <div class="i-meal-cal"><div class="v">520</div><div class="u">kcal</div></div>
+            </div>
+            <div class="i-meal-acts"><span class="i-meal-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="i-meal-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span><span class="i-meal-btn" style="background:rgba(245,158,11,0.08);color:#B45309;">Eat Out</span></div>
+          </div>
+
+          <div class="i-meal lu">
+            <div class="i-meal-main">
+              <div class="i-meal-time-col"><div class="i-meal-time-emoji">☀️</div><div class="i-meal-time-label">12 PM</div></div>
+              <div class="i-meal-body"><div class="i-meal-cat">Lunch</div><div class="i-meal-name">Grilled Chicken & Rice</div><div class="i-meal-mac">45g P · 55g C · 14g F</div></div>
+              <div class="i-meal-cal"><div class="v">680</div><div class="u">kcal</div></div>
+            </div>
+            <div class="i-meal-acts"><span class="i-meal-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="i-meal-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span><span class="i-meal-btn" style="background:rgba(245,158,11,0.08);color:#B45309;">Eat Out</span></div>
+          </div>
+
+          <div class="i-meal sn">
+            <div class="i-meal-main">
+              <div class="i-meal-time-col"><div class="i-meal-time-emoji">🍎</div><div class="i-meal-time-label">4 PM</div></div>
+              <div class="i-meal-body"><div class="i-meal-cat">Snack</div><div class="i-meal-name">Protein Shake & Almonds</div><div class="i-meal-mac">37g P · 18g C · 14g F</div></div>
+              <div class="i-meal-cal"><div class="v">260</div><div class="u">kcal</div></div>
+            </div>
+            <div class="i-meal-acts"><span class="i-meal-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="i-meal-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span></div>
+          </div>
+
+          <div class="i-meal di">
+            <div class="i-meal-main">
+              <div class="i-meal-time-col"><div class="i-meal-time-emoji">🌙</div><div class="i-meal-time-label">7 PM</div></div>
+              <div class="i-meal-body"><div class="i-meal-cat">Dinner</div><div class="i-meal-name">Salmon & Sweet Potato</div><div class="i-meal-mac">48g P · 62g C · 22g F</div></div>
+              <div class="i-meal-cal"><div class="v">720</div><div class="u">kcal</div></div>
+            </div>
+            <div class="i-meal-acts"><span class="i-meal-btn" style="background:var(--stone);color:var(--earth);">Recipe</span><span class="i-meal-btn" style="background:rgba(52,211,153,0.08);color:var(--trail);">Swap</span><span class="i-meal-btn" style="background:rgba(245,158,11,0.08);color:#B45309;">Eat Out</span></div>
+          </div>
+        </div>
+
+        <div class="i-grocery"><div><div class="t" style="color:#F6F5F0;">Grocery List</div><div class="s" style="color:rgba(246,245,240,0.4);">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);">›</span></div>
+      </div>
+    </div>
+    <div class="col-desc">Warm sky gradient with sun at top. Macro widgets float at the horizon line. Each card has a gradient accent stripe matching its time of day. Grounded but aspirational.</div>
+  </div>
+
+</div>
+
+<script>
+// G: Scroll-driven background transition
+const phoneG = document.getElementById('phone-g');
+const scrollG = document.getElementById('g-scroll');
+
+const themes = [
+  { bg: '#FDF6E8', text: '#92400E', muted: 'rgba(146,64,14,0.5)' },   // sunrise
+  { bg: '#ECFDF5', text: '#065F46', muted: 'rgba(6,95,70,0.5)' },     // noon
+  { bg: '#FEF0E0', text: '#9A3412', muted: 'rgba(154,52,18,0.5)' },   // golden
+  { bg: '#1A1625', text: '#C4B5FD', muted: 'rgba(196,181,253,0.5)' }, // twilight
+];
+
+if (scrollG) {
+  scrollG.addEventListener('scroll', () => {
+    const scrollTop = scrollG.scrollTop;
+    const zones = document.querySelectorAll('.g-zone');
+    let activeIdx = 0;
+
+    zones.forEach((zone, i) => {
+      const rect = zone.getBoundingClientRect();
+      const phoneRect = phoneG.getBoundingClientRect();
+      const relTop = rect.top - phoneRect.top;
+      if (relTop < phoneRect.height * 0.5) activeIdx = i;
+    });
+
+    const t = themes[activeIdx];
+    phoneG.style.background = t.bg;
+    phoneG.style.transition = 'background 0.6s ease';
+  });
+}
+</script>
+
+</body>
+</html>

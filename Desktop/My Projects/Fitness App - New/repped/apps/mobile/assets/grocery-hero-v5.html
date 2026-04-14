@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Grocery Hero V5</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Fraunces:wght@700;800&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&family=Cormorant+Garamond:wght@600;700&family=Libre+Baskerville:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+.top{padding:56px 24px 0;display:flex;align-items:center;gap:12px}
+.back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.title{flex:1;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--earth);letter-spacing:-0.3px}
+.week{font-size:10px;color:var(--rock)}
+
+.ph{padding:22px 24px 0}
+.ph-head{display:flex;justify-content:space-between;margin-bottom:12px}
+.ph-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.ph-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.ph-sub{font-size:10px;color:var(--rock)}
+.ph-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.ph-cb{width:18px;height:18px;border-radius:6px;border:2px solid var(--stone);flex-shrink:0}
+.ph-name{font-size:13px;font-weight:500;color:var(--earth);flex-shrink:0}
+.ph-dots{flex:1;margin:0 6px;overflow:hidden;font-size:10px;color:var(--rock);opacity:0.2;letter-spacing:2px;white-space:nowrap}
+.ph-price{font-size:12px;font-weight:600;color:var(--rock);min-width:40px;text-align:right}
+
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes breathe{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+
+
+/* ============================================================
+   A1: WARM — Cormorant serif. Circled dollar. Glass save.
+   ============================================================ */
+.a1-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.a1-card::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.a1-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.a1-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+.a1-items{font-size:10px;color:var(--rock)}
+
+.a1-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Dollar in a circle */
+.a1-total-wrap{display:flex;align-items:baseline;gap:0}
+.a1-dollar-circle{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--earth);display:flex;align-items:center;justify-content:center;margin-right:6px;margin-bottom:6px;opacity:0.7}
+.a1-dollar-sign{font-family:'Inter';font-size:20px;font-weight:800;color:var(--earth)}
+.a1-amount{font-family:'Cormorant Garamond',serif;font-size:50px;font-weight:700;color:var(--earth);line-height:1;letter-spacing:-1px}
+.a1-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.a1-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.a1-checked{font-size:11px;color:var(--rock)}
+.a1-checked b{color:var(--trail);font-weight:800}
+
+/* Glass morphism save */
+.a1-save{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:14px;background:rgba(255,255,255,0.45);border:1px solid rgba(255,255,255,0.5);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);cursor:pointer;position:absolute;bottom:16px;right:16px}
+.a1-save-dot{width:8px;height:8px;border-radius:50%;background:var(--trail);animation:breathe 2.4s infinite}
+.a1-save-text{font-size:10px;font-weight:600;color:var(--earth);letter-spacing:0.3px}
+.a1-save-arrow{font-size:12px;color:var(--rock);opacity:0.4}
+
+/* Tiny progress */
+.a1-prog{margin-top:14px;height:3px;border-radius:2px;background:rgba(0,0,0,0.04);position:relative}
+.a1-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   A2: DARK — Libre Baskerville. Outlined dollar. Neon save.
+   ============================================================ */
+.a2-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 40%,#33312B 70%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden}
+.a2-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.a2-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.a2-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.a2-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.a2-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Dollar with outline style */
+.a2-total-wrap{display:flex;align-items:baseline}
+.a2-dollar{font-family:'Inter';font-size:44px;font-weight:800;color:transparent;-webkit-text-stroke:1.5px rgba(246,245,240,0.3);margin-right:2px}
+.a2-amount{font-family:'Libre Baskerville',serif;font-size:44px;font-weight:700;color:var(--sand);line-height:1;letter-spacing:-0.5px}
+.a2-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.a2-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.a2-stats{display:flex;gap:10px}
+.a2-stat{text-align:right}
+.a2-stat-val{font-size:13px;font-weight:800;color:var(--sand)}
+.a2-stat-val.green{color:var(--trail)}
+.a2-stat-label{font-size:7px;color:rgba(246,245,240,0.2);text-transform:uppercase}
+
+/* Neon-edge save button */
+.a2-save{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:14px;background:transparent;border:1px solid rgba(52,211,153,0.25);cursor:pointer;position:absolute;bottom:16px;right:16px}
+.a2-save::before{content:'';position:absolute;inset:-1px;border-radius:14px;background:linear-gradient(135deg,rgba(52,211,153,0.08),transparent,rgba(52,211,153,0.05));z-index:0}
+.a2-save-icon{position:relative;z-index:1;font-size:12px}
+.a2-save-text{position:relative;z-index:1;font-size:10px;font-weight:600;color:var(--trail);letter-spacing:0.3px}
+.a2-save-arrow{position:relative;z-index:1;font-size:12px;color:rgba(52,211,153,0.3)}
+
+.a2-prog{margin-top:14px;height:3px;border-radius:2px;background:rgba(246,245,240,0.06);position:relative}
+.a2-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   A3: WARM — DM Serif. Superscript dollar. Tab save.
+   ============================================================ */
+.a3-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#D8D3C9 0%,#EAE6DD 30%,#F4F1EA 60%,#DFD9CF 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.a3-card::before{content:'';position:absolute;top:-30px;right:-10px;width:140px;height:140px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.a3-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.a3-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+
+.a3-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Superscript dollar */
+.a3-total-wrap{display:flex;align-items:flex-start}
+.a3-dollar{font-family:'Inter';font-size:22px;font-weight:700;color:var(--earth);margin-top:8px;margin-right:2px;opacity:0.6}
+.a3-amount{font-family:'DM Serif Display',serif;font-size:52px;color:var(--earth);line-height:1;letter-spacing:-1px}
+.a3-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.a3-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.a3-checked{font-size:11px;color:var(--rock)}
+.a3-checked b{color:var(--trail);font-weight:800}
+
+/* Tab-style save — looks like a pulled tab */
+.a3-save-wrap{position:absolute;bottom:16px;right:16px}
+.a3-save{display:flex;align-items:center;gap:6px;padding:10px 20px 10px 16px;border-radius:16px 16px 16px 4px;background:var(--earth);cursor:pointer;box-shadow:0 2px 10px rgba(0,0,0,0.08)}
+.a3-save-spark{width:20px;height:20px;border-radius:10px;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center;font-size:10px}
+.a3-save-text{font-size:10px;font-weight:600;color:var(--sand);letter-spacing:0.3px}
+.a3-save-count{font-size:9px;font-weight:800;color:var(--trail);margin-left:4px}
+
+.a3-prog{margin-top:10px;height:3px;border-radius:2px;background:rgba(0,0,0,0.04);position:relative}
+.a3-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   A4: DARK — Fraunces. Same-size bold dollar. Slide save.
+   ============================================================ */
+.a4-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 35%,#33312B 65%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden}
+.a4-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.a4-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.a4-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.a4-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.a4-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Same-size bold dollar — no opacity diff, just font diff */
+.a4-total-wrap{display:flex;align-items:baseline}
+.a4-dollar{font-family:'Inter';font-size:46px;font-weight:800;color:var(--trail);margin-right:2px}
+.a4-amount{font-family:'Fraunces',serif;font-size:46px;font-weight:700;color:var(--sand);line-height:1;letter-spacing:-0.5px}
+.a4-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.a4-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.a4-checked{font-size:11px;color:rgba(246,245,240,0.3)}
+.a4-checked b{color:var(--trail);font-weight:800}
+
+/* Slide reveal save — shimmer animation */
+.a4-save{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:14px;background:rgba(246,245,240,0.05);border:1px solid rgba(246,245,240,0.06);cursor:pointer;position:absolute;bottom:16px;right:16px;overflow:hidden}
+.a4-save::after{content:'';position:absolute;inset:0;background:linear-gradient(110deg,transparent 25%,rgba(52,211,153,0.08) 50%,transparent 75%);background-size:200% 100%;animation:shimmer 3s ease-in-out infinite}
+.a4-save-dot{width:8px;height:8px;border-radius:50%;background:var(--trail);box-shadow:0 0 8px rgba(52,211,153,0.3);position:relative;z-index:1;animation:breathe 2.4s infinite}
+.a4-save-text{font-size:10px;font-weight:600;color:var(--sand);position:relative;z-index:1;letter-spacing:0.3px}
+.a4-save-arrow{font-size:12px;color:rgba(246,245,240,0.2);position:relative;z-index:1}
+
+.a4-prog{margin-top:14px;height:3px;border-radius:2px;background:rgba(246,245,240,0.06);position:relative}
+.a4-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   A5: WARM — Playfair. Trail dollar. Chip save with count.
+   ============================================================ */
+.a5-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#D4CFC5 0%,#E8E4DB 30%,#F2EFE8 65%,#DDD8CE 100%);box-shadow:0 4px 20px rgba(0,0,0,0.06);position:relative;overflow:hidden}
+.a5-card::before{content:'';position:absolute;top:-35px;right:-15px;width:150px;height:150px;border-radius:50%;background:rgba(52,211,153,0.05)}
+
+.a5-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:8px}
+.a5-label{font-size:9px;font-weight:700;color:var(--rock);text-transform:uppercase;letter-spacing:2px}
+
+.a5-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Trail-colored dollar */
+.a5-total-wrap{display:flex;align-items:baseline}
+.a5-dollar{font-family:'Inter';font-size:48px;font-weight:800;color:var(--trail);margin-right:3px;opacity:0.6}
+.a5-amount{font-family:'Playfair Display',serif;font-size:48px;font-weight:800;color:var(--earth);line-height:1;letter-spacing:-1px}
+.a5-est{font-size:9px;color:var(--rock);margin-top:4px}
+
+.a5-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.a5-checked{font-size:11px;color:var(--rock)}
+.a5-checked b{color:var(--trail);font-weight:800}
+
+/* Chip save — rounded, with item count badge */
+.a5-save{display:flex;align-items:center;gap:6px;padding:8px 12px 8px 14px;border-radius:100px;background:var(--earth);cursor:pointer;position:absolute;bottom:16px;right:16px}
+.a5-save-text{font-size:10px;font-weight:600;color:var(--sand)}
+.a5-save-badge{width:22px;height:22px;border-radius:11px;background:var(--trail);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;color:var(--earth)}
+
+.a5-prog{margin-top:14px;height:3px;border-radius:2px;background:rgba(0,0,0,0.04);position:relative}
+.a5-prog-fill{height:100%;border-radius:2px;background:var(--trail)}
+
+
+/* ============================================================
+   A6: DARK — Cormorant. Circle dollar. Pill save with arrow.
+   ============================================================ */
+.a6-card{margin:16px 18px 0;padding:22px 22px 54px 22px;border-radius:22px;background:linear-gradient(155deg,#2D2A24 0%,#3A3630 35%,#33312B 65%,#2D2A24 100%);box-shadow:0 4px 20px rgba(0,0,0,0.15);position:relative;overflow:hidden}
+.a6-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+
+.a6-row1{display:flex;justify-content:space-between;align-items:center;position:relative;margin-bottom:10px}
+.a6-label{font-size:9px;font-weight:600;color:rgba(246,245,240,0.25);text-transform:uppercase;letter-spacing:2px}
+.a6-items{font-size:10px;color:rgba(246,245,240,0.2)}
+
+.a6-row2{display:flex;justify-content:space-between;align-items:flex-end;position:relative}
+/* Circle dollar on dark */
+.a6-total-wrap{display:flex;align-items:baseline;gap:0}
+.a6-dollar-circle{width:36px;height:36px;border-radius:50%;border:2px solid rgba(246,245,240,0.15);display:flex;align-items:center;justify-content:center;margin-right:6px;margin-bottom:8px}
+.a6-dollar-sign{font-family:'Inter';font-size:18px;font-weight:800;color:rgba(246,245,240,0.5)}
+.a6-amount{font-family:'Cormorant Garamond',serif;font-size:48px;font-weight:700;color:var(--sand);line-height:1;letter-spacing:-0.5px}
+.a6-est{font-size:9px;color:rgba(246,245,240,0.2);margin-top:4px}
+
+.a6-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.a6-checked{font-size:11px;color:rgba(246,245,240,0.3)}
+.a6-checked b{color:var(--trail);font-weight:800}
+
+/* Wide pill save */
+.a6-save{display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:14px;background:rgba(52,211,153,0.08);cursor:pointer;position:absolute;bottom:16px;right:16px}
+.a6-save-left{display:flex;align-items:center;gap:6px}
+.a6-save-dot{width:8px;height:8px;border-radius:50%;background:var(--trail);animation:breathe 2.4s infinite}
+.a6-save-text{font-size:10px;font-weight:600;color:var(--trail);letter-spacing:0.3px}
+.a6-save-arrow{width:26px;height:26px;border-radius:13px;background:rgba(52,211,153,0.12);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--trail)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- A1 -->
+  <div>
+    <div class="col-label">A1 — CIRCLED $ · GLASS SAVE</div>
+    <div class="col-desc">Dollar in a circle. Cormorant serif number. Frosted glass save with breathing green dot.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a1-card"><div class="a1-row1"><span class="a1-label">Weekly Shop</span><span class="a1-items">18 items</span></div>
+        <div class="a1-row2"><div><div class="a1-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:32px;height:32px;opacity:0.7;margin-right:6px;margin-bottom:8px"><span class="a1-amount">47.82</span></div><div class="a1-est">estimated total</div></div><div class="a1-right"><div class="a1-checked"><b>5</b> / 18 checked</div><div class="a1-save"><div class="a1-save-dot"></div><span class="a1-save-text">Smart Save Tips</span><span class="a1-save-arrow">›</span></div></div></div>
+        <div class="a1-prog"><div class="a1-prog-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- A2 -->
+  <div>
+    <div class="col-label">A2 — OUTLINED $ · NEON SAVE</div>
+    <div class="col-desc">Dollar as outline text. Libre Baskerville number. Save with gradient neon border glow.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a2-card"><div class="a2-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div><div class="a2-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="a2-row1"><span class="a2-label">Weekly Shop</span><span class="a2-items">18 items</span></div>
+        <div class="a2-row2"><div><div class="a2-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:34px;height:34px;opacity:0.4;margin-right:4px;margin-bottom:4px;filter:brightness(10)"><span class="a2-amount">47.82</span></div><div class="a2-est">estimated total</div></div><div class="a2-right"><div class="a2-stats"><div class="a2-stat"><div class="a2-stat-val">18</div><div class="a2-stat-label">Items</div></div><div class="a2-stat"><div class="a2-stat-val green">5</div><div class="a2-stat-label">Done</div></div></div><div class="a2-save"><span class="a2-save-icon">✦</span><span class="a2-save-text">Smart Save Tips</span><span class="a2-save-arrow">›</span></div></div></div>
+        <div class="a2-prog"><div class="a2-prog-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- A3 -->
+  <div>
+    <div class="col-label">A3 — SUPERSCRIPT $ · TAB SAVE</div>
+    <div class="col-desc">Dollar as small superscript. DM Serif 52px number. Tab-shaped save button with count.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a3-card"><div class="a3-row1"><span class="a3-label">Weekly Shop · 18 items</span></div>
+        <div class="a3-row2"><div><div class="a3-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:22px;height:22px;opacity:0.5;margin-right:3px;margin-top:8px"><span class="a3-amount">47.82</span></div><div class="a3-est">estimated total</div></div><div class="a3-right"><div class="a3-checked"><b>5</b> / 18 checked</div></div></div>
+        <div class="a3-save-wrap"><div class="a3-save"><div class="a3-save-spark">✦</div><span class="a3-save-text">Smart Save Tips</span><span class="a3-save-count">3</span></div></div>
+        <div class="a3-prog"><div class="a3-prog-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- A4 -->
+  <div>
+    <div class="col-label">A4 — GREEN $ · SHIMMER SAVE</div>
+    <div class="col-desc">Dollar in trail green. Fraunces serif. Save with shimmer sweep + breathing green dot.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a4-card"><div class="a4-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div><div class="a4-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="a4-row1"><span class="a4-label">Weekly Shop</span><span class="a4-items">18 items</span></div>
+        <div class="a4-row2"><div><div class="a4-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:34px;height:34px;opacity:0.4;margin-right:4px;margin-bottom:4px;filter:brightness(10)"><span class="a4-amount">47.82</span></div><div class="a4-est">estimated total</div></div><div class="a4-right"><div class="a4-checked"><b>5</b> / 18 checked</div><div class="a4-save"><div class="a4-save-dot"></div><span class="a4-save-text">Smart Save Tips</span><span class="a4-save-arrow">›</span></div></div></div>
+        <div class="a4-prog"><div class="a4-prog-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- A5 -->
+  <div>
+    <div class="col-label">A5 — TRAIL $ · CHIP SAVE</div>
+    <div class="col-desc">Dollar in faded trail green. Playfair number. Chip-shaped save with green count badge.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a5-card"><div class="a5-row1"><span class="a5-label">Weekly Shop · 18 items</span></div>
+        <div class="a5-row2"><div><div class="a5-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:34px;height:34px;opacity:0.5;margin-right:4px;margin-bottom:4px"><span class="a5-amount">47.82</span></div><div class="a5-est">estimated total</div></div><div class="a5-right"><div class="a5-checked"><b>5</b> / 18 checked</div><div class="a5-save"><span class="a5-save-text">Save Tips</span><span class="a5-save-badge">3</span></div></div></div>
+        <div class="a5-prog"><div class="a5-prog-fill" style="width:28%"></div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+  <!-- A6 -->
+  <div>
+    <div class="col-label">A6 — CIRCLE $ DARK · WIDE SAVE</div>
+    <div class="col-desc">Dollar in circle on dark. Cormorant 48px. Full-width save with breathing dot + arrow circle.</div>
+    <div class="phone"><div class="ps">
+      <div class="top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px">‹</span></div><span class="title">Grocery List</span><span class="week">Mar 30</span></div>
+      <div class="a6-card"><div class="a6-diag" style="width:100px;top:14px;right:-6px;transform:rotate(-35deg)"></div><div class="a6-diag" style="width:70px;top:26px;right:-6px;transform:rotate(-35deg)"></div>
+        <div class="a6-row1"><span class="a6-label">Weekly Shop</span><span class="a6-items">18 items</span></div>
+        <div class="a6-row2"><div><div class="a6-total-wrap"><img src="https://cdn-icons-png.flaticon.com/128/2530/2530493.png" style="width:30px;height:30px;opacity:0.5;margin-right:6px;margin-bottom:8px;filter:brightness(10)"><span class="a6-amount">47.82</span></div><div class="a6-est">estimated total</div></div><div class="a6-right"><div class="a6-checked"><b>5</b> / 18 checked</div></div></div>
+        <div class="a6-save"><div class="a6-save-left"><div class="a6-save-dot"></div><span class="a6-save-text">Smart Save Tips</span></div><div class="a6-save-arrow">›</div></div>
+      </div>
+      <div class="ph"><div class="ph-head"><div><span class="ph-title">Shopping List</span><div class="ph-accent"></div></div><span class="ph-sub">18 items</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Chicken breast</span><span class="ph-dots">···················</span><span class="ph-price">$8.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Avocado</span><span class="ph-dots">···················</span><span class="ph-price">$1.99</span></div><div class="ph-row"><div class="ph-cb"></div><span class="ph-name">Greek yogurt</span><span class="ph-dots">···················</span><span class="ph-price">$5.99</span></div></div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Subtle Immersive Nutrition</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+
+  .page-head { text-align: center; padding: 24px 24px 4px; }
+  .page-head h1 { font-size: 18px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 11px; color: #555; margin-top: 4px; max-width: 500px; margin-inline: auto; line-height: 1.5; }
+
+  .showcase { display: flex; gap: 28px; justify-content: center; padding: 12px 20px 60px; flex-wrap: wrap; align-items: flex-start; }
+
+  .col { max-width: 420px; }
+  .col-label { text-align: center; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 6px 0 2px; }
+  .col-desc { text-align: center; font-size: 10px; color: #555; padding: 0 12px 8px; line-height: 1.5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  /* ============================================================
+     J: WARM DRIFT — Stays in sand/earth palette, subtle warm shifts
+     ============================================================ */
+  .col-j .col-label { color: #D4A574; }
+  .phone-j { background: var(--sand); }
+
+  /* Ambient warmth — subtle radial blobs that drift */
+  .j-ambient { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+  .j-blob { position: absolute; border-radius: 50%; filter: blur(80px); }
+  .j-blob.b1 { width: 300px; height: 300px; top: -60px; left: -40px; background: #F59E0B; opacity: 0.025; animation: jDrift1 20s ease-in-out infinite alternate; }
+  .j-blob.b2 { width: 250px; height: 250px; top: 35%; right: -50px; background: #34D399; opacity: 0.02; animation: jDrift2 24s ease-in-out infinite alternate; }
+  .j-blob.b3 { width: 280px; height: 280px; bottom: 10%; left: -30px; background: #818CF8; opacity: 0.02; animation: jDrift3 22s ease-in-out infinite alternate; }
+  @keyframes jDrift1 { 0% { transform: translate(0,0); } 100% { transform: translate(30px,20px); } }
+  @keyframes jDrift2 { 0% { transform: translate(0,0); } 100% { transform: translate(-20px,30px); } }
+  @keyframes jDrift3 { 0% { transform: translate(0,0); } 100% { transform: translate(20px,-20px); } }
+
+  /* Topo lines */
+  .j-topo { position: absolute; inset: 0; pointer-events: none; }
+  .j-tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.018; }
+  .j-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .j-tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+
+  .j-cnt { position: relative; z-index: 1; }
+
+  .j-status { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .j-time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .j-alive { display: flex; align-items: center; gap: 6px; }
+  .j-alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: jPulse 2.4s ease-in-out infinite; }
+  @keyframes jPulse { 0%,100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.35); } }
+  .j-alive-lbl { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  .j-hero { padding: 18px 24px 0; }
+  .j-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .j-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  /* Macro ring — single horizontal bar that fills */
+  .j-macro-bar { margin: 18px 24px 0; }
+  .j-macro-track { height: 6px; border-radius: 3px; background: var(--stone); display: flex; overflow: hidden; }
+  .j-macro-seg { height: 100%; }
+  .j-macro-seg.p { background: var(--trail); width: 30%; }
+  .j-macro-seg.c { background: #D4A574; width: 45%; }
+  .j-macro-seg.f { background: var(--rock); width: 25%; }
+  .j-macro-labels { display: flex; justify-content: space-between; margin-top: 8px; }
+  .j-ml { text-align: center; }
+  .j-ml .v { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .j-ml .l { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 1px; }
+  .j-ml.cal .v { font-size: 20px; }
+
+  /* Time-of-day indicator — warm gradient strip */
+  .j-tod { margin: 20px 24px 0; height: 3px; border-radius: 2px; background: linear-gradient(90deg, #D4A574 0%, #E8C49A 25%, #D4A574 50%, #B8956A 75%, #6B5B4E 100%); position: relative; }
+  .j-tod-dot { position: absolute; top: -5px; width: 13px; height: 13px; border-radius: 50%; background: var(--sand); border: 2.5px solid var(--earth); transition: left 0.6s cubic-bezier(0.4,0,0.2,1); }
+  .j-tod-labels { display: flex; justify-content: space-between; margin-top: 8px; padding: 0; }
+  .j-tod-lbl { font-size: 8px; color: var(--rock); font-weight: 500; }
+
+  /* Expandable meal cards — large, tactile */
+  .j-meals { padding: 18px 24px 0; }
+  .j-meals-head { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 14px; }
+
+  .j-meal {
+    margin-bottom: 12px; border-radius: 24px; overflow: hidden;
+    background: #fff; border: 1px solid rgba(0,0,0,0.04);
+    cursor: pointer; transition: box-shadow 0.3s ease;
+  }
+  .j-meal:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+
+  .j-meal-collapsed { padding: 18px 20px; display: flex; align-items: center; gap: 16px; }
+
+  /* Large warm-tinted thumbnail */
+  .j-meal-thumb {
+    width: 64px; height: 64px; border-radius: 18px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0; position: relative;
+  }
+  /* Subtle warm tint per meal time */
+  .j-meal-thumb.dawn { background: rgba(212,165,116,0.1); }
+  .j-meal-thumb.noon { background: rgba(52,211,153,0.06); }
+  .j-meal-thumb.golden { background: rgba(212,165,116,0.12); }
+  .j-meal-thumb.dusk { background: rgba(107,91,78,0.08); }
+  /* Time pip */
+  .j-meal-thumb::after {
+    content: attr(data-time); position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+    font-size: 7px; font-weight: 700; color: var(--rock); background: var(--sand);
+    padding: 1px 6px; border-radius: 100px; letter-spacing: 0.3px;
+  }
+
+  .j-meal-info { flex: 1; }
+  .j-meal-cat { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .j-meal-name { font-size: 16px; font-weight: 600; color: var(--earth); margin-top: 3px; line-height: 1.25; }
+  .j-meal-macro { font-size: 11px; color: var(--rock); margin-top: 3px; }
+
+  .j-meal-right { text-align: right; flex-shrink: 0; }
+  .j-meal-cal { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .j-meal-unit { font-size: 9px; color: var(--rock); }
+
+  /* Expanded state */
+  .j-meal-expanded { display: none; padding: 0 20px 18px; }
+  .j-meal.open .j-meal-expanded { display: block; animation: jExpand 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes jExpand { 0% { opacity: 0; transform: translateY(-8px); } 100% { opacity: 1; transform: translateY(0); } }
+
+  .j-meal-divider { height: 1px; background: var(--stone); margin-bottom: 14px; }
+
+  /* Mode toggle */
+  .j-mode-row { display: flex; gap: 6px; margin-bottom: 12px; }
+  .j-mode { padding: 8px 16px; border-radius: 100px; font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .j-mode.active { background: var(--earth); color: var(--sand); }
+  .j-mode.inactive { background: var(--stone); color: var(--rock); }
+
+  /* Action buttons */
+  .j-act-row { display: flex; gap: 6px; }
+  .j-act { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; }
+  .j-act.recipe { background: var(--earth); color: var(--sand); }
+  .j-act.swap { background: rgba(52,211,153,0.06); color: var(--trail); }
+  .j-act.out { background: rgba(212,165,116,0.1); color: #8B6914; }
+  .j-act.nah { background: var(--stone); color: #AEAEB2; }
+
+  /* Grocery */
+  .j-grocery { margin: 16px 24px 44px; padding: 16px 18px; border-radius: 20px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .j-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .j-grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+
+
+  /* ============================================================
+     K: THE CHAPTERS — Each meal is a "chapter" page turn
+     ============================================================ */
+  .col-k .col-label { color: var(--trail); }
+  .phone-k { background: var(--sand); }
+
+  .k-topo { position: absolute; inset: 0; pointer-events: none; }
+  .k-tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.018; }
+  .k-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .k-tc:nth-child(2) { width: 380px; height: 300px; bottom: -40px; right: -60px; }
+
+  .k-cnt { position: relative; z-index: 1; }
+
+  .k-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .k-hero { padding: 16px 24px 0; }
+  .k-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .k-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  /* Macro — inline pills */
+  .k-macro-pills { display: flex; gap: 6px; padding: 14px 24px; flex-wrap: wrap; }
+  .k-mp { padding: 6px 12px; border-radius: 100px; font-size: 11px; font-weight: 600; }
+  .k-mp.cal { background: var(--earth); color: var(--sand); }
+  .k-mp.p { background: rgba(52,211,153,0.06); color: #047857; }
+  .k-mp.c { background: rgba(212,165,116,0.08); color: #92400E; }
+  .k-mp.f { background: rgba(107,91,78,0.08); color: #57534E; }
+
+  /* Chapter pages — full-width cards with big typography */
+  .k-chapter {
+    margin: 0 24px 16px; border-radius: 24px; overflow: hidden;
+    position: relative; min-height: 175px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 22px;
+  }
+  .k-chapter.dawn { background: linear-gradient(150deg, #FAF5EB 0%, #F5EDE0 100%); }
+  .k-chapter.noon { background: linear-gradient(150deg, #ECFAF5 0%, #E0F5ED 100%); }
+  .k-chapter.golden { background: linear-gradient(150deg, #FBF2E6 0%, #F5E6D4 100%); }
+  .k-chapter.dusk { background: linear-gradient(150deg, #EFECF5 0%, #E5E0F0 100%); }
+
+  /* Chapter number watermark */
+  .k-chapter-num {
+    position: absolute; top: 16px; right: 22px;
+    font-size: 64px; font-weight: 900; letter-spacing: -4px;
+    line-height: 1;
+  }
+  .k-chapter.dawn .k-chapter-num { color: rgba(212,165,116,0.1); }
+  .k-chapter.noon .k-chapter-num { color: rgba(52,211,153,0.08); }
+  .k-chapter.golden .k-chapter-num { color: rgba(212,165,116,0.12); }
+  .k-chapter.dusk .k-chapter-num { color: rgba(129,140,248,0.08); }
+
+  .k-chapter-time { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .k-chapter.dawn .k-chapter-time { color: rgba(146,64,14,0.5); }
+  .k-chapter.noon .k-chapter-time { color: rgba(4,120,87,0.5); }
+  .k-chapter.golden .k-chapter-time { color: rgba(146,64,14,0.5); }
+  .k-chapter.dusk .k-chapter-time { color: rgba(91,33,182,0.5); }
+
+  .k-chapter-name { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; margin-top: 10px; line-height: 1.15; }
+  .k-chapter.dawn .k-chapter-name { color: #78350F; }
+  .k-chapter.noon .k-chapter-name { color: #065F46; }
+  .k-chapter.golden .k-chapter-name { color: #7C2D12; }
+  .k-chapter.dusk .k-chapter-name { color: #4C1D95; }
+
+  .k-chapter-macros { font-size: 12px; margin-top: 6px; }
+  .k-chapter.dawn .k-chapter-macros { color: rgba(120,53,15,0.45); }
+  .k-chapter.noon .k-chapter-macros { color: rgba(6,95,70,0.45); }
+  .k-chapter.golden .k-chapter-macros { color: rgba(124,45,18,0.45); }
+  .k-chapter.dusk .k-chapter-macros { color: rgba(76,29,149,0.45); }
+
+  .k-chapter-cal { display: flex; align-items: baseline; gap: 4px; margin-top: 10px; }
+  .k-chapter-cal .v { font-size: 28px; font-weight: 800; letter-spacing: -1px; }
+  .k-chapter-cal .u { font-size: 11px; }
+  .k-chapter.dawn .k-chapter-cal .v { color: #92400E; }
+  .k-chapter.dawn .k-chapter-cal .u { color: rgba(146,64,14,0.4); }
+  .k-chapter.noon .k-chapter-cal .v { color: #047857; }
+  .k-chapter.noon .k-chapter-cal .u { color: rgba(4,120,87,0.4); }
+  .k-chapter.golden .k-chapter-cal .v { color: #9A3412; }
+  .k-chapter.golden .k-chapter-cal .u { color: rgba(154,52,18,0.4); }
+  .k-chapter.dusk .k-chapter-cal .v { color: #5B21B6; }
+  .k-chapter.dusk .k-chapter-cal .u { color: rgba(91,33,182,0.4); }
+
+  .k-chapter-acts { display: flex; gap: 6px; margin-top: 14px; }
+  .k-chapter-btn { padding: 8px 16px; border-radius: 12px; font-size: 11px; font-weight: 600; backdrop-filter: blur(8px); }
+  .k-chapter.dawn .k-chapter-btn.primary { background: #78350F; color: #FEF7EC; }
+  .k-chapter.dawn .k-chapter-btn.secondary { background: rgba(120,53,15,0.06); color: #78350F; }
+  .k-chapter.noon .k-chapter-btn.primary { background: #065F46; color: #ECFDF5; }
+  .k-chapter.noon .k-chapter-btn.secondary { background: rgba(6,95,70,0.06); color: #065F46; }
+  .k-chapter.golden .k-chapter-btn.primary { background: #7C2D12; color: #FFF7ED; }
+  .k-chapter.golden .k-chapter-btn.secondary { background: rgba(124,45,18,0.06); color: #7C2D12; }
+  .k-chapter.dusk .k-chapter-btn.primary { background: #5B21B6; color: #EDE9FE; }
+  .k-chapter.dusk .k-chapter-btn.secondary { background: rgba(91,33,182,0.06); color: #5B21B6; }
+
+
+  /* ============================================================
+     L: SPLIT HORIZON — Left time column, right content
+     ============================================================ */
+  .col-l .col-label { color: #818CF8; }
+  .phone-l { background: var(--sand); }
+
+  .l-topo { position: absolute; inset: 0; pointer-events: none; }
+  .l-tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.018; }
+  .l-tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .l-tc:nth-child(2) { width: 380px; height: 300px; bottom: -40px; right: -60px; }
+
+  .l-cnt { position: relative; z-index: 1; }
+  .l-status { padding: 54px 24px 0; display: flex; justify-content: space-between; }
+  .l-hero { padding: 16px 24px 0; }
+  .l-hero .ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .l-hero .ttl { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; margin-top: 4px; }
+
+  /* Compact macro row */
+  .l-macros { display: flex; gap: 6px; padding: 14px 24px; }
+  .l-m { flex: 1; border-radius: 14px; padding: 10px 6px; text-align: center; }
+  .l-m.dk { background: var(--earth); }
+  .l-m.st { background: var(--stone); }
+  .l-m .v { font-size: 16px; font-weight: 800; }
+  .l-m.dk .v { color: var(--sand); }
+  .l-m.st .v { color: var(--earth); }
+  .l-m .l { font-size: 7px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 1px; }
+  .l-m.dk .l { color: rgba(246,245,240,0.35); }
+  .l-m.st .l { color: var(--rock); }
+
+  /* Split layout: fixed time column on left */
+  .l-split { padding: 12px 24px; }
+  .l-split-head { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 14px; }
+
+  .l-row { display: flex; gap: 0; margin-bottom: 12px; }
+
+  /* Left time column — narrow, with connecting line */
+  .l-time-col {
+    width: 56px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center;
+    position: relative; padding-top: 2px;
+  }
+  .l-time-num { font-size: 13px; font-weight: 800; color: var(--earth); }
+  .l-time-ampm { font-size: 8px; color: var(--rock); font-weight: 600; }
+  .l-time-emoji { font-size: 16px; margin-top: 4px; }
+  /* Connecting line segment */
+  .l-time-line { width: 2px; flex: 1; background: #DDD9CE; margin-top: 6px; min-height: 20px; }
+
+  /* Right content card */
+  .l-card {
+    flex: 1; background: #fff; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04);
+    padding: 16px 18px; position: relative; overflow: hidden;
+  }
+  /* Warm tint strip on top */
+  .l-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .l-card.dawn::before { background: linear-gradient(90deg, #D4A574, #E8C49A); }
+  .l-card.noon::before { background: linear-gradient(90deg, #34D399, #6EE7B7); }
+  .l-card.golden::before { background: linear-gradient(90deg, #D4A574, #B8956A); }
+  .l-card.dusk::before { background: linear-gradient(90deg, #818CF8, #A5B4FC); }
+
+  .l-card-cat { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; }
+  .l-card-name { font-size: 16px; font-weight: 600; color: var(--earth); margin-top: 4px; line-height: 1.2; }
+  .l-card-macros { font-size: 11px; color: var(--rock); margin-top: 3px; }
+
+  .l-card-bottom { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; }
+  .l-card-cal { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .l-card-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .l-card-acts { display: flex; gap: 4px; }
+  .l-card-btn { padding: 5px 12px; border-radius: 100px; font-size: 9px; font-weight: 600; }
+  .l-card-btn.recipe { background: var(--stone); color: var(--earth); }
+  .l-card-btn.swap { background: rgba(52,211,153,0.06); color: var(--trail); }
+
+  .l-grocery { margin: 8px 24px 44px; padding: 16px; border-radius: 18px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; }
+  .l-grocery .t { font-size: 14px; font-weight: 600; color: var(--sand); }
+  .l-grocery .s { font-size: 11px; color: rgba(246,245,240,0.35); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Nutrition — Subtle & Unique</h1>
+  <p>Warm, grounded, stays in the terrain palette. No bright color shocks. Three different spatial structures.</p>
+</div>
+
+<div class="showcase">
+
+  <!-- ===== J: WARM DRIFT ===== -->
+  <div class="col col-j">
+    <div class="col-label">J — Warm Drift</div>
+    <div class="col-desc">Stays in sand/earth palette. Subtle ambient blobs drift. Macro bar as a segmented strip. Large expandable meal cards with warm-tinted thumbnails. Click cards to expand.</div>
+    <div class="phone phone-j">
+      <div class="j-ambient"><div class="j-blob b1"></div><div class="j-blob b2"></div><div class="j-blob b3"></div></div>
+      <div class="j-topo"><div class="j-tc"></div><div class="j-tc"></div></div>
+      <div class="ps"><div class="j-cnt">
+        <div class="j-status"><span class="j-time">9:41</span><div class="j-alive"><div class="j-alive-dot"></div><span class="j-alive-lbl">Fresh</span></div></div>
+        <div class="j-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+        <!-- Segmented macro bar -->
+        <div class="j-macro-bar">
+          <div class="j-macro-track">
+            <div class="j-macro-seg p"></div>
+            <div class="j-macro-seg c"></div>
+            <div class="j-macro-seg f"></div>
+          </div>
+          <div class="j-macro-labels">
+            <div class="j-ml cal"><div class="v">2,180</div><div class="l">kcal</div></div>
+            <div class="j-ml"><div class="v">165g</div><div class="l">Protein</div></div>
+            <div class="j-ml"><div class="v">245g</div><div class="l">Carbs</div></div>
+            <div class="j-ml"><div class="v">72g</div><div class="l">Fat</div></div>
+          </div>
+        </div>
+
+        <!-- Time-of-day ruler -->
+        <div class="j-tod">
+          <div class="j-tod-dot" style="left:15%;"></div>
+        </div>
+        <div class="j-tod-labels" style="display:flex;justify-content:space-between;padding:6px 24px 0;">
+          <span class="j-tod-lbl">6 AM</span><span class="j-tod-lbl">12 PM</span><span class="j-tod-lbl">6 PM</span><span class="j-tod-lbl">12 AM</span>
+        </div>
+
+        <!-- Meal cards -->
+        <div class="j-meals">
+          <div class="j-meals-head">Today's Meals</div>
+
+          <div class="j-meal open" onclick="this.classList.toggle('open')">
+            <div class="j-meal-collapsed">
+              <div class="j-meal-thumb dawn" data-time="8 AM">🥣</div>
+              <div class="j-meal-info">
+                <div class="j-meal-cat">Breakfast</div>
+                <div class="j-meal-name">Greek Yogurt Power Bowl</div>
+                <div class="j-meal-macro">35g P · 42g C · 12g F</div>
+              </div>
+              <div class="j-meal-right"><div class="j-meal-cal">520</div><div class="j-meal-unit">kcal</div></div>
+            </div>
+            <div class="j-meal-expanded">
+              <div class="j-meal-divider"></div>
+              <div class="j-mode-row"><span class="j-mode active">🍳 Cook</span><span class="j-mode inactive">🍽️ Eat Out</span></div>
+              <div class="j-act-row"><span class="j-act recipe">Recipe</span><span class="j-act swap">Swap</span><span class="j-act out">Eat Out</span><span class="j-act nah">Nah</span></div>
+            </div>
+          </div>
+
+          <div class="j-meal" onclick="this.classList.toggle('open')">
+            <div class="j-meal-collapsed">
+              <div class="j-meal-thumb noon" data-time="12 PM">🍗</div>
+              <div class="j-meal-info">
+                <div class="j-meal-cat">Lunch</div>
+                <div class="j-meal-name">Grilled Chicken & Rice</div>
+                <div class="j-meal-macro">45g P · 55g C · 14g F</div>
+              </div>
+              <div class="j-meal-right"><div class="j-meal-cal">680</div><div class="j-meal-unit">kcal</div></div>
+            </div>
+            <div class="j-meal-expanded">
+              <div class="j-meal-divider"></div>
+              <div class="j-mode-row"><span class="j-mode active">🍳 Cook</span><span class="j-mode inactive">🍽️ Eat Out</span></div>
+              <div class="j-act-row"><span class="j-act recipe">Recipe</span><span class="j-act swap">Swap</span><span class="j-act out">Eat Out</span><span class="j-act nah">Nah</span></div>
+            </div>
+          </div>
+
+          <div class="j-meal" onclick="this.classList.toggle('open')">
+            <div class="j-meal-collapsed">
+              <div class="j-meal-thumb golden" data-time="4 PM">🥤</div>
+              <div class="j-meal-info">
+                <div class="j-meal-cat">Snack</div>
+                <div class="j-meal-name">Protein Shake & Almonds</div>
+                <div class="j-meal-macro">37g P · 18g C · 14g F</div>
+              </div>
+              <div class="j-meal-right"><div class="j-meal-cal">260</div><div class="j-meal-unit">kcal</div></div>
+            </div>
+            <div class="j-meal-expanded">
+              <div class="j-meal-divider"></div>
+              <div class="j-mode-row"><span class="j-mode active">🍳 Cook</span><span class="j-mode inactive">🍽️ Eat Out</span></div>
+              <div class="j-act-row"><span class="j-act recipe">Recipe</span><span class="j-act swap">Swap</span><span class="j-act nah">Nah</span></div>
+            </div>
+          </div>
+
+          <div class="j-meal" onclick="this.classList.toggle('open')">
+            <div class="j-meal-collapsed">
+              <div class="j-meal-thumb dusk" data-time="7 PM">🐟</div>
+              <div class="j-meal-info">
+                <div class="j-meal-cat">Dinner</div>
+                <div class="j-meal-name">Salmon & Sweet Potato</div>
+                <div class="j-meal-macro">48g P · 62g C · 22g F</div>
+              </div>
+              <div class="j-meal-right"><div class="j-meal-cal">720</div><div class="j-meal-unit">kcal</div></div>
+            </div>
+            <div class="j-meal-expanded">
+              <div class="j-meal-divider"></div>
+              <div class="j-mode-row"><span class="j-mode active">🍳 Cook</span><span class="j-mode inactive">🍽️ Eat Out</span></div>
+              <div class="j-act-row"><span class="j-act recipe">Recipe</span><span class="j-act swap">Swap</span><span class="j-act out">Eat Out</span><span class="j-act nah">Nah</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="j-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ===== K: THE CHAPTERS ===== -->
+  <div class="col col-k">
+    <div class="col-label">K — The Chapters</div>
+    <div class="col-desc">Each meal is a full-width "chapter card" with its own subtle gradient tint, large typography, and a ghost chapter number. Like pages of a cookbook. Macro pills inline at top.</div>
+    <div class="phone phone-k">
+      <div class="k-topo"><div class="k-tc"></div><div class="k-tc"></div></div>
+      <div class="ps"><div class="k-cnt">
+        <div class="k-status" style="color:var(--earth);font-size:15px;font-weight:600;"><span>9:41</span></div>
+        <div class="k-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+        <div class="k-macro-pills">
+          <span class="k-mp cal">2,180 kcal</span>
+          <span class="k-mp p">165g protein</span>
+          <span class="k-mp c">245g carbs</span>
+          <span class="k-mp f">72g fat</span>
+        </div>
+
+        <!-- Chapter 1: Breakfast -->
+        <div class="k-chapter dawn">
+          <div class="k-chapter-num">01</div>
+          <div class="k-chapter-time"><span>🌅</span> 8:00 AM · Breakfast</div>
+          <div class="k-chapter-name">Greek Yogurt<br>Power Bowl</div>
+          <div class="k-chapter-macros">35g protein · 42g carbs · 12g fat</div>
+          <div class="k-chapter-cal"><span class="v">520</span><span class="u">kcal</span></div>
+          <div class="k-chapter-acts"><span class="k-chapter-btn primary">Recipe</span><span class="k-chapter-btn secondary">Swap</span><span class="k-chapter-btn secondary">Eat Out</span></div>
+        </div>
+
+        <!-- Chapter 2: Lunch -->
+        <div class="k-chapter noon">
+          <div class="k-chapter-num">02</div>
+          <div class="k-chapter-time"><span>☀️</span> 12:00 PM · Lunch</div>
+          <div class="k-chapter-name">Grilled Chicken<br>& Brown Rice</div>
+          <div class="k-chapter-macros">45g protein · 55g carbs · 14g fat</div>
+          <div class="k-chapter-cal"><span class="v">680</span><span class="u">kcal</span></div>
+          <div class="k-chapter-acts"><span class="k-chapter-btn primary">Recipe</span><span class="k-chapter-btn secondary">Swap</span><span class="k-chapter-btn secondary">Eat Out</span></div>
+        </div>
+
+        <!-- Chapter 3: Snack -->
+        <div class="k-chapter golden">
+          <div class="k-chapter-num">03</div>
+          <div class="k-chapter-time"><span>🌇</span> 4:00 PM · Snack</div>
+          <div class="k-chapter-name">Protein Shake<br>& Almonds</div>
+          <div class="k-chapter-macros">37g protein · 18g carbs · 14g fat</div>
+          <div class="k-chapter-cal"><span class="v">260</span><span class="u">kcal</span></div>
+          <div class="k-chapter-acts"><span class="k-chapter-btn primary">Recipe</span><span class="k-chapter-btn secondary">Swap</span></div>
+        </div>
+
+        <!-- Chapter 4: Dinner -->
+        <div class="k-chapter dusk">
+          <div class="k-chapter-num">04</div>
+          <div class="k-chapter-time"><span>🌙</span> 7:00 PM · Dinner</div>
+          <div class="k-chapter-name">Salmon &<br>Sweet Potato</div>
+          <div class="k-chapter-macros">48g protein · 62g carbs · 22g fat</div>
+          <div class="k-chapter-cal"><span class="v">720</span><span class="u">kcal</span></div>
+          <div class="k-chapter-acts"><span class="k-chapter-btn primary">Recipe</span><span class="k-chapter-btn secondary">Swap</span><span class="k-chapter-btn secondary">Eat Out</span></div>
+        </div>
+
+        <div style="margin:8px 24px 44px;padding:16px;border-radius:18px;background:var(--earth);display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="font-size:14px;font-weight:600;color:var(--sand);">Grocery List</div><div style="font-size:11px;color:rgba(246,245,240,0.35);">14 items · ~$45</div></div>
+          <span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span>
+        </div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- ===== L: SPLIT HORIZON ===== -->
+  <div class="col col-l">
+    <div class="col-label">L — Split Horizon</div>
+    <div class="col-desc">Time column on the left with connecting line. Meal cards on the right with warm gradient top stripe. Compact macro bento. Structural separation of WHEN vs WHAT.</div>
+    <div class="phone phone-l">
+      <div class="l-topo"><div class="l-tc"></div><div class="l-tc"></div></div>
+      <div class="ps"><div class="l-cnt">
+        <div class="l-status" style="color:var(--earth);font-size:15px;font-weight:600;"><span>9:41</span></div>
+        <div class="l-hero"><div class="ctx">Wednesday · Nutrition</div><div class="ttl">Today's Fuel</div></div>
+
+        <div class="l-macros">
+          <div class="l-m dk"><div class="v">2,180</div><div class="l">kcal</div></div>
+          <div class="l-m st"><div class="v">165g</div><div class="l">Protein</div></div>
+          <div class="l-m st"><div class="v">245g</div><div class="l">Carbs</div></div>
+          <div class="l-m st"><div class="v">72g</div><div class="l">Fat</div></div>
+        </div>
+
+        <div class="l-split">
+          <div class="l-split-head">Today's Meals</div>
+
+          <div class="l-row">
+            <div class="l-time-col"><div class="l-time-num">8</div><div class="l-time-ampm">AM</div><div class="l-time-emoji">🌅</div><div class="l-time-line"></div></div>
+            <div class="l-card dawn">
+              <div class="l-card-cat">Breakfast</div>
+              <div class="l-card-name">Greek Yogurt Power Bowl</div>
+              <div class="l-card-macros">35g P · 42g C · 12g F</div>
+              <div class="l-card-bottom"><div class="l-card-cal">520<span> kcal</span></div><div class="l-card-acts"><span class="l-card-btn recipe">Recipe</span><span class="l-card-btn swap">Swap</span></div></div>
+            </div>
+          </div>
+
+          <div class="l-row">
+            <div class="l-time-col"><div class="l-time-num">12</div><div class="l-time-ampm">PM</div><div class="l-time-emoji">☀️</div><div class="l-time-line"></div></div>
+            <div class="l-card noon">
+              <div class="l-card-cat">Lunch</div>
+              <div class="l-card-name">Grilled Chicken & Rice</div>
+              <div class="l-card-macros">45g P · 55g C · 14g F</div>
+              <div class="l-card-bottom"><div class="l-card-cal">680<span> kcal</span></div><div class="l-card-acts"><span class="l-card-btn recipe">Recipe</span><span class="l-card-btn swap">Swap</span></div></div>
+            </div>
+          </div>
+
+          <div class="l-row">
+            <div class="l-time-col"><div class="l-time-num">4</div><div class="l-time-ampm">PM</div><div class="l-time-emoji">🍎</div><div class="l-time-line"></div></div>
+            <div class="l-card golden">
+              <div class="l-card-cat">Snack</div>
+              <div class="l-card-name">Protein Shake & Almonds</div>
+              <div class="l-card-macros">37g P · 18g C · 14g F</div>
+              <div class="l-card-bottom"><div class="l-card-cal">260<span> kcal</span></div><div class="l-card-acts"><span class="l-card-btn recipe">Recipe</span><span class="l-card-btn swap">Swap</span></div></div>
+            </div>
+          </div>
+
+          <div class="l-row">
+            <div class="l-time-col"><div class="l-time-num">7</div><div class="l-time-ampm">PM</div><div class="l-time-emoji">🌙</div></div>
+            <div class="l-card dusk">
+              <div class="l-card-cat">Dinner</div>
+              <div class="l-card-name">Salmon & Sweet Potato</div>
+              <div class="l-card-macros">48g P · 62g C · 22g F</div>
+              <div class="l-card-bottom"><div class="l-card-cal">720<span> kcal</span></div><div class="l-card-acts"><span class="l-card-btn recipe">Recipe</span><span class="l-card-btn swap">Swap</span></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="l-grocery"><div><div class="t">Grocery List</div><div class="s">14 items · ~$45</div></div><span style="color:rgba(246,245,240,0.3);font-size:18px;">›</span></div>
+      </div></div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

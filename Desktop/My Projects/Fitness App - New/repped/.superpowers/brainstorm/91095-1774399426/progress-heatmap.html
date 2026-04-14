@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Heatmap Options</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 14px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 730px) { .grid { grid-template-columns: 345px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 20px; overflow: hidden; position: relative; }
+
+
+  /* ============================================================
+     A1: WHITE CARD HEATMAP — Grid inside a white rounded card.
+     Day labels on top. Legend below. Clean, contained.
+     ============================================================ */
+
+  .a1-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a1-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a1-range { font-size: 10px; color: var(--rock); }
+
+  .a1-card { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .a1-days { display: flex; gap: 2px; margin-bottom: 6px; justify-content: center; }
+  .a1-day { width: 14px; text-align: center; font-size: 7px; color: var(--rock); font-weight: 600; }
+
+  .a1-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .a1-c { width: 14px; height: 14px; border-radius: 3px; }
+  .a1-c.empty { background: var(--stone); }
+  .a1-c.done { background: var(--earth); }
+  .a1-c.today { background: var(--trail); }
+
+  .a1-legend { display: flex; gap: 12px; justify-content: center; margin-top: 10px; }
+  .a1-leg { display: flex; align-items: center; gap: 4px; font-size: 8px; color: var(--rock); }
+  .a1-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+
+  /* ============================================================
+     A2: DARK CARD HEATMAP — Grid on dark earth background.
+     Workout days glow slightly. Today is bright green.
+     ============================================================ */
+
+  .a2-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a2-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a2-range { font-size: 10px; color: var(--rock); }
+
+  .a2-card { padding: 16px; border-radius: 20px; background: var(--earth); position: relative; overflow: hidden; }
+  .a2-accent { position: absolute; bottom: -15px; right: -15px; width: 60px; height: 60px; border-radius: 50%; border: 5px solid rgba(246,245,240,0.03); }
+
+  .a2-days { display: flex; gap: 2px; margin-bottom: 6px; justify-content: center; position: relative; }
+  .a2-day { width: 14px; text-align: center; font-size: 7px; color: rgba(246,245,240,0.2); font-weight: 600; }
+
+  .a2-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; position: relative; }
+  .a2-c { width: 14px; height: 14px; border-radius: 3px; }
+  .a2-c.empty { background: rgba(246,245,240,0.04); }
+  .a2-c.done { background: rgba(246,245,240,0.15); }
+  .a2-c.today { background: var(--trail); opacity: 0.7; }
+
+  .a2-legend { display: flex; gap: 12px; justify-content: center; margin-top: 10px; position: relative; }
+  .a2-leg { display: flex; align-items: center; gap: 4px; font-size: 8px; color: rgba(246,245,240,0.25); }
+  .a2-leg-dot { width: 8px; height: 8px; border-radius: 2px; }
+
+
+  /* ============================================================
+     A3: FULL-WIDTH NO CARD — Grid sits directly on sand.
+     Larger cells. No container. Maximum breathing room.
+     ============================================================ */
+
+  .a3-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a3-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a3-range { font-size: 10px; color: var(--rock); }
+
+  .a3-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .a3-c { aspect-ratio: 1; border-radius: 5px; }
+  .a3-c.empty { background: var(--stone); }
+  .a3-c.done { background: var(--earth); }
+  .a3-c.today { background: var(--trail); }
+
+
+  /* ============================================================
+     A4: ROUNDED DOTS — Circles instead of squares.
+     Softer, more organic feel. White card.
+     ============================================================ */
+
+  .a4-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a4-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a4-range { font-size: 10px; color: var(--rock); }
+
+  .a4-card { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .a4-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 4px; justify-content: center; }
+  .a4-c { width: 14px; height: 14px; border-radius: 50%; }
+  .a4-c.empty { background: var(--stone); }
+  .a4-c.done { background: var(--earth); }
+  .a4-c.today { background: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+
+
+  /* ============================================================
+     A5: INTENSITY GRADIENT — 3 levels of intensity.
+     Light = easy day, Medium = normal, Dark = heavy.
+     Today = green. Shows volume, not just yes/no.
+     ============================================================ */
+
+  .a5-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a5-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a5-range { font-size: 10px; color: var(--rock); }
+
+  .a5-card { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .a5-grid { display: grid; grid-template-columns: repeat(7, 14px); gap: 2px; justify-content: center; }
+  .a5-c { width: 14px; height: 14px; border-radius: 3px; }
+  .a5-c.empty { background: var(--stone); }
+  .a5-c.light { background: rgba(45,42,36,0.08); }
+  .a5-c.medium { background: rgba(45,42,36,0.2); }
+  .a5-c.heavy { background: var(--earth); }
+  .a5-c.today { background: var(--trail); }
+
+  .a5-legend { display: flex; gap: 6px; justify-content: center; margin-top: 10px; align-items: center; }
+  .a5-leg-label { font-size: 8px; color: var(--rock); }
+  .a5-leg-bar { display: flex; gap: 2px; }
+  .a5-leg-dot { width: 10px; height: 10px; border-radius: 2px; }
+
+
+  /* ============================================================
+     A6: MONTH COLUMNS — Grouped by month with month labels.
+     Visual separation by time period. White card.
+     ============================================================ */
+
+  .a6-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .a6-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .a6-range { font-size: 10px; color: var(--rock); }
+
+  .a6-card { padding: 16px; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .a6-months { display: flex; gap: 10px; justify-content: center; }
+  .a6-month { text-align: center; }
+  .a6-month-label { font-size: 8px; color: var(--rock); font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px; margin-bottom: 6px; }
+  .a6-month-grid { display: grid; grid-template-columns: repeat(7, 12px); gap: 2px; }
+  .a6-c { width: 12px; height: 12px; border-radius: 2px; }
+  .a6-c.empty { background: var(--stone); }
+  .a6-c.done { background: var(--earth); }
+  .a6-c.today { background: var(--trail); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- A1 -->
+<div>
+  <div class="col-label">A1 — White Card</div>
+  <div class="col-desc">Classic grid inside a white rounded card. Day labels. Legend. Clean, contained. Standard but polished.</div>
+  <div class="block">
+    <div class="a1-head"><span class="a1-title">Activity</span><span class="a1-range">12 weeks</span></div>
+    <div class="a1-card">
+      <div class="a1-days"><div class="a1-day">M</div><div class="a1-day">T</div><div class="a1-day">W</div><div class="a1-day">T</div><div class="a1-day">F</div><div class="a1-day">S</div><div class="a1-day">S</div></div>
+      <div class="a1-grid" id="a1g"></div>
+      <div class="a1-legend"><div class="a1-leg"><div class="a1-leg-dot" style="background:var(--stone);"></div>Rest</div><div class="a1-leg"><div class="a1-leg-dot" style="background:var(--earth);"></div>Workout</div><div class="a1-leg"><div class="a1-leg-dot" style="background:var(--trail);"></div>Today</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- A2 -->
+<div>
+  <div class="col-label">A2 — Dark Card</div>
+  <div class="col-desc">Grid on dark earth. Workout cells glow faintly. Today is bright green. Decorative ring accent. Moody, premium.</div>
+  <div class="block">
+    <div class="a2-head"><span class="a2-title">Activity</span><span class="a2-range">12 weeks</span></div>
+    <div class="a2-card"><div class="a2-accent"></div>
+      <div class="a2-days"><div class="a2-day">M</div><div class="a2-day">T</div><div class="a2-day">W</div><div class="a2-day">T</div><div class="a2-day">F</div><div class="a2-day">S</div><div class="a2-day">S</div></div>
+      <div class="a2-grid" id="a2g"></div>
+      <div class="a2-legend"><div class="a2-leg"><div class="a2-leg-dot" style="background:rgba(246,245,240,0.04);"></div>Rest</div><div class="a2-leg"><div class="a2-leg-dot" style="background:rgba(246,245,240,0.15);"></div>Workout</div><div class="a2-leg"><div class="a2-leg-dot" style="background:var(--trail);opacity:0.7;"></div>Today</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- A3 -->
+<div>
+  <div class="col-label">A3 — Full-Width No Card</div>
+  <div class="col-desc">Grid sits directly on sand. Larger cells fill the width. No container, no card. Maximum breathing room. Most minimal.</div>
+  <div class="block">
+    <div class="a3-head"><span class="a3-title">Activity</span><span class="a3-range">12 weeks</span></div>
+    <div class="a3-grid" id="a3g"></div>
+  </div>
+</div>
+
+<!-- A4 -->
+<div>
+  <div class="col-label">A4 — Rounded Dots</div>
+  <div class="col-desc">Circles instead of squares. Softer, more organic. Today dot has a green glow shadow. White card. Friendlier feel.</div>
+  <div class="block">
+    <div class="a4-head"><span class="a4-title">Activity</span><span class="a4-range">12 weeks</span></div>
+    <div class="a4-card"><div class="a4-grid" id="a4g"></div></div>
+  </div>
+</div>
+
+<!-- A5 -->
+<div>
+  <div class="col-label">A5 — Intensity Gradient</div>
+  <div class="col-desc">3 intensity levels (light/medium/heavy) + rest + today. Shows HOW HARD you trained, not just if you did. Gradient legend.</div>
+  <div class="block">
+    <div class="a5-head"><span class="a5-title">Activity</span><span class="a5-range">12 weeks</span></div>
+    <div class="a5-card"><div class="a5-grid" id="a5g"></div>
+      <div class="a5-legend"><span class="a5-leg-label">Less</span><div class="a5-leg-bar"><div class="a5-leg-dot" style="background:var(--stone);"></div><div class="a5-leg-dot" style="background:rgba(45,42,36,0.08);"></div><div class="a5-leg-dot" style="background:rgba(45,42,36,0.2);"></div><div class="a5-leg-dot" style="background:var(--earth);"></div></div><span class="a5-leg-label">More</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- A6 -->
+<div>
+  <div class="col-label">A6 — Month Columns</div>
+  <div class="col-desc">Grouped by month with labels. Visual separation by time period. Smaller cells. You can see which month was strongest.</div>
+  <div class="block">
+    <div class="a6-head"><span class="a6-title">Activity</span><span class="a6-range">3 months</span></div>
+    <div class="a6-card">
+      <div class="a6-months">
+        <div class="a6-month"><div class="a6-month-label">Jan</div><div class="a6-month-grid" id="a6g1"></div></div>
+        <div class="a6-month"><div class="a6-month-label">Feb</div><div class="a6-month-grid" id="a6g2"></div></div>
+        <div class="a6-month"><div class="a6-month-label">Mar</div><div class="a6-month-grid" id="a6g3"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function gen(id, cls, count) {
+  const g = document.getElementById(id);
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    const isLast = i === count - 1;
+    c.className = cls + (isLast ? ' today' : Math.random() < 0.45 ? ' done' : ' empty');
+    g.appendChild(c);
+  }
+}
+
+function genIntensity(id, cls, count) {
+  const g = document.getElementById(id);
+  const levels = ['empty', 'light', 'medium', 'heavy'];
+  for (let i = 0; i < count; i++) {
+    const c = document.createElement('div');
+    const isLast = i === count - 1;
+    if (isLast) { c.className = cls + ' today'; }
+    else {
+      const r = Math.random();
+      c.className = cls + ' ' + (r < 0.35 ? 'empty' : r < 0.55 ? 'light' : r < 0.75 ? 'medium' : 'heavy');
+    }
+    g.appendChild(c);
+  }
+}
+
+gen('a1g', 'a1-c', 84);
+gen('a2g', 'a2-c', 84);
+gen('a3g', 'a3-c', 84);
+gen('a4g', 'a4-c', 84);
+genIntensity('a5g', 'a5-c', 84);
+gen('a6g1', 'a6-c', 28);
+gen('a6g2', 'a6-c', 28);
+gen('a6g3', 'a6-c', 28);
+</script>
+
+</body>
+</html>

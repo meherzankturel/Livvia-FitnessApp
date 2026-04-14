@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Recipe Hero CSS Pan</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; max-width: 393px; margin: 0 auto; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+  .ph { padding: 20px 24px 0; }
+  .ph-head { display: flex; justify-content: space-between; margin-bottom: 10px; }
+  .ph-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .ph-sub { font-size: 11px; color: var(--rock); }
+  .ph-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid rgba(0,0,0,0.04); }
+  .ph-cb { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--stone); flex-shrink: 0; }
+  .ph-bar { height: 12px; border-radius: 6px; background: var(--stone); flex: 1; opacity: 0.35; }
+  .ph-sm { width: 40px; height: 10px; border-radius: 5px; background: var(--stone); opacity: 0.25; }
+
+  .back { width: 32px; height: 32px; border-radius: 16px; background: var(--stone); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .pill { padding: 5px 12px; border-radius: 100px; background: var(--stone); font-size: 11px; font-weight: 600; color: var(--earth); }
+  .video-pill { padding: 5px 14px; border-radius: 100px; background: var(--earth); font-size: 11px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+
+  /* ============================================================
+     CSS ANIMATED PAN — Terrain Palette
+     Hand holding a frying pan, gently tossing/flipping.
+     Steam particles rise. All View-based, no SVG, no images.
+     Colors: earth pan, rock handle, trail steam.
+     ============================================================ */
+
+  @keyframes panFlip {
+    0%, 100% { transform: rotate(-2deg) translateY(0); }
+    25% { transform: rotate(2deg) translateY(-3px); }
+    50% { transform: rotate(-1deg) translateY(1px); }
+    75% { transform: rotate(3deg) translateY(-4px); }
+  }
+
+  @keyframes steamRise {
+    0% { opacity: 0; transform: translateY(0) scale(0.6); }
+    30% { opacity: 0.5; }
+    100% { opacity: 0; transform: translateY(-50px) scale(0.2); }
+  }
+
+  @keyframes ingredientToss {
+    0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0.8; }
+    30% { transform: translateY(-24px) rotate(15deg); opacity: 1; }
+    60% { transform: translateY(-18px) rotate(-10deg); opacity: 0.9; }
+  }
+
+  @keyframes handRock {
+    0%, 100% { transform: rotate(0deg); }
+    50% { transform: rotate(-3deg); }
+  }
+
+  .pan-scene {
+    position: relative; width: 200px; height: 140px;
+    animation: panFlip 2.5s ease-in-out infinite;
+  }
+
+  /* Pan body — ellipse */
+  .pan-body {
+    position: absolute; bottom: 20px; left: 20px;
+    width: 110px; height: 28px; border-radius: 50%;
+    background: var(--earth);
+    box-shadow: 0 4px 12px rgba(45,42,36,0.2);
+  }
+  /* Pan rim — slightly larger ellipse behind */
+  .pan-rim {
+    position: absolute; bottom: 22px; left: 16px;
+    width: 118px; height: 32px; border-radius: 50%;
+    border: 2.5px solid rgba(45,42,36,0.3);
+    background: transparent;
+  }
+  /* Pan interior — lighter ellipse on top */
+  .pan-inner {
+    position: absolute; bottom: 24px; left: 26px;
+    width: 98px; height: 22px; border-radius: 50%;
+    background: rgba(142,142,122,0.15);
+  }
+
+  /* Handle */
+  .pan-handle {
+    position: absolute; bottom: 28px; right: 10px;
+    width: 60px; height: 10px; border-radius: 5px;
+    background: var(--rock);
+    transform: rotate(-5deg);
+    transform-origin: left center;
+  }
+  .pan-handle-end {
+    position: absolute; bottom: 26px; right: 4px;
+    width: 14px; height: 14px; border-radius: 50%;
+    background: var(--rock);
+  }
+
+  /* Hand — simplified fingers */
+  .hand-wrap {
+    position: absolute; bottom: 10px; right: 0px;
+    animation: handRock 2.5s ease-in-out infinite;
+  }
+  .hand-palm {
+    width: 30px; height: 22px; border-radius: 6px;
+    background: #D4A574;
+    transform: rotate(-8deg);
+  }
+  .hand-thumb {
+    position: absolute; top: -4px; left: 2px;
+    width: 10px; height: 14px; border-radius: 5px;
+    background: #D4A574;
+    transform: rotate(20deg);
+  }
+  .hand-fingers {
+    position: absolute; bottom: -3px; left: 4px;
+    display: flex; gap: 2px;
+  }
+  .finger {
+    width: 5px; height: 12px; border-radius: 3px;
+    background: #D4A574;
+  }
+
+  /* Steam particles */
+  .steam {
+    position: absolute; border-radius: 50%;
+    background: var(--trail); opacity: 0;
+  }
+  .steam:nth-child(1) { width: 6px; height: 6px; left: 40px; top: 18px; animation: steamRise 2s ease-out infinite; }
+  .steam:nth-child(2) { width: 5px; height: 5px; left: 58px; top: 14px; animation: steamRise 2s ease-out 0.4s infinite; }
+  .steam:nth-child(3) { width: 7px; height: 7px; left: 75px; top: 16px; animation: steamRise 2s ease-out 0.8s infinite; }
+  .steam:nth-child(4) { width: 4px; height: 4px; left: 50px; top: 20px; animation: steamRise 2s ease-out 1.2s infinite; }
+  .steam:nth-child(5) { width: 5px; height: 5px; left: 66px; top: 12px; animation: steamRise 2s ease-out 1.6s infinite; }
+
+  /* Tiny tossed ingredient bits */
+  .bit {
+    position: absolute; border-radius: 2px; opacity: 0;
+  }
+  .bit:nth-child(6) { width: 6px; height: 6px; background: var(--trail); left: 45px; top: 22px; animation: ingredientToss 2.5s ease-in-out 0.1s infinite; border-radius: 50%; }
+  .bit:nth-child(7) { width: 5px; height: 8px; background: var(--rock); left: 60px; top: 24px; animation: ingredientToss 2.5s ease-in-out 0.4s infinite; border-radius: 3px; }
+  .bit:nth-child(8) { width: 7px; height: 5px; background: rgba(52,211,153,0.6); left: 78px; top: 20px; animation: ingredientToss 2.5s ease-in-out 0.7s infinite; border-radius: 2px; }
+  .bit:nth-child(9) { width: 4px; height: 4px; background: var(--earth); left: 52px; top: 26px; animation: ingredientToss 2.5s ease-in-out 1s infinite; border-radius: 50%; opacity: 0.5; }
+
+
+  /* ============================================================
+     LAYOUTS
+     ============================================================ */
+
+  /* LAYOUT A: CENTERED */
+  .la-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .la-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .la-anim { display: flex; justify-content: center; padding: 16px 0 0; }
+  .la-name { padding: 0 24px; font-size: 30px; font-weight: 800; color: var(--earth); letter-spacing: -1.2px; line-height: 1.05; text-align: center; animation: fadeUp 0.4s ease-out 0.2s backwards; }
+  .la-meta { display: flex; justify-content: center; gap: 8px; padding: 10px 24px 0; animation: fadeUp 0.35s ease-out 0.3s backwards; }
+
+  /* LAYOUT B: SIDE BY SIDE */
+  .lb-top { padding: 56px 24px 0; display: flex; align-items: center; }
+  .lb-type { font-size: 10px; font-weight: 600; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; margin-left: auto; }
+  .lb-hero { display: flex; align-items: center; gap: 0; padding: 12px 16px 0; animation: fadeUp 0.4s ease-out; }
+  .lb-info { flex: 1; }
+  .lb-name { font-size: 26px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1.05; }
+  .lb-meta { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+  .lb-pill { padding: 4px 10px; border-radius: 8px; background: var(--stone); font-size: 10px; font-weight: 600; color: var(--earth); }
+  .lb-video { padding: 4px 12px; border-radius: 8px; background: var(--earth); font-size: 10px; font-weight: 600; color: var(--trail); cursor: pointer; }
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- LAYOUT A: CENTERED -->
+  <div>
+    <div class="col-label">LAYOUT A — CENTERED</div>
+    <div class="col-desc">CSS hand + pan animation centered. Steam in trail green. Ingredient bits toss. Terrain palette. No images.</div>
+    <div class="phone"><div class="ps">
+      <div class="la-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="la-type">Breakfast · Recipe</span></div>
+
+      <div class="la-anim">
+        <div class="pan-scene">
+          <!-- Steam -->
+          <div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div>
+          <!-- Tossed bits -->
+          <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+          <!-- Pan -->
+          <div class="pan-rim"></div>
+          <div class="pan-body"></div>
+          <div class="pan-inner"></div>
+          <div class="pan-handle"></div>
+          <div class="pan-handle-end"></div>
+          <!-- Hand -->
+          <div class="hand-wrap">
+            <div class="hand-palm"></div>
+            <div class="hand-thumb"></div>
+            <div class="hand-fingers"><div class="finger"></div><div class="finger"></div><div class="finger"></div><div class="finger"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="la-name">Black Bean<br>Burrito Bowl</div>
+      <div class="la-meta"><span class="pill">5 min prep</span><span class="pill">10 min cook</span><span class="pill">Easy</span><span class="video-pill">▶ Video</span></div>
+
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- LAYOUT B: SIDE BY SIDE -->
+  <div>
+    <div class="col-label">LAYOUT B — SIDE BY SIDE</div>
+    <div class="col-desc">Pan animation left, name + meta right. Compact editorial layout.</div>
+    <div class="phone"><div class="ps">
+      <div class="lb-top"><div class="back"><span style="font-size:18px;color:var(--earth);margin-top:-1px;">‹</span></div><span class="lb-type">Breakfast · Recipe</span></div>
+
+      <div class="lb-hero">
+        <div class="pan-scene" style="transform-origin: center; width: 170px; height: 120px;">
+          <div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div><div class="steam"></div>
+          <div class="bit"></div><div class="bit"></div><div class="bit"></div><div class="bit"></div>
+          <div class="pan-rim"></div>
+          <div class="pan-body"></div>
+          <div class="pan-inner"></div>
+          <div class="pan-handle"></div>
+          <div class="pan-handle-end"></div>
+          <div class="hand-wrap">
+            <div class="hand-palm"></div>
+            <div class="hand-thumb"></div>
+            <div class="hand-fingers"><div class="finger"></div><div class="finger"></div><div class="finger"></div><div class="finger"></div></div>
+          </div>
+        </div>
+        <div class="lb-info">
+          <div class="lb-name">Black Bean Burrito Bowl</div>
+          <div class="lb-meta">
+            <span class="lb-pill">5 min prep</span>
+            <span class="lb-pill">10 min cook</span>
+            <span class="lb-pill">Easy</span>
+            <span class="lb-video">▶ Video</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ph"><div class="ph-head"><span class="ph-title">Ingredients</span><span class="ph-sub">6 items</span></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:55%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:70%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:45%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:60%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:35%;"></div><div class="ph-sm"></div></div>
+        <div class="ph-row"><div class="ph-cb"></div><div class="ph-bar" style="width:50%;"></div><div class="ph-sm"></div></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+
+</body>
+</html>

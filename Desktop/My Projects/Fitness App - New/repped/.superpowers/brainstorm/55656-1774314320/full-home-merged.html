@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Full Home Screen</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --hb: 2.4s; --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .page-head { text-align: center; padding: 24px 24px 8px; }
+  .page-head h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .page-head p { font-size: 12px; color: #555; margin-top: 4px; }
+
+  .showcase { display: flex; justify-content: center; padding: 12px 24px 60px; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .phone-scroll { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; position: relative; }
+  .phone-scroll::-webkit-scrollbar { display: none; }
+
+  /* Topo bg */
+  .topo { position: absolute; inset: 0; pointer-events: none; }
+  .topo-c { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.02; }
+  .topo-c:nth-child(1) { width: 550px; height: 440px; top: -100px; left: -100px; }
+  .topo-c:nth-child(2) { width: 420px; height: 340px; top: -50px; left: -50px; }
+  .topo-c:nth-child(3) { width: 500px; height: 400px; bottom: -80px; right: -100px; }
+  .topo-c:nth-child(4) { width: 380px; height: 300px; bottom: -40px; right: -60px; }
+
+  .content { position: relative; z-index: 1; }
+
+  /* === STATUS === */
+  .status-bar { padding: 54px 24px 0; display: flex; justify-content: space-between; align-items: center; }
+  .time { font-size: 15px; font-weight: 600; color: var(--earth); }
+  .status-r { display: flex; align-items: center; gap: 6px; }
+  .alive-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--trail); animation: pulse var(--hb) ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.5; transform: scale(1); } 30% { opacity: 1; transform: scale(1.35); } }
+  .status-lbl { font-size: 11px; color: var(--trail); font-weight: 600; }
+
+  /* === HERO === */
+  .hero { padding: 20px 24px 0; }
+  .hero-ctx { font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; }
+  .hero-msg { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; line-height: 1.15; margin-top: 6px; }
+  .hl { color: var(--trail); }
+
+  /* === BENTO === */
+  .bento { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 20px 24px 0; }
+  .w { border-radius: 20px; padding: 16px; position: relative; overflow: hidden; opacity: 0; animation: wIn 0.45s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .w:nth-child(1) { animation-delay: 0.05s; }
+  .w:nth-child(2) { animation-delay: 0.1s; }
+  .w:nth-child(3) { animation-delay: 0.15s; }
+  @keyframes wIn { 0% { opacity: 0; transform: scale(0.92); } 100% { opacity: 1; transform: scale(1); } }
+
+  .w-streak { background: var(--earth); }
+  .w-streak .num { font-size: 32px; font-weight: 800; color: var(--sand); letter-spacing: -1.5px; line-height: 1; position: relative; }
+  .w-streak .glow { position: absolute; inset: -15px; border-radius: 50%; background: radial-gradient(circle, rgba(52,211,153,0.1), transparent 70%); animation: sGlow var(--hb) ease-in-out infinite; }
+  @keyframes sGlow { 0%,100% { opacity: 0.3; transform: scale(0.9); } 30% { opacity: 0.8; transform: scale(1.05); } }
+  .w-streak .unit { font-size: 10px; color: rgba(246,245,240,0.35); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 4px; }
+  .w-mom { background: var(--stone); }
+  .w-mom .num { font-size: 32px; font-weight: 800; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .w-mom .unit { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 4px; }
+  .w-vol { background: var(--stone); }
+  .w-vol .num { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -1px; line-height: 1; }
+  .w-vol .trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .w-vol .unit { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 2px; }
+
+  /* === ELEVATION CHART === */
+  .elev-section { margin: 20px 24px 0; }
+  .elev-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .elev-title { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .elev-sub { font-size: 11px; color: var(--rock); }
+  .elev-chart { background: var(--stone); border-radius: 20px; padding: 16px 16px 12px; }
+  .elev-bars { display: flex; align-items: flex-end; gap: 6px; height: 90px; padding: 0 4px; }
+  .elev-col { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .elev-bar { width: 100%; border-radius: 8px 8px 4px 4px; animation: barG 0.7s cubic-bezier(0.16,1,0.3,1) forwards; transform-origin: bottom; position: relative; }
+  @keyframes barG { from { transform: scaleY(0); } }
+  .elev-bar.done { background: var(--earth); }
+  .elev-bar.today { background: var(--trail); }
+  .elev-bar.today::after { content: ''; position: absolute; top: -5px; left: 50%; transform: translateX(-50%); width: 8px; height: 8px; border-radius: 50%; background: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.5); animation: hPing 1.8s ease-in-out infinite; }
+  @keyframes hPing { 0%,100% { box-shadow: 0 0 6px rgba(52,211,153,0.5); } 50% { box-shadow: 0 0 14px rgba(52,211,153,0.3); } }
+  .elev-bar.rest { background: #D6D3CA; }
+  .elev-bar.future { background: rgba(45,42,36,0.08); }
+  .elev-lbl { font-size: 8px; color: var(--rock); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .elev-vol { font-size: 7px; color: var(--rock); margin-top: 2px; opacity: 0.6; }
+
+  /* === TRAIL SECTION === */
+  .trail { padding: 20px 24px 0; position: relative; }
+  .trail-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .trail-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+  .trail-count { font-size: 11px; color: var(--rock); }
+
+  .trail-line-wrap { position: absolute; left: 39px; top: 52px; bottom: 20px; width: 2px; z-index: 0; }
+  .trail-line { width: 100%; height: 100%; background: #DDD9CE; border-radius: 1px; }
+  .trail-pulse { position: absolute; left: -1px; top: 0; width: 4px; height: 20px; border-radius: 2px; background: var(--trail); opacity: 0.5; animation: pD 4s ease-in-out infinite; }
+  @keyframes pD { 0% { top: 0; opacity: 0; } 15% { opacity: 0.6; } 85% { opacity: 0.6; } 100% { top: calc(100% - 20px); opacity: 0; } }
+
+  /* === WAYPOINT === */
+  .wp { display: flex; gap: 14px; margin-bottom: 12px; position: relative; z-index: 1; }
+  .wp-dot-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; width: 32px; padding-top: 14px; }
+  .wp-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #DDD9CE; background: var(--sand); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: var(--rock); z-index: 2; }
+  .wp:first-child .wp-dot { border-color: var(--trail); color: var(--trail); background: rgba(52,211,153,0.06); }
+
+  /* === CARD === */
+  .card { flex: 1; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; cursor: pointer; }
+
+  /* Collapsed */
+  .card-col { display: flex; align-items: center; gap: 12px; padding: 10px 14px 10px 10px; }
+  .card-thumb { width: 56px; height: 56px; border-radius: 14px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; position: relative; overflow: hidden; }
+  .card-thumb::after { content: ''; position: absolute; inset: 0; border-radius: 14px; opacity: 0.12; }
+  .card-thumb.c1 { background: #E8E4F8; } .card-thumb.c1::after { background: #6366F1; }
+  .card-thumb.c2 { background: #FEF3C7; } .card-thumb.c2::after { background: #F59E0B; }
+  .card-thumb.c3 { background: #FEE2E2; } .card-thumb.c3::after { background: #EF4444; }
+  .card-thumb.c4 { background: #D1FAE5; } .card-thumb.c4::after { background: #34D399; }
+  .card-thumb.c5 { background: #E0E7FF; } .card-thumb.c5::after { background: #818CF8; }
+  .card-info { flex: 1; min-width: 0; }
+  .card-name { font-size: 14px; font-weight: 600; color: var(--earth); }
+  .card-meta { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .card-wt { text-align: right; flex-shrink: 0; }
+  .card-wt .v { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .card-wt .u { font-size: 9px; color: var(--rock); }
+  .card-chev { font-size: 14px; color: #D6D3CA; flex-shrink: 0; margin-left: 2px; }
+
+  /* Expanded */
+  .card-exp { display: none; }
+  .card.open .card-col { display: none; }
+  .card.open .card-exp { display: block; animation: expIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+  @keyframes expIn { 0% { opacity: 0; transform: scale(0.92) translateY(8px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+
+  /* Collapse — reverse stagger: children fly out first, then card shrinks */
+  .card.closing .card-exp { pointer-events: none; }
+
+  /* Children scatter out in reverse order */
+  .card.closing .exp-last { animation: flyOut 0.2s ease-in forwards; animation-delay: 0s; }
+  .card.closing .exp-cue { animation: flyOutLeft 0.2s ease-in forwards; animation-delay: 0.03s; }
+  .card.closing .exp-pips { animation: flyOut 0.15s ease-in forwards; animation-delay: 0.06s; }
+  .card.closing .exp-stats { animation: statsCollapse 0.2s ease-in forwards; animation-delay: 0.06s; }
+  .card.closing .exp-name { animation: flyOut 0.2s ease-in forwards; animation-delay: 0.1s; }
+  .card.closing .exp-tags { animation: flyOut 0.15s ease-in forwards; animation-delay: 0.12s; }
+
+  @keyframes flyOut { 0% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(16px) scale(0.95); } }
+  @keyframes flyOutLeft { 0% { opacity: 1; transform: translateX(0); } 100% { opacity: 0; transform: translateX(-20px) scale(0.95); } }
+  @keyframes statsCollapse { 0% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(0.85); } }
+
+  /* Image shrinks back to thumbnail after children are gone */
+  .card.closing .exp-img { animation: imgShrink 0.3s cubic-bezier(0.4, 0, 1, 1) 0.15s forwards; }
+  @keyframes imgShrink {
+    0% { clip-path: inset(0% 0% 0% 0% round 0px); opacity: 1; transform: scale(1); }
+    100% { clip-path: inset(30% 30% 30% 30% round 14px); opacity: 0; transform: scale(0.8); }
+  }
+
+  /* Collapsed row re-entrance — snaps in with spring after everything is gone */
+  .card.col-enter .card-col { animation: colEnter 0.45s cubic-bezier(0.34,1.56,0.64,1) !important; }
+  @keyframes colEnter {
+    0% { opacity: 0; transform: translateY(-8px) scale(0.92); }
+    50% { opacity: 1; }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Thumbnail pops back */
+  .card.col-enter .card-thumb { animation: thumbPop 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.05s both; }
+  @keyframes thumbPop { 0% { transform: scale(0.5) rotate(-8deg); opacity: 0; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+
+  /* Weight slides in from right */
+  .card.col-enter .card-wt { animation: wtSlide 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.1s both; }
+  @keyframes wtSlide { 0% { opacity: 0; transform: translateX(12px); } 100% { opacity: 1; transform: translateX(0); } }
+
+  /* Chevron rotates in */
+  .card.col-enter .card-chev { animation: chevSpin 0.4s cubic-bezier(0.34,1.56,0.64,1) 0.12s both; }
+  @keyframes chevSpin { 0% { opacity: 0; transform: rotate(-90deg); } 100% { opacity: 1; transform: rotate(0deg); } }
+
+  /* Expand: image entrance */
+  .card.open .exp-img { animation: imgReveal 0.55s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes imgReveal { 0% { clip-path: inset(40% 10% 40% 10% round 14px); opacity: 0; } 100% { clip-path: inset(0% 0% 0% 0% round 0px); opacity: 1; } }
+
+  /* Expand: stagger children */
+  .card.open .exp-tags { opacity: 0; animation: staggerUp 0.4s ease-out 0.15s forwards; }
+  .card.open .exp-name { opacity: 0; animation: staggerUp 0.4s ease-out 0.2s forwards; }
+  .card.open .exp-stats { opacity: 0; animation: staggerUp 0.4s ease-out 0.25s forwards; }
+  .card.open .exp-pips { opacity: 0; animation: staggerUp 0.4s ease-out 0.3s forwards; }
+  .card.open .exp-cue { opacity: 0; animation: staggerUp 0.4s ease-out 0.35s forwards; }
+  .card.open .exp-last { opacity: 0; animation: staggerUp 0.4s ease-out 0.4s forwards; }
+  @keyframes staggerUp { 0% { opacity: 0; transform: translateY(12px); } 100% { opacity: 1; transform: translateY(0); } }
+
+  /* Stat cells pop */
+  .card.open .exp-stat { opacity: 0; animation: statPop 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  .card.open .exp-stat:nth-child(1) { animation-delay: 0.25s; }
+  .card.open .exp-stat:nth-child(2) { animation-delay: 0.3s; }
+  .card.open .exp-stat:nth-child(3) { animation-delay: 0.35s; }
+  @keyframes statPop { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
+
+  /* Pips fill cascade */
+  .card.open .exp-pip { opacity: 0; animation: pipFill 0.3s ease-out forwards; }
+  .card.open .exp-pip:nth-child(1) { animation-delay: 0.32s; }
+  .card.open .exp-pip:nth-child(2) { animation-delay: 0.36s; }
+  .card.open .exp-pip:nth-child(3) { animation-delay: 0.4s; }
+  .card.open .exp-pip:nth-child(4) { animation-delay: 0.44s; }
+  @keyframes pipFill { 0% { opacity: 0; transform: scaleX(0); } 100% { opacity: 1; transform: scaleX(1); } }
+
+  /* Focus cue slide in */
+  .card.open .exp-cue { animation: cueSilde 0.45s cubic-bezier(0.34,1.56,0.64,1) 0.35s both !important; }
+  @keyframes cueSilde { 0% { opacity: 0; transform: translateX(-16px); } 100% { opacity: 1; transform: translateX(0); } }
+
+  /* Thumbnail press feedback */
+  .card:not(.open):active { transform: scale(0.97); transition: transform 0.1s ease; }
+  .card:not(.open) { transition: transform 0.2s ease; }
+
+  .exp-img { width: 100%; height: 180px; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+  .exp-img .bg { position: absolute; inset: 0; opacity: 0.08; }
+  .exp-img .bg.c1 { background: #6366F1; } .exp-img .bg.c2 { background: #F59E0B; }
+  .exp-img .bg.c3 { background: #EF4444; } .exp-img .bg.c4 { background: #34D399; }
+  .exp-img .bg.c5 { background: #818CF8; }
+  .exp-img .emoji { font-size: 64px; position: relative; z-index: 1; }
+  .exp-img .contour { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.04; }
+  .exp-img .contour:nth-child(2) { width: 200px; height: 200px; right: -60px; bottom: -60px; }
+  .exp-img .contour:nth-child(3) { width: 160px; height: 160px; right: -40px; bottom: -40px; }
+  .exp-close { position: absolute; top: 12px; right: 12px; width: 28px; height: 28px; border-radius: 50%; background: rgba(0,0,0,0.06); display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--rock); cursor: pointer; z-index: 5; border: none; }
+
+  .exp-tags { padding: 14px 16px 0; display: flex; gap: 6px; }
+  .exp-tag { font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 100px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .exp-tag.muscle { background: rgba(99,102,241,0.08); color: #6366F1; }
+  .exp-tag.type { background: rgba(52,211,153,0.08); color: #059669; }
+
+  .exp-name { padding: 10px 16px 0; font-size: 20px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; }
+
+  .exp-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; padding: 12px 16px 0; }
+  .exp-stat { background: var(--stone); border-radius: 14px; padding: 12px; text-align: center; }
+  .exp-stat .v { font-size: 20px; font-weight: 800; color: var(--earth); }
+  .exp-stat .l { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; margin-top: 2px; }
+
+  .exp-pips { display: flex; gap: 6px; padding: 12px 16px 0; }
+  .exp-pip { flex: 1; height: 6px; border-radius: 3px; background: var(--stone); }
+
+  .exp-cue { margin: 12px 16px 0; padding: 12px 14px; border-radius: 14px; background: rgba(52,211,153,0.05); border: 1px solid rgba(52,211,153,0.08); }
+  .exp-cue-lbl { font-size: 9px; color: var(--trail); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
+  .exp-cue-txt { font-size: 12px; color: #4D7C5B; line-height: 1.5; }
+
+  .exp-last { margin: 10px 16px 0; padding: 10px 14px; border-radius: 12px; background: var(--stone); display: flex; align-items: center; gap: 10px; }
+  .exp-last-icon { font-size: 14px; }
+  .exp-last-txt { font-size: 11px; color: var(--rock); }
+  .exp-last-txt strong { color: var(--earth); }
+
+  .exp-pad { height: 14px; }
+
+  /* Finish */
+  .finish { display: flex; align-items: center; gap: 12px; padding-left: 6px; margin-top: 4px; z-index: 1; position: relative; }
+  .finish-flag { font-size: 14px; }
+  .finish-txt { font-size: 11px; color: var(--rock); font-weight: 500; }
+
+  /* CTA */
+  .cta { margin: 24px 24px 40px; position: relative; }
+  .cta-glow { position: absolute; inset: -5px; border-radius: 26px; background: conic-gradient(from 0deg, var(--trail), rgba(99,102,241,0.3), var(--trail)); filter: blur(14px); opacity: 0; animation: ctaG var(--hb) ease-in-out infinite; }
+  @keyframes ctaG { 0%,100% { opacity: 0.04; } 30% { opacity: 0.1; } }
+  .cta-btn { width: 100%; padding: 20px; border: none; border-radius: 22px; background: var(--earth); color: var(--sand); font-size: 16px; font-weight: 700; cursor: pointer; position: relative; z-index: 1; transition: transform 0.2s cubic-bezier(0.34,1.56,0.64,1); }
+  .cta-btn:active { transform: scale(0.97); }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>Full Home Screen — Everything Merged</h1>
+  <p>Hero + widgets + volume chart + expandable trail cards. Click Card 1 to collapse, click others to expand.</p>
+</div>
+
+<div class="showcase">
+  <div class="phone">
+    <div class="topo"><div class="topo-c"></div><div class="topo-c"></div><div class="topo-c"></div><div class="topo-c"></div></div>
+    <div class="phone-scroll"><div class="content">
+
+      <!-- STATUS -->
+      <div class="status-bar">
+        <div class="time">9:41</div>
+        <div class="status-r"><div class="alive-dot"></div><div class="status-lbl">Fresh</div></div>
+      </div>
+
+      <!-- HERO -->
+      <div class="hero">
+        <div class="hero-ctx">Wednesday · Push Day · Week 3</div>
+        <div class="hero-msg">You're <span class="hl">1 session away</span> from your longest streak.</div>
+      </div>
+
+      <!-- BENTO -->
+      <div class="bento">
+        <div class="w w-streak"><div style="position:relative;"><div class="glow"></div><div class="num">12</div></div><div class="unit">Day streak</div></div>
+        <div class="w w-mom"><div class="num">3/4</div><div class="unit">This week</div></div>
+        <div class="w w-vol"><div class="num">12.4k</div><div class="trend">&#9650; 12%</div><div class="unit">Volume kg</div></div>
+      </div>
+
+      <!-- ELEVATION -->
+      <div class="elev-section">
+        <div class="elev-header"><span class="elev-title">Weekly Volume</span><span class="elev-sub">kg per day</span></div>
+        <div class="elev-chart"><div class="elev-bars">
+          <div class="elev-col"><div class="elev-bar done" style="height:65%;animation-delay:0.3s;"></div><div class="elev-lbl">Mon</div><div class="elev-vol">3.2k</div></div>
+          <div class="elev-col"><div class="elev-bar done" style="height:80%;animation-delay:0.36s;"></div><div class="elev-lbl">Tue</div><div class="elev-vol">4.1k</div></div>
+          <div class="elev-col"><div class="elev-bar rest" style="height:15%;animation-delay:0.42s;"></div><div class="elev-lbl">Wed</div><div class="elev-vol">rest</div></div>
+          <div class="elev-col"><div class="elev-bar done" style="height:90%;animation-delay:0.48s;"></div><div class="elev-lbl">Thu</div><div class="elev-vol">5.1k</div></div>
+          <div class="elev-col"><div class="elev-bar today" style="height:55%;animation-delay:0.54s;"></div><div class="elev-lbl">Fri</div><div class="elev-vol">today</div></div>
+          <div class="elev-col"><div class="elev-bar future" style="height:70%;animation-delay:0.6s;"></div><div class="elev-lbl">Sat</div><div class="elev-vol">plan</div></div>
+          <div class="elev-col"><div class="elev-bar future" style="height:10%;animation-delay:0.66s;"></div><div class="elev-lbl">Sun</div><div class="elev-vol">rest</div></div>
+        </div></div>
+      </div>
+
+      <!-- TRAIL -->
+      <div class="trail">
+        <div class="trail-head"><span class="trail-title">Today's Route</span><span class="trail-count">5 waypoints · ~45 min</span></div>
+        <div class="trail-line-wrap"><div class="trail-line"></div><div class="trail-pulse"></div></div>
+
+        <!-- 1 — expanded -->
+        <div class="wp">
+          <div class="wp-dot-col"><div class="wp-dot">1</div></div>
+          <div class="card open" onclick="toggle(this)">
+            <div class="card-col">
+              <div class="card-thumb c1">&#128170;</div>
+              <div class="card-info"><div class="card-name">Bench Press</div><div class="card-meta">Chest · 4×8-10</div></div>
+              <div class="card-wt"><div class="v">77.5</div><div class="u">kg</div></div>
+              <div class="card-chev">&#9662;</div>
+            </div>
+            <div class="card-exp">
+              <div class="exp-img"><div class="bg c1"></div><div class="contour"></div><div class="contour"></div><div class="emoji">&#128170;</div><button class="exp-close" onclick="event.stopPropagation();toggle(this.closest('.card'))">&#10005;</button></div>
+              <div class="exp-tags"><span class="exp-tag muscle">Chest</span><span class="exp-tag type">Compound</span></div>
+              <div class="exp-name">Bench Press</div>
+              <div class="exp-stats"><div class="exp-stat"><div class="v">4</div><div class="l">Sets</div></div><div class="exp-stat"><div class="v">8-10</div><div class="l">Reps</div></div><div class="exp-stat"><div class="v">77.5</div><div class="l">kg</div></div></div>
+              <div class="exp-pips"><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div></div>
+              <div class="exp-cue"><div class="exp-cue-lbl">&#9968; Focus Cue</div><div class="exp-cue-txt">Drive feet into floor. Retract scapula. Touch mid-chest, press to lockout in a slight arc. Squeeze at the top.</div></div>
+              <div class="exp-last"><div class="exp-last-icon">&#128200;</div><div class="exp-last-txt">Last session: <strong>75kg × 8 reps</strong> · Today: +2.5kg</div></div>
+              <div class="exp-pad"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 -->
+        <div class="wp">
+          <div class="wp-dot-col"><div class="wp-dot">2</div></div>
+          <div class="card" onclick="toggle(this)">
+            <div class="card-col">
+              <div class="card-thumb c2">&#127947;</div>
+              <div class="card-info"><div class="card-name">Overhead Press</div><div class="card-meta">Shoulders · 3×10-12</div></div>
+              <div class="card-wt"><div class="v">40</div><div class="u">kg</div></div>
+              <div class="card-chev">&#9662;</div>
+            </div>
+            <div class="card-exp">
+              <div class="exp-img"><div class="bg c2"></div><div class="contour"></div><div class="contour"></div><div class="emoji">&#127947;</div><button class="exp-close" onclick="event.stopPropagation();toggle(this.closest('.card'))">&#10005;</button></div>
+              <div class="exp-tags"><span class="exp-tag muscle">Shoulders</span><span class="exp-tag type">Compound</span></div>
+              <div class="exp-name">Overhead Press</div>
+              <div class="exp-stats"><div class="exp-stat"><div class="v">3</div><div class="l">Sets</div></div><div class="exp-stat"><div class="v">10-12</div><div class="l">Reps</div></div><div class="exp-stat"><div class="v">40</div><div class="l">kg</div></div></div>
+              <div class="exp-pips"><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div></div>
+              <div class="exp-cue"><div class="exp-cue-lbl">&#9968; Focus Cue</div><div class="exp-cue-txt">Brace core tight. Press straight up, head through at the top. Control the negative — 2 seconds down.</div></div>
+              <div class="exp-last"><div class="exp-last-icon">&#128200;</div><div class="exp-last-txt">Last session: <strong>40kg × 10</strong> · Same weight, push for 12</div></div>
+              <div class="exp-pad"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3 -->
+        <div class="wp">
+          <div class="wp-dot-col"><div class="wp-dot">3</div></div>
+          <div class="card" onclick="toggle(this)">
+            <div class="card-col">
+              <div class="card-thumb c3">&#128293;</div>
+              <div class="card-info"><div class="card-name">Incline DB Press</div><div class="card-meta">Upper Chest · 3×10</div></div>
+              <div class="card-wt"><div class="v">24</div><div class="u">kg</div></div>
+              <div class="card-chev">&#9662;</div>
+            </div>
+            <div class="card-exp">
+              <div class="exp-img"><div class="bg c3"></div><div class="contour"></div><div class="contour"></div><div class="emoji">&#128293;</div><button class="exp-close" onclick="event.stopPropagation();toggle(this.closest('.card'))">&#10005;</button></div>
+              <div class="exp-tags"><span class="exp-tag muscle">Upper Chest</span><span class="exp-tag type">Compound</span></div>
+              <div class="exp-name">Incline DB Press</div>
+              <div class="exp-stats"><div class="exp-stat"><div class="v">3</div><div class="l">Sets</div></div><div class="exp-stat"><div class="v">10</div><div class="l">Reps</div></div><div class="exp-stat"><div class="v">24</div><div class="l">kg ea</div></div></div>
+              <div class="exp-pips"><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div></div>
+              <div class="exp-cue"><div class="exp-cue-lbl">&#9968; Focus Cue</div><div class="exp-cue-txt">30° incline. Bring dumbbells wide on the negative, squeeze upper chest at the top. Don't flare past 75°.</div></div>
+              <div class="exp-last"><div class="exp-last-icon">&#128200;</div><div class="exp-last-txt">Last session: <strong>22kg × 10</strong> · Today: +2kg</div></div>
+              <div class="exp-pad"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4 -->
+        <div class="wp">
+          <div class="wp-dot-col"><div class="wp-dot">4</div></div>
+          <div class="card" onclick="toggle(this)">
+            <div class="card-col">
+              <div class="card-thumb c4">&#127919;</div>
+              <div class="card-info"><div class="card-name">Cable Flyes</div><div class="card-meta">Chest · 3×12-15</div></div>
+              <div class="card-wt"><div class="v">15</div><div class="u">kg</div></div>
+              <div class="card-chev">&#9662;</div>
+            </div>
+            <div class="card-exp">
+              <div class="exp-img"><div class="bg c4"></div><div class="contour"></div><div class="contour"></div><div class="emoji">&#127919;</div><button class="exp-close" onclick="event.stopPropagation();toggle(this.closest('.card'))">&#10005;</button></div>
+              <div class="exp-tags"><span class="exp-tag muscle">Chest</span><span class="exp-tag type">Isolation</span></div>
+              <div class="exp-name">Cable Flyes</div>
+              <div class="exp-stats"><div class="exp-stat"><div class="v">3</div><div class="l">Sets</div></div><div class="exp-stat"><div class="v">12-15</div><div class="l">Reps</div></div><div class="exp-stat"><div class="v">15</div><div class="l">kg</div></div></div>
+              <div class="exp-pips"><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div></div>
+              <div class="exp-cue"><div class="exp-cue-lbl">&#9968; Focus Cue</div><div class="exp-cue-txt">Slight forward lean. Bring hands together at chest height — hug a tree. Hold the squeeze 1 second.</div></div>
+              <div class="exp-last"><div class="exp-last-icon">&#128200;</div><div class="exp-last-txt">Last session: <strong>15kg × 13</strong> · Push for 15 reps today</div></div>
+              <div class="exp-pad"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5 -->
+        <div class="wp">
+          <div class="wp-dot-col"><div class="wp-dot">5</div></div>
+          <div class="card" onclick="toggle(this)">
+            <div class="card-col">
+              <div class="card-thumb c5">&#10024;</div>
+              <div class="card-info"><div class="card-name">Lateral Raises</div><div class="card-meta">Delts · 3×15</div></div>
+              <div class="card-wt"><div class="v">10</div><div class="u">kg</div></div>
+              <div class="card-chev">&#9662;</div>
+            </div>
+            <div class="card-exp">
+              <div class="exp-img"><div class="bg c5"></div><div class="contour"></div><div class="contour"></div><div class="emoji">&#10024;</div><button class="exp-close" onclick="event.stopPropagation();toggle(this.closest('.card'))">&#10005;</button></div>
+              <div class="exp-tags"><span class="exp-tag muscle">Side Delts</span><span class="exp-tag type">Isolation</span></div>
+              <div class="exp-name">Lateral Raises</div>
+              <div class="exp-stats"><div class="exp-stat"><div class="v">3</div><div class="l">Sets</div></div><div class="exp-stat"><div class="v">15</div><div class="l">Reps</div></div><div class="exp-stat"><div class="v">10</div><div class="l">kg</div></div></div>
+              <div class="exp-pips"><div class="exp-pip"></div><div class="exp-pip"></div><div class="exp-pip"></div></div>
+              <div class="exp-cue"><div class="exp-cue-lbl">&#9968; Focus Cue</div><div class="exp-cue-txt">Lead with elbows, not hands. Raise to shoulder height only. Slow 3-second negative.</div></div>
+              <div class="exp-last"><div class="exp-last-icon">&#128200;</div><div class="exp-last-txt">Last session: <strong>10kg × 14</strong> · Go for 15 clean reps</div></div>
+              <div class="exp-pad"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="finish"><div class="finish-flag">&#127937;</div><div class="finish-txt">Summit — complete all 5 to keep the streak</div></div>
+      </div>
+
+      <!-- CTA -->
+      <div class="cta"><div class="cta-glow"></div><button class="cta-btn">Begin Ascent &#8599;</button></div>
+
+    </div></div>
+  </div>
+</div>
+
+<script>
+function closeCard(card, cb) {
+  // Phase 1: children fly out (0-250ms)
+  card.classList.add('closing');
+
+  // Phase 2: remove expanded, show collapsed with entrance animation (at 350ms)
+  setTimeout(() => {
+    card.classList.remove('open', 'closing');
+    card.classList.add('col-enter');
+
+    // Phase 3: clean up entrance class
+    setTimeout(() => {
+      card.classList.remove('col-enter');
+      if (cb) cb();
+    }, 500);
+  }, 380);
+}
+
+function toggle(card) {
+  if (card.classList.contains('open')) {
+    closeCard(card);
+  } else {
+    // Close any other open card first
+    const openCard = document.querySelector('.card.open');
+    if (openCard) {
+      closeCard(openCard, () => {
+        card.classList.add('open');
+        setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
+      });
+    } else {
+      card.classList.add('open');
+      setTimeout(() => card.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 120);
+    }
+  }
+}
+</script>
+
+</body>
+</html>

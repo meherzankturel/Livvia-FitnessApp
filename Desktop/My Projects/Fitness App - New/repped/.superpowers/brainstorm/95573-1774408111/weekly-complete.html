@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly Summary Complete</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; display: flex; justify-content: center; padding: 24px; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ===== HEADER ===== */
+  .hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .back { width: 36px; height: 36px; border-radius: 50%; background: rgba(45,42,36,0.04); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--earth); cursor: pointer; }
+  .hdr-title { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+
+
+  /* ===== 1. HERO — B: Ring + Side Stats ===== */
+  .hero-section { padding: 14px 24px 0; }
+
+  .hero-date { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; text-align: center; }
+  .hero-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; text-align: center; }
+
+  .hero-row { display: flex; gap: 20px; align-items: center; margin-top: 14px; }
+
+  .hero-ring { width: 120px; height: 120px; border-radius: 50%; position: relative; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .ring-track { position: absolute; inset: 0; border-radius: 50%; border: 7px solid var(--stone); }
+  .ring-fill { position: absolute; inset: 0; border-radius: 50%; border: 7px solid transparent; border-top-color: var(--trail); border-right-color: var(--trail); border-bottom-color: var(--trail); border-left-color: transparent; transform: rotate(-90deg); }
+  .ring-inner { text-align: center; position: relative; z-index: 1; }
+  .ring-score { font-size: 32px; font-weight: 900; color: var(--earth); letter-spacing: -1.5px; line-height: 1; }
+  .ring-label { font-size: 7px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .hero-side { flex: 1; }
+  .hero-msg { font-size: 13px; color: var(--trail); font-weight: 600; }
+
+  .hero-stats {}
+  .hs-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .hs-row:last-child { border-bottom: none; }
+  .hs-name { font-size: 13px; color: var(--rock); }
+  .hs-val { font-size: 15px; font-weight: 800; color: var(--earth); }
+  .hs-val.green { color: #047857; }
+  .hs-val.amber { color: #92400E; }
+
+
+  /* ===== 2. TIMELINE ===== */
+  .tl-section { padding: 20px 24px 0; }
+  .tl-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 14px; }
+
+  .tl { position: relative; padding-left: 28px; }
+  .tl-line { position: absolute; left: 5px; top: 6px; bottom: 6px; width: 2px; background: var(--stone); border-radius: 1px; }
+
+  .day { padding: 0 0 16px; position: relative; }
+  .day:last-child { padding-bottom: 0; }
+
+  .day-dot {
+    position: absolute; left: -27px; top: 4px;
+    width: 12px; height: 12px; border-radius: 50%;
+    border: 2px solid var(--stone); background: var(--sand); z-index: 1;
+  }
+  .day.workout .day-dot { background: var(--earth); border-color: var(--earth); }
+  .day.today .day-dot { background: var(--trail); border-color: var(--trail); }
+  .day.rest .day-dot { background: var(--sand); border-color: var(--stone); }
+
+  .day-header { display: flex; justify-content: space-between; align-items: baseline; }
+  .day-name { font-size: 13px; font-weight: 700; color: var(--earth); }
+  .day.rest .day-name { color: var(--rock); font-weight: 500; }
+  .day.today .day-name { color: var(--trail); }
+  .day-focus { font-size: 10px; color: var(--rock); }
+
+  .day-detail { font-size: 12px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+  .day.rest .day-detail { opacity: 0.5; font-size: 11px; }
+
+  .day-pr {
+    display: inline-flex; align-items: center; gap: 4px;
+    margin-top: 4px; padding: 3px 10px; border-radius: 100px;
+    background: rgba(52,211,153,0.06); font-size: 10px;
+    color: #047857; font-weight: 600;
+  }
+
+
+  /* ===== 3. WEIGHT + WELLNESS ===== */
+  .bottom { padding: 20px 24px 0; }
+
+  .weight-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03);
+  }
+  .wr-name { font-size: 15px; color: var(--earth); font-weight: 500; }
+  .wr-val { font-size: 16px; font-weight: 800; color: var(--trail); }
+
+  .well-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin: 16px 0 8px; }
+
+  .well { display: flex; gap: 8px; }
+  .wc { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .wc:nth-child(2) { background: var(--stone); }
+  .wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .wc-val { font-size: 20px; font-weight: 800; }
+  .wc:nth-child(1) .wc-val { color: #047857; }
+  .wc:nth-child(2) .wc-val { color: var(--earth); }
+  .wc:nth-child(3) .wc-val { color: #92400E; }
+  .wc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="topo"><div class="tc"></div><div class="tc"></div></div>
+  <div class="ps"><div class="cnt">
+
+    <!-- HEADER -->
+    <div class="hdr"><div class="back">←</div><span class="hdr-title">Weekly Summary</span></div>
+
+    <!-- 1. HERO — Ring + Side Stats -->
+    <div class="hero-section">
+      <div class="hero-date">Mar 18 – 24</div>
+      <div class="hero-title">This Week</div>
+
+      <div class="hero-row">
+        <div class="hero-ring">
+          <div class="ring-track"></div>
+          <div class="ring-fill"></div>
+          <div class="ring-inner"><div class="ring-score">80%</div><div class="ring-label">Complete</div></div>
+        </div>
+        <div class="hero-side">
+          <div class="hero-msg">Crushing it! 💪</div>
+          <div class="hero-stats">
+            <div class="hs-row"><span class="hs-name">Volume</span><span class="hs-val">2.4 tons</span></div>
+            <div class="hs-row"><span class="hs-name">Workouts</span><span class="hs-val">4</span></div>
+            <div class="hs-row"><span class="hs-name">Streak</span><span class="hs-val amber">12 days</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TIMELINE -->
+    <div class="tl-section">
+      <div class="tl-title">Your Week</div>
+      <div class="tl">
+        <div class="tl-line"></div>
+
+        <div class="day workout">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Monday</span><span class="day-focus">Push Day</span></div>
+          <div class="day-detail">Bench Press, OHP, Cable Flyes, Lateral Raises</div>
+          <div class="day-pr">🏆 Bench Press 80 kg</div>
+        </div>
+
+        <div class="day rest">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Tuesday</span></div>
+          <div class="day-detail">Rest day</div>
+        </div>
+
+        <div class="day workout">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Wednesday</span><span class="day-focus">Pull Day</span></div>
+          <div class="day-detail">Barbell Rows, Lat Pulldowns, Face Pulls, Curls</div>
+        </div>
+
+        <div class="day rest">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Thursday</span></div>
+          <div class="day-detail">Rest day</div>
+        </div>
+
+        <div class="day workout">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Friday</span><span class="day-focus">Leg Day</span></div>
+          <div class="day-detail">Squats, RDLs, Leg Press, Lunges</div>
+          <div class="day-pr">🏆 Squat 105 kg</div>
+        </div>
+
+        <div class="day workout">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Saturday</span><span class="day-focus">Upper</span></div>
+          <div class="day-detail">Bench, Rows, Shoulders, Arms</div>
+        </div>
+
+        <div class="day today">
+          <div class="day-dot"></div>
+          <div class="day-header"><span class="day-name">Today</span></div>
+          <div class="day-detail">Rest day · Week complete</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. WEIGHT + WELLNESS -->
+    <div class="bottom">
+      <div class="weight-row"><span class="wr-name">Weight Change</span><span class="wr-val">-0.8 kg</span></div>
+
+      <div class="well-label">Wellness</div>
+      <div class="well">
+        <div class="wc"><div class="wc-val">4.5</div><div class="wc-label">Sleep</div></div>
+        <div class="wc"><div class="wc-val">3.8</div><div class="wc-label">Energy</div></div>
+        <div class="wc"><div class="wc-val">2.0</div><div class="wc-label">Soreness</div></div>
+      </div>
+    </div>
+
+    <div style="height:100px;"></div>
+
+  </div></div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Workout Player v2</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+
+
+  /* ============================================================
+     P1: POLISHED CLEAN — Everything on sand. No dark cards.
+     Exercise name big. Table clean with generous spacing.
+     Inputs are clear. Focused on usability.
+     ============================================================ */
+
+  .p1-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .p1-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); font-variant-numeric: tabular-nums; }
+  .p1-of { font-size: 13px; color: var(--rock); font-weight: 500; }
+  .p1-exit { font-size: 13px; color: var(--rock); margin-left: auto; cursor: pointer; }
+
+  .p1-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .p1-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .p1-ex { padding: 16px 24px 0; }
+  .p1-ex-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .p1-ex-name { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; }
+  .p1-swap { font-size: 12px; color: var(--trail); font-weight: 600; cursor: pointer; margin-top: 6px; }
+  .p1-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .p1-muscle { padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .p1-suggested { font-size: 12px; color: var(--rock); }
+
+  /* Focus cue — subtle */
+  .p1-cue { margin: 12px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); cursor: pointer; }
+  .p1-cue-row { display: flex; justify-content: space-between; align-items: center; }
+  .p1-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .p1-cue-chev { font-size: 10px; color: var(--trail); opacity: 0.4; }
+  .p1-cue-text { font-size: 13px; color: var(--rock); margin-top: 6px; line-height: 1.45; }
+
+  /* Table — no card wrapper, just clean rows */
+  .p1-table { margin: 14px 24px 0; }
+
+  .p1-thead { display: flex; padding: 0 0 8px; }
+  .p1-th { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .p1-th.set { width: 32px; }
+  .p1-th.prev { flex: 1; }
+  .p1-th.kg { width: 80px; text-align: center; }
+  .p1-th.reps { width: 66px; text-align: center; }
+  .p1-th.ck { width: 28px; }
+
+  .p1-row { display: flex; align-items: center; padding: 10px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p1-row:last-child { border-bottom: none; }
+  .p1-row.current { background: rgba(52,211,153,0.02); margin: 0 -24px; padding: 12px 24px; border-radius: 14px; border-bottom: none; border-left: 3px solid var(--trail); padding-left: 21px; }
+  .p1-row.upcoming { opacity: 0.35; }
+  .p1-row.done { }
+
+  .p1-td { font-size: 15px; color: var(--earth); }
+  .p1-td.set { width: 32px; font-weight: 700; font-size: 16px; }
+  .p1-row.current .p1-td.set { color: var(--trail); }
+  .p1-td.prev { flex: 1; font-size: 13px; color: var(--rock); font-weight: 400; }
+  .p1-td.kg { width: 80px; }
+  .p1-td.reps { width: 66px; }
+  .p1-td.ck { width: 28px; display: flex; justify-content: center; }
+
+  .p1-input { width: 100%; padding: 10px 6px; border-radius: 12px; background: #fff; border: 1.5px solid var(--stone); text-align: center; font-size: 16px; font-weight: 700; color: var(--earth); outline: none; }
+  .p1-input:focus { border-color: var(--trail); }
+  .p1-dash { color: var(--rock); opacity: 0.25; text-align: center; font-size: 14px; }
+
+  .p1-check { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .p1-check.done { background: var(--trail); color: #fff; }
+  .p1-check.empty { background: var(--stone); }
+
+  /* Done row styling */
+  .p1-row.done .p1-td { color: var(--rock); }
+  .p1-row.done .p1-input { background: var(--stone); border-color: transparent; color: var(--rock); font-weight: 500; }
+
+  /* Log button */
+  .p1-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; cursor: pointer; transition: transform 0.15s; }
+  .p1-log:active { transform: scale(0.97); }
+  .p1-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     P2: CARD TABLE — Table inside a white card. Exercise header
+     clean. More contained, defined boundaries.
+     ============================================================ */
+
+  .p2-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .p2-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); }
+  .p2-of { font-size: 13px; color: var(--rock); }
+  .p2-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .p2-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .p2-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .p2-ex { padding: 16px 24px 0; }
+  .p2-ex-row { display: flex; justify-content: space-between; align-items: flex-start; }
+  .p2-ex-name { font-size: 26px; font-weight: 700; color: var(--earth); letter-spacing: -0.8px; }
+  .p2-swap { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 6px; }
+  .p2-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .p2-muscle { padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .p2-suggested { font-size: 12px; color: var(--rock); }
+
+  .p2-cue { margin: 12px 24px 0; padding: 10px 14px; border-radius: 14px; background: rgba(52,211,153,0.04); border: 1px solid rgba(52,211,153,0.06); }
+  .p2-cue-label { font-size: 10px; color: var(--trail); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* Table card */
+  .p2-card { margin: 14px 24px 0; border-radius: 20px; background: #fff; border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+
+  .p2-thead { display: flex; padding: 12px 16px 8px; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .p2-th { font-size: 10px; font-weight: 700; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; }
+  .p2-th.set { width: 32px; }
+  .p2-th.prev { flex: 1; }
+  .p2-th.kg { width: 80px; text-align: center; }
+  .p2-th.reps { width: 66px; text-align: center; }
+  .p2-th.ck { width: 28px; }
+
+  .p2-row { display: flex; align-items: center; padding: 12px 16px; border-bottom: 1px solid rgba(0,0,0,0.02); }
+  .p2-row:last-child { border-bottom: none; }
+  .p2-row.current { border-left: 3px solid var(--trail); padding-left: 13px; background: rgba(52,211,153,0.02); }
+  .p2-row.upcoming { opacity: 0.3; }
+
+  .p2-td { font-size: 15px; color: var(--earth); }
+  .p2-td.set { width: 32px; font-weight: 700; font-size: 16px; }
+  .p2-row.current .p2-td.set { color: var(--trail); }
+  .p2-td.prev { flex: 1; font-size: 13px; color: var(--rock); font-weight: 400; }
+  .p2-td.kg { width: 80px; }
+  .p2-td.reps { width: 66px; }
+  .p2-td.ck { width: 28px; display: flex; justify-content: center; }
+
+  .p2-input { width: 100%; padding: 10px 6px; border-radius: 12px; background: var(--sand); text-align: center; font-size: 16px; font-weight: 700; color: var(--earth); border: none; outline: none; }
+  .p2-dash { color: var(--rock); opacity: 0.2; text-align: center; font-size: 14px; }
+
+  .p2-check { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .p2-check.done { background: var(--trail); color: #fff; }
+  .p2-check.empty { background: var(--stone); }
+
+  .p2-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .p2-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+
+
+  /* ============================================================
+     P3: MINIMAL — Bare minimum. No cards, no borders on table.
+     Just exercise name + clean input rows. Maximum simplicity.
+     ============================================================ */
+
+  .p3-top { padding: 54px 24px 0; display: flex; align-items: center; gap: 10px; }
+  .p3-timer { padding: 6px 14px; border-radius: 100px; background: var(--earth); font-size: 14px; font-weight: 700; color: var(--sand); }
+  .p3-of { font-size: 13px; color: var(--rock); }
+  .p3-exit { font-size: 13px; color: var(--rock); margin-left: auto; }
+
+  .p3-progress { margin: 10px 24px 0; height: 4px; border-radius: 2px; background: var(--stone); overflow: hidden; }
+  .p3-progress-fill { height: 100%; border-radius: 2px; background: var(--trail); width: 12%; }
+
+  .p3-ex { padding: 18px 24px 0; }
+  .p3-ex-row { display: flex; justify-content: space-between; align-items: baseline; }
+  .p3-ex-name { font-size: 28px; font-weight: 700; color: var(--earth); letter-spacing: -1px; }
+  .p3-swap { font-size: 12px; color: var(--trail); font-weight: 600; }
+  .p3-ex-meta { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+  .p3-muscle { padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 600; background: var(--stone); color: var(--earth); }
+  .p3-suggested { font-size: 12px; color: var(--rock); }
+
+  /* Minimal set rows */
+  .p3-sets { padding: 20px 24px 0; }
+  .p3-set-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 12px; }
+
+  .p3-set {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.03);
+  }
+  .p3-set:last-child { border-bottom: none; }
+  .p3-set.current { background: rgba(52,211,153,0.02); margin: 0 -24px; padding: 14px 24px; border-radius: 14px; border-bottom: none; }
+  .p3-set.upcoming { opacity: 0.3; }
+
+  .p3-set-num { font-size: 18px; font-weight: 800; color: var(--earth); width: 24px; }
+  .p3-set.current .p3-set-num { color: var(--trail); }
+
+  .p3-set-prev { font-size: 12px; color: var(--rock); flex: 1; }
+
+  .p3-set-inputs { display: flex; gap: 8px; }
+  .p3-sinput { width: 68px; padding: 10px 6px; border-radius: 12px; background: #fff; border: 1.5px solid var(--stone); text-align: center; font-size: 16px; font-weight: 700; color: var(--earth); outline: none; }
+  .p3-sinput:focus { border-color: var(--trail); }
+  .p3-sinput-label { font-size: 8px; color: var(--rock); text-align: center; margin-top: 3px; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
+
+  .p3-set-check { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .p3-set-check.done { background: var(--trail); color: #fff; }
+  .p3-set-check.empty { background: var(--stone); }
+
+  .p3-log { margin: 18px 24px 0; padding: 18px; border-radius: 16px; background: var(--earth); text-align: center; }
+  .p3-log-text { font-size: 16px; font-weight: 700; color: var(--sand); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- P1 -->
+<div>
+  <div class="col-label">P1 — Clean Open Table</div>
+  <div class="col-desc">No card wrapper on table. Rows sit directly on sand. Current row has green left border + green tint. White inputs with border. Focused, airy, clean.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p1-top"><div class="p1-timer">0:05</div><span class="p1-of">1 of 8</span><span class="p1-exit">Exit</span></div>
+    <div class="p1-progress"><div class="p1-progress-fill"></div></div>
+
+    <div class="p1-ex"><div class="p1-ex-row"><div class="p1-ex-name">Goblet Squat</div><span class="p1-swap">Swap</span></div><div class="p1-ex-meta"><span class="p1-muscle">quads</span><span class="p1-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="p1-cue" onclick="this.querySelector('.p1-cue-text').style.display=this.querySelector('.p1-cue-text').style.display==='block'?'none':'block'"><div class="p1-cue-row"><span class="p1-cue-label">Focus Cue</span><span class="p1-cue-chev">▾</span></div><div class="p1-cue-text" style="display:none;">Drive through your heels. Keep chest up and core braced.</div></div>
+
+    <div class="p1-table">
+      <div class="p1-thead"><span class="p1-th set">SET</span><span class="p1-th prev">PREVIOUS</span><span class="p1-th kg">KG</span><span class="p1-th reps">REPS</span><span class="p1-th ck"></span></div>
+
+      <div class="p1-row current"><span class="p1-td set">1</span><span class="p1-td prev">—</span><div class="p1-td kg"><input class="p1-input" value="32.5"></div><div class="p1-td reps"><input class="p1-input" value="6"></div><span class="p1-td ck"><div class="p1-check empty"></div></span></div>
+      <div class="p1-row upcoming"><span class="p1-td set">2</span><span class="p1-td prev">—</span><span class="p1-td kg"><span class="p1-dash">—</span></span><span class="p1-td reps"><span class="p1-dash">—</span></span><span class="p1-td ck"><div class="p1-check empty"></div></span></div>
+      <div class="p1-row upcoming"><span class="p1-td set">3</span><span class="p1-td prev">—</span><span class="p1-td kg"><span class="p1-dash">—</span></span><span class="p1-td reps"><span class="p1-dash">—</span></span><span class="p1-td ck"><div class="p1-check empty"></div></span></div>
+      <div class="p1-row upcoming"><span class="p1-td set">4</span><span class="p1-td prev">—</span><span class="p1-td kg"><span class="p1-dash">—</span></span><span class="p1-td reps"><span class="p1-dash">—</span></span><span class="p1-td ck"><div class="p1-check empty"></div></span></div>
+    </div>
+
+    <div class="p1-log"><span class="p1-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- P2 -->
+<div>
+  <div class="col-label">P2 — Card Table</div>
+  <div class="col-desc">Table inside a white rounded card. Column headers. Current row green left border + tint. Sand-colored inputs inside white card. More contained.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p2-top"><div class="p2-timer">0:05</div><span class="p2-of">1 of 8</span><span class="p2-exit">Exit</span></div>
+    <div class="p2-progress"><div class="p2-progress-fill"></div></div>
+
+    <div class="p2-ex"><div class="p2-ex-row"><div class="p2-ex-name">Goblet Squat</div><span class="p2-swap">Swap</span></div><div class="p2-ex-meta"><span class="p2-muscle">quads</span><span class="p2-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="p2-cue"><div class="p2-cue-label">Focus Cue ▾</div></div>
+
+    <div class="p2-card">
+      <div class="p2-thead"><span class="p2-th set">SET</span><span class="p2-th prev">PREVIOUS</span><span class="p2-th kg">KG</span><span class="p2-th reps">REPS</span><span class="p2-th ck"></span></div>
+
+      <div class="p2-row current"><span class="p2-td set">1</span><span class="p2-td prev">—</span><div class="p2-td kg"><input class="p2-input" value="32.5"></div><div class="p2-td reps"><input class="p2-input" value="6"></div><span class="p2-td ck"><div class="p2-check empty"></div></span></div>
+      <div class="p2-row upcoming"><span class="p2-td set">2</span><span class="p2-td prev">—</span><span class="p2-td kg"><span class="p2-dash">—</span></span><span class="p2-td reps"><span class="p2-dash">—</span></span><span class="p2-td ck"><div class="p2-check empty"></div></span></div>
+      <div class="p2-row upcoming"><span class="p2-td set">3</span><span class="p2-td prev">—</span><span class="p2-td kg"><span class="p2-dash">—</span></span><span class="p2-td reps"><span class="p2-dash">—</span></span><span class="p2-td ck"><div class="p2-check empty"></div></span></div>
+      <div class="p2-row upcoming"><span class="p2-td set">4</span><span class="p2-td prev">—</span><span class="p2-td kg"><span class="p2-dash">—</span></span><span class="p2-td reps"><span class="p2-dash">—</span></span><span class="p2-td ck"><div class="p2-check empty"></div></span></div>
+    </div>
+
+    <div class="p2-log"><span class="p2-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+<!-- P3 -->
+<div>
+  <div class="col-label">P3 — Minimal Rows</div>
+  <div class="col-desc">No table structure. Each set is a clean row: big set number, previous, KG+REPS inputs side by side with labels, checkmark. Bigger inputs, more touch-friendly. Current set highlighted.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="p3-top"><div class="p3-timer">0:05</div><span class="p3-of">1 of 8</span><span class="p3-exit">Exit</span></div>
+    <div class="p3-progress"><div class="p3-progress-fill"></div></div>
+
+    <div class="p3-ex"><div class="p3-ex-row"><span class="p3-ex-name">Goblet Squat</span><span class="p3-swap">Swap</span></div><div class="p3-ex-meta"><span class="p3-muscle">quads</span><span class="p3-suggested">Suggested: 32.5 kg</span></div></div>
+
+    <div class="p3-sets"><div class="p3-set-label">Sets</div>
+
+      <div class="p3-set current">
+        <div class="p3-set-num">1</div>
+        <div class="p3-set-prev">—</div>
+        <div class="p3-set-inputs">
+          <div><input class="p3-sinput" value="32.5"><div class="p3-sinput-label">KG</div></div>
+          <div><input class="p3-sinput" value="6"><div class="p3-sinput-label">REPS</div></div>
+        </div>
+        <div class="p3-set-check empty"></div>
+      </div>
+
+      <div class="p3-set upcoming">
+        <div class="p3-set-num">2</div>
+        <div class="p3-set-prev">—</div>
+        <div class="p3-set-inputs"><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">KG</div></div><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">REPS</div></div></div>
+        <div class="p3-set-check empty"></div>
+      </div>
+
+      <div class="p3-set upcoming">
+        <div class="p3-set-num">3</div>
+        <div class="p3-set-prev">—</div>
+        <div class="p3-set-inputs"><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">KG</div></div><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">REPS</div></div></div>
+        <div class="p3-set-check empty"></div>
+      </div>
+
+      <div class="p3-set upcoming">
+        <div class="p3-set-num">4</div>
+        <div class="p3-set-prev">—</div>
+        <div class="p3-set-inputs"><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">KG</div></div><div><div class="p3-sinput" style="background:var(--stone);border-color:transparent;color:var(--rock);font-weight:400;">—</div><div class="p3-sinput-label">REPS</div></div></div>
+        <div class="p3-set-check empty"></div>
+      </div>
+    </div>
+
+    <div class="p3-log"><span class="p3-log-text">Log Set 1</span></div>
+    <div style="height:100px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

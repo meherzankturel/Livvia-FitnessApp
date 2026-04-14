@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Weekly 6 More</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 393px); gap: 16px; padding: 8px 10px 60px; justify-content: center; }
+  @media (max-width: 1250px) { .grid { grid-template-columns: repeat(2, 393px); } }
+  @media (max-width: 830px) { .grid { grid-template-columns: 393px; } }
+
+  .col-label { text-align: center; font-size: 9px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #888; padding: 4px 0 2px; }
+  .col-desc { text-align: center; font-size: 8px; color: #555; padding: 0 6px 4px; line-height: 1.3; }
+
+  .phone { width: 393px; height: 852px; border-radius: 48px; overflow: hidden; position: relative; border: 2.5px solid rgba(255,255,255,0.06); background: var(--sand); }
+  .ps { width: 100%; height: 100%; overflow-y: auto; scrollbar-width: none; overflow-x: hidden; }
+  .ps::-webkit-scrollbar { display: none; }
+  .topo { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
+  .tc { position: absolute; border: 1px solid var(--earth); border-radius: 50%; opacity: 0.015; }
+  .tc:nth-child(1) { width: 500px; height: 400px; top: -80px; left: -80px; }
+  .tc:nth-child(2) { width: 400px; height: 320px; bottom: -60px; right: -80px; }
+  .cnt { position: relative; z-index: 1; }
+  .bk { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; cursor: pointer; flex-shrink: 0; }
+
+
+  /* ============================================================
+     SHARED
+     ============================================================ */
+  .hdr { padding: 54px 24px 0; display: flex; align-items: center; position: relative; }
+  .hdr-t { position: absolute; left: 50%; transform: translateX(-50%); font-size: 11px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .bk-light { background: rgba(45,42,36,0.04); color: var(--earth); }
+  .bk-dark { background: rgba(246,245,240,0.06); color: var(--sand); }
+
+
+  /* ============================================================
+     H1: HORIZONTAL METRIC CARDS — Swipeable cards per metric.
+     Same pattern as nutrition meals + recipe steps.
+     ============================================================ */
+
+  .h1-top { padding: 12px 24px 0; }
+  .h1-date { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .h1-title { font-size: 24px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+  .h1-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; }
+
+  .h1-scroll { display: flex; gap: 12px; padding: 16px 0 0 24px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .h1-scroll::-webkit-scrollbar { display: none; }
+
+  .h1-card {
+    min-width: 260px; max-width: 260px; border-radius: 24px; padding: 24px;
+    min-height: 200px; display: flex; flex-direction: column;
+    flex-shrink: 0; scroll-snap-align: start; position: relative; overflow: hidden;
+  }
+  .h1-card:last-child { margin-right: 24px; }
+  .h1-card:nth-child(odd) { background: var(--earth); }
+  .h1-card:nth-child(even) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+
+  .h1-c-wm { font-size: 90px; font-weight: 900; letter-spacing: -5px; line-height: 1; position: absolute; top: -8px; right: 0; pointer-events: none; }
+  .h1-card:nth-child(odd) .h1-c-wm { color: rgba(246,245,240,0.03); }
+  .h1-card:nth-child(even) .h1-c-wm { color: rgba(45,42,36,0.025); }
+
+  .h1-c-label { font-size: 9px; text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; position: relative; }
+  .h1-card:nth-child(odd) .h1-c-label { color: rgba(246,245,240,0.25); }
+  .h1-card:nth-child(even) .h1-c-label { color: var(--rock); }
+
+  .h1-c-val { font-size: 36px; font-weight: 900; letter-spacing: -1.5px; margin-top: auto; position: relative; line-height: 1; }
+  .h1-card:nth-child(odd) .h1-c-val { color: var(--sand); }
+  .h1-card:nth-child(even) .h1-c-val { color: var(--earth); }
+  .h1-c-val span { font-size: 14px; font-weight: 500; }
+  .h1-card:nth-child(odd) .h1-c-val span { color: rgba(246,245,240,0.3); }
+  .h1-card:nth-child(even) .h1-c-val span { color: var(--rock); }
+
+  .h1-c-sub { font-size: 10px; margin-top: 4px; position: relative; }
+  .h1-card:nth-child(odd) .h1-c-sub { color: rgba(246,245,240,0.25); }
+  .h1-card:nth-child(even) .h1-c-sub { color: var(--rock); }
+  .h1-c-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 3px; position: relative; }
+
+  .h1-dots { display: flex; justify-content: center; gap: 5px; padding: 10px 0; }
+  .h1-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--stone); }
+  .h1-dot:first-child { background: var(--earth); width: 18px; border-radius: 3px; }
+
+  /* Wellness below */
+  .h1-well-sec { padding: 8px 24px; }
+  .h1-well-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+  .h1-well { display: flex; gap: 8px; }
+  .h1-wc { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .h1-wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .h1-wc:nth-child(2) { background: var(--stone); }
+  .h1-wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .h1-wc-val { font-size: 20px; font-weight: 800; }
+  .h1-wc:nth-child(1) .h1-wc-val { color: #047857; }
+  .h1-wc:nth-child(2) .h1-wc-val { color: var(--earth); }
+  .h1-wc:nth-child(3) .h1-wc-val { color: #92400E; }
+  .h1-wc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+
+
+  /* ============================================================
+     H2: NUMBERED ROWS — Like recipe ingredients. Clean numbered
+     list of your week's stats. Familiar, scannable.
+     ============================================================ */
+
+  .h2-hero { margin: 14px 24px 0; padding: 24px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .h2-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h2-ha:nth-child(1) { width: 100px; top: 16px; right: -8px; transform: rotate(-35deg); }
+  .h2-ha:nth-child(2) { width: 80px; top: 28px; right: -8px; transform: rotate(-35deg); }
+  .h2-hero-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .h2-hero-title { font-size: 26px; font-weight: 700; color: var(--sand); letter-spacing: -0.6px; margin-top: 4px; position: relative; }
+  .h2-hero-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+
+  .h2-list { padding: 18px 24px 0; }
+  .h2-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .h2-row:last-child { border-bottom: none; }
+  .h2-num { width: 26px; height: 26px; border-radius: 8px; background: var(--earth); display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: var(--sand); flex-shrink: 0; }
+  .h2-row-name { font-size: 15px; color: var(--earth); font-weight: 500; flex: 1; }
+  .h2-row-val { font-size: 18px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; flex-shrink: 0; }
+  .h2-row-val.green { color: var(--trail); }
+  .h2-row-val.amber { color: #F59E0B; }
+
+  .h2-well-sec { padding: 16px 24px 0; }
+
+
+  /* ============================================================
+     H3: SCORE CARD — A "grade" for your week. A/B/C/D with
+     color. Supporting metrics explain the grade. Simple.
+     ============================================================ */
+
+  .h3-top { padding: 12px 24px 0; text-align: center; }
+  .h3-date { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .h3-title { font-size: 22px; font-weight: 700; color: var(--earth); letter-spacing: -0.5px; margin-top: 2px; }
+
+  /* Grade circle */
+  .h3-grade-area { display: flex; justify-content: center; padding: 24px 0 8px; }
+  .h3-grade { width: 120px; height: 120px; border-radius: 50%; background: var(--earth); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .h3-grade-letter { font-size: 52px; font-weight: 900; color: var(--trail); letter-spacing: -2px; line-height: 1; }
+  .h3-grade-label { font-size: 8px; color: rgba(246,245,240,0.25); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 2px; }
+
+  .h3-msg { text-align: center; font-size: 14px; color: var(--trail); font-weight: 600; margin-top: 8px; }
+
+  /* Stats that explain the grade */
+  .h3-explain { padding: 20px 24px 0; }
+  .h3-ex-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .h3-ex-row:last-child { border-bottom: none; }
+  .h3-ex-name { font-size: 14px; color: var(--earth); }
+  .h3-ex-val { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .h3-ex-val.green { color: var(--trail); }
+  .h3-ex-val.amber { color: #F59E0B; }
+
+  .h3-well-sec { padding: 16px 24px 0; }
+
+
+  /* ============================================================
+     H4: TIMELINE — Week as a vertical timeline. Each day
+     is a node showing what you did. Tells the story of your week.
+     ============================================================ */
+
+  .h4-hero { margin: 14px 24px 0; padding: 20px; border-radius: 22px; background: var(--earth); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden; }
+  .h4-hero-left { position: relative; }
+  .h4-hero-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+  .h4-hero-title { font-size: 20px; font-weight: 700; color: var(--sand); margin-top: 3px; }
+  .h4-hero-msg { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 3px; }
+  .h4-hero-right { text-align: right; position: relative; }
+  .h4-hero-vol { font-size: 28px; font-weight: 900; color: var(--sand); letter-spacing: -1px; }
+  .h4-hero-vol span { font-size: 11px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .h4-hero-trend { font-size: 9px; color: var(--trail); font-weight: 600; margin-top: 2px; opacity: 0.6; }
+
+  /* Timeline */
+  .h4-tl { padding: 16px 24px 0; position: relative; padding-left: 50px; }
+  .h4-tl-line { position: absolute; left: 35px; top: 24px; bottom: 16px; width: 2px; background: var(--stone); }
+
+  .h4-day { padding: 8px 0; position: relative; }
+  .h4-day-dot { position: absolute; left: -23px; top: 12px; width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--stone); background: var(--sand); z-index: 1; }
+  .h4-day.done .h4-day-dot { background: var(--earth); border-color: var(--earth); }
+  .h4-day.today .h4-day-dot { background: var(--trail); border-color: var(--trail); box-shadow: 0 0 6px rgba(52,211,153,0.3); }
+  .h4-day.rest .h4-day-dot { background: var(--sand); border-color: var(--stone); }
+
+  .h4-day-label { font-size: 10px; color: var(--rock); font-weight: 600; }
+  .h4-day.today .h4-day-label { color: var(--trail); }
+  .h4-day-text { font-size: 13px; color: var(--earth); font-weight: 500; margin-top: 2px; }
+  .h4-day.rest .h4-day-text { color: var(--rock); opacity: 0.5; }
+  .h4-day-pr { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 1px; }
+
+  .h4-well-sec { padding: 14px 24px 0; }
+
+
+  /* ============================================================
+     H5: SINGLE NUMBER FOCUS — One HUGE number changes based
+     on what's most impressive. Supporting context below.
+     ============================================================ */
+
+  .h5-phone { background: var(--earth); }
+
+  .h5-content { padding: 0 28px; display: flex; flex-direction: column; min-height: calc(100% - 90px); }
+  .h5-date { font-size: 10px; color: rgba(246,245,240,0.15); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; margin-top: 24px; }
+  .h5-title { font-size: 22px; font-weight: 700; color: var(--sand); margin-top: 4px; }
+
+  .h5-hero { margin-top: auto; margin-bottom: auto; text-align: center; padding: 20px 0; }
+  .h5-hero-val { font-size: 96px; font-weight: 900; color: var(--sand); letter-spacing: -6px; line-height: 0.85; }
+  .h5-hero-unit { font-size: 18px; color: rgba(246,245,240,0.25); font-weight: 500; margin-top: 6px; }
+  .h5-hero-trend { font-size: 12px; color: var(--trail); font-weight: 600; margin-top: 6px; opacity: 0.6; }
+
+  .h5-bottom { border-top: 1px solid rgba(246,245,240,0.04); padding-top: 18px; margin-bottom: 40px; }
+  .h5-b-row { display: flex; justify-content: space-between; padding: 7px 0; }
+  .h5-b-name { font-size: 13px; color: rgba(246,245,240,0.25); }
+  .h5-b-val { font-size: 14px; font-weight: 700; color: var(--sand); }
+  .h5-b-val.green { color: var(--trail); opacity: 0.7; }
+
+
+  /* ============================================================
+     H6: MIXED BENTO — Hero stat at top, then smaller tiles
+     in an organic grid. Weight, completion, streak, PRs, wellness.
+     ============================================================ */
+
+  .h6-hero { margin: 14px 24px 0; padding: 22px; border-radius: 24px; background: var(--earth); position: relative; overflow: hidden; }
+  .h6-ha { position: absolute; height: 1px; background: rgba(246,245,240,0.04); transform-origin: right top; }
+  .h6-ha:nth-child(1) { width: 100px; top: 16px; right: -8px; transform: rotate(-35deg); }
+  .h6-ha:nth-child(2) { width: 80px; top: 28px; right: -8px; transform: rotate(-35deg); }
+  .h6-hero-date { font-size: 9px; color: rgba(246,245,240,0.2); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; position: relative; }
+  .h6-hero-title { font-size: 24px; font-weight: 700; color: var(--sand); letter-spacing: -0.5px; margin-top: 4px; position: relative; }
+  .h6-hero-msg { font-size: 13px; color: var(--trail); font-weight: 600; margin-top: 4px; position: relative; }
+  .h6-hero-vol-row { display: flex; align-items: baseline; gap: 6px; margin-top: 14px; position: relative; }
+  .h6-hero-vol { font-size: 40px; font-weight: 900; color: var(--sand); letter-spacing: -2px; }
+  .h6-hero-unit { font-size: 14px; color: rgba(246,245,240,0.3); }
+  .h6-hero-trend { font-size: 10px; color: var(--trail); font-weight: 600; margin-left: auto; opacity: 0.6; position: relative; }
+
+  .h6-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; padding: 12px 24px 0; }
+  .h6-tile { padding: 16px 12px; border-radius: 18px; text-align: center; }
+  .h6-tile.white { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h6-tile.stone { background: var(--stone); }
+  .h6-tile.green { background: rgba(52,211,153,0.04); }
+  .h6-tile.amber { background: rgba(245,158,11,0.04); }
+  .h6-tile-val { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+  .h6-tile.white .h6-tile-val { color: var(--earth); }
+  .h6-tile.stone .h6-tile-val { color: var(--earth); }
+  .h6-tile.green .h6-tile-val { color: #047857; }
+  .h6-tile.amber .h6-tile-val { color: #92400E; }
+  .h6-tile-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 3px; }
+
+  .h6-sec { padding: 16px 24px 0; }
+  .h6-sec-title { font-size: 13px; font-weight: 700; color: var(--earth); margin-bottom: 8px; }
+
+  .h6-hl { padding: 16px; border-radius: 18px; background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .h6-hl-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .h6-hl-val { font-size: 18px; font-weight: 700; color: var(--earth); margin-top: 4px; }
+  .h6-hl-sub { font-size: 10px; color: var(--trail); font-weight: 600; margin-top: 2px; }
+
+  .h6-pr-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(0,0,0,0.03); }
+  .h6-pr-row:last-child { border-bottom: none; }
+  .h6-pr-name { font-size: 14px; color: var(--earth); }
+  .h6-pr-val { font-size: 14px; font-weight: 700; color: var(--trail); }
+
+  /* Shared wellness */
+  .well { display: flex; gap: 8px; }
+  .wc { flex: 1; padding: 14px 8px; border-radius: 16px; text-align: center; }
+  .wc:nth-child(1) { background: rgba(52,211,153,0.04); }
+  .wc:nth-child(2) { background: var(--stone); }
+  .wc:nth-child(3) { background: rgba(245,158,11,0.04); }
+  .wc-val { font-size: 20px; font-weight: 800; }
+  .wc:nth-child(1) .wc-val { color: #047857; }
+  .wc:nth-child(2) .wc-val { color: var(--earth); }
+  .wc:nth-child(3) .wc-val { color: #92400E; }
+  .wc-label { font-size: 8px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; margin-top: 2px; }
+  .well-label { font-size: 10px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- H1 -->
+<div>
+  <div class="col-label">H1 — Swipe Cards</div>
+  <div class="col-desc">Each metric = a swipeable card. Same pattern as nutrition meals + recipe steps. Dark/light alternating. Giant watermark numbers. Dots below. Wellness row at bottom.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-light">←</div><span class="hdr-t">Weekly Summary</span></div>
+    <div class="h1-top"><div class="h1-date">Mar 18 – 24</div><div class="h1-title">This Week</div><div class="h1-msg">Crushing it! 💪</div></div>
+    <div class="h1-scroll">
+      <div class="h1-card"><div class="h1-c-wm">2.4</div><div class="h1-c-label">Volume Lifted</div><div class="h1-c-val">2.4 <span>tons</span></div><div class="h1-c-sub">Total weight moved</div><div class="h1-c-trend">▲ 12% vs last week</div></div>
+      <div class="h1-card"><div class="h1-c-wm">4</div><div class="h1-c-label">Workouts</div><div class="h1-c-val">4 <span>of 5</span></div><div class="h1-c-sub">80% completion</div><div class="h1-c-trend">12-day streak</div></div>
+      <div class="h1-card"><div class="h1-c-wm">80</div><div class="h1-c-label">Best Lift · PR</div><div class="h1-c-val">80 <span>kg</span></div><div class="h1-c-sub">Bench Press</div><div class="h1-c-trend">New personal record!</div></div>
+      <div class="h1-card"><div class="h1-c-wm">0.8</div><div class="h1-c-label">Weight Change</div><div class="h1-c-val">-0.8 <span>kg</span></div><div class="h1-c-sub">Net this week</div><div class="h1-c-trend">On track ✓</div></div>
+    </div>
+    <div class="h1-dots"><div class="h1-dot"></div><div class="h1-dot"></div><div class="h1-dot"></div><div class="h1-dot"></div></div>
+    <div class="h1-well-sec"><div class="h1-well-label">Wellness</div><div class="h1-well"><div class="h1-wc"><div class="h1-wc-val">4.5</div><div class="h1-wc-label">Sleep</div></div><div class="h1-wc"><div class="h1-wc-val">3.8</div><div class="h1-wc-label">Energy</div></div><div class="h1-wc"><div class="h1-wc-val">2.0</div><div class="h1-wc-label">Soreness</div></div></div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- H2 -->
+<div>
+  <div class="col-label">H2 — Numbered Rows</div>
+  <div class="col-desc">Dark hero card at top. Below: clean numbered rows (like recipe ingredients). Each stat = a numbered row. Familiar, scannable, consistent.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-light">←</div><span class="hdr-t">Weekly Summary</span></div>
+    <div class="h2-hero"><div class="h2-ha"></div><div class="h2-ha"></div><div class="h2-hero-date">Mar 18 – 24</div><div class="h2-hero-title">This Week</div><div class="h2-hero-msg">Crushing it! 💪</div></div>
+    <div class="h2-list">
+      <div class="h2-row"><div class="h2-num">1</div><span class="h2-row-name">Volume Lifted</span><span class="h2-row-val">2.4 tons</span></div>
+      <div class="h2-row"><div class="h2-num">2</div><span class="h2-row-name">Workouts</span><span class="h2-row-val">4</span></div>
+      <div class="h2-row"><div class="h2-num">3</div><span class="h2-row-name">Completion</span><span class="h2-row-val green">80%</span></div>
+      <div class="h2-row"><div class="h2-num">4</div><span class="h2-row-name">Streak</span><span class="h2-row-val amber">12 days</span></div>
+      <div class="h2-row"><div class="h2-num">5</div><span class="h2-row-name">Best Lift</span><span class="h2-row-val">Bench 80kg</span></div>
+      <div class="h2-row"><div class="h2-num">6</div><span class="h2-row-name">Weight Change</span><span class="h2-row-val green">-0.8 kg</span></div>
+      <div class="h2-row"><div class="h2-num">7</div><span class="h2-row-name">Personal Records</span><span class="h2-row-val green">2 PRs</span></div>
+    </div>
+    <div class="h2-well-sec"><div class="well-label">Wellness</div><div class="well"><div class="wc"><div class="wc-val">4.5</div><div class="wc-label">Sleep</div></div><div class="wc"><div class="wc-val">3.8</div><div class="wc-label">Energy</div></div><div class="wc"><div class="wc-val">2.0</div><div class="wc-label">Soreness</div></div></div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- H3 -->
+<div>
+  <div class="col-label">H3 — Grade Card</div>
+  <div class="col-desc">A "week grade" (A/B/C) as a big dark circle. Message below. Stats explain why you got that grade. Simple, gamified, motivating.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-light">←</div><span class="hdr-t">Weekly Summary</span></div>
+    <div class="h3-top"><div class="h3-date">Mar 18 – 24</div><div class="h3-title">This Week</div></div>
+    <div class="h3-grade-area"><div class="h3-grade"><div class="h3-grade-letter">A-</div><div class="h3-grade-label">Week Score</div></div></div>
+    <div class="h3-msg">Crushing it! 💪</div>
+    <div class="h3-explain">
+      <div class="h3-ex-row"><span class="h3-ex-name">Volume Lifted</span><span class="h3-ex-val">2.4 tons</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">Workouts</span><span class="h3-ex-val">4 of 5</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">Completion</span><span class="h3-ex-val green">80%</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">Streak</span><span class="h3-ex-val amber">12 days</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">Best Lift</span><span class="h3-ex-val">Bench 80 kg</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">Weight Change</span><span class="h3-ex-val green">-0.8 kg</span></div>
+      <div class="h3-ex-row"><span class="h3-ex-name">PRs</span><span class="h3-ex-val green">2</span></div>
+    </div>
+    <div class="h3-well-sec"><div class="well-label">Wellness</div><div class="well"><div class="wc"><div class="wc-val">4.5</div><div class="wc-label">Sleep</div></div><div class="wc"><div class="wc-val">3.8</div><div class="wc-label">Energy</div></div><div class="wc"><div class="wc-val">2.0</div><div class="wc-label">Soreness</div></div></div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- H4 -->
+<div>
+  <div class="col-label">H4 — Day Timeline</div>
+  <div class="col-desc">Compact dark hero with volume. Below: your week as a vertical timeline — each day is a node showing what you did. Rest days are muted. PRs highlighted. Tells your week's story.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-light">←</div><span class="hdr-t">Weekly Summary</span></div>
+    <div class="h4-hero">
+      <div class="h4-hero-left"><div class="h4-hero-date">Mar 18 – 24</div><div class="h4-hero-title">This Week</div><div class="h4-hero-msg">Crushing it! 💪</div></div>
+      <div class="h4-hero-right"><div class="h4-hero-vol">2.4 <span>tons</span></div><div class="h4-hero-trend">▲ 12%</div></div>
+    </div>
+    <div class="h4-tl"><div class="h4-tl-line"></div>
+      <div class="h4-day done"><div class="h4-day-dot"></div><div class="h4-day-label">Monday</div><div class="h4-day-text">Push Day — Bench, OHP, Flyes</div><div class="h4-day-pr">🏆 Bench Press 80 kg PR</div></div>
+      <div class="h4-day rest"><div class="h4-day-dot"></div><div class="h4-day-label">Tuesday</div><div class="h4-day-text">Rest day</div></div>
+      <div class="h4-day done"><div class="h4-day-dot"></div><div class="h4-day-label">Wednesday</div><div class="h4-day-text">Pull Day — Rows, Pulldowns, Curls</div></div>
+      <div class="h4-day rest"><div class="h4-day-dot"></div><div class="h4-day-label">Thursday</div><div class="h4-day-text">Rest day</div></div>
+      <div class="h4-day done"><div class="h4-day-dot"></div><div class="h4-day-label">Friday</div><div class="h4-day-text">Leg Day — Squats, RDLs, Lunges</div><div class="h4-day-pr">🏆 Squat 105 kg PR</div></div>
+      <div class="h4-day done"><div class="h4-day-dot"></div><div class="h4-day-label">Saturday</div><div class="h4-day-text">Upper Body — Bench, Rows, Shoulders</div></div>
+      <div class="h4-day today"><div class="h4-day-dot"></div><div class="h4-day-label">Today</div><div class="h4-day-text">Rest day · Week complete</div></div>
+    </div>
+    <div class="h4-well-sec"><div class="well-label">Wellness</div><div class="well"><div class="wc"><div class="wc-val">4.5</div><div class="wc-label">Sleep</div></div><div class="wc"><div class="wc-val">3.8</div><div class="wc-label">Energy</div></div><div class="wc"><div class="wc-val">2.0</div><div class="wc-label">Soreness</div></div></div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+<!-- H5 -->
+<div>
+  <div class="col-label">H5 — Hero Number</div>
+  <div class="col-desc">Full dark screen. One MASSIVE 96px number centered. Supporting stats as clean key-value rows at the bottom. Most impactful. Poster for your week.</div>
+  <div class="phone h5-phone"><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-dark">←</div><span class="hdr-t" style="color:rgba(246,245,240,0.2);">Weekly Summary</span></div>
+    <div class="h5-content">
+      <div class="h5-date">Mar 18 – 24</div>
+      <div class="h5-title">This Week</div>
+      <div class="h5-hero"><div class="h5-hero-val">2.4</div><div class="h5-hero-unit">tons lifted this week</div><div class="h5-hero-trend">▲ 12% vs last week</div></div>
+      <div class="h5-bottom">
+        <div class="h5-b-row"><span class="h5-b-name">Workouts</span><span class="h5-b-val">4 of 5</span></div>
+        <div class="h5-b-row"><span class="h5-b-name">Completion</span><span class="h5-b-val green">80%</span></div>
+        <div class="h5-b-row"><span class="h5-b-name">Streak</span><span class="h5-b-val" style="color:#F59E0B;">12 days</span></div>
+        <div class="h5-b-row"><span class="h5-b-name">Best Lift</span><span class="h5-b-val green">Bench 80 kg</span></div>
+        <div class="h5-b-row"><span class="h5-b-name">Weight</span><span class="h5-b-val green">-0.8 kg</span></div>
+        <div class="h5-b-row"><span class="h5-b-name">PRs</span><span class="h5-b-val green">2</span></div>
+      </div>
+    </div>
+  </div></div></div>
+</div>
+
+<!-- H6 -->
+<div>
+  <div class="col-label">H6 — Hero + Tiles</div>
+  <div class="col-desc">Dark hero card with volume. 3-column stat tiles below (white/green/amber tints). Highlight card. PR rows. Wellness. Balanced between data and visual.</div>
+  <div class="phone"><div class="topo"><div class="tc"></div><div class="tc"></div></div><div class="ps"><div class="cnt">
+    <div class="hdr"><div class="bk bk-light">←</div><span class="hdr-t">Weekly Summary</span></div>
+    <div class="h6-hero"><div class="h6-ha"></div><div class="h6-ha"></div><div class="h6-hero-date">Mar 18 – 24</div><div class="h6-hero-title">This Week</div><div class="h6-hero-msg">Crushing it! 💪</div><div class="h6-hero-vol-row"><span class="h6-hero-vol">2.4</span><span class="h6-hero-unit">tons</span><span class="h6-hero-trend">▲ 12%</span></div></div>
+
+    <div class="h6-grid">
+      <div class="h6-tile white"><div class="h6-tile-val">4</div><div class="h6-tile-label">Workouts</div></div>
+      <div class="h6-tile green"><div class="h6-tile-val">80%</div><div class="h6-tile-label">Completion</div></div>
+      <div class="h6-tile amber"><div class="h6-tile-val">12d</div><div class="h6-tile-label">Streak</div></div>
+    </div>
+
+    <div class="h6-sec"><div class="h6-sec-title">Highlight</div><div class="h6-hl"><div class="h6-hl-label">Best Lift · PR</div><div class="h6-hl-val">Bench Press — 80 kg</div><div class="h6-hl-sub">New personal record!</div></div></div>
+
+    <div class="h6-sec"><div class="h6-sec-title">Details</div>
+      <div class="h6-pr-row"><span class="h6-pr-name">Weight Change</span><span class="h6-pr-val">-0.8 kg</span></div>
+      <div class="h6-pr-row"><span class="h6-pr-name">Bench Press PR</span><span class="h6-pr-val">80 kg</span></div>
+      <div class="h6-pr-row"><span class="h6-pr-name">Squat PR</span><span class="h6-pr-val">105 kg</span></div>
+    </div>
+
+    <div class="h6-sec"><div class="well-label">Wellness</div><div class="well"><div class="wc"><div class="wc-val">4.5</div><div class="wc-label">Sleep</div></div><div class="wc"><div class="wc-val">3.8</div><div class="wc-label">Energy</div></div><div class="wc"><div class="wc-val">2.0</div><div class="wc-label">Soreness</div></div></div></div>
+    <div style="height:80px;"></div>
+  </div></div></div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — More Meal Card Variations</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif; background: #050508; color: #fff; }
+  :root { --earth: #2D2A24; --sand: #F6F5F0; --trail: #34D399; --rock: #8E8E7A; --stone: #EDEBE5; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 345px); gap: 16px; padding: 12px 16px 60px; justify-content: center; }
+  @media (max-width: 1100px) { .grid { grid-template-columns: repeat(2, 345px); } }
+  @media (max-width: 740px) { .grid { grid-template-columns: 345px; } }
+
+  .block { background: var(--sand); border-radius: 20px; padding: 18px; overflow: hidden; }
+  .lbl { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #fff; text-align: center; margin-bottom: 4px; }
+  .dsc { font-size: 9px; color: #555; text-align: center; margin-bottom: 10px; line-height: 1.4; }
+
+
+  /* ============================================================
+     A: NUMBERED EDITORIAL — Bold meal number leads, content right
+     ============================================================ */
+  .a-meal { display: flex; gap: 12px; margin-bottom: 14px; cursor: pointer; }
+  .a-num { font-size: 40px; font-weight: 900; color: var(--stone); letter-spacing: -2px; line-height: 1; width: 44px; flex-shrink: 0; text-align: center; padding-top: 2px; }
+  .a-body { flex: 1; background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); padding: 16px; }
+  .a-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .a-name { font-size: 16px; font-weight: 700; color: var(--earth); margin-top: 4px; letter-spacing: -0.3px; }
+  .a-macros { font-size: 11px; color: var(--rock); margin-top: 3px; }
+  .a-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+  .a-cal { font-size: 22px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .a-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .a-pills { display: flex; gap: 4px; }
+  .a-pill { padding: 5px 10px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .a-pill.r { background: var(--stone); color: var(--earth); }
+  .a-pill.s { background: rgba(52,211,153,0.06); color: #047857; }
+
+
+  /* ============================================================
+     B: STACKED FULL-WIDTH — Edge-to-edge cards, no border radius
+     Clean horizontal dividers. Calorie right-aligned bold.
+     ============================================================ */
+  .b-meal { padding: 16px 0; border-bottom: 1px solid var(--stone); cursor: pointer; }
+  .b-meal:last-child { border-bottom: none; }
+  .b-row { display: flex; align-items: center; gap: 14px; }
+  .b-emoji { font-size: 28px; flex-shrink: 0; }
+  .b-mid { flex: 1; }
+  .b-time { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .b-name { font-size: 16px; font-weight: 700; color: var(--earth); margin-top: 2px; letter-spacing: -0.3px; }
+  .b-desc { font-size: 11px; color: var(--rock); margin-top: 3px; line-height: 1.4; }
+  .b-right { text-align: right; flex-shrink: 0; }
+  .b-cal { font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.5px; }
+  .b-cal span { font-size: 9px; color: var(--rock); font-weight: 500; display: block; }
+  .b-macros { font-size: 10px; color: var(--rock); margin-top: 2px; }
+
+
+  /* ============================================================
+     C: DARK CARDS WITH GLOW — All dark, each with a warm glow
+     ============================================================ */
+  .c-meal { background: var(--earth); border-radius: 22px; padding: 20px; margin-bottom: 10px; position: relative; overflow: hidden; cursor: pointer; transition: transform 0.2s; }
+  .c-meal:active { transform: scale(0.98); }
+  .c-glow { position: absolute; width: 150px; height: 150px; border-radius: 50%; filter: blur(50px); opacity: 0.06; top: -40px; right: -30px; }
+  .c-meal:nth-child(1) .c-glow { background: #F59E0B; }
+  .c-meal:nth-child(2) .c-glow { background: var(--trail); }
+  .c-meal:nth-child(3) .c-glow { background: #F97316; }
+  .c-meal:nth-child(4) .c-glow { background: #818CF8; }
+  .c-top { display: flex; justify-content: space-between; align-items: center; position: relative; }
+  .c-time { font-size: 9px; color: rgba(246,245,240,0.3); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+  .c-cal { font-size: 20px; font-weight: 800; color: var(--sand); letter-spacing: -0.5px; }
+  .c-cal span { font-size: 9px; color: rgba(246,245,240,0.3); font-weight: 500; }
+  .c-name { font-size: 18px; font-weight: 700; color: var(--sand); margin-top: 10px; letter-spacing: -0.3px; position: relative; }
+  .c-macros { font-size: 11px; color: rgba(246,245,240,0.35); margin-top: 4px; position: relative; }
+  .c-acts { display: flex; gap: 5px; margin-top: 12px; position: relative; }
+  .c-btn { padding: 7px 14px; border-radius: 10px; font-size: 10px; font-weight: 600; }
+  .c-btn.cook { background: rgba(246,245,240,0.08); color: var(--sand); }
+  .c-btn.recipe { background: rgba(246,245,240,0.05); color: rgba(246,245,240,0.5); }
+  .c-btn.swap { background: rgba(52,211,153,0.1); color: var(--trail); }
+
+
+  /* ============================================================
+     D: HORIZONTAL SCROLL COMPACT — Small horizontal swipeable cards
+     ============================================================ */
+  .d-scroll { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; padding-bottom: 4px; }
+  .d-scroll::-webkit-scrollbar { display: none; }
+  .d-card { min-width: 160px; border-radius: 20px; padding: 16px; flex-shrink: 0; cursor: pointer; transition: transform 0.2s; }
+  .d-card:active { transform: scale(0.96); }
+  .d-card:nth-child(1) { background: var(--earth); }
+  .d-card:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .d-card:nth-child(3) { background: var(--stone); }
+  .d-card:nth-child(4) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .d-emoji { font-size: 32px; }
+  .d-time { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-top: 10px; }
+  .d-card:nth-child(1) .d-time { color: rgba(246,245,240,0.3); }
+  .d-card:nth-child(2) .d-time, .d-card:nth-child(4) .d-time { color: var(--rock); }
+  .d-card:nth-child(3) .d-time { color: var(--rock); }
+  .d-name { font-size: 14px; font-weight: 700; margin-top: 4px; line-height: 1.2; }
+  .d-card:nth-child(1) .d-name { color: var(--sand); }
+  .d-card:nth-child(2) .d-name, .d-card:nth-child(4) .d-name { color: var(--earth); }
+  .d-card:nth-child(3) .d-name { color: var(--earth); }
+  .d-cal { font-size: 24px; font-weight: 800; letter-spacing: -1px; margin-top: 10px; }
+  .d-card:nth-child(1) .d-cal { color: var(--sand); }
+  .d-card:nth-child(2) .d-cal, .d-card:nth-child(4) .d-cal { color: var(--earth); }
+  .d-card:nth-child(3) .d-cal { color: var(--earth); }
+  .d-cal span { font-size: 9px; font-weight: 500; }
+  .d-card:nth-child(1) .d-cal span { color: rgba(246,245,240,0.3); }
+  .d-card:nth-child(2) .d-cal span, .d-card:nth-child(3) .d-cal span, .d-card:nth-child(4) .d-cal span { color: var(--rock); }
+
+
+  /* ============================================================
+     E: TIMELINE ROWS — Time column left, card right, connected
+     ============================================================ */
+  .e-wrap { position: relative; padding-left: 52px; }
+  .e-line { position: absolute; left: 23px; top: 8px; bottom: 8px; width: 2px; background: var(--stone); }
+  .e-meal { display: flex; margin-bottom: 12px; position: relative; }
+  .e-time-col { position: absolute; left: -52px; width: 46px; text-align: center; padding-top: 14px; }
+  .e-dot { width: 10px; height: 10px; border-radius: 50%; margin: 0 auto 4px; border: 2px solid var(--stone); background: var(--sand); }
+  .e-meal:first-child .e-dot { border-color: var(--trail); background: rgba(52,211,153,0.1); }
+  .e-hour { font-size: 11px; font-weight: 800; color: var(--earth); }
+  .e-ampm { font-size: 7px; color: var(--rock); font-weight: 600; }
+  .e-card { flex: 1; background: #fff; border-radius: 18px; border: 1px solid rgba(0,0,0,0.04); padding: 14px 16px; }
+  .e-card-head { display: flex; justify-content: space-between; align-items: center; }
+  .e-label { font-size: 9px; color: var(--rock); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .e-cal { font-size: 16px; font-weight: 800; color: var(--earth); }
+  .e-cal span { font-size: 9px; color: var(--rock); font-weight: 500; }
+  .e-name { font-size: 15px; font-weight: 600; color: var(--earth); margin-top: 4px; }
+  .e-macros { font-size: 11px; color: var(--rock); margin-top: 2px; }
+  .e-acts { display: flex; gap: 4px; margin-top: 8px; }
+  .e-btn { padding: 5px 10px; border-radius: 8px; font-size: 9px; font-weight: 600; }
+  .e-btn.r { background: var(--stone); color: var(--earth); }
+  .e-btn.s { background: rgba(52,211,153,0.06); color: #047857; }
+  .e-btn.n { background: rgba(45,42,36,0.03); color: #AEAEB2; }
+
+
+  /* ============================================================
+     F: 2x2 BENTO — Square tiles, tap any for detail overlay
+     ============================================================ */
+  .f-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .f-tile { border-radius: 20px; padding: 16px; min-height: 130px; display: flex; flex-direction: column; justify-content: flex-end; position: relative; cursor: pointer; transition: transform 0.2s; overflow: hidden; }
+  .f-tile:active { transform: scale(0.96); }
+  .f-tile:nth-child(1) { background: var(--earth); }
+  .f-tile:nth-child(2) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .f-tile:nth-child(3) { background: #fff; border: 1px solid rgba(0,0,0,0.04); }
+  .f-tile:nth-child(4) { background: var(--stone); }
+  .f-tile .emoji { position: absolute; top: 12px; right: 12px; font-size: 24px; opacity: 0.15; }
+  .f-tile:nth-child(1) .emoji { opacity: 0.1; }
+  .f-tile .time { font-size: 8px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .f-tile:nth-child(1) .time { color: rgba(246,245,240,0.3); }
+  .f-tile:nth-child(2) .time, .f-tile:nth-child(3) .time { color: var(--rock); }
+  .f-tile:nth-child(4) .time { color: var(--rock); }
+  .f-tile .name { font-size: 14px; font-weight: 700; margin-top: 4px; line-height: 1.2; }
+  .f-tile:nth-child(1) .name { color: var(--sand); }
+  .f-tile:nth-child(2) .name, .f-tile:nth-child(3) .name { color: var(--earth); }
+  .f-tile:nth-child(4) .name { color: var(--earth); }
+  .f-tile .cal { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; margin-top: 6px; }
+  .f-tile:nth-child(1) .cal { color: var(--sand); }
+  .f-tile:nth-child(2) .cal, .f-tile:nth-child(3) .cal { color: var(--earth); }
+  .f-tile:nth-child(4) .cal { color: var(--earth); }
+  .f-tile .cal span { font-size: 9px; font-weight: 500; }
+  .f-tile:nth-child(1) .cal span { color: rgba(246,245,240,0.3); }
+  .f-tile:nth-child(2) .cal span, .f-tile:nth-child(3) .cal span, .f-tile:nth-child(4) .cal span { color: var(--rock); }
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+<!-- A -->
+<div>
+  <div class="lbl" style="color:var(--trail);">A — Numbered Editorial</div>
+  <div class="dsc">Big ghost meal numbers (01-04) on the left gutter. Cards on the right with bold calorie + quick action pills. Magazine editorial feel.</div>
+  <div class="block">
+    <div class="a-meal"><div class="a-num">01</div><div class="a-body"><div class="a-time"><span>🌅</span> Breakfast · 8 AM</div><div class="a-name">Greek Yogurt Power Bowl</div><div class="a-macros">35g P · 42g C · 12g F</div><div class="a-footer"><div class="a-cal">520 <span>kcal</span></div><div class="a-pills"><span class="a-pill r">Recipe</span><span class="a-pill s">Swap</span></div></div></div></div>
+    <div class="a-meal"><div class="a-num">02</div><div class="a-body"><div class="a-time"><span>☀️</span> Lunch · 12 PM</div><div class="a-name">Grilled Chicken & Rice</div><div class="a-macros">45g P · 55g C · 14g F</div><div class="a-footer"><div class="a-cal">680 <span>kcal</span></div><div class="a-pills"><span class="a-pill r">Recipe</span><span class="a-pill s">Swap</span></div></div></div></div>
+    <div class="a-meal"><div class="a-num">03</div><div class="a-body"><div class="a-time"><span>🌇</span> Snack · 4 PM</div><div class="a-name">Protein Shake & Almonds</div><div class="a-macros">37g P · 18g C · 14g F</div><div class="a-footer"><div class="a-cal">260 <span>kcal</span></div><div class="a-pills"><span class="a-pill r">Recipe</span><span class="a-pill s">Swap</span></div></div></div></div>
+    <div class="a-meal"><div class="a-num">04</div><div class="a-body"><div class="a-time"><span>🌙</span> Dinner · 7 PM</div><div class="a-name">Salmon & Sweet Potato</div><div class="a-macros">48g P · 62g C · 22g F</div><div class="a-footer"><div class="a-cal">720 <span>kcal</span></div><div class="a-pills"><span class="a-pill r">Recipe</span><span class="a-pill s">Swap</span></div></div></div></div>
+  </div>
+</div>
+
+<!-- B -->
+<div>
+  <div class="lbl" style="color:#818CF8;">B — Clean Dividers</div>
+  <div class="dsc">No cards. Just clean rows separated by thin dividers. Big emoji, description visible, bold 24px calorie right-aligned. Breathes.</div>
+  <div class="block">
+    <div class="b-meal"><div class="b-row"><div class="b-emoji">🥣</div><div class="b-mid"><div class="b-time">🌅 Breakfast · 8 AM</div><div class="b-name">Greek Yogurt Power Bowl</div><div class="b-desc">Yogurt, berries, granola, chia, honey</div></div><div class="b-right"><div class="b-cal">520<span>kcal</span></div><div class="b-macros">35P 42C 12F</div></div></div></div>
+    <div class="b-meal"><div class="b-row"><div class="b-emoji">🍗</div><div class="b-mid"><div class="b-time">☀️ Lunch · 12 PM</div><div class="b-name">Grilled Chicken & Rice</div><div class="b-desc">Herb chicken, brown rice, broccoli</div></div><div class="b-right"><div class="b-cal">680<span>kcal</span></div><div class="b-macros">45P 55C 14F</div></div></div></div>
+    <div class="b-meal"><div class="b-row"><div class="b-emoji">🥤</div><div class="b-mid"><div class="b-time">🌇 Snack · 4 PM</div><div class="b-name">Protein Shake & Almonds</div><div class="b-desc">Whey protein, banana, almonds</div></div><div class="b-right"><div class="b-cal">260<span>kcal</span></div><div class="b-macros">37P 18C 14F</div></div></div></div>
+    <div class="b-meal"><div class="b-row"><div class="b-emoji">🐟</div><div class="b-mid"><div class="b-time">🌙 Dinner · 7 PM</div><div class="b-name">Salmon & Sweet Potato</div><div class="b-desc">Salmon, sweet potato, asparagus</div></div><div class="b-right"><div class="b-cal">720<span>kcal</span></div><div class="b-macros">48P 62C 22F</div></div></div></div>
+  </div>
+</div>
+
+<!-- C -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">C — Dark Glow Cards</div>
+  <div class="dsc">All dark earth cards. Each has a unique warm glow blob (amber, green, orange, indigo). 18px name, actions always visible. Moody, premium.</div>
+  <div class="block">
+    <div class="c-meal"><div class="c-glow"></div><div class="c-top"><div class="c-time"><span>🌅</span> 8 AM · Breakfast</div><div class="c-cal">520 <span>kcal</span></div></div><div class="c-name">Greek Yogurt Power Bowl</div><div class="c-macros">35g P · 42g C · 12g F</div><div class="c-acts"><span class="c-btn cook">🍳 Cook</span><span class="c-btn recipe">Recipe</span><span class="c-btn swap">Swap</span></div></div>
+    <div class="c-meal"><div class="c-glow"></div><div class="c-top"><div class="c-time"><span>☀️</span> 12 PM · Lunch</div><div class="c-cal">680 <span>kcal</span></div></div><div class="c-name">Grilled Chicken & Rice</div><div class="c-macros">45g P · 55g C · 14g F</div><div class="c-acts"><span class="c-btn cook">🍳 Cook</span><span class="c-btn recipe">Recipe</span><span class="c-btn swap">Swap</span></div></div>
+    <div class="c-meal"><div class="c-glow"></div><div class="c-top"><div class="c-time"><span>🌇</span> 4 PM · Snack</div><div class="c-cal">260 <span>kcal</span></div></div><div class="c-name">Protein Shake & Almonds</div><div class="c-macros">37g P · 18g C · 14g F</div><div class="c-acts"><span class="c-btn cook">🍳 Cook</span><span class="c-btn recipe">Recipe</span><span class="c-btn swap">Swap</span></div></div>
+    <div class="c-meal"><div class="c-glow"></div><div class="c-top"><div class="c-time"><span>🌙</span> 7 PM · Dinner</div><div class="c-cal">720 <span>kcal</span></div></div><div class="c-name">Salmon & Sweet Potato</div><div class="c-macros">48g P · 62g C · 22g F</div><div class="c-acts"><span class="c-btn cook">🍳 Cook</span><span class="c-btn recipe">Recipe</span><span class="c-btn swap">Swap</span></div></div>
+  </div>
+</div>
+
+<!-- D -->
+<div>
+  <div class="lbl" style="color:var(--trail);">D — Horizontal Compact</div>
+  <div class="dsc">Swipeable small cards. Alternating dark/white/stone. Big emoji, bold name, large calorie. Scroll sideways to browse. Most compact.</div>
+  <div class="block">
+    <div class="d-scroll">
+      <div class="d-card"><div class="d-emoji">🥣</div><div class="d-time">Breakfast</div><div class="d-name">Greek Yogurt Power Bowl</div><div class="d-cal">520 <span>kcal</span></div></div>
+      <div class="d-card"><div class="d-emoji">🍗</div><div class="d-time">Lunch</div><div class="d-name">Grilled Chicken & Rice</div><div class="d-cal">680 <span>kcal</span></div></div>
+      <div class="d-card"><div class="d-emoji">🥤</div><div class="d-time">Snack</div><div class="d-name">Protein Shake</div><div class="d-cal">260 <span>kcal</span></div></div>
+      <div class="d-card"><div class="d-emoji">🐟</div><div class="d-time">Dinner</div><div class="d-name">Salmon & Sweet Potato</div><div class="d-cal">720 <span>kcal</span></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- E -->
+<div>
+  <div class="lbl" style="color:#818CF8;">E — Timeline</div>
+  <div class="dsc">Time column on the left with dots + connecting line. Cards on the right with calorie badge, name, and quick action pills. Structured, temporal.</div>
+  <div class="block">
+    <div class="e-wrap">
+      <div class="e-line"></div>
+      <div class="e-meal"><div class="e-time-col"><div class="e-dot"></div><div class="e-hour">8</div><div class="e-ampm">AM</div></div><div class="e-card"><div class="e-card-head"><div class="e-label">🌅 Breakfast</div><div class="e-cal">520 <span>kcal</span></div></div><div class="e-name">Greek Yogurt Power Bowl</div><div class="e-macros">35g P · 42g C · 12g F</div><div class="e-acts"><span class="e-btn r">Recipe</span><span class="e-btn s">Swap</span><span class="e-btn n">Nah</span></div></div></div>
+      <div class="e-meal"><div class="e-time-col"><div class="e-dot"></div><div class="e-hour">12</div><div class="e-ampm">PM</div></div><div class="e-card"><div class="e-card-head"><div class="e-label">☀️ Lunch</div><div class="e-cal">680 <span>kcal</span></div></div><div class="e-name">Grilled Chicken & Rice</div><div class="e-macros">45g P · 55g C · 14g F</div><div class="e-acts"><span class="e-btn r">Recipe</span><span class="e-btn s">Swap</span><span class="e-btn n">Nah</span></div></div></div>
+      <div class="e-meal"><div class="e-time-col"><div class="e-dot"></div><div class="e-hour">4</div><div class="e-ampm">PM</div></div><div class="e-card"><div class="e-card-head"><div class="e-label">🌇 Snack</div><div class="e-cal">260 <span>kcal</span></div></div><div class="e-name">Protein Shake & Almonds</div><div class="e-macros">37g P · 18g C · 14g F</div><div class="e-acts"><span class="e-btn r">Recipe</span><span class="e-btn s">Swap</span></div></div></div>
+      <div class="e-meal"><div class="e-time-col"><div class="e-dot"></div><div class="e-hour">7</div><div class="e-ampm">PM</div></div><div class="e-card"><div class="e-card-head"><div class="e-label">🌙 Dinner</div><div class="e-cal">720 <span>kcal</span></div></div><div class="e-name">Salmon & Sweet Potato</div><div class="e-macros">48g P · 62g C · 22g F</div><div class="e-acts"><span class="e-btn r">Recipe</span><span class="e-btn s">Swap</span><span class="e-btn n">Nah</span></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- F -->
+<div>
+  <div class="lbl" style="color:#F59E0B;">F — 2×2 Bento</div>
+  <div class="dsc">Square tiles. Dark/white/white/stone alternating. Ghost emoji. Bold calorie. Tap any for detail. Fits all 4 meals in one screen.</div>
+  <div class="block">
+    <div class="f-grid">
+      <div class="f-tile"><div class="emoji">🌅</div><div class="time">Breakfast · 8 AM</div><div class="name">Greek Yogurt Power Bowl</div><div class="cal">520 <span>kcal</span></div></div>
+      <div class="f-tile"><div class="emoji">☀️</div><div class="time">Lunch · 12 PM</div><div class="name">Grilled Chicken & Rice</div><div class="cal">680 <span>kcal</span></div></div>
+      <div class="f-tile"><div class="emoji">🌇</div><div class="time">Snack · 4 PM</div><div class="name">Protein Shake</div><div class="cal">260 <span>kcal</span></div></div>
+      <div class="f-tile"><div class="emoji">🌙</div><div class="time">Dinner · 7 PM</div><div class="name">Salmon & Sweet Potato</div><div class="cal">720 <span>kcal</span></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+</body>
+</html>

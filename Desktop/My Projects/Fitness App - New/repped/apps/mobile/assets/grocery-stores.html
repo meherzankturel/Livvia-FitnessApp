@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repped — Nearby Stores Options</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#050508}
+:root{--earth:#2D2A24;--sand:#F6F5F0;--trail:#34D399;--rock:#8E8E7A;--stone:#EDEBE5}
+.grid{display:grid;grid-template-columns:repeat(3,393px);gap:16px;padding:8px 10px 60px;justify-content:center}
+@media(max-width:1250px){.grid{grid-template-columns:repeat(2,393px)}}
+@media(max-width:830px){.grid{grid-template-columns:393px}}
+.col-label{text-align:center;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#888;padding:4px 0 2px}
+.col-desc{text-align:center;font-size:8px;color:#555;padding:0 6px 4px;line-height:1.3;max-width:393px;margin:0 auto}
+.phone{width:393px;height:852px;border-radius:48px;overflow:hidden;position:relative;border:2.5px solid rgba(255,255,255,0.06);background:var(--sand)}
+.ps{width:100%;height:100%;overflow-y:auto;scrollbar-width:none;overflow-x:hidden}
+.ps::-webkit-scrollbar{display:none}
+
+/* List placeholder above */
+.list-ph{padding:56px 24px 0}
+.list-ph-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:0.5px solid rgba(0,0,0,0.04)}
+.list-ph-cb{width:14px;height:14px;border-radius:50%;border:1.5px solid var(--stone);flex-shrink:0}
+.list-ph-bar{height:10px;border-radius:5px;background:var(--stone);flex:1;opacity:0.25}
+.list-ph-sm{width:30px;height:8px;border-radius:4px;background:var(--stone);opacity:0.2}
+
+/* Section head shared */
+.s-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.s-title{font-size:11px;font-weight:800;color:var(--earth);text-transform:uppercase;letter-spacing:2px}
+.s-accent{width:18px;height:2px;border-radius:1px;background:var(--trail);opacity:0.4;margin-top:4px}
+.s-meta{font-size:10px;color:var(--rock)}
+
+
+/* ============================================================
+   N1: CLEAN CARDS — White cards with store info. Open/closed
+   badge. Distance + walk time + rating inline. Tap to navigate.
+   ============================================================ */
+.n1{padding:20px 20px 50px}
+
+.n1-card{background:#fff;border-radius:16px;padding:14px 16px;margin-bottom:8px;cursor:pointer;border:1px solid rgba(0,0,0,0.03);transition:all 0.15s}
+.n1-card:active{transform:scale(0.98)}
+.n1-card.closest{border-color:rgba(52,211,153,0.15)}
+
+.n1-top{display:flex;align-items:center;justify-content:space-between}
+.n1-name{font-size:14px;font-weight:600;color:var(--earth);letter-spacing:-0.2px}
+.n1-badge{padding:3px 8px;border-radius:100px;font-size:8px;font-weight:700}
+.n1-badge.open{background:rgba(52,211,153,0.08);color:var(--trail)}
+.n1-badge.closed{background:rgba(239,68,68,0.06);color:#EF4444}
+
+.n1-bottom{display:flex;align-items:center;gap:6px;margin-top:6px}
+.n1-dist{font-size:12px;font-weight:700;color:var(--earth)}
+.n1-sep{width:3px;height:3px;border-radius:50%;background:var(--stone)}
+.n1-walk{font-size:11px;color:var(--rock)}
+.n1-rating{font-size:11px;color:var(--rock);margin-left:auto}
+
+.n1-address{font-size:10px;color:var(--rock);margin-top:3px;opacity:0.6}
+
+
+/* ============================================================
+   N2: HORIZONTAL SCROLL — Store cards as horizontal swipeable.
+   Each card is compact. Closest highlighted. Saves vertical space.
+   ============================================================ */
+.n2{padding:20px 0 50px}
+.n2-head{padding:0 24px}
+
+.n2-scroll{display:flex;gap:8px;overflow-x:auto;padding:0 24px;scrollbar-width:none;scroll-snap-type:x mandatory}
+.n2-scroll::-webkit-scrollbar{display:none}
+
+.n2-card{flex-shrink:0;width:200px;background:#fff;border-radius:16px;padding:14px;cursor:pointer;scroll-snap-align:start;border:1px solid rgba(0,0,0,0.03)}
+.n2-card.closest{border-color:rgba(52,211,153,0.15);background:rgba(52,211,153,0.02)}
+
+.n2-name{font-size:13px;font-weight:600;color:var(--earth);margin-bottom:4px}
+.n2-badge{display:inline-block;padding:2px 6px;border-radius:100px;font-size:7px;font-weight:700;margin-bottom:6px}
+.n2-badge.open{background:rgba(52,211,153,0.08);color:var(--trail)}
+.n2-badge.closed{background:rgba(239,68,68,0.06);color:#EF4444}
+
+.n2-stats{display:flex;gap:8px}
+.n2-stat{text-align:center}
+.n2-stat-val{font-size:12px;font-weight:700;color:var(--earth)}
+.n2-stat-label{font-size:7px;color:var(--rock);text-transform:uppercase;letter-spacing:0.3px}
+
+.n2-nav{display:flex;align-items:center;gap:4px;margin-top:8px;padding-top:6px;border-top:0.5px solid rgba(0,0,0,0.04)}
+.n2-nav-text{font-size:9px;font-weight:600;color:var(--trail)}
+.n2-nav-arrow{font-size:10px;color:var(--trail);opacity:0.5}
+
+
+/* ============================================================
+   N3: MINIMAL LIST — No cards. Just rows with distance as
+   bold number left, name + details right. Like a leaderboard.
+   ============================================================ */
+.n3{padding:20px 24px 50px}
+
+.n3-row{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:0.5px solid rgba(0,0,0,0.04);cursor:pointer}
+.n3-row:last-child{border-bottom:none}
+
+.n3-dist-wrap{text-align:center;min-width:50px;flex-shrink:0}
+.n3-dist-val{font-size:16px;font-weight:800;color:var(--earth);letter-spacing:-0.5px}
+.n3-dist-unit{font-size:8px;color:var(--rock);text-transform:uppercase}
+.n3-row.closest .n3-dist-val{color:var(--trail)}
+
+.n3-info{flex:1}
+.n3-name{font-size:14px;font-weight:600;color:var(--earth)}
+.n3-details{display:flex;align-items:center;gap:6px;margin-top:2px}
+.n3-walk{font-size:10px;color:var(--rock)}
+.n3-rating{font-size:10px;color:var(--rock)}
+.n3-sep{width:3px;height:3px;border-radius:50%;background:var(--stone)}
+
+.n3-badge{padding:3px 8px;border-radius:100px;font-size:8px;font-weight:700;flex-shrink:0}
+.n3-badge.open{background:rgba(52,211,153,0.08);color:var(--trail)}
+.n3-badge.closed{background:rgba(239,68,68,0.06);color:#EF4444}
+
+.n3-arrow{font-size:14px;color:var(--stone);flex-shrink:0}
+
+
+/* ============================================================
+   N4: DARK CARD — Single dark card with all stores listed.
+   Closest store highlighted with green. Compact, contained.
+   ============================================================ */
+.n4{padding:20px 18px 50px}
+
+.n4-card{background:var(--earth);border-radius:20px;padding:16px;position:relative;overflow:hidden}
+.n4-diag{position:absolute;height:1px;background:rgba(246,245,240,0.04);transform-origin:right top}
+.n4-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;position:relative}
+.n4-card-title{font-size:10px;font-weight:700;color:rgba(246,245,240,0.4);text-transform:uppercase;letter-spacing:1.5px}
+.n4-card-pin{font-size:12px}
+
+.n4-store{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid rgba(246,245,240,0.04);cursor:pointer;position:relative}
+.n4-store:last-child{border-bottom:none}
+
+.n4-store-num{width:22px;height:22px;border-radius:11px;background:rgba(246,245,240,0.06);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:rgba(246,245,240,0.4);flex-shrink:0}
+.n4-store.closest .n4-store-num{background:rgba(52,211,153,0.15);color:var(--trail)}
+
+.n4-store-info{flex:1}
+.n4-store-name{font-size:13px;font-weight:600;color:var(--sand)}
+.n4-store-meta{display:flex;gap:6px;margin-top:2px}
+.n4-store-dist{font-size:10px;font-weight:700;color:rgba(246,245,240,0.5)}
+.n4-store.closest .n4-store-dist{color:var(--trail)}
+.n4-store-walk{font-size:10px;color:rgba(246,245,240,0.25)}
+
+.n4-store-badge{padding:2px 6px;border-radius:100px;font-size:7px;font-weight:700;flex-shrink:0}
+.n4-store-badge.open{background:rgba(52,211,153,0.1);color:var(--trail)}
+.n4-store-badge.closed{background:rgba(239,68,68,0.08);color:#EF4444}
+
+
+/* ============================================================
+   N5: MAP PIN STYLE — Each store as a pin on a "mini map"
+   (abstract). Distance as concentric rings from center.
+   ============================================================ */
+.n5{padding:20px 20px 50px}
+
+/* Abstract map area */
+.n5-map{background:var(--stone);border-radius:18px;padding:16px;position:relative;min-height:160px;margin-bottom:12px}
+.n5-map-ring{position:absolute;border:1px dashed rgba(0,0,0,0.05);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%)}
+.n5-map-ring.r1{width:60px;height:60px}
+.n5-map-ring.r2{width:120px;height:120px}
+.n5-map-ring.r3{width:180px;height:180px}
+.n5-you{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:10px;height:10px;border-radius:50%;background:var(--trail);box-shadow:0 0 8px rgba(52,211,153,0.3)}
+.n5-pin{position:absolute;display:flex;flex-direction:column;align-items:center;cursor:pointer}
+.n5-pin-dot{width:22px;height:22px;border-radius:11px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--earth);box-shadow:0 2px 6px rgba(0,0,0,0.08)}
+.n5-pin-name{font-size:7px;font-weight:600;color:var(--rock);margin-top:2px;white-space:nowrap}
+
+.n5-list{}
+.n5-store{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:0.5px solid rgba(0,0,0,0.04);cursor:pointer}
+.n5-store:last-child{border-bottom:none}
+.n5-store-name{font-size:13px;font-weight:600;color:var(--earth);flex:1}
+.n5-store-dist{font-size:11px;font-weight:700;color:var(--earth)}
+.n5-store.closest .n5-store-dist{color:var(--trail)}
+.n5-store-walk{font-size:10px;color:var(--rock)}
+.n5-store-arrow{font-size:12px;color:var(--stone)}
+
+
+/* ============================================================
+   N6: TIMELINE ROUTE — Stores on a walking route timeline.
+   "You" at top, stores as waypoints with distance labels.
+   ============================================================ */
+.n6{padding:20px 24px 50px}
+
+.n6-route{position:relative;padding-left:34px}
+.n6-line{position:absolute;left:9px;top:10px;bottom:10px;width:2px;background:var(--stone)}
+
+/* You node */
+.n6-you{position:relative;margin-bottom:14px}
+.n6-you-dot{position:absolute;left:-34px;top:2px;width:20px;height:20px;border-radius:10px;background:var(--trail);z-index:1;display:flex;align-items:center;justify-content:center;box-shadow:0 0 8px rgba(52,211,153,0.2)}
+.n6-you-dot-inner{width:6px;height:6px;border-radius:50%;background:#fff}
+.n6-you-text{font-size:11px;font-weight:600;color:var(--trail)}
+
+/* Store node */
+.n6-store{position:relative;margin-bottom:10px;cursor:pointer}
+.n6-store-dot{position:absolute;left:-34px;top:6px;width:20px;height:20px;border-radius:10px;background:#fff;z-index:1;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--earth);border:2px solid var(--stone);box-shadow:0 1px 4px rgba(0,0,0,0.04)}
+.n6-store.closest .n6-store-dot{border-color:var(--trail);color:var(--trail)}
+
+.n6-store-card{background:#fff;border-radius:14px;padding:12px 14px;border:1px solid rgba(0,0,0,0.03)}
+.n6-store.closest .n6-store-card{border-color:rgba(52,211,153,0.12)}
+.n6-store-top{display:flex;justify-content:space-between;align-items:center}
+.n6-store-name{font-size:13px;font-weight:600;color:var(--earth)}
+.n6-store-badge{padding:2px 6px;border-radius:100px;font-size:7px;font-weight:700}
+.n6-store-badge.open{background:rgba(52,211,153,0.08);color:var(--trail)}
+.n6-store-meta{display:flex;gap:8px;margin-top:4px}
+.n6-store-dist{font-size:11px;font-weight:700;color:var(--earth)}
+.n6-store.closest .n6-store-dist{color:var(--trail)}
+.n6-store-walk{font-size:10px;color:var(--rock)}
+.n6-store-rating{font-size:10px;color:var(--rock)}
+
+</style>
+</head>
+<body>
+
+<div class="grid">
+
+  <!-- N1 -->
+  <div>
+    <div class="col-label">N1 — CLEAN CARDS</div>
+    <div class="col-desc">White cards per store. Name + open/closed badge. Distance + walk time + rating. Address below. Closest has green border.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n1"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div>
+        <div class="n1-card closest"><div class="n1-top"><span class="n1-name">No Frills</span><span class="n1-badge open">Open</span></div><div class="n1-bottom"><span class="n1-dist">0.8 km</span><span class="n1-sep"></span><span class="n1-walk">🚶 10 min</span><span class="n1-rating">⭐ 4.2</span></div><div class="n1-address">245 Queen St W</div></div>
+        <div class="n1-card"><div class="n1-top"><span class="n1-name">Walmart Supercentre</span><span class="n1-badge open">Open</span></div><div class="n1-bottom"><span class="n1-dist">1.2 km</span><span class="n1-sep"></span><span class="n1-walk">🚶 14 min</span><span class="n1-rating">⭐ 3.8</span></div><div class="n1-address">900 Dufferin St</div></div>
+        <div class="n1-card"><div class="n1-top"><span class="n1-name">Loblaws</span><span class="n1-badge closed">Closed</span></div><div class="n1-bottom"><span class="n1-dist">1.8 km</span><span class="n1-sep"></span><span class="n1-walk">🚶 22 min</span><span class="n1-rating">⭐ 4.5</span></div><div class="n1-address">396 St. Clair Ave W</div></div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- N2 -->
+  <div>
+    <div class="col-label">N2 — HORIZONTAL SCROLL</div>
+    <div class="col-desc">Store cards as horizontal swipeable. Compact. Saves vertical space. "Navigate" link at bottom.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n2"><div class="n2-head"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div></div>
+        <div class="n2-scroll">
+          <div class="n2-card closest"><div class="n2-name">No Frills</div><span class="n2-badge open">Open</span><div class="n2-stats"><div class="n2-stat"><div class="n2-stat-val">0.8</div><div class="n2-stat-label">km</div></div><div class="n2-stat"><div class="n2-stat-val">10</div><div class="n2-stat-label">min walk</div></div><div class="n2-stat"><div class="n2-stat-val">4.2</div><div class="n2-stat-label">rating</div></div></div><div class="n2-nav"><span class="n2-nav-text">Navigate</span><span class="n2-nav-arrow">→</span></div></div>
+          <div class="n2-card"><div class="n2-name">Walmart</div><span class="n2-badge open">Open</span><div class="n2-stats"><div class="n2-stat"><div class="n2-stat-val">1.2</div><div class="n2-stat-label">km</div></div><div class="n2-stat"><div class="n2-stat-val">14</div><div class="n2-stat-label">min walk</div></div><div class="n2-stat"><div class="n2-stat-val">3.8</div><div class="n2-stat-label">rating</div></div></div><div class="n2-nav"><span class="n2-nav-text">Navigate</span><span class="n2-nav-arrow">→</span></div></div>
+          <div class="n2-card"><div class="n2-name">Loblaws</div><span class="n2-badge closed">Closed</span><div class="n2-stats"><div class="n2-stat"><div class="n2-stat-val">1.8</div><div class="n2-stat-label">km</div></div><div class="n2-stat"><div class="n2-stat-val">22</div><div class="n2-stat-label">min walk</div></div><div class="n2-stat"><div class="n2-stat-val">4.5</div><div class="n2-stat-label">rating</div></div></div><div class="n2-nav"><span class="n2-nav-text">Navigate</span><span class="n2-nav-arrow">→</span></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- N3 -->
+  <div>
+    <div class="col-label">N3 — DISTANCE LEADERBOARD</div>
+    <div class="col-desc">Big distance number left. Name + walk + rating right. No cards. Clean rows. Closest in green.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n3"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div>
+        <div class="n3-row closest"><div class="n3-dist-wrap"><div class="n3-dist-val">0.8</div><div class="n3-dist-unit">km</div></div><div class="n3-info"><div class="n3-name">No Frills</div><div class="n3-details"><span class="n3-walk">🚶 10 min</span><span class="n3-sep"></span><span class="n3-rating">⭐ 4.2</span></div></div><span class="n3-badge open">Open</span><span class="n3-arrow">›</span></div>
+        <div class="n3-row"><div class="n3-dist-wrap"><div class="n3-dist-val">1.2</div><div class="n3-dist-unit">km</div></div><div class="n3-info"><div class="n3-name">Walmart Supercentre</div><div class="n3-details"><span class="n3-walk">🚶 14 min</span><span class="n3-sep"></span><span class="n3-rating">⭐ 3.8</span></div></div><span class="n3-badge open">Open</span><span class="n3-arrow">›</span></div>
+        <div class="n3-row"><div class="n3-dist-wrap"><div class="n3-dist-val">1.8</div><div class="n3-dist-unit">km</div></div><div class="n3-info"><div class="n3-name">Loblaws</div><div class="n3-details"><span class="n3-walk">🚶 22 min</span><span class="n3-sep"></span><span class="n3-rating">⭐ 4.5</span></div></div><span class="n3-badge closed">Closed</span><span class="n3-arrow">›</span></div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+<div class="grid" style="margin-top:0">
+
+  <!-- N4 -->
+  <div>
+    <div class="col-label">N4 — DARK CONTAINED CARD</div>
+    <div class="col-desc">All stores in one dark earth card. Numbered. Closest highlighted green. Compact, premium.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n4"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div>
+        <div class="n4-card">
+          <div class="n4-diag" style="width:80px;top:10px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="n4-diag" style="width:55px;top:20px;right:-4px;transform:rotate(-35deg)"></div>
+          <div class="n4-card-head"><span class="n4-card-title">Walking Distance</span><span class="n4-card-pin">📍</span></div>
+          <div class="n4-store closest"><div class="n4-store-num">1</div><div class="n4-store-info"><div class="n4-store-name">No Frills</div><div class="n4-store-meta"><span class="n4-store-dist">0.8 km</span><span class="n4-store-walk">🚶 10 min</span></div></div><span class="n4-store-badge open">Open</span></div>
+          <div class="n4-store"><div class="n4-store-num">2</div><div class="n4-store-info"><div class="n4-store-name">Walmart</div><div class="n4-store-meta"><span class="n4-store-dist">1.2 km</span><span class="n4-store-walk">🚶 14 min</span></div></div><span class="n4-store-badge open">Open</span></div>
+          <div class="n4-store"><div class="n4-store-num">3</div><div class="n4-store-info"><div class="n4-store-name">Loblaws</div><div class="n4-store-meta"><span class="n4-store-dist">1.8 km</span><span class="n4-store-walk">🚶 22 min</span></div></div><span class="n4-store-badge closed">Closed</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- N5 -->
+  <div>
+    <div class="col-label">N5 — MINI MAP + LIST</div>
+    <div class="col-desc">Abstract map with distance rings + store pins. List below. Visual, spatial.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n5"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div>
+        <div class="n5-map">
+          <div class="n5-map-ring r3"></div><div class="n5-map-ring r2"></div><div class="n5-map-ring r1"></div>
+          <div class="n5-you"></div>
+          <div class="n5-pin" style="top:32%;left:62%"><div class="n5-pin-dot">1</div><div class="n5-pin-name">No Frills</div></div>
+          <div class="n5-pin" style="top:24%;left:30%"><div class="n5-pin-dot">2</div><div class="n5-pin-name">Walmart</div></div>
+          <div class="n5-pin" style="top:68%;left:72%"><div class="n5-pin-dot">3</div><div class="n5-pin-name">Loblaws</div></div>
+        </div>
+        <div class="n5-list">
+          <div class="n5-store closest"><span class="n5-store-name">No Frills</span><span class="n5-store-dist">0.8 km</span><span class="n5-store-walk">· 10 min</span><span class="n5-store-arrow">›</span></div>
+          <div class="n5-store"><span class="n5-store-name">Walmart</span><span class="n5-store-dist">1.2 km</span><span class="n5-store-walk">· 14 min</span><span class="n5-store-arrow">›</span></div>
+          <div class="n5-store"><span class="n5-store-name">Loblaws</span><span class="n5-store-dist">1.8 km</span><span class="n5-store-walk">· 22 min</span><span class="n5-store-arrow">›</span></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- N6 -->
+  <div>
+    <div class="col-label">N6 — WALKING ROUTE</div>
+    <div class="col-desc">Timeline from "You" to stores. Trail line. White cards per store. Distance + walk + rating. Terrain language.</div>
+    <div class="phone"><div class="ps">
+      <div class="list-ph"><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:50%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:65%"></div><div class="list-ph-sm"></div></div><div class="list-ph-row"><div class="list-ph-cb"></div><div class="list-ph-bar" style="width:40%"></div><div class="list-ph-sm"></div></div></div>
+      <div class="n6"><div class="s-head"><div><span class="s-title">Nearby Stores</span><div class="s-accent"></div></div><span class="s-meta">3 found</span></div>
+        <div class="n6-route">
+          <div class="n6-line"></div>
+          <div class="n6-you"><div class="n6-you-dot"><div class="n6-you-dot-inner"></div></div><span class="n6-you-text">Your location</span></div>
+          <div class="n6-store closest"><div class="n6-store-dot">1</div><div class="n6-store-card"><div class="n6-store-top"><span class="n6-store-name">No Frills</span><span class="n6-store-badge open">Open</span></div><div class="n6-store-meta"><span class="n6-store-dist">0.8 km</span><span class="n6-store-walk">🚶 10 min</span><span class="n6-store-rating">⭐ 4.2</span></div></div></div>
+          <div class="n6-store"><div class="n6-store-dot">2</div><div class="n6-store-card"><div class="n6-store-top"><span class="n6-store-name">Walmart Supercentre</span><span class="n6-store-badge open">Open</span></div><div class="n6-store-meta"><span class="n6-store-dist">1.2 km</span><span class="n6-store-walk">🚶 14 min</span><span class="n6-store-rating">⭐ 3.8</span></div></div></div>
+          <div class="n6-store"><div class="n6-store-dot">3</div><div class="n6-store-card"><div class="n6-store-top"><span class="n6-store-name">Loblaws</span><span class="n6-store-badge open">Open</span></div><div class="n6-store-meta"><span class="n6-store-dist">1.8 km</span><span class="n6-store-walk">🚶 22 min</span><span class="n6-store-rating">⭐ 4.5</span></div></div></div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+</div>
+</body>
+</html>
