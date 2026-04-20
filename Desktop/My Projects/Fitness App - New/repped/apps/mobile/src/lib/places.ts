@@ -21,7 +21,10 @@ export async function findNearbyRestaurants(
   lng: number,
   dietaryPreference?: string
 ): Promise<PlaceResult[]> {
-  if (!PLACES_API_KEY) return [];
+  if (!PLACES_API_KEY) {
+    console.warn("Places API: No API key configured");
+    return [];
+  }
 
   const dietQuery = dietaryPreference && dietaryPreference !== "no_preference"
     ? ` ${dietaryPreference}` : "";
@@ -51,6 +54,10 @@ export async function findNearbyRestaurants(
     );
 
     const data = await response.json();
+    if (data.error) {
+      console.warn("Places API error:", data.error.message || JSON.stringify(data.error));
+      return [];
+    }
     if (!data.places) return [];
 
     return data.places.filter((place: any) => {

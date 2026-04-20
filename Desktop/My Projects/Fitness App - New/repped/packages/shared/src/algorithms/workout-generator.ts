@@ -2,6 +2,7 @@ import type { Exercise, MuscleGroup } from "../types/exercise";
 import type { Equipment, TrainingHistory, Goal, Sex } from "../types/user";
 import { shouldAvoidExercise, type UserInjury } from "../constants/injuries";
 import { inferMovementPattern, type MovementPattern } from "../constants/movement-patterns";
+import { type TrainingPhase, TRAINING_PHASES } from "../constants/training-phases";
 
 export interface WorkoutDay {
   day: number;
@@ -31,6 +32,7 @@ interface GeneratorInput {
   age?: number;
   sex?: Sex;
   bodyWeightKg?: number;
+  trainingPhase?: TrainingPhase;
 }
 
 // ─── Age Bracket ────────────────────────────────────────────────────────────────
@@ -132,12 +134,15 @@ const FEMALE_PREFERRED_PATTERNS = [
 
 // ─── Split & Focus Mapping ──────────────────────────────────────────────────────
 
+// Muscle groups per focus — balanced to produce 4-7 exercises per session.
+// Large muscles (chest, back, quads) get 2 exercises; small (biceps, triceps,
+// calves, core) get 1. This is managed by getExercisesPerGroup().
 const FOCUS_MUSCLE_MAP: Record<string, MuscleGroup[]> = {
-  "Full Body A": ["chest", "back", "quads", "core"],
-  "Full Body B": ["shoulders", "hamstrings", "glutes", "biceps", "triceps"],
-  "Full Body C": ["chest", "back", "quads", "core"],
+  "Full Body A": ["chest", "back", "quads", "shoulders"],
+  "Full Body B": ["back", "hamstrings", "glutes", "shoulders"],
+  "Full Body C": ["chest", "quads", "hamstrings", "core"],
   "Upper": ["chest", "back", "shoulders", "biceps", "triceps"],
-  "Lower": ["quads", "hamstrings", "glutes", "calves", "core"],
+  "Lower": ["quads", "hamstrings", "glutes", "calves"],
   "Push": ["chest", "shoulders", "triceps"],
   "Pull": ["back", "biceps", "core"],
   "Legs": ["quads", "hamstrings", "glutes", "calves"],
@@ -193,25 +198,44 @@ interface PositionalVolume {
   isolation: ExerciseVolumeConfig;
 }
 
+// ─── Evidence-Based Volume Configuration ─────────────────────────────────────
+//
+// Sources:
+//   Schoenfeld et al. (2017) — dose-response volume for hypertrophy
+//   Schoenfeld et al. (2016) — longer rest = better strength + hypertrophy
+//   Rhea et al. (2003) — sets by training status
+//   Helms et al. (2014) — fat loss: maintain intensity, reduce volume
+//   Helms et al. (2016) — RIR-based RPE for resistance training
+//   Carroll et al. (2019) — 1-3 RIR optimal, failure unnecessary
+//   Krieger (2010) — 2-3 sets > 1 set, diminishing returns past 4
+//   Grgic et al. (2017) — rest interval meta-analysis
+//
+// Sets: B:2-3, I:3-4, A:3-4 per exercise (Krieger 2010)
+// RPE:  B: compound 6-7 / iso 7-8 (Carroll 2019 — beginners avoid failure)
+//       I: compound 7-8 / iso 8-9
+//       A: compound 8-9 / iso 9-10
+// Rest: Compounds need 90-180s for hypertrophy (Schoenfeld 2016)
+//       Fat loss compounds: 60-90s (metabolic stress, Grgic 2017)
+//       Isolation: 60-120s hypertrophy, 30-60s fat loss
+
 function getPositionalVolume(
   history: TrainingHistory,
   goal: Goal,
   ageBracket: AgeBracket,
   sex: Sex | undefined
 ): PositionalVolume {
-  const baseSets = { beginner: 3, intermediate: 4, advanced: 4 }[history];
+  // Sets per exercise by experience (Krieger 2010, Rhea 2003)
+  const baseSets = { beginner: 3, intermediate: 3, advanced: 4 }[history];
 
   // ── Age adjustments ──
-  // Teens: cap RPE lower (safety), add rest (recovery between growth spurts)
-  // Seniors: more rest (joints), higher reps (lighter loads), lower RPE
-  const ageRestBonus = ageBracket === "senior" ? 30 : ageBracket === "teen" ? 15 : ageBracket === "adult" ? 10 : 0;
+  const ageRestBonus = ageBracket === "senior" ? 30 : ageBracket === "teen" ? 15 : 0;
   const ageRpeReduction = ageBracket === "senior" ? 1.5 : ageBracket === "teen" ? 1 : 0;
-  const ageRepBonus = ageBracket === "senior" ? 3 : ageBracket === "teen" ? 2 : 0;
+  const ageRepBonus = ageBracket === "senior" ? 2 : ageBracket === "teen" ? 1 : 0;
   const ageSetsReduction = ageBracket === "senior" ? 1 : 0;
 
   // ── Sex adjustments ──
-  // Women recover faster between sets → can use slightly shorter rest
-  // Women respond well to higher volume (more reps) at moderate intensity
+  // Women recover faster between sets (shorter rest OK)
+  // Women respond well to moderate extra reps at moderate intensity
   const sexRestReduction = sex === "female" ? 10 : 0;
   const sexRepBonus = sex === "female" ? 1 : 0;
 
@@ -227,66 +251,70 @@ function getPositionalVolume(
   let base: PositionalVolume;
 
   if (goal === "lose_fat") {
+    // Helms et al. (2014): maintain intensity, reduce volume ~1/3 from bulk.
+    // Shorter rest for metabolic demand, but compounds still need adequate rest.
     base = {
       compound: {
         sets: baseSets,
-        reps: history === "beginner" ? 12 : 10,
+        reps: history === "beginner" ? 10 : 8,
         rpe: history === "beginner" ? 6.5 : 7.5,
-        restSeconds: 60,
+        restSeconds: 75, // 60-90s range (Grgic 2017)
       },
       mid: {
         sets: baseSets,
-        reps: history === "beginner" ? 14 : 12,
-        rpe: history === "beginner" ? 6 : 7,
-        restSeconds: 45,
+        reps: history === "beginner" ? 12 : 10,
+        rpe: history === "beginner" ? 7 : 7.5,
+        restSeconds: 60,
       },
       isolation: {
         sets: Math.max(2, baseSets - 1),
-        reps: 15,
-        rpe: history === "beginner" ? 6 : 7,
-        restSeconds: 45,
+        reps: 12,
+        rpe: history === "beginner" ? 7 : 8,
+        restSeconds: 45, // 30-60s (Grgic 2017)
       },
     };
   } else if (goal === "build_muscle") {
+    // Schoenfeld et al. (2017): 10+ sets/muscle/week, 6-12 reps
+    // Schoenfeld et al. (2016): longer rest (2-3 min) = better hypertrophy
     base = {
       compound: {
         sets: baseSets,
-        reps: history === "beginner" ? 8 : 6,
-        rpe: history === "beginner" ? 7 : 8,
-        restSeconds: 120,
+        reps: history === "beginner" ? 10 : 8,
+        rpe: history === "beginner" ? 6.5 : 7.5,
+        restSeconds: 150, // 2.5 min — Schoenfeld (2016): 3 min > 1 min
       },
       mid: {
         sets: baseSets,
-        reps: history === "beginner" ? 10 : 8,
+        reps: history === "beginner" ? 10 : 10,
         rpe: history === "beginner" ? 7 : 8,
-        restSeconds: 90,
+        restSeconds: 120, // 2 min
       },
       isolation: {
         sets: baseSets,
         reps: history === "beginner" ? 12 : 10,
         rpe: history === "beginner" ? 7.5 : 8.5,
-        restSeconds: 60,
+        restSeconds: 90, // 1.5 min
       },
     };
   } else {
-    // maintain
+    // Maintain: moderate everything, balanced approach
     base = {
       compound: {
         sets: baseSets,
         reps: history === "beginner" ? 10 : 8,
         rpe: history === "beginner" ? 6.5 : 7,
-        restSeconds: 90,
+        restSeconds: 120,
       },
       mid: {
         sets: baseSets,
         reps: 10,
-        rpe: history === "beginner" ? 6.5 : 7,
-        restSeconds: 75,
+        rpe: history === "beginner" ? 7 : 7.5,
+        restSeconds: 90,
       },
       isolation: {
         sets: Math.max(2, baseSets - 1),
         reps: 12,
-        rpe: history === "beginner" ? 6.5 : 7,
+        rpe: history === "beginner" ? 7 : 7.5,
         restSeconds: 60,
       },
     };
@@ -301,17 +329,31 @@ function getPositionalVolume(
 
 // ─── Exercises Per Muscle Group ─────────────────────────────────────────────────
 
-function getExercisesPerGroup(history: TrainingHistory, goal: Goal, ageBracket: AgeBracket): number {
-  // Seniors and teens: slightly less volume per group (recovery, safety)
+// Large muscles benefit from 2 exercises (compound + isolation/variation).
+// Small muscles only need 1 exercise per session (Fink et al., 2021).
+const LARGE_MUSCLE_GROUPS: ReadonlySet<MuscleGroup> = new Set(["chest", "back", "quads"]);
+
+function getExercisesPerGroup(
+  muscleGroup: MuscleGroup,
+  history: TrainingHistory,
+  goal: Goal,
+  ageBracket: AgeBracket
+): number {
+  const isLarge = LARGE_MUSCLE_GROUPS.has(muscleGroup);
   const volumeReduction = (ageBracket === "senior" || ageBracket === "teen") ? 1 : 0;
 
   let base: number;
-  if (goal === "lose_fat") {
-    base = history === "beginner" ? 2 : 3;
-  } else if (goal === "build_muscle") {
-    base = history === "beginner" ? 2 : 3;
-  } else {
+  if (isLarge) {
+    // Large muscles: 2 exercises (compound + accessory) for intermediates+
     base = history === "beginner" ? 1 : 2;
+  } else {
+    // Small/medium muscles: 1 exercise is sufficient per session
+    base = 1;
+  }
+
+  // Fat loss: slightly fewer exercises, keep intensity
+  if (goal === "lose_fat" && base > 1) {
+    base = Math.max(1, base);
   }
 
   return Math.max(1, base - volumeReduction);
@@ -382,10 +424,13 @@ function pickExercisesGoalAware(
   // Score each exercise based on demographic fit
   const scored = pool.map((ex) => {
     let score = Math.random() * 0.5; // small random factor for variety
+    const exerciseIsCompound = isCompound(ex.name);
 
-    // Goal-based: compound preference for fat loss
-    if (goal === "lose_fat" && isCompound(ex.name)) score += 2;
-    if (goal === "build_muscle" && !isCompound(ex.name)) score += 1;
+    // Goal-based: compounds always form the foundation (Schoenfeld et al.)
+    // Fat loss: strong compound preference (metabolic cost)
+    // Muscle building: compounds first, then isolation as supplement
+    if (exerciseIsCompound) score += 1.5;
+    if (goal === "lose_fat" && exerciseIsCompound) score += 1;
 
     // Age preference: boost exercises that are safer/better for the age bracket
     const agePrefs = AGE_PREFERRED_PATTERNS[ageBracket];
@@ -395,7 +440,6 @@ function pickExercisesGoalAware(
     if (sex === "female") {
       const isLowerBody = ["quads", "hamstrings", "glutes", "calves"].includes(muscleGroup);
       if (FEMALE_PREFERRED_PATTERNS.some((p) => p.test(ex.name))) score += 2;
-      // Women building muscle: extra glute emphasis
       if (goal === "build_muscle" && isLowerBody) score += 0.5;
     }
 
@@ -477,8 +521,11 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
   const optimizedFocusList = optimizeDayOrder(focusList, daysPerWeek);
   const allowedEquipment = EQUIPMENT_MAP[equipment];
   const positionalVolume = getPositionalVolume(trainingHistory, goal, ageBracket, sex);
-  const exercisesPerGroup = getExercisesPerGroup(trainingHistory, goal, ageBracket);
   const usedExerciseIds = new Set<string>();
+
+  // ── NASM OPT Phase Configuration ──
+  const phase = input.trainingPhase ?? (trainingHistory === "beginner" ? "stabilization" : "hypertrophy");
+  const phaseConfig = TRAINING_PHASES[phase];
 
   const days: WorkoutDay[] = [];
 
@@ -489,12 +536,20 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
       const exercises: PlannedExercise[] = [];
 
       for (const mg of muscleGroups) {
-        const available = filterExercises(
+        const countForGroup = getExercisesPerGroup(mg, trainingHistory, goal, ageBracket);
+        let available = filterExercises(
           exerciseLibrary, mg, allowedEquipment, trainingHistory, ageBracket, bodyWeightKg
         );
 
+        // ── Phase rules: stabilization removes heavy barbell compounds ──
+        if (!phaseConfig.exerciseRules.allowHeavyCompounds) {
+          const heavyBarbell = /\bbarbell\b.*\b(squat|deadlift|bench press|overhead press|military press)\b/i;
+          const filtered = available.filter(ex => !heavyBarbell.test(ex.name));
+          if (filtered.length > 0) available = filtered; // keep originals if filtering removes everything
+        }
+
         let picked = pickExercisesGoalAware(
-          available, exercisesPerGroup, usedExerciseIds, goal, ageBracket, sex, mg
+          available, countForGroup, usedExerciseIds, goal, ageBracket, sex, mg
         );
 
         // Filter out exercises that conflict with injuries
@@ -524,12 +579,52 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
         }
       }
 
-      // ── Order exercises: compounds first, then isolation ──
+      // ── Order exercises by movement priority (NSCA guidelines) ──
+      // 1. Heavy compounds first (squat, hinge, press) — most CNS demand, do fresh
+      // 2. Secondary compounds (lunges, rows) — still multi-joint
+      // 3. Accessory/isolation — least demanding, can handle fatigue
+      const MOVEMENT_PRIORITY: Record<string, number> = {
+        squat: 1, hinge: 1,                              // heavy lower compounds
+        horizontal_press: 2, vertical_press: 2,           // heavy upper compounds
+        horizontal_pull: 2, vertical_pull: 2,             // heavy upper pulls
+        leg_press: 3, lunge: 3, incline_press: 3,        // secondary compounds
+        fly: 4, curl: 4, extension: 4, lateral_raise: 4, // isolation
+        calf_raise: 5, plank: 5, crunch: 5, rotation: 5, // accessories/core
+        unknown: 4,
+      };
+
       exercises.sort((a, b) => {
-        const aCompound = isCompound(a.exerciseName) ? 0 : 1;
-        const bCompound = isCompound(b.exerciseName) ? 0 : 1;
-        return aCompound - bCompound;
+        const patA = inferMovementPattern(a.exerciseName);
+        const patB = inferMovementPattern(b.exerciseName);
+        const prioA = MOVEMENT_PRIORITY[patA] ?? 4;
+        const prioB = MOVEMENT_PRIORITY[patB] ?? 4;
+        if (prioA !== prioB) return prioA - prioB;
+        // Within same priority: compounds before isolation
+        const compA = isCompound(a.exerciseName) ? 0 : 1;
+        const compB = isCompound(b.exerciseName) ? 0 : 1;
+        return compA - compB;
       });
+
+      // ── Cap total exercises per session ──
+      // Research (Simao et al. 2012): performance degrades after 6th exercise.
+      // Caps are split-aware: PPL has fewer muscle groups → fewer exercises.
+      // Cap trims from the END (lowest priority = isolation/core), preserving
+      // all compound movements which are the foundation of the program.
+      const currentSplit = getSplitType(daysPerWeek);
+      const isPPL = currentSplit === "push_pull_legs";
+      let maxExercises: number;
+      if (trainingHistory === "beginner") {
+        maxExercises = isPPL ? 4 : 5;
+      } else if (trainingHistory === "intermediate") {
+        maxExercises = isPPL ? 5 : 6;
+      } else {
+        maxExercises = isPPL ? 6 : 7;
+      }
+      // Phase-specific cap overrides split-based cap
+      maxExercises = Math.min(maxExercises, phaseConfig.exerciseRules.maxExercisesPerSession);
+      if (exercises.length > maxExercises) {
+        exercises.length = maxExercises;
+      }
 
       // ── Assign positional volume (progressive rep scheme) ──
       const totalExercises = exercises.length;
@@ -557,10 +652,12 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
           vol = { ...vol, restSeconds: Math.max(vol.restSeconds, positionalVolume.mid.restSeconds) };
         }
 
-        ex.targetSets = vol.sets;
-        ex.targetReps = vol.reps;
-        ex.targetRpe = vol.rpe;
-        ex.restSeconds = vol.restSeconds;
+        ex.targetSets = Math.max(2, Math.round(vol.sets * phaseConfig.volume.setsMultiplier));
+        ex.targetReps = Math.max(phaseConfig.volume.repsMin, Math.min(vol.reps, phaseConfig.volume.repsMax));
+        ex.targetRpe = Math.min(vol.rpe, phaseConfig.volume.rpeMax);
+        ex.restSeconds = (phase === "stabilization" || phase === "strength_endurance")
+          ? (exerciseIsCompound ? phaseConfig.volume.restSecondsCompound : phaseConfig.volume.restSecondsIsolation)
+          : vol.restSeconds;
 
         const originalEx = exerciseLibrary.find(e => e.id === ex.exerciseId);
         const mg = originalEx?.muscle_group || "target muscle";

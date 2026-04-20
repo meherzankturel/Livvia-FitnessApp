@@ -26,7 +26,7 @@ export default function Step1Welcome() {
   return (
     <OnboardingLayout
       step={0}
-      totalSteps={8}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
       onCta={handleContinue}
@@ -70,7 +70,7 @@ export default function Step1Welcome() {
           marginBottom: 8,
         }}
       >
-        Step 1 of 8
+        Step 1 of 9
       </Text>
 
       {/* Title */}

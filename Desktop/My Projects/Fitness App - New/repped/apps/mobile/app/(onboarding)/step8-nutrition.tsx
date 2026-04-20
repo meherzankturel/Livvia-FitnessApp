@@ -57,14 +57,14 @@ export default function StepNutrition() {
 
   return (
     <OnboardingLayout
-      step={6}
-      totalSteps={8}
+      step={7}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
-      onCta={() => router.push("/(onboarding)/step8-injuries")}
+      onCta={() => router.push("/(onboarding)/step9-injuries")}
     >
       <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
-        Step 7 of 8
+        Step 8 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
         Your <Text style={{ color: C.trail }}>nutrition</Text>

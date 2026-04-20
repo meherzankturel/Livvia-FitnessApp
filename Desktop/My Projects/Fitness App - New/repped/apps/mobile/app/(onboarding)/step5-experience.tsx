@@ -12,29 +12,31 @@ const C = {
   trail: "#34D399",
 };
 
-type GoalOption = "lose_fat" | "build_muscle" | "maintain";
+type ExperienceOption = "beginner" | "intermediate" | "advanced";
 
-const GOALS: { value: GoalOption; label: string; desc: string }[] = [
-  { value: "lose_fat", label: "Lose Fat", desc: "Drop body fat while keeping muscle" },
-  { value: "build_muscle", label: "Build Muscle", desc: "Get bigger and stronger" },
-  { value: "maintain", label: "Stay Fit", desc: "Maintain your current physique" },
+const LEVELS: { value: ExperienceOption; label: string; desc: string }[] = [
+  { value: "beginner", label: "Beginner", desc: "New to lifting or less than 6 months" },
+  { value: "intermediate", label: "Intermediate", desc: "6 months to 2 years of consistent training" },
+  { value: "advanced", label: "Advanced", desc: "2+ years of serious training" },
 ];
 
-export default function Step3Goals() {
+export default function Step4Experience() {
   const { data, updateData } = useOnboardingStore();
-  const [goal, setGoal] = useState<GoalOption | null>((data.goal as GoalOption) ?? null);
+  const [level, setLevel] = useState<ExperienceOption | null>(
+    (data.training_history as ExperienceOption) ?? null
+  );
 
-  const canContinue = goal !== null;
+  const canContinue = level !== null;
 
   const handleContinue = () => {
-    updateData({ goal });
-    router.push("/(onboarding)/step4-experience");
+    updateData({ training_history: level });
+    router.push("/(onboarding)/step6-equipment");
   };
 
   return (
     <OnboardingLayout
-      step={2}
-      totalSteps={8}
+      step={4}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
       onCta={handleContinue}
@@ -51,27 +53,27 @@ export default function Step3Goals() {
           marginBottom: 8,
         }}
       >
-        Step 3 of 8
+        Step 5 of 9
       </Text>
 
       {/* Title */}
       <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
-        What's your <Text style={{ color: C.trail }}>goal</Text>?
+        Your <Text style={{ color: C.trail }}>experience</Text>
       </Text>
 
       {/* Subtitle */}
       <Text style={{ fontSize: 14, color: C.rock, marginBottom: 28, lineHeight: 20 }}>
-        We'll program every workout and meal around this.
+        This determines exercise difficulty and volume.
       </Text>
 
       {/* Option cards */}
       <View style={{ gap: 12 }}>
-        {GOALS.map((opt) => {
-          const selected = goal === opt.value;
+        {LEVELS.map((opt) => {
+          const selected = level === opt.value;
           return (
             <Pressable
               key={opt.value}
-              onPress={() => setGoal(opt.value)}
+              onPress={() => setLevel(opt.value)}
               style={{
                 backgroundColor: selected ? C.earth : C.stone,
                 borderRadius: 16,

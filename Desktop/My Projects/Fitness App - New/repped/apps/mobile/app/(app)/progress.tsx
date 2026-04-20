@@ -22,6 +22,7 @@ import {
 } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
+import { ProgressSkeleton } from "../../src/components/SkeletonLoader";
 import {
   SegmentControl,
   TrendsOverview,
@@ -726,7 +727,7 @@ export default function Progress() {
     return (
       <View style={s.loadingContainer}>
         <TopoBackground />
-        <ActivityIndicator size="large" color={earth} />
+        <ProgressSkeleton />
       </View>
     );
   }
@@ -739,6 +740,12 @@ export default function Progress() {
   return (
     <View style={s.screen}>
       <TopoBackground />
+      {/* FIXED HEADER */}
+      <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 8, backgroundColor: sand, zIndex: 10 }}>
+        <Text style={s.dateLabel}>{dateLabel}</Text>
+        <Text style={s.heroTitle}>Your Journey</Text>
+        <SegmentControl tabs={TABS} active={activeTab} onChange={setActiveTab} />
+      </View>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
@@ -746,14 +753,7 @@ export default function Progress() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={earth} />
         }
       >
-        <View style={s.content}>
-
-          {/* ── HEADER ── */}
-          <Text style={s.dateLabel}>{dateLabel}</Text>
-          <Text style={s.heroTitle}>Your Journey</Text>
-
-          {/* ── SEGMENT CONTROL ── */}
-          <SegmentControl tabs={TABS} active={activeTab} onChange={setActiveTab} />
+        <View style={s.contentBody}>
 
           {/* ════════════════════════════════════════════════════════════ */}
           {/* TAB 0: OVERVIEW                                            */}
@@ -1004,7 +1004,7 @@ export default function Progress() {
 
               {/* Nutrition Correlation */}
               <View style={s.sectionHeader}>
-                <Text style={s.sectionTitle}>Nutrition \u00D7 Training</Text>
+                <Text style={s.sectionTitle}>Nutrition × Training</Text>
               </View>
               <NutritionCorrelation {...nutritionData} />
 
@@ -1175,6 +1175,7 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: sand },
   loadingContainer: { flex: 1, backgroundColor: sand, justifyContent: "center", alignItems: "center" },
   content: { paddingHorizontal: 24, paddingTop: 60 },
+  contentBody: { paddingHorizontal: 24, paddingTop: 12 },
 
   // Header
   dateLabel: { fontSize: 10, color: rock, textTransform: "uppercase", letterSpacing: 1, textAlign: "center", marginBottom: 4 },

@@ -44,7 +44,7 @@ export function OnboardingLayout({
       {/* Scrollable middle */}
       <ScrollView
         style={{ flex: 1 }}
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 20 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >

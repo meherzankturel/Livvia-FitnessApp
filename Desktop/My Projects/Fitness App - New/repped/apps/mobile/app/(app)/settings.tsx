@@ -4,6 +4,9 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useAuthStore } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
+import { Avatar } from "../../src/components/Avatar";
+import { AvatarPicker } from "../../src/components/AvatarPicker";
+import { calculateMacros } from "@repped/shared";
 
 // ——— Animated Avatar Ring ———
 function AvatarRing() {
@@ -64,6 +67,7 @@ export default function Settings() {
   const signOut = useAuthStore((s) => s.signOut);
   const [profile, setProfile] = useState<any>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
 
   // Stagger animation
   const cardOpacity = useRef(new Animated.Value(0)).current;
@@ -115,7 +119,9 @@ export default function Settings() {
   const initial = (session?.user?.email?.[0] ?? "R").toUpperCase();
   const equipment = profile?.equipment?.replace("_", " ") ?? "—";
   const goal = profile?.goal?.replace("_", " ") ?? "—";
-  const calories = profile?.tdee ? String(Math.round(profile.tdee)) : "—";
+  const calories = (profile?.tdee && profile?.goal && profile?.weight_kg)
+    ? String(calculateMacros(profile.tdee, profile.goal, profile.weight_kg).calories)
+    : profile?.tdee ? String(Math.round(profile.tdee)) : "—";
   const daysPerWeek = String(profile?.days_per_week ?? "—");
   const trainingHistory = profile?.training_history ?? "—";
 
@@ -133,14 +139,16 @@ export default function Settings() {
           <Animated.View style={[s.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
             {/* Profile row */}
             <View style={s.cardTop}>
-              <View style={s.avatarWrap}>
-                <View style={s.avatar}>
-                  <Text style={s.avatarText}>{initial}</Text>
-                </View>
+              <Pressable style={s.avatarWrap} onPress={() => setShowAvatarPicker(true)}>
+                <Avatar
+                  avatarUrl={profile?.avatar_url ?? null}
+                  fallbackLetter={initial}
+                  size={56}
+                />
                 <AvatarRing />
-              </View>
+              </Pressable>
               <View style={{ flex: 1 }}>
-                <Text style={s.cardEmail} numberOfLines={1}>{session?.user?.email}</Text>
+                <Text style={s.cardEmail} numberOfLines={1}>{profile?.display_name ?? session?.user?.email}</Text>
                 <Text style={s.cardMeta}>{goal} · {equipment}</Text>
                 <View style={s.rankBadge}>
                   <Text style={s.rankText}>{trainingHistory}</Text>
@@ -187,6 +195,14 @@ export default function Settings() {
           </Pressable>
         </View>
       </ScrollView>
+      <AvatarPicker
+        visible={showAvatarPicker}
+        userId={session?.user?.id ?? ""}
+        currentAvatar={profile?.avatar_url ?? null}
+        displayName={profile?.display_name ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
+        onClose={() => setShowAvatarPicker(false)}
+        onAvatarChanged={(url) => setProfile((p: any) => ({ ...p, avatar_url: url || null }))}
+      />
     </View>
   );
 }

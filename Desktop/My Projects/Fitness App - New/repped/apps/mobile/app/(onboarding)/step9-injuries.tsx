@@ -73,12 +73,21 @@ export default function StepInjuries() {
       cuisine_preferences: data.cuisine_preferences,
       current_injuries: data.current_injuries,
       tdee,
+      // Health screening (PAR-Q+)
+      health_conditions: data.health_conditions,
+      health_cleared: data.health_cleared,
+      health_screening_completed: true,
+      // Training phase (NASM OPT)
+      training_phase: data.training_history === "beginner" ? "stabilization" : "hypertrophy",
+      phase_start_date: new Date().toISOString().split("T")[0],
+      phase_week: 1,
       onboarding_completed: true,
     });
 
     setLoading(false);
 
     if (dbError) {
+      console.error("Onboarding save error:", dbError.message, dbError.details, dbError.hint);
       setError("Something went wrong. Please try again.");
       return;
     }
@@ -90,16 +99,16 @@ export default function StepInjuries() {
 
   return (
     <OnboardingLayout
-      step={7}
-      totalSteps={8}
+      step={8}
+      totalSteps={9}
       ctaLabel={loading ? "Saving..." : "Let\u2019s Go"}
       ctaDisabled={loading}
       onCta={handleComplete}
-      skipLabel="Skip \u2014 no injuries"
+      skipLabel="Skip — no injuries"
       onSkip={handleComplete}
     >
       <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
-        Step 8 of 8
+        Step 9 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
         Any <Text style={{ color: C.trail }}>injuries</Text>?

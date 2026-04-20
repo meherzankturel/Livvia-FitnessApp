@@ -8,6 +8,8 @@ export * from "./types/meal";
 export * from "./constants/fitness";
 export * from "./constants/meals";
 
+export * from "./constants/training-phases";
+
 // Algorithms
 export * from "./algorithms/tdee";
 export * from "./algorithms/macros";
@@ -49,6 +51,7 @@ export * from "./constants/indian-meals";
 
 // Algorithms (new)
 export * from "./algorithms/finisher-generator";
+export * from "./algorithms/injury-assessment";
 
 // Utils
 export * from "./utils/formatting";

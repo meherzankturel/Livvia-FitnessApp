@@ -247,7 +247,7 @@ export function ExerciseProgression({ userId, exerciseList }: Props) {
             <View style={s.historySetsList}>
               {point.sets.map((set, i) => (
                 <Text key={i} style={s.historySet}>
-                  {set.weight_kg}kg \u00D7 {set.reps}
+                  {set.weight_kg}kg × {set.reps}
                 </Text>
               ))}
             </View>

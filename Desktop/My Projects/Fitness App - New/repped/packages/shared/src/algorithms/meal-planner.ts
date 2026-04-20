@@ -237,15 +237,26 @@ function selectMealForGoal(
   const source = categoryMeals.length > 0 ? categoryMeals : pool;
   if (source.length === 0) return null;
 
-  // Score each meal and add random factor for variety
+  // Score each meal by goal fitness
   const scored = source.map((m: any) => ({
     meal: m,
-    score: scoreMealForGoal(m, goal) + rng() * 1.5, // small random factor for variety without overriding goal scoring
+    score: scoreMealForGoal(m, goal),
   }));
 
-  // Sort by score descending, pick top
+  // Sort by score descending
   scored.sort((a, b) => b.score - a.score);
-  return scored[0].meal;
+
+  // Pick randomly from the top tier (within 30% of best score range)
+  // This ensures daily variety while keeping meals goal-appropriate
+  const bestScore = scored[0].score;
+  const worstScore = scored[scored.length - 1].score;
+  const range = bestScore - worstScore;
+  const threshold = bestScore - range * 0.3;
+  const topTier = scored.filter((s) => s.score >= threshold);
+
+  // Random pick from top tier using the daily seed
+  const pick = Math.floor(rng() * topTier.length);
+  return topTier[pick].meal;
 }
 
 /**

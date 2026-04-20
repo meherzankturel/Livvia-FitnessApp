@@ -76,10 +76,13 @@ export default function SignUp() {
     ? "Passwords don't match" : null;
   const canSubmit = emailValidation.valid && passwordValidation.valid && confirmMatch;
 
+  const [submitAttempted, setSubmitAttempted] = useState(false);
+
   const handleSignUp = async () => {
     setEmailTouched(true);
     setPasswordTouched(true);
     setConfirmTouched(true);
+    setSubmitAttempted(true);
     if (!canSubmit) return;
 
     setLoading(true);
@@ -239,6 +242,19 @@ export default function SignUp() {
           </Text>
         ) : (
           <View style={{ height: 20 }} />
+        )}
+
+        {/* Validation error on empty submit */}
+        {submitAttempted && !canSubmit && !error && (
+          <Text style={{ color: "#EF4444", textAlign: "center", marginBottom: 16, fontSize: 14 }}>
+            {email.trim().length === 0 ? "Please enter your email address" :
+             !emailValidation.valid ? "Please enter a valid email" :
+             password.length === 0 ? "Please enter a password" :
+             password.length < 6 ? "Password must be at least 6 characters" :
+             confirmPassword.length === 0 ? "Please confirm your password" :
+             password !== confirmPassword ? "Passwords don't match" :
+             "Please fill in all fields"}
+          </Text>
         )}
 
         {/* Server error */}

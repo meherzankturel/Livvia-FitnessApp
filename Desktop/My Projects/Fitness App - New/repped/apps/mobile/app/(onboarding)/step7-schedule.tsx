@@ -28,14 +28,14 @@ export default function StepSchedule() {
 
   return (
     <OnboardingLayout
-      step={5}
-      totalSteps={8}
+      step={6}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
-      onCta={() => router.push("/(onboarding)/step7-nutrition")}
+      onCta={() => router.push("/(onboarding)/step8-nutrition")}
     >
       <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
-        Step 6 of 8
+        Step 7 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
         Your <Text style={{ color: C.trail }}>schedule</Text>

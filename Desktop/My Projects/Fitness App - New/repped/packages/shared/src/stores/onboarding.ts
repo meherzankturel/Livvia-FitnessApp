@@ -9,20 +9,23 @@ export interface OnboardingData {
   sex: Sex | null;
   weight_kg: number | null;
   height_cm: number | null;
-  // Step 3: Goal
+  // Step 3: Health Screening (PAR-Q+)
+  health_conditions: string[];
+  health_cleared: boolean;
+  // Step 4: Goal
   goal: Goal | null;
-  // Step 4: Experience
+  // Step 5: Experience
   training_history: TrainingHistory | null;
-  // Step 5: Equipment
+  // Step 6: Equipment
   equipment: Equipment | null;
-  // Step 6: Schedule
+  // Step 7: Schedule
   days_per_week: number | null;
   activity_level: ActivityLevel | null;
-  // Step 7: Nutrition
+  // Step 8: Nutrition
   dietary_preference: DietaryPreference | null;
   food_exclusions: string[];
   cuisine_preferences: string[];
-  // Step 8: Injuries
+  // Step 9: Injuries
   current_injuries: { key: string; severity: "moderate"; since: string }[];
 }
 
@@ -46,6 +49,8 @@ const initialData: OnboardingData = {
   sex: null,
   weight_kg: null,
   height_cm: null,
+  health_conditions: [],
+  health_cleared: true,
   goal: null,
   training_history: null,
   equipment: null,
@@ -59,7 +64,7 @@ const initialData: OnboardingData = {
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   step: 1,
-  totalSteps: 8,
+  totalSteps: 9,
   data: { ...initialData },
   setStep: (step) => set({ step }),
   nextStep: () => set((state) => ({ step: Math.min(state.step + 1, state.totalSteps) })),

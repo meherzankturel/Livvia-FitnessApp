@@ -43,12 +43,19 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailTouched, setEmailTouched] = useState(false);
+  const [passwordTouched, setPasswordTouched] = useState(false);
 
   const emailValidation = validateEmail(email);
+  const passwordError = passwordTouched && password.length === 0
+    ? "Password is required"
+    : passwordTouched && password.length > 0 && password.length < 6
+    ? "Password must be at least 6 characters"
+    : null;
   const canSubmit = emailValidation.valid && password.length >= 6;
 
   const handleSignIn = async () => {
     setEmailTouched(true);
+    setPasswordTouched(true);
     if (!canSubmit) return;
 
     setLoading(true);
@@ -120,19 +127,20 @@ export default function SignIn() {
         )}
 
         {/* Password */}
-        <View style={{ position: "relative", marginBottom: 24 }}>
+        <View style={{ position: "relative", marginBottom: 4 }}>
           <TextInput
             style={{
               backgroundColor: C.stone, color: C.earth, fontSize: 16, fontWeight: "500",
               borderRadius: 14, paddingHorizontal: 18, paddingVertical: 16, paddingRight: 56,
-              borderWidth: 1.5, borderColor: C.border,
+              borderWidth: 1.5, borderColor: passwordError ? "#EF4444" : C.border,
             }}
             placeholder="Password"
             placeholderTextColor="rgba(142,142,122,0.5)"
             secureTextEntry={!showPassword}
             textContentType="password"
             value={password}
-            onChangeText={setPassword}
+            onChangeText={(t) => { setPassword(t); setPasswordTouched(true); }}
+            onBlur={() => setPasswordTouched(true)}
           />
           <Pressable
             onPress={() => setShowPassword(!showPassword)}
@@ -141,6 +149,13 @@ export default function SignIn() {
             <Text style={{ fontSize: 13, fontWeight: "600", color: C.rock }}>{showPassword ? "Hide" : "Show"}</Text>
           </Pressable>
         </View>
+        {passwordError ? (
+          <Text style={{ fontSize: 12, color: "#EF4444", paddingLeft: 4, marginBottom: 16 }}>
+            {passwordError}
+          </Text>
+        ) : (
+          <View style={{ height: 20 }} />
+        )}
 
         {/* Error */}
         {error && (

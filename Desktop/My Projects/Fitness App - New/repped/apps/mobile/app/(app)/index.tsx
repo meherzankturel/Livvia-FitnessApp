@@ -1,12 +1,15 @@
 import { View, Text, Pressable, ScrollView, ActivityIndicator, RefreshControl, Alert, Modal, Animated, Image } from "react-native";
 import { router } from "expo-router";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useAuthStore, suggestWeight, EDUCATIONAL_TIPS, calculateReadiness, type ReadinessLevel, getMissedDayOptions, handleMissedDay, calculateWorkoutStreak } from "@repped/shared";
+import { useAuthStore, suggestWeight, EDUCATIONAL_TIPS, calculateReadiness, type ReadinessLevel, getMissedDayOptions, handleMissedDay, calculateWorkoutStreak, assessInjuryForWorkout, type InjuryAssessment, applyPeriodization, TRAINING_PHASES, type TrainingPhase } from "@repped/shared";
 import type { MissedDayOption, MissedDayStrategy } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import type { WorkoutDay } from "@repped/shared";
 import { theme } from "../../src/lib/styles";
 import { TopoBackground, BentoWidget, AliveDot, VolumeChart, ExpandableExerciseCard, TrailLine } from "../../src/components/terrain";
+import { Avatar } from "../../src/components/Avatar";
+import { AvatarPicker } from "../../src/components/AvatarPicker";
+import { HomeSkeleton } from "../../src/components/SkeletonLoader";
 import type { DayData } from "../../src/components/terrain";
 
 interface ExerciseData {
@@ -42,6 +45,8 @@ export default function Today() {
   const [readinessBannerVisible, setReadinessBannerVisible] = useState(false);
   const [readinessBannerMessage, setReadinessBannerMessage] = useState<string | null>(null);
   const [openCardIndex, setOpenCardIndex] = useState<number | null>(null);
+  const [healthCleared, setHealthCleared] = useState(true);
+  const [trainingPhase, setTrainingPhase] = useState<TrainingPhase | null>(null);
   const [weekVolumeData, setWeekVolumeData] = useState<DayData[]>([]);
   const [dayStreak, setDayStreak] = useState(0);
   const [weekWorkoutCount, setWeekWorkoutCount] = useState(0);
@@ -52,6 +57,9 @@ export default function Today() {
   const [topWeightLastWeek, setTopWeightLastWeek] = useState(0);
   const [statsLoading, setStatsLoading] = useState(true);
   const [displayName, setDisplayName] = useState<string | null>(null);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [injuryAssessment, setInjuryAssessment] = useState<InjuryAssessment | null>(null);
 
   // Adapt modal state
   const [adaptVisible, setAdaptVisible] = useState(false);
@@ -99,14 +107,15 @@ export default function Today() {
       setWeekPlan(Array.from(unique.values()).sort((a, b) => a.day - b.day));
     }
 
-    // Load profile data (equipment + display name)
+    // Load profile data (equipment + display name + avatar)
     const { data: profile } = await supabase
       .from("profiles")
-      .select("available_equipment, display_name")
+      .select("available_equipment, display_name, avatar_url")
       .eq("id", session.user.id)
       .single();
-    if (profile && (profile as any).display_name) {
-      setDisplayName((profile as any).display_name);
+    if (profile) {
+      if ((profile as any).display_name) setDisplayName((profile as any).display_name);
+      if ((profile as any).avatar_url) setAvatarUrl((profile as any).avatar_url);
     }
     if (profile) {
       const eq = (profile as any).available_equipment;
@@ -634,66 +643,81 @@ export default function Today() {
   const loadTodaysWorkout = async () => {
     if (!session?.user?.id) return;
     setLoading(true);
+    const uid = session.user.id;
 
     // Get current day of week (1=Monday, 7=Sunday)
     const now = new Date();
     const day = now.getDay() === 0 ? 7 : now.getDay();
     setDayOfWeek(day);
 
-    // Fetch today's workout plan
-    const { data: plan } = await supabase
-      .from("workout_plans")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .eq("day", day)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
+    // Yesterday info for missed workout check
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayDay = yesterday.getDay() === 0 ? 7 : yesterday.getDay();
+
+    // ── BATCH 1: Fire all independent queries in parallel ──
+    const [profileResult, planResult, yesterdayPlanResult] = await Promise.all([
+      supabase.from("profiles")
+        .select("display_name, avatar_url, weight_kg, sex, training_history, current_injuries, health_cleared, training_phase")
+        .eq("id", uid).single(),
+      supabase.from("workout_plans")
+        .select("*").eq("user_id", uid).eq("day", day)
+        .order("created_at", { ascending: false }).limit(1).single(),
+      supabase.from("workout_plans")
+        .select("*").eq("user_id", uid).eq("day", yesterdayDay).eq("is_rest_day", false)
+        .order("created_at", { ascending: false }).limit(1).single(),
+    ]);
+
+    const profile = profileResult.data as any;
+    if (profile?.display_name) setDisplayName(profile.display_name);
+    if (profile?.avatar_url) setAvatarUrl(profile.avatar_url);
+    if (profile?.health_cleared !== undefined) setHealthCleared(profile.health_cleared);
+    if (profile?.training_phase) setTrainingPhase(profile.training_phase as TrainingPhase);
+
+    const plan = planResult.data;
+    if (planResult.error) {
+      console.error("Load today workout error:", planResult.error.message, planResult.error.details);
+    }
 
     if (plan) {
       if (plan.is_rest_day) {
         setTodayWorkout({ day, focus: "Rest", isRestDay: true, exercises: [] });
       } else {
-        // Fetch exercises for this plan with full exercise details
+        // ── BATCH 2: Fetch exercises + all last-logged weights in parallel ──
         const { data: planExercises } = await supabase
           .from("workout_plan_exercises")
           .select("*, exercises(*)")
           .eq("workout_plan_id", plan.id)
           .order("order");
 
-        // Fetch user profile for weight suggestions
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("body_weight_kg, sex, training_history")
-          .eq("id", session.user.id)
-          .single();
-
-        const bodyWeightKg = profile?.body_weight_kg ?? 70;
+        const bodyWeightKg = profile?.weight_kg ?? 70;
         const sex = profile?.sex ?? "male";
         const trainingHistory = profile?.training_history ?? "beginner";
 
-        const enrichedExercises: ExerciseData[] = [];
+        // Fetch all last-logged weights in parallel instead of one-by-one
+        const exerciseIds = (planExercises || []).map((pe: any) => pe.exercise_id);
+        const lastLogPromises = exerciseIds.map((exId: string) =>
+          supabase.from("set_logs")
+            .select("weight_kg, exercise_id")
+            .eq("exercise_id", exId).gt("weight_kg", 0)
+            .order("created_at", { ascending: false }).limit(1).single()
+        );
+        const lastLogResults = await Promise.all(lastLogPromises);
+        const lastLogMap = new Map<string, number>();
+        for (const r of lastLogResults) {
+          if (r.data) lastLogMap.set(r.data.exercise_id, r.data.weight_kg);
+        }
 
-        for (const pe of planExercises || []) {
-          // Get last logged weight for this exercise
-          const { data: lastLog } = await supabase
-            .from("set_logs")
-            .select("weight_kg")
-            .eq("exercise_id", pe.exercise_id)
-            .gt("weight_kg", 0)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .single();
-
+        const enrichedExercises: ExerciseData[] = (planExercises || []).map((pe: any) => {
           const suggestion = suggestWeight({
             bodyWeightKg,
             sex,
             trainingHistory,
             muscleGroup: pe.exercises?.muscle_group ?? "full_body",
-            lastLoggedWeight: lastLog?.weight_kg,
+            lastLoggedWeight: lastLogMap.get(pe.exercise_id),
           });
 
-          enrichedExercises.push({
+          return {
             exerciseId: pe.exercise_id,
             exerciseName: pe.exercises?.name ?? "Unknown",
             targetSets: pe.target_sets,
@@ -707,12 +731,20 @@ export default function Today() {
             muscleGroup: pe.exercises?.muscle_group ?? "",
             suggestedWeight: suggestion.suggestedKg,
             weightReasoning: suggestion.reasoning,
-          });
-        }
+          };
+        });
 
-        setExerciseData(enrichedExercises);
+        // Apply mesocycle periodization (deload weeks, intro ramp-up, etc.)
+        const planCreated = plan.created_at ? new Date(plan.created_at) : new Date();
+        const weeksSincePlan = Math.max(1, Math.ceil((Date.now() - planCreated.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+        const periodizedExercises = enrichedExercises.map((e) => {
+          const p = applyPeriodization(e.targetSets, e.targetReps, e.targetRpe, weeksSincePlan);
+          return { ...e, targetSets: p.sets, targetReps: p.reps, targetRpe: p.rpe };
+        });
 
-        const exercises = enrichedExercises.map((e) => ({
+        setExerciseData(periodizedExercises);
+
+        const exercises = periodizedExercises.map((e) => ({
           exerciseId: e.exerciseId,
           exerciseName: e.exerciseName,
           targetSets: e.targetSets,
@@ -722,29 +754,52 @@ export default function Today() {
           explainWhy: e.explainWhy,
         }));
 
-        setTodayWorkout({ day, focus: plan.focus, isRestDay: false, exercises });
+        // ── Injury Assessment (uses profile already fetched in batch 1) ──
+        const activeInjuries = (profile?.current_injuries ?? []) as { key: string; severity: "mild" | "moderate" | "severe" }[];
+
+        if (activeInjuries.length > 0) {
+          const assessment = assessInjuryForWorkout(activeInjuries, plan.focus);
+          setInjuryAssessment(assessment);
+
+          if (assessment.action === "rest") {
+            setTodayWorkout({ day, focus: "Rest", isRestDay: true, exercises: [] });
+            setExerciseData([]);
+            setLoading(false);
+            return;
+          }
+
+          if (assessment.action === "modify") {
+            const safeExercises = enrichedExercises.filter((ex) => {
+              const nameLower = ex.exerciseName.toLowerCase();
+              for (const pattern of assessment.unsafeExercisePatterns) {
+                if (nameLower.includes(pattern.toLowerCase())) return false;
+              }
+              if (assessment.unsafeMuscleGroups.includes(ex.muscleGroup)) return false;
+              return true;
+            });
+            setExerciseData(safeExercises);
+            const safeWorkoutExercises = safeExercises.map((e) => ({
+              exerciseId: e.exerciseId, exerciseName: e.exerciseName,
+              targetSets: e.targetSets, targetReps: e.targetReps,
+              targetRpe: e.targetRpe, restSeconds: e.restSeconds, explainWhy: e.explainWhy,
+            }));
+            setTodayWorkout({ day, focus: plan.focus, isRestDay: false, exercises: safeWorkoutExercises });
+            setLoading(false);
+          } else {
+            setTodayWorkout({ day, focus: plan.focus, isRestDay: false, exercises });
+          }
+        } else {
+          setInjuryAssessment(null);
+          setTodayWorkout({ day, focus: plan.focus, isRestDay: false, exercises });
+        }
       }
     } else {
       setTodayWorkout(null);
     }
 
-    // Check for missed workout from yesterday
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    const yesterdayDay = yesterday.getDay() === 0 ? 7 : yesterday.getDay();
-
-    const { data: yesterdayPlan } = await supabase
-      .from("workout_plans")
-      .select("*")
-      .eq("user_id", session.user.id)
-      .eq("day", yesterdayDay)
-      .eq("is_rest_day", false)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .single();
-
+    // ── Missed workout check (yesterdayPlan already fetched in batch 1) ──
+    const yesterdayPlan = yesterdayPlanResult.data;
     if (yesterdayPlan) {
-      // Check if yesterday's workout was completed
       const yesterdayStr = yesterday.toISOString().split("T")[0];
       const { data: yesterdayLog } = await supabase
         .from("workout_logs")
@@ -755,35 +810,33 @@ export default function Today() {
         .single();
 
       if (!yesterdayLog) {
-        // Yesterday's workout was missed
         const missedWorkoutDay = {
           day: yesterdayDay,
           focus: yesterdayPlan.focus,
           isRestDay: false,
-          exercises: [], // We just need the focus for the options
+          exercises: [],
         };
         setMissedDay(missedWorkoutDay);
 
-        // Get remaining days of the week
-        const remainingDays = [];
-        for (let d = day; d <= 7; d++) {
-          const { data: dayPlan } = await supabase
-            .from("workout_plans")
-            .select("focus, is_rest_day, day")
-            .eq("user_id", session.user.id)
-            .eq("day", d)
-            .order("created_at", { ascending: false })
-            .limit(1)
-            .single();
-          if (dayPlan) {
-            remainingDays.push({
-              day: d,
-              focus: dayPlan.focus || "Rest",
-              isRestDay: dayPlan.is_rest_day,
-              exercises: [],
-            });
-          }
-        }
+        // Fetch all remaining days in parallel instead of one-by-one loop
+        const remainingDayNums = Array.from({ length: 7 - day + 1 }, (_, i) => day + i);
+        const dayPlanResults = await Promise.all(
+          remainingDayNums.map((d) =>
+            supabase.from("workout_plans")
+              .select("focus, is_rest_day, day")
+              .eq("user_id", uid).eq("day", d)
+              .order("created_at", { ascending: false }).limit(1).single()
+          )
+        );
+
+        const remainingDays = dayPlanResults
+          .filter((r) => r.data)
+          .map((r) => ({
+            day: r.data!.day,
+            focus: r.data!.focus || "Rest",
+            isRestDay: r.data!.is_rest_day,
+            exercises: [],
+          }));
 
         const options = getMissedDayOptions(missedWorkoutDay, remainingDays);
         setMissedDayOptions(options);
@@ -917,8 +970,9 @@ export default function Today() {
   // ─── Loading ───
   if (loading) {
     return (
-      <View style={{ flex: 1, backgroundColor: theme.colors.bg, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color={theme.colors.earth} />
+      <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
+        <TopoBackground />
+        <HomeSkeleton />
       </View>
     );
   }
@@ -931,7 +985,7 @@ export default function Today() {
           Welcome to Livvia
         </Text>
         <Text style={{ color: theme.colors.rock, fontSize: 15, textAlign: "center", marginBottom: 28, lineHeight: 22 }}>
-          Your personalized workout plan is being prepared. Generate one to begin your ascent.
+          Your personalized workout plan is being prepared. Generate one to begin your workout.
         </Text>
         <Pressable
           onPress={() => router.push("/(app)/generate-plan" as any)}
@@ -956,26 +1010,40 @@ export default function Today() {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
         <TopoBackground />
+        {/* FIXED PROFILE ROW */}
+        <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12, flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: theme.colors.bg, zIndex: 10 }}>
+          <Pressable onPress={() => setShowAvatarPicker(true)}>
+            <Avatar
+              avatarUrl={avatarUrl}
+              fallbackLetter={displayName?.[0] ?? session?.user?.email?.[0] ?? "L"}
+              size={44}
+            />
+          </Pressable>
+          <View>
+            <Text style={{ fontSize: 14, color: theme.colors.rock }}>
+              {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
+            </Text>
+            <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
+              {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
+            </Text>
+          </View>
+        </View>
         <ScrollView
           contentContainerStyle={{ paddingBottom: 120 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.earth} />}
         >
-          {/* PROFILE ROW */}
-          <View style={{ paddingHorizontal: 24, paddingTop: 60, flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 24 }}>
-            <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(52,211,153,0.12)", alignItems: "center", justifyContent: "center" }}>
-              <Text style={{ fontSize: 18, fontWeight: "800", color: theme.colors.trail }}>
-                {(displayName?.[0] ?? session?.user?.email?.[0] ?? "L").toUpperCase()}
+          {/* HEALTH ADVISORY */}
+          {!healthCleared && (
+            <View style={{
+              backgroundColor: "rgba(245,158,11,0.08)", borderRadius: 14, padding: 14,
+              marginHorizontal: 24, marginBottom: 12,
+              borderWidth: 1, borderColor: "rgba(245,158,11,0.15)",
+            }}>
+              <Text style={{ fontSize: 12, color: "#92400E", lineHeight: 18 }}>
+                Based on your health screening, we recommend consulting a doctor before intense exercise. Listen to your body.
               </Text>
             </View>
-            <View>
-              <Text style={{ fontSize: 14, color: theme.colors.rock }}>
-                {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
-              </Text>
-              <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
-                {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
-              </Text>
-            </View>
-          </View>
+          )}
 
           {/* HERO — matches workout day pattern */}
           <View style={{ paddingHorizontal: 24 }}>
@@ -988,6 +1056,34 @@ export default function Today() {
           </View>
 
           <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
+            {/* Injury Rest Banner — only shown when injury forced the rest day */}
+            {injuryAssessment?.action === "rest" && (
+              <View style={{ backgroundColor: "#FEF3C7", borderRadius: 22, padding: 22, marginBottom: 12, borderWidth: 1, borderColor: "rgba(245,158,11,0.2)" }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <Text style={{ fontSize: 18 }}>⚠️</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: "#B45309" }}>
+                    Injury Rest Day
+                  </Text>
+                </View>
+                <Text style={{ fontSize: 15, fontWeight: "700", color: "#92400E", marginBottom: 8, lineHeight: 21 }}>
+                  {injuryAssessment.triggeringInjuries.map(i => i.label).join(", ")} — {injuryAssessment.triggeringInjuries[0]?.severity} severity
+                </Text>
+                <Text style={{ fontSize: 14, color: "#92400E", lineHeight: 21, opacity: 0.8 }}>
+                  {injuryAssessment.reason}
+                </Text>
+                {injuryAssessment.recoveryTip.length > 0 && (
+                  <View style={{ marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: "rgba(245,158,11,0.15)" }}>
+                    <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, color: "#B45309", marginBottom: 6 }}>
+                      Recovery Tips
+                    </Text>
+                    <Text style={{ fontSize: 13, color: "#92400E", lineHeight: 20, opacity: 0.8 }}>
+                      {injuryAssessment.recoveryTip}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            )}
+
             {/* Recovery Focus Card */}
             <View style={{ backgroundColor: theme.colors.stone, borderRadius: 22, padding: 22, marginBottom: 12 }}>
               <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: theme.colors.trail, marginBottom: 12 }}>
@@ -1035,26 +1131,53 @@ export default function Today() {
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.bg }}>
       <TopoBackground />
+      {/* FIXED PROFILE ROW */}
+      <View style={{ paddingHorizontal: 24, paddingTop: 60, paddingBottom: 12, flexDirection: "row", alignItems: "center", gap: 14, backgroundColor: theme.colors.bg, zIndex: 10 }}>
+        <Pressable onPress={() => setShowAvatarPicker(true)}>
+          <Avatar
+            avatarUrl={avatarUrl}
+            fallbackLetter={displayName?.[0] ?? session?.user?.email?.[0] ?? "L"}
+            size={44}
+          />
+        </Pressable>
+        <View>
+          <Text style={{ fontSize: 14, color: theme.colors.rock }}>
+            {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
+          </Text>
+          <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
+            {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
+          </Text>
+        </View>
+      </View>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 180 }}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.earth} />}
       >
-        {/* PROFILE ROW */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 60, flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 24 }}>
-          <View style={{ width: 44, height: 44, borderRadius: 22, backgroundColor: "rgba(52,211,153,0.12)", alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ fontSize: 18, fontWeight: "800", color: theme.colors.trail }}>
-              {(displayName?.[0] ?? session?.user?.email?.[0] ?? "L").toUpperCase()}
+        {/* HEALTH ADVISORY */}
+        {!healthCleared && (
+          <View style={{
+            backgroundColor: "rgba(245,158,11,0.08)", borderRadius: 14, padding: 14,
+            marginHorizontal: 24, marginBottom: 12,
+            borderWidth: 1, borderColor: "rgba(245,158,11,0.15)",
+          }}>
+            <Text style={{ fontSize: 12, color: "#92400E", lineHeight: 18 }}>
+              Based on your health screening, we recommend consulting a doctor before intense exercise. Listen to your body.
             </Text>
           </View>
-          <View>
-            <Text style={{ fontSize: 14, color: theme.colors.rock }}>
-              {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
-            </Text>
-            <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
-              {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
+        )}
+
+        {/* TRAINING PHASE BADGE */}
+        {trainingPhase && trainingPhase !== "hypertrophy" && (
+          <View style={{
+            alignSelf: "flex-start", marginLeft: 24, marginBottom: 8,
+            backgroundColor: "rgba(52,211,153,0.1)", borderRadius: 10,
+            paddingHorizontal: 10, paddingVertical: 5,
+          }}>
+            <Text style={{ fontSize: 10, fontWeight: "700", color: theme.colors.trail, textTransform: "uppercase", letterSpacing: 1 }}>
+              {TRAINING_PHASES[trainingPhase]?.name ?? "Training"}
             </Text>
           </View>
-        </View>
+        )}
 
         {/* 2. PERSONAL HERO */}
         <View style={{ paddingHorizontal: 24 }}>
@@ -1101,6 +1224,25 @@ export default function Today() {
               }}
             />
           </Pressable>
+        )}
+
+        {/* INJURY MODIFICATION BANNER */}
+        {injuryAssessment?.action === "modify" && (
+          <View style={{
+            marginHorizontal: 24, marginTop: 12, backgroundColor: "#FEF3C7",
+            borderRadius: 14, paddingHorizontal: 14, paddingVertical: 12,
+            borderWidth: 1, borderColor: "rgba(245,158,11,0.15)",
+          }}>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <Text style={{ fontSize: 14 }}>⚠️</Text>
+              <Text style={{ fontSize: 11, fontWeight: "700", color: "#B45309" }}>
+                Workout Modified — {injuryAssessment.triggeringInjuries.map(i => i.label).join(", ")}
+              </Text>
+            </View>
+            <Text style={{ fontSize: 12, color: "#92400E", lineHeight: 18 }}>
+              {injuryAssessment.reason}
+            </Text>
+          </View>
         )}
 
         {/* 3. BENTO WIDGETS */}
@@ -1326,7 +1468,7 @@ export default function Today() {
           }}
         >
           <Text style={{ color: theme.colors.bg, fontSize: 16, fontWeight: "700" }}>
-            Begin Ascent ↗
+            Begin Workout ↗
           </Text>
         </Pressable>
       </View>
@@ -1594,6 +1736,16 @@ export default function Today() {
           </Animated.View>
         </Pressable>
       </Modal>
+
+      {/* Avatar Picker */}
+      <AvatarPicker
+        visible={showAvatarPicker}
+        userId={session?.user?.id ?? ""}
+        currentAvatar={avatarUrl}
+        displayName={displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
+        onClose={() => setShowAvatarPicker(false)}
+        onAvatarChanged={(url) => setAvatarUrl(url || null)}
+      />
     </View>
   );
 }

@@ -26,14 +26,14 @@ export default function StepEquipment() {
 
   return (
     <OnboardingLayout
-      step={4}
-      totalSteps={8}
+      step={5}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
-      onCta={() => router.push("/(onboarding)/step6-schedule")}
+      onCta={() => router.push("/(onboarding)/step7-schedule")}
     >
       <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
-        Step 5 of 8
+        Step 6 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
         Your <Text style={{ color: C.trail }}>equipment</Text>

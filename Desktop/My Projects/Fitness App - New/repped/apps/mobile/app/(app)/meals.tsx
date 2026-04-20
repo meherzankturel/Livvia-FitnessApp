@@ -1,5 +1,5 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator, Modal, RefreshControl, StyleSheet, Animated, LayoutAnimation, Platform, UIManager, Dimensions, Easing } from "react-native";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { View, Text, ScrollView, Pressable, ActivityIndicator, Modal, RefreshControl, StyleSheet, Animated, LayoutAnimation, Platform, UIManager, Dimensions, Easing, Linking, Alert } from "react-native";
+import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { router } from "expo-router";
 import { useAuthStore, generateMealPlanWithAlternatives, regenerateSingleMeal, TAKEOUT_GUIDES, getNutritionGuidance, getGuiltFreeStatus, getGuiltFreeDates, cuisineLabels, cuisineEmojis } from "@repped/shared";
 import type { Meal, MacroTargets, CuisinePreference } from "@repped/shared";
@@ -9,7 +9,9 @@ import * as Location from "expo-location";
 import { findNearbyRestaurants, type PlaceResult } from "../../src/lib/places";
 import { theme } from "../../src/lib/styles";
 import { TopoBackground, TrailLine } from "../../src/components/terrain";
-import { openUberEats, openDoorDash, openMapsUrl } from "../../src/lib/deeplink";
+import { MealsSkeleton } from "../../src/components/SkeletonLoader";
+import { openMapsUrl } from "../../src/lib/deeplink";
+import { getDeliveryServices } from "../../src/lib/delivery-services";
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -228,6 +230,7 @@ export default function Meals() {
   const [selectedExclusions, setSelectedExclusions] = useState<string[]>([]);
 
   const [selectedCuisines, setSelectedCuisines] = useState<string[]>(["american"]);
+  const deliveryServices = useMemo(() => getDeliveryServices(), []);
   const [showCuisineSelector, setShowCuisineSelector] = useState(false);
 
   const [activeCategory, setActiveCategory] = useState(0);
@@ -288,7 +291,7 @@ export default function Meals() {
   const actionSheetOpacity = useRef(new Animated.Value(0)).current;
 
   // Action icons (6 items: Log, Cook, Recipe, Swap, Eat Out, Nah)
-  const actionIconAnims = useRef([0, 1, 2, 3, 4, 5].map(() => ({
+  const actionIconAnims = useRef([0, 1, 2, 3, 4].map(() => ({
     translateY: new Animated.Value(8),
     opacity: new Animated.Value(0),
   }))).current;
@@ -419,20 +422,50 @@ export default function Meals() {
 
   useEffect(() => {
     loadDislikedMeals();
-    requestLocation();
   }, []);
 
   useEffect(() => {
     loadMealPlan();
-  }, [dislikedMeals, selectedCuisines, selectedExclusions]);
+  }, [dislikedMeals, selectedCuisines]);
 
-  const requestLocation = async () => {
+  const requestLocation = async (): Promise<{ lat: number; lng: number } | null> => {
     try {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") return;
-      const loc = await Location.getCurrentPositionAsync({});
-      setLocation({ lat: loc.coords.latitude, lng: loc.coords.longitude });
-    } catch {}
+      // Check if already granted
+      const { status: existing } = await Location.getForegroundPermissionsAsync();
+      if (existing === "granted") {
+        const loc = await Location.getCurrentPositionAsync({});
+        const coords = { lat: loc.coords.latitude, lng: loc.coords.longitude };
+        setLocation(coords);
+        return coords;
+      }
+
+      // Show friendly in-app explanation before the system prompt
+      return new Promise((resolve) => {
+        Alert.alert(
+          "Find Restaurants Near You",
+          "To show nearby restaurants and grocery stores for your meals, Livvia needs access to your location. Your location is never stored or shared.",
+          [
+            { text: "Not Now", style: "cancel", onPress: () => resolve(null) },
+            {
+              text: "Allow",
+              onPress: async () => {
+                const { status } = await Location.requestForegroundPermissionsAsync();
+                if (status === "granted") {
+                  const loc = await Location.getCurrentPositionAsync({});
+                  const coords = { lat: loc.coords.latitude, lng: loc.coords.longitude };
+                  setLocation(coords);
+                  resolve(coords);
+                } else {
+                  resolve(null);
+                }
+              },
+            },
+          ]
+        );
+      });
+    } catch {
+      return null;
+    }
   };
 
   const loadDislikedMeals = async () => {
@@ -452,28 +485,40 @@ export default function Meals() {
     if (!session?.user?.id) return;
     setLoading(true);
 
-    const { data } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
-    const p = data as any;
-    setProfile(p);
-    setSelectedExclusions(p?.food_exclusions || []);
-    if (!p?.tdee) { setLoading(false); return; }
+    try {
+      const { data, error: fetchError } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
+      if (fetchError || !data) {
+        console.error("Meal plan profile fetch error:", fetchError?.message);
+        setLoading(false);
+        return;
+      }
+      const p = data as any;
+      setProfile(p);
+      // Use the fetched exclusions directly instead of setting state (avoids re-render loop)
+      const exclusions = p?.food_exclusions || [];
+      setSelectedExclusions(exclusions);
+      if (!p?.tdee) { setLoading(false); return; }
 
-    const plan = generateMealPlanWithAlternatives(
-      p.tdee, p.goal, p.weight_kg, p.dietary_preference, selectedExclusions,
-      dislikedMeals, selectedCuisines
-    );
+      const plan = generateMealPlanWithAlternatives(
+        p.tdee, p.goal, p.weight_kg, p.dietary_preference, exclusions,
+        dislikedMeals, selectedCuisines
+      );
 
-    setTargets(plan.targets);
-    setSlots(plan.slots.map((s, i) => ({
-      selected: s.selected as any,
-      alternatives: s.alternatives as any[],
-      category: CATEGORIES[i],
-      mode: "cook",
-      showAlts: false,
-      deals: [],
-      dealsLoading: false,
-    })));
-    setLoading(false);
+      setTargets(plan.targets);
+      setSlots(plan.slots.map((s, i) => ({
+        selected: s.selected as any,
+        alternatives: s.alternatives as any[],
+        category: CATEGORIES[i],
+        mode: "cook",
+        showAlts: false,
+        deals: [],
+        dealsLoading: false,
+      })));
+    } catch (err) {
+      console.error("Meal plan generation error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleRegenerate = (index: number) => {
@@ -510,25 +555,33 @@ export default function Meals() {
     setSlots(updated);
   };
 
-  const toggleMode = async (index: number) => {
+  const setMode = async (index: number, mode: "cook" | "eatout") => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     const updated = [...slots];
-    const newMode = updated[index].mode === "cook" ? "eatout" : "cook";
-    updated[index] = { ...updated[index], mode: newMode as any };
+    updated[index] = { ...updated[index], mode };
     setSlots(updated);
 
-    if (newMode === "eatout" && updated[index].deals.length === 0 && location) {
-      const updatedWithLoading = [...updated];
-      updatedWithLoading[index] = { ...updatedWithLoading[index], dealsLoading: true };
-      setSlots(updatedWithLoading);
+    if (mode !== "eatout") return;
 
-      const mealName = updated[index].selected.name;
-      const searchQuery = getRestaurantSearchQuery(mealName, CATEGORIES[index]);
-      const deals = await findNearbyRestaurants(searchQuery, location.lat, location.lng, profile?.dietary_preference);
-      const final = [...updatedWithLoading];
-      final[index] = { ...final[index], deals, dealsLoading: false };
-      setSlots(final);
+    // Get location — either from state or by requesting it
+    let loc = location;
+    if (!loc) {
+      loc = await requestLocation();
     }
+    if (!loc) return;
+
+    // Skip if deals already loaded for this slot
+    if (updated[index].deals.length > 0) return;
+
+    // Load nearby restaurants
+    updated[index] = { ...updated[index], dealsLoading: true };
+    setSlots([...updated]);
+
+    const mealName = updated[index].selected.name;
+    const searchQuery = getRestaurantSearchQuery(mealName, CATEGORIES[index]);
+    const deals = await findNearbyRestaurants(searchQuery, loc.lat, loc.lng, profile?.dietary_preference);
+    updated[index] = { ...updated[index], deals, dealsLoading: false };
+    setSlots([...updated]);
   };
 
   const toggleAlts = (index: number) => {
@@ -723,8 +776,9 @@ export default function Meals() {
 
   if (loading) {
     return (
-      <View style={s.centered}>
-        <ActivityIndicator size="large" color={C.earth} />
+      <View style={{ flex: 1, backgroundColor: C.bg }}>
+        <TopoBackground />
+        <MealsSkeleton />
       </View>
     );
   }
@@ -958,10 +1012,9 @@ export default function Meals() {
                 icon: <LogCheckIcon logged={loggedMeals.has(selectedMealIndex)} />,
                 onPress: () => toggleLogMeal(selectedMealIndex),
               },
-              { label: "Cook", bg: C.earth, icon: <PotIcon />, onPress: () => toggleMode(selectedMealIndex) },
-              { label: "Recipe", bg: C.stone, icon: <BookIcon />, onPress: () => openRecipe(selectedSlot?.selected) },
+              { label: "Recipe", bg: C.earth, icon: <PotIcon />, onPress: () => { setMode(selectedMealIndex, "cook"); openRecipe(selectedSlot?.selected); } },
               { label: "Swap", bg: "rgba(52,211,153,0.12)", icon: <SwapArrowsIcon />, onPress: () => handleRegenerate(selectedMealIndex) },
-              { label: "Eat Out", bg: "rgba(245,158,11,0.12)", icon: <ForkLocationIcon />, onPress: () => { toggleMode(selectedMealIndex); } },
+              { label: "Eat Out", bg: "rgba(245,158,11,0.12)", icon: <ForkLocationIcon />, onPress: () => setMode(selectedMealIndex, "eatout") },
               { label: "Nah", bg: "rgba(0,0,0,0.04)", icon: <XIcon />, onPress: () => handleDislike(selectedMealIndex) },
             ].map((action, i) => (
               <Animated.View
@@ -981,18 +1034,33 @@ export default function Meals() {
             ))}
           </View>
 
-          {/* Eat out deals inline */}
+          {/* Eat out section */}
           {selectedSlot?.mode === "eatout" && (
             <View style={s.eatOutSection}>
+              {/* Delivery service buttons — always visible */}
+              <Text style={s.restaurantsSectionLabel}>Order Delivery</Text>
+              <View style={s.orderRow}>
+                {deliveryServices.map((svc) => (
+                  <Pressable
+                    key={svc.name}
+                    onPress={() => Linking.openURL(svc.openSearch(selectedSlot.selected.name))}
+                    style={[s.orderBtn, { flex: 1 }]}
+                  >
+                    <Text style={s.orderBtnText}>{svc.icon} {svc.name}</Text>
+                  </Pressable>
+                ))}
+              </View>
+
+              {/* Nearby restaurants — bonus section */}
               {selectedSlot.dealsLoading && (
                 <View style={s.dealsLoading}>
                   <ActivityIndicator color={C.earth} size="small" />
-                  <Text style={s.dealsLoadingText}>Finding deals...</Text>
+                  <Text style={s.dealsLoadingText}>Finding nearby spots...</Text>
                 </View>
               )}
               {!selectedSlot.dealsLoading && selectedSlot.deals.length > 0 && (
                 <>
-                  <Text style={s.restaurantsSectionLabel}>Nearby</Text>
+                  <Text style={[s.restaurantsSectionLabel, { marginTop: 16 }]}>Nearby Pickup</Text>
                   {selectedSlot.deals.map((place, j) => (
                     <Pressable
                       key={j}
@@ -1018,30 +1086,9 @@ export default function Meals() {
                         <Text style={s.restaurantMeta}>{place.distance}</Text>
                       </View>
                       {j === 0 && <Text style={s.bestMatch}>Best Match</Text>}
-                      <View style={s.orderRow}>
-                        <Pressable onPress={() => openUberEats(place.name)} style={s.orderBtn}>
-                          <Text style={s.orderBtnText}>UberEats</Text>
-                        </Pressable>
-                        <Pressable onPress={() => openDoorDash(place.name)} style={s.orderBtn}>
-                          <Text style={s.orderBtnText}>DoorDash</Text>
-                        </Pressable>
-                        <Pressable onPress={() => openMapsUrl(place.mapsUrl)} style={s.orderBtn}>
-                          <Text style={s.orderBtnText}>Pickup</Text>
-                        </Pressable>
-                      </View>
                     </Pressable>
                   ))}
                 </>
-              )}
-              {!selectedSlot.dealsLoading && selectedSlot.deals.length === 0 && !location && (
-                <View style={s.noDeals}>
-                  <Text style={s.noDealsText}>Enable location to find deals nearby</Text>
-                </View>
-              )}
-              {!selectedSlot.dealsLoading && selectedSlot.deals.length === 0 && location && (
-                <Pressable onPress={() => toggleMode(selectedMealIndex)} style={s.noDeals}>
-                  <Text style={s.noDealsTextAction}>Tap "Eat Out" again to search</Text>
-                </Pressable>
               )}
             </View>
           )}

@@ -11,6 +11,9 @@
       "supportsTablet": false,
       "bundleIdentifier": "com.livvia.app",
       "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Livvia uses your location to find nearby restaurants and grocery stores for your meal plan.",
+        "NSCameraUsageDescription": "Livvia uses your camera to take a profile photo.",
+        "NSPhotoLibraryUsageDescription": "Livvia accesses your photos to set a profile picture.",
         "LSApplicationQueriesSchemes": [
           "youtube",
           "vnd.youtube",

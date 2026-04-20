@@ -129,7 +129,7 @@ export function NutritionCorrelation({
   return (
     <View style={s.card}>
       <View style={s.headerRow}>
-        <Text style={s.title}>{"\uD83D\uDCA1"} Nutrition \u00D7 Training</Text>
+        <Text style={s.title}>💡 Nutrition × Training</Text>
       </View>
       {insights.map((insight, i) => (
         <View

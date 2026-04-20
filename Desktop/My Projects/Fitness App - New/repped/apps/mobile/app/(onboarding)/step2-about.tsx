@@ -17,7 +17,7 @@ type SexOption = "male" | "female";
 
 export default function Step2About() {
   const { data, updateData } = useOnboardingStore();
-  const [age, setAge] = useState(data.age ? String(data.age) : "");
+  const [age, setAge] = useState(data.age ? String(data.age) : "25");
   const [sex, setSex] = useState<SexOption | null>(data.sex as SexOption | null);
   const [weightKg, setWeightKg] = useState(data.weight_kg ?? 0);
   const [heightCm, setHeightCm] = useState(data.height_cm ?? 0);
@@ -32,7 +32,7 @@ export default function Step2About() {
       weight_kg: weightKg,
       height_cm: heightCm,
     });
-    router.push("/(onboarding)/step3-goals");
+    router.push("/(onboarding)/step3-health");
   };
 
   const sexOptions: { label: string; value: SexOption }[] = [
@@ -43,7 +43,7 @@ export default function Step2About() {
   return (
     <OnboardingLayout
       step={1}
-      totalSteps={8}
+      totalSteps={9}
       ctaLabel="Continue"
       ctaDisabled={!canContinue}
       onCta={handleContinue}
@@ -60,7 +60,7 @@ export default function Step2About() {
           marginBottom: 8,
         }}
       >
-        Step 2 of 8
+        Step 2 of 9
       </Text>
 
       {/* Title */}
@@ -178,7 +178,7 @@ export default function Step2About() {
         max={230}
         initial={data.height_cm ?? 175}
         unit="cm"
-        altUnit="ft"
+        altUnit="in"
         altMin={40}
         altMax={90}
         altInitial={69}
