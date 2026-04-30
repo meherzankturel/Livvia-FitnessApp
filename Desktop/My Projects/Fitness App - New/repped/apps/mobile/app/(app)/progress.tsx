@@ -4,7 +4,6 @@ import {
   useAuthStore,
   calculateVolumeLoad,
   calculateWorkoutStreak,
-  ACHIEVEMENT_DEFINITIONS,
   calculateMacros,
 } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
@@ -18,21 +17,11 @@ import {
   NutritionCard,
   StreakAchievementsRow,
   WeeklySummaryCard,
-  MonthlySummaryCard,
-  RecoveryCard,
 } from "../../src/components/progress-v2";
-
-// ─── Icon emoji mapping ─────────────────────────────────────────────────────
-const ICON_EMOJI: Record<string, string> = {
-  target: "🎯", dumbbell: "🏋️", trophy: "🏆", crown: "👑", star: "⭐",
-  flame: "🔥", calendar: "📅", chart: "📈", scale: "⚖️", ruler: "📏",
-  check: "✅", heart: "❤️", leaf: "🌿", weight: "🏋️", medal: "🏅",
-  lightning: "⚡", sun: "☀️", moon: "🌙", shield: "🛡️", share: "📤",
-};
 
 // ─── Date helpers ────────────────────────────────────────────────────────────
 
-/** "24 Apr 2026" */
+/** "29 Apr 2026" */
 function formatDateLabel(): string {
   const now = new Date();
   return now.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
@@ -67,31 +56,18 @@ export default function Progress() {
 
   // ── Streak ─────────────────────────────────────────────────────────────────
   const [streak, setStreak] = useState(0);
-  const [streakBest, setStreakBest] = useState(0);
 
   // ── Achievements ───────────────────────────────────────────────────────────
   const [earnedCount, setEarnedCount] = useState(0);
-  const [totalAchievements] = useState(ACHIEVEMENT_DEFINITIONS.length);
-  const [recentEarnedEmojis, setRecentEarnedEmojis] = useState<string[]>([]);
 
   // ── Weekly ─────────────────────────────────────────────────────────────────
   const [weekWorkouts, setWeekWorkouts] = useState(0);
   const [weekPlanned, setWeekPlanned] = useState(0);
   const [weekVolume, setWeekVolume] = useState(0);
   const [weekVolumeChange, setWeekVolumeChange] = useState(0);
-  const [weekAvgDuration, setWeekAvgDuration] = useState(0);
-  const [weekPRs, setWeekPRs] = useState(0);
   const [weekLabel, setWeekLabel] = useState(formatWeekLabel());
-
-  // ── Monthly ────────────────────────────────────────────────────────────────
-  const [monthWorkouts, setMonthWorkouts] = useState(0);
-  const [monthWorkoutsChange, setMonthWorkoutsChange] = useState(0);
-  const [monthVolume, setMonthVolume] = useState(0);
-  const [monthVolumeChange, setMonthVolumeChange] = useState(0);
-  const [monthAvgDuration, setMonthAvgDuration] = useState(0);
-  const [monthPRs, setMonthPRs] = useState(0);
-  const [monthCompletionRate, setMonthCompletionRate] = useState(0);
-  const [monthLabel, setMonthLabel] = useState("");
+  const [bestLift, setBestLift] = useState<{ weight: number; exercise: string; isPR: boolean } | null>(null);
+  const [dayDurations, setDayDurations] = useState<number[]>([0, 0, 0, 0, 0, 0, 0]);
 
   // ── Effects ────────────────────────────────────────────────────────────────
   useEffect(() => { loadAll(); }, []);
@@ -113,14 +89,16 @@ export default function Progress() {
 
     // ── Time boundaries ──
     const { start: weekStart, end: weekEnd } = getWeekBounds();
-    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    const twoWeeksAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
-    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59).toISOString();
+    const weekStartISO = weekStart.toISOString();
+    const weekEndISO = weekEnd.toISOString();
 
-    // ── Parallel queries ──
-    // Profile query separately (single() breaks Promise.all type inference)
+    // Last week boundaries for volume comparison
+    const lastWeekStart = new Date(weekStart);
+    lastWeekStart.setDate(lastWeekStart.getDate() - 7);
+    const lastWeekEnd = new Date(weekStart);
+    lastWeekEnd.setTime(lastWeekEnd.getTime() - 1); // 1ms before this week
+
+    // ── Profile (single) ──
     const profileRes = await (supabase as any)
       .from("profiles")
       .select("tdee, goal, weight_kg")
@@ -128,132 +106,104 @@ export default function Progress() {
       .single();
 
     const [
-      // Day strip: workout_logs this week
-      weekDayLogsRes,
-      // Streak: all workout_logs ordered desc
+      // Workout logs this week (for day strip + durations)
+      weekWorkoutLogsRes,
+      // All workout logs (for streak)
       allLogsRes,
-      // Achievements
+      // Achievements count
       achRes,
       // Meal logs today
       mealLogsTodayRes,
-      // Weekly: workout_logs this week (with completed_at for duration)
-      weekWorkoutLogsRes,
-      // Weekly: workout_logs last week (for volume comparison)
+      // Last week workout logs (for volume comparison)
       lastWeekWorkoutLogsRes,
       // Plans (for planned count)
       plansRes,
       // PRs this week
       weekPRsRes,
-      // Monthly: this month workouts
-      monthWorkoutsRes,
-      // Monthly: last month workouts
-      lastMonthWorkoutsRes,
-      // PRs this month
-      monthPRsRes,
     ] = await Promise.all([
-      supabase
+      (supabase as any)
         .from("workout_logs")
-        .select("started_at")
+        .select("id, started_at, completed_at")
         .eq("user_id", uid)
         .eq("skipped", false)
-        .gte("started_at", weekStart.toISOString())
-        .lte("started_at", weekEnd.toISOString()),
-      supabase
+        .gte("started_at", weekStartISO)
+        .lte("started_at", weekEndISO),
+      (supabase as any)
         .from("workout_logs")
         .select("started_at")
         .eq("user_id", uid)
         .eq("skipped", false)
         .order("started_at", { ascending: false }),
-      supabase
+      (supabase as any)
         .from("user_achievements")
-        .select("*, achievements(key)")
+        .select("id")
         .eq("user_id", uid),
-      supabase
+      (supabase as any)
         .from("meal_logs")
         .select("calories, protein_g, carbs_g, fat_g")
         .eq("user_id", uid)
         .eq("date", today),
-      supabase
-        .from("workout_logs")
-        .select("id, started_at, completed_at")
-        .eq("user_id", uid)
-        .eq("skipped", false)
-        .gte("started_at", weekAgo),
-      supabase
+      (supabase as any)
         .from("workout_logs")
         .select("id, started_at")
         .eq("user_id", uid)
         .eq("skipped", false)
-        .gte("started_at", twoWeeksAgo)
-        .lt("started_at", weekAgo),
-      supabase
+        .gte("started_at", lastWeekStart.toISOString())
+        .lt("started_at", weekStartISO),
+      (supabase as any)
         .from("workout_plans")
         .select("id")
         .eq("user_id", uid)
         .eq("is_rest_day", false),
-      supabase
+      (supabase as any)
         .from("personal_records")
-        .select("id")
+        .select("id, exercise_id")
         .eq("user_id", uid)
-        .gte("achieved_at", weekAgo),
-      supabase
-        .from("workout_logs")
-        .select("id, started_at, completed_at")
-        .eq("user_id", uid)
-        .eq("skipped", false)
-        .gte("started_at", monthStart),
-      supabase
-        .from("workout_logs")
-        .select("id, started_at, completed_at")
-        .eq("user_id", uid)
-        .eq("skipped", false)
-        .gte("started_at", lastMonthStart)
-        .lte("started_at", lastMonthEnd),
-      supabase
-        .from("personal_records")
-        .select("id")
-        .eq("user_id", uid)
-        .gte("achieved_at", monthStart),
+        .gte("achieved_at", weekStartISO),
     ]);
 
     // ── Day strip: map started_at to day indices ──
+    const thisWeekLogs = ((weekWorkoutLogsRes.data as any[]) || []);
     const daySet = new Set<number>();
-    ((weekDayLogsRes.data as any[]) || []).forEach((l) => {
+    thisWeekLogs.forEach((l: any) => {
       const d = new Date(l.started_at);
-      const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1; // 0=Mon … 6=Sun
+      const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
       daySet.add(dayIdx);
     });
     setCompletedDays(daySet);
 
+    // ── Day durations for bar chart ──
+    const durations = [0, 0, 0, 0, 0, 0, 0];
+    thisWeekLogs.forEach((w: any) => {
+      if (!w.completed_at) return;
+      const d = new Date(w.started_at);
+      const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
+      const startMs = new Date(w.started_at).getTime();
+      const endMs = new Date(w.completed_at).getTime();
+      const mins = Math.round((endMs - startMs) / 60000);
+      if (mins > 0 && mins < 300) {
+        durations[dayIdx] += mins;
+      }
+    });
+    setDayDurations(durations);
+
     // ── Streak ──
-    const workoutDates = ((allLogsRes.data as any[]) || []).map((l) => l.started_at);
-    const currentStreak = calculateWorkoutStreak(workoutDates);
-    setStreak(currentStreak);
-    setStreakBest(Math.max(currentStreak, currentStreak)); // simple: best = current for now
+    const workoutDates = ((allLogsRes.data as any[]) || []).map((l: any) => l.started_at);
+    setStreak(calculateWorkoutStreak(workoutDates));
 
     // ── Achievements ──
-    const achData = (achRes.data as any[]) || [];
-    const earnedKeys = achData.map((a) => a.achievements?.key).filter(Boolean) as string[];
-    setEarnedCount(earnedKeys.length);
-    // Last 3 earned → map to emoji
-    const recentKeys = earnedKeys.slice(-3);
-    const emojis = recentKeys.map((key) => {
-      const def = ACHIEVEMENT_DEFINITIONS.find((d) => d.key === key);
-      return def ? (ICON_EMOJI[def.icon] || "🏆") : "🏆";
-    });
-    setRecentEarnedEmojis(emojis);
+    setEarnedCount(((achRes.data as any[]) || []).length);
 
     // ── Nutrition ──
     if (profileRes.data) {
       const { tdee, goal, weight_kg } = profileRes.data as any;
       if (tdee && goal && weight_kg) {
-        const targets = calculateMacros(tdee, goal, weight_kg);
-        setNutritionTargets(targets);
+        setNutritionTargets(calculateMacros(tdee, goal, weight_kg));
       }
     }
     const mealLogs = (mealLogsTodayRes.data as any[]) || [];
     const actual = { calories: 0, protein: 0, carbs: 0, fat: 0 };
-    mealLogs.forEach((m) => {
+    mealLogs.forEach((m: any) => {
       actual.calories += m.calories || 0;
       actual.protein += m.protein_g || 0;
       actual.carbs += m.carbs_g || 0;
@@ -262,7 +212,6 @@ export default function Progress() {
     setNutritionActual(actual);
 
     // ── Weekly ──
-    const thisWeekLogs = (weekWorkoutLogsRes.data as any[]) || [];
     const lastWeekLogs = (lastWeekWorkoutLogsRes.data as any[]) || [];
     const planned = ((plansRes.data as any[]) || []).length;
     setWeekWorkouts(thisWeekLogs.length);
@@ -270,17 +219,17 @@ export default function Progress() {
     setWeekLabel(formatWeekLabel());
 
     // Volume: fetch set_logs via workout_log_ids
-    const thisWeekIds = thisWeekLogs.map((w) => w.id);
-    const lastWeekIds = lastWeekLogs.map((w) => w.id);
+    const thisWeekIds = thisWeekLogs.map((w: any) => w.id);
+    const lastWeekIds = lastWeekLogs.map((w: any) => w.id);
 
     const loadVolume = async (ids: string[]): Promise<number> => {
       if (ids.length === 0) return 0;
-      const { data } = await supabase
+      const { data } = await (supabase as any)
         .from("set_logs")
         .select("reps, weight_kg")
         .in("workout_log_id", ids);
       return calculateVolumeLoad(
-        ((data as any[]) || []).map((s) => ({ reps: s.reps, weight_kg: s.weight_kg }))
+        ((data as any[]) || []).map((s: any) => ({ reps: s.reps, weight_kg: s.weight_kg }))
       );
     };
 
@@ -295,74 +244,30 @@ export default function Progress() {
         : 0
     );
 
-    // Week PRs
-    setWeekPRs(((weekPRsRes.data as any[]) || []).length);
+    // ── Best lift this week ──
+    if (thisWeekIds.length > 0) {
+      const { data: setLogs } = await (supabase as any)
+        .from("set_logs")
+        .select("weight_kg, exercise_id, exercises(name)")
+        .in("workout_log_id", thisWeekIds)
+        .order("weight_kg", { ascending: false })
+        .limit(1);
 
-    // Week avg duration
-    const weekDurations = thisWeekLogs
-      .filter((w) => w.completed_at)
-      .map((w) => {
-        const s = new Date(w.started_at).getTime();
-        const e = new Date(w.completed_at).getTime();
-        return Math.round((e - s) / 60000);
-      })
-      .filter((d) => d > 0 && d < 300);
-    setWeekAvgDuration(
-      weekDurations.length > 0
-        ? Math.round(weekDurations.reduce((a, b) => a + b, 0) / weekDurations.length)
-        : 0
-    );
+      const weekPRData = (weekPRsRes.data as any[]) || [];
+      const prExerciseIds = new Set(weekPRData.map((pr: any) => pr.exercise_id));
 
-    // ── Monthly ──
-    const thisMonthLogs = (monthWorkoutsRes.data as any[]) || [];
-    const lastMonthLogs = (lastMonthWorkoutsRes.data as any[]) || [];
-    setMonthWorkouts(thisMonthLogs.length);
-    setMonthWorkoutsChange(thisMonthLogs.length - lastMonthLogs.length);
-    setMonthLabel(now.toLocaleDateString("en-US", { month: "long" }));
-
-    // Monthly PRs
-    setMonthPRs(((monthPRsRes.data as any[]) || []).length);
-
-    // Monthly volume
-    const thisMonthIds = thisMonthLogs.map((w: any) => w.id);
-    const lastMonthIds = lastMonthLogs.map((w: any) => w.id);
-    const [thisMonthVol, lastMonthVol] = await Promise.all([
-      loadVolume(thisMonthIds),
-      loadVolume(lastMonthIds),
-    ]);
-    setMonthVolume(thisMonthVol);
-    setMonthVolumeChange(
-      lastMonthVol > 0
-        ? Math.round(((thisMonthVol - lastMonthVol) / lastMonthVol) * 100)
-        : 0
-    );
-
-    // Monthly avg duration
-    const monthDurations = thisMonthLogs
-      .filter((w: any) => w.completed_at)
-      .map((w: any) => {
-        const s = new Date(w.started_at).getTime();
-        const e = new Date(w.completed_at).getTime();
-        return Math.round((e - s) / 60000);
-      })
-      .filter((d: number) => d > 0 && d < 300);
-    setMonthAvgDuration(
-      monthDurations.length > 0
-        ? Math.round(monthDurations.reduce((a: number, b: number) => a + b, 0) / monthDurations.length)
-        : 0
-    );
-
-    // Monthly completion rate
-    if (planned > 0) {
-      const dayOfMonth = now.getDate();
-      const expectedWorkouts = Math.round((planned / 7) * dayOfMonth);
-      setMonthCompletionRate(
-        expectedWorkouts > 0
-          ? Math.min(thisMonthLogs.length / expectedWorkouts, 1)
-          : 0
-      );
+      if (setLogs && setLogs.length > 0) {
+        const top = setLogs[0];
+        setBestLift({
+          weight: Math.round(top.weight_kg),
+          exercise: top.exercises?.name || "Unknown",
+          isPR: prExerciseIds.has(top.exercise_id),
+        });
+      } else {
+        setBestLift(null);
+      }
     } else {
-      setMonthCompletionRate(0);
+      setBestLift(null);
     }
 
     setLoading(false);
@@ -415,7 +320,7 @@ export default function Progress() {
           onSelectDay={setSelectedDay}
         />
 
-        {/* Content with horizontal padding */}
+        {/* Content */}
         <View style={{ paddingHorizontal: 2, gap: 14, marginTop: 14 }}>
           <OverviewBento
             steps={7235}
@@ -437,11 +342,8 @@ export default function Progress() {
 
           <StreakAchievementsRow
             streak={streak}
-            streakBest={streakBest}
             completedDays={completedDays}
             earnedCount={earnedCount}
-            totalAchievements={totalAchievements}
-            recentEarnedEmojis={recentEarnedEmojis}
           />
 
           <WeeklySummaryCard
@@ -450,22 +352,9 @@ export default function Progress() {
             workoutsPlanned={weekPlanned}
             volume={weekVolume}
             volumeChange={weekVolumeChange}
-            avgDuration={weekAvgDuration}
-            prs={weekPRs}
+            bestLift={bestLift}
+            dayDurations={dayDurations}
           />
-
-          <MonthlySummaryCard
-            monthLabel={monthLabel}
-            workouts={monthWorkouts}
-            workoutsChange={monthWorkoutsChange}
-            volume={monthVolume}
-            volumeChange={monthVolumeChange}
-            avgDuration={monthAvgDuration}
-            prs={monthPRs}
-            completionRate={monthCompletionRate}
-          />
-
-          <RecoveryCard />
         </View>
       </ScrollView>
     </View>
