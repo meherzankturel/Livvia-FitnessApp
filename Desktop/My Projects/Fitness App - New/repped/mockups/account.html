@@ -1,0 +1,1897 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Revive · Account (interactive mockup)</title>
+  <style>
+    :root {
+      --earth:#1A1A1A;
+      --sand: #FFFFFF;
+      --stone:#F2F1ED;
+      --rock: #9A9A92;
+      --trail:#34D399;
+      --amber:#F59E0B;
+      --red:#EF4444;
+      --indigo:#6366F1;
+      --board:#1a1815;
+      --green-text:#0E8757;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      background: var(--board); color: var(--sand);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    .stage {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px;
+    }
+    .frame {
+      width: min(420px, 100%);
+      background: #000; border-radius: 44px; padding: 8px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .screen-wrap {
+      background: #FFFFFF; color: var(--earth);
+      border-radius: 36px; overflow: hidden;
+      width: 100%; aspect-ratio: 390 / 844;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 24px; background: #000;
+      border-bottom-left-radius: 16px; border-bottom-right-radius: 16px; z-index: 50;
+    }
+    .statusbar {
+      padding: 14px 28px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 700; color: var(--earth);
+      flex-shrink: 0; background: #FFFFFF;
+      position: relative; z-index: 40;
+    }
+
+    /* Screen system — sub-screens slide in from the right */
+    .screens-container {
+      flex: 1; position: relative; overflow: hidden;
+    }
+    .screen {
+      position: absolute; inset: 0;
+      transform: translateX(100%);
+      transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+      background: var(--sand);
+      display: flex; flex-direction: column;
+    }
+    .screen.active { transform: translateX(0); }
+    .screen.behind { transform: translateX(-12%); opacity: 0.5; }
+    #screen-main { transform: translateX(0); }
+
+    /* Screen header (subscreen) */
+    .sub-header {
+      padding: 12px 20px;
+      display: flex; align-items: center; gap: 14px;
+      background: var(--sand); position: relative; z-index: 5;
+    }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 18px;
+      background: var(--stone); color: var(--earth);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; cursor: pointer; border: none;
+      font-family: inherit;
+    }
+    .sub-title {
+      font-size: 17px; font-weight: 800; color: var(--earth);
+    }
+
+    /* Main screen header */
+    .main-header {
+      padding: 14px 24px 12px;
+    }
+    .main-title {
+      font-size: 28px; font-weight: 800; color: var(--earth); letter-spacing: -0.02em;
+    }
+
+    .scroll {
+      flex: 1; overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 28px;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* Hero pill — Floyd Miles pattern: photo-style avatar, name, email */
+    .player-hero {
+      margin: 4px 20px 12px;
+      padding: 14px 16px 14px 12px;
+      background: var(--stone);
+      border-radius: 26px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hero-avatar-wrap { width: 54px; height: 54px; flex-shrink: 0; }
+    .hero-avatar {
+      width: 54px; height: 54px;
+      border-radius: 27px;
+      background: #D4B896;
+      display: flex; align-items: flex-end; justify-content: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .hero-avatar::before {
+      content: "";
+      position: absolute; top: 9px; left: 50%; transform: translateX(-50%);
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #F4DDC5;
+    }
+    .hero-avatar::after {
+      content: "";
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 36px; height: 24px;
+      border-radius: 18px 18px 0 0;
+      background: #C97849;
+    }
+    .hero-text { flex: 1; min-width: 0; }
+    .player-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--earth);
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+    }
+    .player-meta {
+      font-size: 13px;
+      color: var(--rock);
+      font-weight: 400;
+      margin-top: 2px;
+    }
+    .hero-edit {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--earth);
+      flex-shrink: 0;
+    }
+
+    /* Badges pill — celebratory moment between hero and Settings */
+    .badges-pill {
+      margin: 0 20px 0;
+      padding: 10px 16px 10px 12px;
+      background: var(--stone);
+      border-radius: 28px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer;
+      transition: background 200ms;
+    }
+    .badges-pill:active { background: #E8E6DF; }
+    .badge-stack { display: flex; flex-shrink: 0; }
+    .badge {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--stone);
+      display: flex; align-items: center; justify-content: center;
+      color: #FFFFFF;
+      margin-left: -12px;
+      position: relative;
+    }
+    .badge:first-child { margin-left: 0; }
+    .badge:nth-child(1) { z-index: 5; }
+    .badge:nth-child(2) { z-index: 4; }
+    .badge:nth-child(3) { z-index: 3; }
+    .badge:nth-child(4) { z-index: 2; }
+    .badge:nth-child(5) { z-index: 1; }
+    .badge svg { display: block; }
+    .b-amber  { background: #F2A638; }
+    .b-coral  { background: #D87454; }
+    .b-indigo { background: #6366F1; }
+    .b-trail  { background: #34D399; }
+    .b-earth  { background: #2D2A24; }
+
+    .badges-text { flex: 1; font-size: 15px; font-weight: 500; color: var(--earth); letter-spacing: -0.01em; }
+    .badges-text small {
+      display: block;
+      font-size: 11px; color: var(--rock); margin-top: 0; font-weight: 400;
+    }
+
+    /* Section heading — Floyd Miles: large bold, anchors the screen */
+    .section { margin: 0 20px 8px; }
+    .section-heading {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--earth);
+      letter-spacing: -0.02em;
+      margin: 20px 6px 14px;
+    }
+    .row-stack {
+      display: flex; flex-direction: column;
+      gap: 10px;
+    }
+    .row {
+      padding: 10px 16px 10px 12px;
+      background: var(--stone);
+      border-radius: 28px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer;
+      transition: background 200ms;
+    }
+    .row:active { background: #E8E6DF; }
+    .row-icon {
+      width: 30px; height: 30px;
+      color: var(--earth);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .row-icon svg { display: block; }
+    .row-text { flex: 1; }
+    .row-label { font-size: 15px; font-weight: 500; color: var(--earth); letter-spacing: -0.01em; }
+    .row-sub { font-size: 11px; color: var(--rock); margin-top: 2px; }
+    .row-chev { color: #B8B8AE; font-size: 17px; font-weight: 400; }
+    .row-value { font-size: 13px; color: var(--rock); }
+
+    /* Toggle switch */
+    .switch {
+      width: 44px; height: 26px;
+      background: var(--stone);
+      border-radius: 13px;
+      position: relative;
+      cursor: pointer;
+      transition: background 200ms;
+      flex-shrink: 0;
+    }
+    .switch.on { background: var(--trail); }
+    .switch-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 22px; height: 22px; border-radius: 11px;
+      background: #FFFFFF;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      transition: left 200ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .switch.on .switch-knob { left: 20px; }
+
+    /* Exit actions — quiet text-only Sign Out + Delete below the lists */
+    .exit-actions {
+      margin: 28px 20px 8px;
+      display: flex; flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .signout-link {
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--earth);
+      letter-spacing: -0.01em;
+      padding: 10px 16px;
+      cursor: pointer;
+    }
+    .signout-link:active { opacity: 0.5; }
+    .danger-zone {
+      margin: 0 20px 8px;
+    }
+    .danger-btn {
+      width: 100%;
+      padding: 14px;
+      background: transparent;
+      border: none;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+    }
+    .danger-btn.signout { color: var(--earth); }
+    .danger-btn.delete { color: var(--red); margin-top: 4px; }
+
+    /* App footer */
+    .app-footer {
+      text-align: center;
+      padding: 16px 20px;
+      font-size: 11px;
+      color: var(--rock);
+      opacity: 0.6;
+    }
+
+    /* ───── Sub-screen content blocks ───── */
+    .sub-section {
+      margin: 0 20px 20px;
+    }
+    .form-label {
+      font-size: 10px; font-weight: 700; color: var(--rock);
+      letter-spacing: 1.2px; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .form-group {
+      background: #FFFFFF;
+      border-radius: 16px;
+      padding: 16px;
+      border: 1px solid rgba(0,0,0,0.05);
+    }
+    .input-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0;
+      border-top: 0.5px solid rgba(0,0,0,0.06);
+    }
+    .input-row:first-child { border-top: 0; padding-top: 0; }
+    .input-row:last-child { padding-bottom: 0; }
+    .input-label {
+      font-size: 13px; color: var(--earth); font-weight: 500; flex: 1;
+    }
+    .input-field {
+      background: var(--sand);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: var(--earth);
+      text-align: right;
+      font-family: inherit; outline: none;
+      width: 100px;
+    }
+    .input-field:focus { background: var(--stone); }
+    .readonly-value {
+      font-size: 14px; font-weight: 400; color: var(--rock);
+      padding: 6px 0;
+    }
+    .input-row.tappable { cursor: pointer; }
+    .input-row.tappable:active { background: rgba(0,0,0,0.025); }
+    .input-value-chev {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .input-value-chev .v {
+      font-size: 14px; font-weight: 600; color: var(--earth);
+    }
+    .input-value-chev .row-chev {
+      font-size: 16px; color: var(--rock);
+    }
+    .input-row .switch {
+      width: 44px; height: 26px;
+    }
+
+    /* Goal-validation inline warning */
+    .goal-warning {
+      margin: -6px 0 8px;
+      padding: 12px 14px;
+      background: rgba(245, 158, 11, 0.10);
+      border: 1px solid rgba(245, 158, 11, 0.25);
+      border-radius: 14px;
+      display: none;
+      gap: 10px;
+      align-items: flex-start;
+    }
+    .goal-warning.show { display: flex; }
+    .goal-warning.error {
+      background: rgba(239, 68, 68, 0.08);
+      border-color: rgba(239, 68, 68, 0.25);
+    }
+    .goal-warning-icon {
+      color: var(--amber);
+      font-size: 16px; line-height: 1;
+      flex-shrink: 0; margin-top: 1px;
+      font-weight: 700;
+    }
+    .goal-warning.error .goal-warning-icon { color: var(--red); }
+    .goal-warning-text {
+      font-size: 12px;
+      color: var(--earth);
+      line-height: 1.45;
+      flex: 1;
+    }
+    .goal-warning-text strong { font-weight: 700; }
+
+    /* DOB row */
+    .dob-row { cursor: pointer; }
+    .dob-row:active { background: rgba(0,0,0,0.03); border-radius: 8px; }
+    .dob-display {
+      display: flex; align-items: center;
+      background: var(--sand);
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: var(--earth);
+    }
+    .age-derived {
+      font-size: 14px; font-weight: 600; color: var(--earth);
+      padding: 8px 0;
+    }
+
+    /* DOB picker modal — slide up from bottom */
+    .dob-modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.45);
+      display: none;
+      z-index: 70;
+    }
+    .dob-modal-backdrop.show { display: block; }
+    .dob-modal {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: var(--sand);
+      border-top-left-radius: 28px; border-top-right-radius: 28px;
+      padding: 12px 20px 28px;
+      transform: translateY(100%);
+      transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .dob-modal-backdrop.show .dob-modal { transform: translateY(0); }
+    .dob-handle {
+      width: 36px; height: 4px;
+      background: var(--stone);
+      border-radius: 2px;
+      margin: 0 auto 16px;
+    }
+    .dob-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .dob-header .dob-title { font-size: 16px; font-weight: 800; color: var(--earth); }
+    .dob-header button {
+      background: none; border: none; font-family: inherit; cursor: pointer;
+      font-size: 14px; padding: 4px 6px;
+    }
+    .dob-header .dob-cancel { color: var(--rock); font-weight: 600; }
+    .dob-header .dob-done { color: var(--earth); font-weight: 800; }
+
+    .dob-wheels {
+      position: relative;
+      display: flex; gap: 8px;
+      padding: 4px 0;
+    }
+    .dob-wheel-band {
+      position: absolute; left: 0; right: 0;
+      top: 80px; height: 40px;
+      background: var(--stone);
+      border-radius: 12px;
+      pointer-events: none;
+    }
+    .dob-wheel {
+      flex: 1;
+      height: 200px;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding: 80px 0;
+      text-align: center;
+      position: relative;
+      z-index: 2;
+    }
+    .dob-wheel::-webkit-scrollbar { display: none; }
+    .dob-wheel-item {
+      height: 40px;
+      display: flex; align-items: center; justify-content: center;
+      scroll-snap-align: center;
+      font-size: 15px; font-weight: 500;
+      color: var(--rock);
+      transition: color 120ms, font-size 120ms, font-weight 120ms;
+    }
+    .dob-wheel-item.center {
+      color: var(--earth); font-weight: 800; font-size: 17px;
+    }
+
+    /* Sex select (segmented mini) */
+    .seg-select {
+      display: flex; gap: 0; background: var(--sand);
+      border-radius: 10px; padding: 3px;
+    }
+    .seg-select button {
+      flex: 1; padding: 6px 10px; border: none;
+      border-radius: 8px; cursor: pointer; font-family: inherit;
+      font-size: 12px; font-weight: 600; color: var(--rock);
+      background: transparent;
+    }
+    .seg-select button.active {
+      background: var(--earth); color: var(--sand);
+    }
+
+    /* Card-style options for goals etc. */
+    .opt-card {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: var(--sand);
+      cursor: pointer;
+      border: 2px solid transparent;
+      margin-bottom: 8px;
+    }
+    .opt-card.active { background: var(--earth); border-color: var(--earth); }
+    .opt-card .opt-title { font-size: 14px; font-weight: 700; color: var(--earth); }
+    .opt-card.active .opt-title { color: var(--sand); }
+    .opt-card .opt-desc { font-size: 11px; color: var(--rock); margin-top: 3px; }
+    .opt-card.active .opt-desc { color: rgba(246,245,240,0.6); }
+
+    /* Day pickers */
+    .day-pick {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px;
+    }
+    .day-btn {
+      aspect-ratio: 1/1;
+      background: var(--sand);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: var(--earth);
+      cursor: pointer; border: none; font-family: inherit;
+    }
+    .day-btn.active { background: var(--earth); color: var(--sand); }
+
+    /* Pills (chips) for diet/allergies */
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pill-chip {
+      padding: 8px 14px;
+      background: var(--sand);
+      border-radius: 100px;
+      font-size: 12px; font-weight: 600; color: var(--earth);
+      cursor: pointer; border: 1px solid transparent;
+    }
+    .pill-chip.active { background: var(--earth); color: var(--sand); }
+    .pill-chip.allergy.active { background: rgba(245,158,11,0.15); border-color: rgba(245,158,11,0.3); color: #B45309; }
+
+    /* Save button */
+    .save-area {
+      padding: 16px 20px 24px;
+      background: var(--sand);
+      border-top: 0.5px solid rgba(0,0,0,0.06);
+    }
+    .save-btn {
+      width: 100%; height: 50px;
+      background: var(--earth); color: var(--sand);
+      border: none; border-radius: 16px;
+      font-size: 14px; font-weight: 700;
+      cursor: pointer; font-family: inherit;
+    }
+    .save-btn:active { opacity: 0.85; }
+
+    /* Toast */
+    .toast {
+      position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
+      background: var(--earth); color: var(--sand);
+      padding: 10px 18px; border-radius: 100px;
+      font-size: 13px; font-weight: 600;
+      opacity: 0; pointer-events: none;
+      transition: opacity 200ms, transform 200ms;
+      z-index: 40;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Modal — delete confirm */
+    .modal-backdrop {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+      display: none; align-items: center; justify-content: center; z-index: 60;
+    }
+    .modal-backdrop.show { display: flex; }
+    .modal {
+      background: #FFFFFF;
+      border-radius: 20px;
+      width: 80%;
+      padding: 22px;
+      text-align: center;
+    }
+    .modal h3 { margin: 0 0 8px; font-size: 16px; color: var(--earth); font-weight: 800; }
+    .modal p { margin: 0 0 16px; font-size: 13px; color: var(--rock); line-height: 1.4; }
+    .modal-actions { display: flex; gap: 8px; }
+    .modal-btn {
+      flex: 1; padding: 12px; border-radius: 12px;
+      border: none; cursor: pointer; font-family: inherit;
+      font-size: 13px; font-weight: 700;
+    }
+    .modal-btn.cancel { background: var(--stone); color: var(--earth); }
+    .modal-btn.danger { background: var(--red); color: white; }
+
+    /* Generic bottom-sheet picker */
+    .picker-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none; z-index: 70;
+    }
+    .picker-backdrop.show { display: block; }
+    .picker-sheet {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: #FFFFFF;
+      border-top-left-radius: 28px; border-top-right-radius: 28px;
+      padding: 12px 20px 28px;
+      transform: translateY(100%);
+      transition: transform 280ms cubic-bezier(0.32, 0.72, 0, 1);
+      max-height: 72%;
+      display: flex; flex-direction: column;
+    }
+    .picker-backdrop.show .picker-sheet { transform: translateY(0); }
+    .picker-handle {
+      width: 36px; height: 4px;
+      background: var(--stone);
+      border-radius: 2px;
+      margin: 4px auto 14px;
+    }
+    .picker-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 16px;
+    }
+    .picker-title { font-size: 16px; font-weight: 800; color: var(--earth); flex: 1; text-align: center; }
+    .picker-header button {
+      background: none; border: none; font-family: inherit; cursor: pointer;
+      font-size: 14px; padding: 4px 6px;
+      min-width: 60px;
+    }
+    .picker-cancel-btn { color: var(--rock); font-weight: 600; text-align: left; }
+    .picker-done-btn { color: var(--earth); font-weight: 800; text-align: right; }
+
+    .picker-options {
+      display: flex; flex-direction: column; gap: 8px;
+      overflow-y: auto;
+      padding-bottom: 8px;
+    }
+    .picker-options::-webkit-scrollbar { display: none; }
+    .picker-option {
+      padding: 14px 18px;
+      background: var(--stone);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer;
+      font-size: 15px;
+      color: var(--earth);
+      font-weight: 500;
+      transition: background 200ms;
+      position: relative;
+    }
+    .picker-option:active { background: #E2DED6; }
+    .picker-option.selected { background: var(--earth); color: #FFFFFF; }
+    .picker-option .check {
+      width: 18px; height: 18px;
+      border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800;
+      opacity: 0;
+    }
+    .picker-option.selected .check {
+      background: var(--trail);
+      color: var(--earth);
+      opacity: 1;
+    }
+    .picker-option .opt-label-text { flex: 1; padding-right: 12px; }
+
+    /* Compact grid-card variant — for multi-select short-label pickers (injuries, allergies, cuisines) */
+    .picker-options.grid-style {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .picker-options.grid-style .picker-option {
+      flex-direction: column;
+      padding: 18px 10px;
+      border-radius: 16px;
+      text-align: center;
+      min-height: 64px;
+      justify-content: center;
+      align-items: center;
+    }
+    .picker-options.grid-style .picker-option .opt-label-text {
+      padding-right: 0; font-size: 14px;
+    }
+    .picker-options.grid-style .picker-option .check {
+      position: absolute;
+      top: 8px; right: 8px;
+      width: 16px; height: 16px;
+      font-size: 9px;
+    }
+
+    /* Confirm modal (used for goal/training change confirmation) */
+    .confirm-modal-backdrop {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.4);
+      display: none; align-items: center; justify-content: center;
+      z-index: 80;
+    }
+    .confirm-modal-backdrop.show { display: flex; }
+    .confirm-modal {
+      background: #FFFFFF;
+      border-radius: 22px;
+      width: 88%;
+      max-width: 380px;
+      padding: 22px;
+    }
+    .confirm-modal h3 { margin: 0 0 16px; font-size: 17px; color: var(--earth); font-weight: 800; letter-spacing: -0.01em; }
+    .confirm-modal p { margin: 0 0 18px; font-size: 13px; color: var(--rock); line-height: 1.5; }
+    .confirm-modal-body { margin-bottom: 18px; }
+    .confirm-actions { display: flex; gap: 8px; }
+    .confirm-btn {
+      flex: 1; padding: 12px; border-radius: 14px;
+      border: none; cursor: pointer; font-family: inherit;
+      font-size: 14px; font-weight: 700;
+    }
+    .confirm-cancel { background: var(--stone); color: var(--earth); }
+    .confirm-apply { background: var(--earth); color: #FFFFFF; }
+
+    /* Diff section inside confirm modal (used for goal & training "what changed / what happens") */
+    .diff-section { margin-bottom: 14px; }
+    .diff-section:last-of-type { margin-bottom: 0; }
+    .diff-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--rock);
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .diff-list { font-size: 13px; color: var(--earth); line-height: 1.5; }
+    .diff-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .diff-item:last-child { margin-bottom: 0; }
+    .diff-item .marker {
+      color: var(--rock);
+      flex-shrink: 0;
+      font-weight: 700;
+    }
+    .diff-item strong { font-weight: 700; color: var(--earth); }
+    .diff-item .arrow { color: var(--rock); padding: 0 2px; }
+
+    /* Plan-update sticky banner (shows on Account after Save; in production this lives on Home) */
+    .plan-banner {
+      margin: 4px 20px 14px;
+      padding: 12px 14px;
+      background: rgba(52, 211, 153, 0.10);
+      border: 1px solid rgba(52, 211, 153, 0.30);
+      border-radius: 18px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+    }
+    .plan-banner.show { display: flex; }
+    .plan-banner-icon {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: rgba(52, 211, 153, 0.20);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      color: #0E8757;
+    }
+    .plan-banner-text {
+      flex: 1;
+      font-size: 13px;
+      color: var(--earth);
+      line-height: 1.3;
+    }
+    .plan-banner-text strong { font-weight: 700; }
+    .plan-banner-text small { display: block; color: var(--rock); font-size: 11px; margin-top: 1px; }
+    .plan-banner-dismiss {
+      background: none;
+      border: none;
+      color: var(--rock);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-family: inherit;
+    }
+    .plan-banner-dismiss:active { opacity: 0.5; }
+
+    /* Dev banner */
+    .dev-banner {
+      position: fixed; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.7); color: rgba(255,255,255,0.7);
+      font-size: 11px; padding: 6px 10px; border-radius: 8px;
+      z-index: 100; pointer-events: none;
+    }
+    .dev-banner b { color: var(--trail); }
+  </style>
+</head>
+<body>
+  <div class="dev-banner">Interactive · Tap rows to navigate · Toggles, sliders, forms all work</div>
+
+  <div class="stage">
+    <div class="frame">
+      <div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span style="font-size:11px;">●●●  📶 📵</span></div>
+
+        <div class="screens-container">
+
+          <!-- ─── MAIN ACCOUNT SCREEN ─── -->
+          <div class="screen active" id="screen-main">
+            <div class="main-header">
+              <div class="main-title">Account</div>
+            </div>
+
+            <div class="scroll">
+              <!-- Plan-update banner (shows after Save Changes in Goal/Training) -->
+              <div class="plan-banner" id="plan-banner">
+                <div class="plan-banner-icon">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                </div>
+                <div class="plan-banner-text" id="plan-banner-text">
+                  Plan updates <strong>Mon, May 25</strong>
+                  <small>This week's workouts stay as planned</small>
+                </div>
+                <button class="plan-banner-dismiss" onclick="dismiss_banner()">✕</button>
+              </div>
+
+              <!-- Hero pill — only the avatar opens the photo picker -->
+              <div class="player-hero">
+                <div class="hero-avatar-wrap" onclick="event.stopPropagation(); toast_show('Change profile photo')" style="cursor:pointer">
+                  <div class="hero-avatar"></div>
+                </div>
+                <div class="hero-text">
+                  <div class="player-name" id="hero-name">Alex Carter</div>
+                  <div class="player-meta">alex.carter@***ple.com</div>
+                </div>
+              </div>
+
+              <!-- Settings -->
+              <div class="section">
+                <div class="section-heading">Settings</div>
+                <div class="row-stack">
+                  <div class="row" onclick="open_screen('profile')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M12 14c-4.4 0-8 2.5-8 6v2h16v-2c0-3.5-3.6-6-8-6z"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Profile</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                  <div class="row" onclick="open_screen('goal')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Your Goal</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                  <div class="row" onclick="open_screen('training')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><rect x="2" y="9.5" width="2.5" height="5" rx="1"/><rect x="5" y="7" width="2.5" height="10" rx="1"/><rect x="8.5" y="11" width="7" height="2"/><rect x="16.5" y="7" width="2.5" height="10" rx="1"/><rect x="19.5" y="9.5" width="2.5" height="5" rx="1"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Training</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                  <div class="row" onclick="open_screen('nutrition')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.66 3.84 3.75 3.97V22h2.5v-9.03C11.34 12.84 13 11.12 13 9V2h-2v7zm5-3v8h2.5v8H21V2c-2.76 0-5 2.24-5 4z"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Nutrition</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                  <div class="row" onclick="open_screen('preferences')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19.4 13c.1-.3.1-.7.1-1s0-.7-.1-1l2-1.5-2-3.5-2.4 1c-.5-.4-1.1-.7-1.7-.9L15 3.5h-4l-.3 2.6c-.6.2-1.2.5-1.7.9l-2.4-1-2 3.5L6.6 11c0 .3-.1.7-.1 1s0 .7.1 1l-2 1.5 2 3.5 2.4-1c.5.4 1.1.7 1.7.9l.3 2.6h4l.3-2.6c.6-.2 1.2-.5 1.7-.9l2.4 1 2-3.5L19.4 13zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Preferences</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Support -->
+              <div class="section">
+                <div class="section-heading">Support</div>
+                <div class="row-stack">
+                  <div class="row" onclick="open_screen('help')">
+                    <div class="row-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H9l-5 4V6a2 2 0 0 1 2-2z"/></svg>
+                    </div>
+                    <div class="row-text"><div class="row-label">Help & Legal</div></div>
+                    <span class="row-chev">›</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="exit-actions">
+                <button class="signout-link" onclick="toast_show('Signed out')">Sign Out</button>
+                <button class="danger-btn delete" onclick="open_delete_modal()" style="margin:0;padding:6px 16px;">Delete Account</button>
+              </div>
+
+              <div class="app-footer">Revive v1.2.4</div>
+            </div>
+          </div>
+
+          <!-- ─── PROFILE SUBSCREEN ─── -->
+          <div class="screen" id="screen-profile">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Profile</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Basics</div>
+                <div class="form-group">
+                  <div class="input-row">
+                    <div class="input-label">Name</div>
+                    <input class="input-field" type="text" value="Alex Carter" id="profile-name-input" style="width:160px" />
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Date of Birth</div>
+                    <div class="readonly-value">Jun 15, 1997</div>
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Age</div>
+                    <div class="readonly-value">28 years</div>
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Sex</div>
+                    <div class="readonly-value">Male</div>
+                  </div>
+                </div>
+              </div>
+              <div class="sub-section">
+                <div class="form-label">Body</div>
+                <div class="form-group">
+                  <div class="input-row">
+                    <div class="input-label">Weight (kg)</div>
+                    <input class="input-field" type="number" value="78" min="30" max="200" />
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Height (cm)</div>
+                    <input class="input-field" type="number" value="178" min="100" max="230" />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-area">
+              <button class="save-btn" onclick="save_profile()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- ─── GOAL SUBSCREEN ─── -->
+          <div class="screen" id="screen-goal">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Your Goal</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Goal</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="open_picker('goalType')">
+                    <div class="input-label">Type</div>
+                    <div class="input-value-chev"><span class="v" id="goal-type-display">Build Muscle</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Target weight (kg)</div>
+                    <input class="input-field" type="number" id="goal-target-input" value="82" min="30" max="200" oninput="refresh_displays()" />
+                  </div>
+                </div>
+                <div class="goal-warning" id="goal-warning">
+                  <div class="goal-warning-icon">!</div>
+                  <div class="goal-warning-text" id="goal-warning-text"></div>
+                </div>
+              </div>
+              <div class="sub-section">
+                <div class="form-label">Progress</div>
+                <div class="form-group">
+                  <div class="input-row">
+                    <div class="input-label">Current weight</div>
+                    <div class="readonly-value">78 kg</div>
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">To go</div>
+                    <div class="readonly-value" id="goal-togo-display">+4 kg</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-area">
+              <button class="save-btn" onclick="save_goal()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- ─── TRAINING SUBSCREEN ─── -->
+          <div class="screen" id="screen-training">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Training</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Training</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="open_picker('experience')">
+                    <div class="input-label">Experience</div>
+                    <div class="input-value-chev"><span class="v" id="experience-display">Intermediate</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('equipment')">
+                    <div class="input-label">Equipment</div>
+                    <div class="input-value-chev"><span class="v" id="equipment-display">Full Gym</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('daysPerWeek')">
+                    <div class="input-label">Days per week</div>
+                    <div class="input-value-chev"><span class="v" id="days-display">5</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('injuries')">
+                    <div class="input-label">Injuries</div>
+                    <div class="input-value-chev"><span class="v" id="injuries-display">None</span><span class="row-chev">›</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sub-section">
+                <div class="form-label">Plan</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="toast_show('Regenerate plan from updated settings')">
+                    <div class="input-label">Regenerate workout plan</div>
+                    <span class="row-chev">›</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-area">
+              <button class="save-btn" onclick="save_training()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- ─── NUTRITION SUBSCREEN ─── -->
+          <div class="screen" id="screen-nutrition">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Nutrition</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Preferences</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="open_picker('diet')">
+                    <div class="input-label">Diet</div>
+                    <div class="input-value-chev"><span class="v" id="diet-display">Non-Veg</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('meat')">
+                    <div class="input-label">Meat</div>
+                    <div class="input-value-chev"><span class="v" id="meat-display">Any</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('allergies')">
+                    <div class="input-label">Allergies</div>
+                    <div class="input-value-chev"><span class="v" id="allergies-display">Nuts</span><span class="row-chev">›</span></div>
+                  </div>
+                  <div class="input-row tappable" onclick="open_picker('cuisines')">
+                    <div class="input-label">Cuisines</div>
+                    <div class="input-value-chev"><span class="v" id="cuisines-display">3 selected</span><span class="row-chev">›</span></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sub-section">
+                <div class="form-label">Pantry</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="toast_show('Opens pantry editor')">
+                    <div class="input-label">Pantry staples</div>
+                    <div class="input-value-chev"><span class="v">12 items</span><span class="row-chev">›</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-area">
+              <button class="save-btn" onclick="toast_show('Nutrition saved'); back_to_main()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- ─── PREFERENCES SUBSCREEN (units + notifications) ─── -->
+          <div class="screen" id="screen-preferences">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Preferences</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Units</div>
+                <div class="form-group">
+                  <div class="input-row">
+                    <div class="input-label">Weight</div>
+                    <div class="seg-select" style="width:130px">
+                      <button class="active" onclick="seg_pick(this)">Kg</button>
+                      <button onclick="seg_pick(this)">Lbs</button>
+                    </div>
+                  </div>
+                  <div class="input-row">
+                    <div class="input-label">Height</div>
+                    <div class="seg-select" style="width:130px">
+                      <button class="active" onclick="seg_pick(this)">Cm</button>
+                      <button onclick="seg_pick(this)">In</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="sub-section">
+                <div class="form-label">Notifications</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="toggle_switch_in_row(this)">
+                    <div class="input-label">Workout reminders</div>
+                    <div class="switch on"><div class="switch-knob"></div></div>
+                  </div>
+                  <div class="input-row tappable" onclick="toggle_switch_in_row(this)">
+                    <div class="input-label">Meal reminders</div>
+                    <div class="switch on"><div class="switch-knob"></div></div>
+                  </div>
+                  <div class="input-row tappable" onclick="toggle_switch_in_row(this)">
+                    <div class="input-label">Weekly summary</div>
+                    <div class="switch on"><div class="switch-knob"></div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-area">
+              <button class="save-btn" onclick="toast_show('Preferences saved'); back_to_main()">Save Changes</button>
+            </div>
+          </div>
+
+          <!-- ─── HELP & LEGAL SUBSCREEN ─── -->
+          <div class="screen" id="screen-help">
+            <div class="sub-header">
+              <button class="back-btn" onclick="back_to_main()">‹</button>
+              <div class="sub-title">Help & Legal</div>
+            </div>
+            <div class="scroll">
+              <div class="sub-section">
+                <div class="form-label">Get in touch</div>
+                <div class="form-group">
+                  <div class="input-row tappable"
+                       onclick="open_contact_sheet()"
+                       oncontextmenu="copy_email(event)"
+                       data-longpress="copy_email">
+                    <div class="input-label">Contact us</div>
+                    <div class="input-value-chev"><span class="v" style="font-size:13px;color:var(--rock);">support@revive.app</span><span class="row-chev">›</span></div>
+                  </div>
+                </div>
+                <div style="font-size:11px;color:var(--rock);margin-top:6px;margin-left:2px">Long-press the row to copy the email.</div>
+              </div>
+
+              <div class="sub-section">
+                <div class="form-label">Legal</div>
+                <div class="form-group">
+                  <div class="input-row tappable" onclick="toast_show('Opens Privacy Policy')">
+                    <div class="input-label">Privacy Policy</div>
+                    <span class="row-chev">›</span>
+                  </div>
+                  <div class="input-row tappable" onclick="toast_show('Opens Terms & Conditions')">
+                    <div class="input-label">Terms & Conditions</div>
+                    <span class="row-chev">›</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="app-footer" style="margin-top:8px">Revive v1.2.4 (build 124)</div>
+            </div>
+          </div>
+
+        </div> <!-- /.screens-container -->
+
+        <!-- Toast -->
+        <div class="toast" id="toast">Saved</div>
+
+        <!-- Generic picker bottom-sheet -->
+        <div class="picker-backdrop" id="picker-backdrop" onclick="if(event.target===this) close_picker()">
+          <div class="picker-sheet">
+            <div class="picker-handle"></div>
+            <div class="picker-header">
+              <button class="picker-cancel-btn" onclick="close_picker()">Cancel</button>
+              <div class="picker-title" id="picker-title">Pick one</div>
+              <button class="picker-done-btn" id="picker-done-btn" onclick="done_picker()">Done</button>
+            </div>
+            <div class="picker-options" id="picker-options"></div>
+          </div>
+        </div>
+
+        <!-- Goal-change confirmation modal -->
+        <div class="confirm-modal-backdrop" id="goal-confirm-modal">
+          <div class="confirm-modal">
+            <h3 id="goal-confirm-title">Switch goal?</h3>
+            <div class="confirm-modal-body" id="goal-confirm-body"></div>
+            <div class="confirm-actions">
+              <button class="confirm-btn confirm-cancel" onclick="cancel_goal_change()">Cancel</button>
+              <button class="confirm-btn confirm-apply" onclick="apply_goal_change()">Update goal</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Training-change confirmation modal (diff-aware) -->
+        <div class="confirm-modal-backdrop" id="training-confirm-modal">
+          <div class="confirm-modal">
+            <h3>Update training settings?</h3>
+            <div class="confirm-modal-body">
+              <div class="diff-section">
+                <div class="diff-label">What you changed</div>
+                <div class="diff-list" id="training-diff-list"></div>
+              </div>
+              <div class="diff-section">
+                <div class="diff-label">What happens</div>
+                <div class="diff-list" id="training-effects-list"></div>
+              </div>
+            </div>
+            <div class="confirm-actions">
+              <button class="confirm-btn confirm-cancel" onclick="cancel_training_change()">Cancel</button>
+              <button class="confirm-btn confirm-apply" onclick="apply_training_change()">Update plan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- DOB picker modal -->
+        <div class="dob-modal-backdrop" id="dob-modal" onclick="if(event.target===this) close_dob_picker()">
+          <div class="dob-modal">
+            <div class="dob-handle"></div>
+            <div class="dob-header">
+              <button class="dob-cancel" onclick="close_dob_picker()">Cancel</button>
+              <div class="dob-title">Date of Birth</div>
+              <button class="dob-done" onclick="confirm_dob()">Done</button>
+            </div>
+            <div class="dob-wheels">
+              <div class="dob-wheel-band"></div>
+              <div class="dob-wheel" id="dob-wheel-month"></div>
+              <div class="dob-wheel" id="dob-wheel-day"></div>
+              <div class="dob-wheel" id="dob-wheel-year"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delete confirmation modal -->
+        <div class="modal-backdrop" id="delete-modal">
+          <div class="modal">
+            <h3>Delete account?</h3>
+            <p>This permanently removes all your workouts, meals, and progress data. You can't undo this.</p>
+            <div class="modal-actions">
+              <button class="modal-btn cancel" onclick="close_delete_modal()">Cancel</button>
+              <button class="modal-btn danger" onclick="toast_show('Account deletion initiated'); close_delete_modal()">Delete</button>
+            </div>
+          </div>
+        </div>
+
+      </div> <!-- /.screen-wrap -->
+    </div>
+  </div>
+
+<script>
+let currentScreen = "main";
+
+function open_screen(name) {
+  const main = document.getElementById("screen-main");
+  const target = document.getElementById("screen-" + name);
+  if (!target) return;
+  main.classList.remove("active");
+  main.classList.add("behind");
+  target.classList.add("active");
+  currentScreen = name;
+  if (name === "goal" && typeof state !== "undefined") {
+    goalOriginal = state.goalType;
+  }
+  if (name === "training" && typeof snapshot_training === "function") {
+    snapshot_training();
+  }
+  if (typeof refresh_displays === "function") refresh_displays();
+}
+
+function back_to_main() {
+  const main = document.getElementById("screen-main");
+  const current = document.getElementById("screen-" + currentScreen);
+  if (current) current.classList.remove("active");
+  main.classList.remove("behind");
+  main.classList.add("active");
+  currentScreen = "main";
+}
+
+function toast_show(text) {
+  const t = document.getElementById("toast");
+  t.textContent = text;
+  t.classList.add("show");
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove("show"), 1600);
+}
+
+function toggle_apple_health(rowEl) {
+  const sw = rowEl.querySelector(".switch");
+  sw.classList.toggle("on");
+  toast_show(sw.classList.contains("on") ? "Apple Health connected" : "Apple Health disconnected");
+}
+
+function toggle_switch_in_row(rowEl) {
+  const sw = rowEl.querySelector(".switch");
+  if (sw) sw.classList.toggle("on");
+}
+
+function pick_goal(card, type) {
+  const parent = card.parentElement;
+  parent.querySelectorAll(".opt-card").forEach(c => c.classList.remove("active"));
+  card.classList.add("active");
+  // Hide target weight section for maintain
+  const ts = document.getElementById("target-section");
+  if (ts) ts.style.display = (type === "maintain") ? "none" : "block";
+}
+
+function pick_in_section(card) {
+  const parent = card.parentElement;
+  parent.querySelectorAll(".opt-card").forEach(c => c.classList.remove("active"));
+  card.classList.add("active");
+}
+
+function pick_pill_in_row(pill) {
+  const row = pill.parentElement;
+  row.querySelectorAll(".pill-chip:not(.allergy)").forEach(p => p.classList.remove("active"));
+  pill.classList.add("active");
+}
+
+function seg_pick(btn) {
+  const parent = btn.parentElement;
+  parent.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+}
+
+function open_delete_modal() { document.getElementById("delete-modal").classList.add("show"); }
+function close_delete_modal() { document.getElementById("delete-modal").classList.remove("show"); }
+
+function save_profile() {
+  const input = document.getElementById("profile-name-input");
+  const heroName = document.getElementById("hero-name");
+  const newName = (input.value || "").trim();
+  if (newName.length === 0) {
+    toast_show("Name can't be empty");
+    return;
+  }
+  heroName.textContent = newName;
+  toast_show("Profile saved");
+  back_to_main();
+}
+
+// ─── Persistent user state (drives every picker + display) ───
+const state = {
+  goalType: "build_muscle",
+  experience: "intermediate",
+  equipment: "full_gym",
+  daysPerWeek: 5,
+  injuries: [],
+  diet: "non_veg",
+  meat: "any",
+  allergies: ["nuts"],
+  cuisines: ["indian", "east_asian", "american"],
+};
+
+const LABELS = {
+  goalType: { lose_fat: "Lose Fat", build_muscle: "Build Muscle", stay_fit: "Stay Fit" },
+  experience: { beginner: "Beginner", intermediate: "Intermediate", advanced: "Advanced" },
+  equipment: { full_gym: "Full Gym", dumbbells_only: "Dumbbells Only", home_gym: "Home Gym", bodyweight: "Bodyweight" },
+  diet: { non_veg: "Non-Veg", vegetarian: "Vegetarian", vegan: "Vegan", pescatarian: "Pescatarian", keto: "Keto" },
+  meat: { any: "Any", chicken_fish: "Chicken & Fish", no_pork_beef: "No Pork or Beef", chicken_only: "Chicken Only" },
+  injuries: { shoulder: "Shoulder", lower_back: "Lower Back", knee: "Knee", wrist: "Wrist", elbow: "Elbow" },
+  allergies: { dairy: "Dairy", gluten: "Gluten", nuts: "Nuts", shellfish: "Shellfish", eggs: "Eggs" },
+  cuisines: { indian: "🇮🇳 Indian", mediterranean: "🫒 Mediterranean", east_asian: "🥢 East Asian", mexican: "🌮 Mexican", american: "🥗 American", middle_eastern: "🧆 Middle Eastern" },
+};
+
+const PICKER_CONFIG = {
+  goalType:    { title: "Goal",            options: ["lose_fat", "build_muscle", "stay_fit"], multi: false },
+  experience:  { title: "Experience",      options: ["beginner", "intermediate", "advanced"], multi: false },
+  equipment:   { title: "Equipment",       options: ["full_gym", "dumbbells_only", "home_gym", "bodyweight"], multi: false },
+  daysPerWeek: { title: "Days per week",   options: [2,3,4,5,6,7], multi: false },
+  diet:        { title: "Diet",            options: ["non_veg", "vegetarian", "vegan", "pescatarian", "keto"], multi: false },
+  meat:        { title: "Meat preference", options: ["any", "chicken_fish", "no_pork_beef", "chicken_only"], multi: false },
+  injuries:    { title: "Injuries",        options: ["shoulder", "lower_back", "knee", "wrist", "elbow"], multi: true, compact: true },
+  allergies:   { title: "Allergies",       options: ["dairy", "gluten", "nuts", "shellfish", "eggs"], multi: true, compact: true },
+  cuisines:    { title: "Cuisines",        options: ["indian", "mediterranean", "east_asian", "mexican", "american", "middle_eastern"], multi: true, compact: true },
+};
+
+let pickerCtx = { field: null, multi: false, current: null };
+
+function label_for(field, value) {
+  if (LABELS[field] && LABELS[field][value] !== undefined) return LABELS[field][value];
+  return String(value);
+}
+
+function open_picker(field) {
+  const cfg = PICKER_CONFIG[field];
+  if (!cfg) return;
+  pickerCtx.field = field;
+  pickerCtx.multi = cfg.multi;
+  pickerCtx.current = cfg.multi ? [...state[field]] : state[field];
+
+  document.getElementById("picker-title").textContent = cfg.title;
+  document.getElementById("picker-done-btn").style.display = cfg.multi ? "inline-block" : "none";
+
+  const optsEl = document.getElementById("picker-options");
+  optsEl.classList.toggle("grid-style", !!cfg.compact);
+  optsEl.innerHTML = "";
+  cfg.options.forEach(opt => {
+    const div = document.createElement("div");
+    div.className = "picker-option";
+    const isSelected = cfg.multi ? pickerCtx.current.includes(opt) : pickerCtx.current === opt;
+    if (isSelected) div.classList.add("selected");
+    div.innerHTML = `<span class="opt-label-text">${label_for(field, opt)}</span><span class="check">✓</span>`;
+    div.addEventListener("click", () => {
+      if (cfg.multi) {
+        const idx = pickerCtx.current.indexOf(opt);
+        if (idx >= 0) { pickerCtx.current.splice(idx, 1); div.classList.remove("selected"); }
+        else { pickerCtx.current.push(opt); div.classList.add("selected"); }
+      } else {
+        pickerCtx.current = opt;
+        state[field] = opt;
+        refresh_displays();
+        close_picker();
+      }
+    });
+    optsEl.appendChild(div);
+  });
+  document.getElementById("picker-backdrop").classList.add("show");
+}
+
+function close_picker() {
+  document.getElementById("picker-backdrop").classList.remove("show");
+}
+
+function done_picker() {
+  if (pickerCtx.multi) {
+    state[pickerCtx.field] = [...pickerCtx.current];
+    refresh_displays();
+  }
+  close_picker();
+}
+
+function refresh_displays() {
+  const u = state;
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  set("goal-type-display",  label_for("goalType", u.goalType));
+  set("experience-display", label_for("experience", u.experience));
+  set("equipment-display",  label_for("equipment", u.equipment));
+  set("days-display",       String(u.daysPerWeek));
+  set("diet-display",       label_for("diet", u.diet));
+  set("meat-display",       label_for("meat", u.meat));
+
+  set("injuries-display",  u.injuries.length === 0 ? "None"
+                          : u.injuries.length === 1 ? label_for("injuries", u.injuries[0])
+                          : `${u.injuries.length} selected`);
+
+  set("allergies-display", u.allergies.length === 0 ? "None"
+                          : u.allergies.length === 1 ? label_for("allergies", u.allergies[0])
+                          : `${u.allergies.length} allergies`);
+
+  set("cuisines-display",  u.cuisines.length === 0 ? "None" : `${u.cuisines.length} selected`);
+
+  // Update "to go" in goal screen if target weight changed
+  const target = parseInt(document.getElementById("goal-target-input")?.value || "82", 10);
+  const togo = target - 78;
+  const togoEl = document.getElementById("goal-togo-display");
+  if (togoEl) togoEl.textContent = (togo >= 0 ? `+${togo}` : `${togo}`) + " kg";
+
+  validate_goal();
+}
+
+// Scientifically-grounded goal validation
+//   - Lose Fat: target must be below current
+//   - Build Muscle: target must be above current
+//   - Stay Fit: target ≈ current (within 3kg)
+//   - Healthy BMI range: 18.5 – 24.9 (warn beyond, block below 17 / above 35)
+const CURRENT_WEIGHT = 78;   // mockup-fixed; in app comes from profile
+const HEIGHT_M = 1.78;       // mockup-fixed
+
+function validate_goal() {
+  const targetEl = document.getElementById("goal-target-input");
+  const warnEl = document.getElementById("goal-warning");
+  const warnTextEl = document.getElementById("goal-warning-text");
+  if (!targetEl || !warnEl) return true;
+
+  const target = parseInt(targetEl.value, 10);
+  if (isNaN(target)) return true;
+
+  const bmi = target / (HEIGHT_M * HEIGHT_M);
+  const delta = target - CURRENT_WEIGHT;
+  let message = null;
+  let severity = "warn";
+
+  // ─── Direction mismatch (hard error) ───
+  if (state.goalType === "lose_fat" && target >= CURRENT_WEIGHT) {
+    message = `Target should be below your current weight (${CURRENT_WEIGHT} kg).`;
+    severity = "error";
+  } else if (state.goalType === "build_muscle" && target <= CURRENT_WEIGHT) {
+    message = `Target should be above your current weight (${CURRENT_WEIGHT} kg).`;
+    severity = "error";
+  } else if (state.goalType === "stay_fit" && Math.abs(delta) > 3) {
+    message = `That's a real change. Switch to Lose Fat or Build Muscle.`;
+    severity = "error";
+  }
+  // ─── Build Muscle: BMI 18.5–29.9 is the normal muscle-gain zone, no warning. ───
+  else if (state.goalType === "build_muscle") {
+    if (delta > 25) {
+      message = `That's too much to gain. Try a smaller target.`;
+      severity = "error";
+    } else if (bmi >= 35) {
+      message = `Too heavy for your height. Try a smaller target.`;
+      severity = "error";
+    } else if (delta > 15) {
+      message = `That's a lot to gain — expect a couple of years.`;
+      severity = "warn";
+    } else if (bmi >= 30) {
+      message = `You may gain some fat alongside muscle at this size.`;
+      severity = "warn";
+    }
+  }
+  // ─── Lose Fat: BMI checks (going thin matters) ───
+  else if (state.goalType === "lose_fat") {
+    if (bmi < 17) {
+      message = `Too thin for your height. Talk to a doctor first.`;
+      severity = "error";
+    } else if (bmi < 18.5) {
+      message = `Target is on the thin side.`;
+      severity = "warn";
+    } else if (Math.abs(delta) > 30) {
+      message = `That's a lot to lose. Try an interim target first.`;
+      severity = "warn";
+    }
+  }
+  // ─── Stay Fit: only flag if current weight is itself well outside healthy range. ───
+  else if (state.goalType === "stay_fit") {
+    if (bmi < 17 || bmi >= 35) {
+      message = `You're outside the healthy range. Try Lose Fat or Build Muscle.`;
+      severity = "warn";
+    }
+  }
+
+  if (message) {
+    warnEl.classList.add("show");
+    warnEl.classList.toggle("error", severity === "error");
+    warnTextEl.innerHTML = message;
+    return severity !== "error";
+  } else {
+    warnEl.classList.remove("show");
+    return true;
+  }
+}
+
+// ─── Boundary-aware date helper ───
+// Mocked "today" = 2026-05-21 (Thu) per the session date. Real impl reads system clock.
+function next_monday_string() {
+  const today = new Date(2026, 4, 21); // May 21, 2026 (Thursday)
+  const dayIdx = today.getDay(); // 0=Sun ... 6=Sat
+  const daysUntilMon = dayIdx === 1 ? 7 : (8 - dayIdx) % 7 || 7;
+  const nextMon = new Date(today.getTime() + daysUntilMon * 86400000);
+  return nextMon.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+
+// ─── Plan-update banner ───
+function show_plan_banner(headline, sub) {
+  const banner = document.getElementById("plan-banner");
+  document.getElementById("plan-banner-text").innerHTML = `${headline}<small>${sub}</small>`;
+  banner.classList.add("show");
+}
+function dismiss_banner() {
+  document.getElementById("plan-banner").classList.remove("show");
+}
+
+// ─── Goal save flow with diff confirmation ───
+let goalOriginal = state.goalType;
+
+function save_goal() {
+  if (!validate_goal()) {
+    toast_show("Fix the goal mismatch first");
+    return;
+  }
+  if (state.goalType !== goalOriginal) {
+    const newLabel = label_for("goalType", state.goalType);
+    const oldLabel = label_for("goalType", goalOriginal);
+    document.getElementById("goal-confirm-title").textContent = `Switch to ${newLabel}?`;
+    document.getElementById("goal-confirm-body").innerHTML = `
+      <div class="diff-section">
+        <div class="diff-label">What you changed</div>
+        <div class="diff-list">
+          <div class="diff-item"><span class="marker">•</span><span>Goal: <strong>${oldLabel}</strong> <span class="arrow">→</span> <strong>${newLabel}</strong></span></div>
+        </div>
+      </div>
+      <div class="diff-section">
+        <div class="diff-label">What happens</div>
+        <div class="diff-list">
+          <div class="diff-item"><span class="marker">•</span><span>Macros recalculate <strong>today</strong></span></div>
+          <div class="diff-item"><span class="marker">•</span><span>New training emphasis starts <strong>${next_monday_string()}</strong></span></div>
+          <div class="diff-item"><span class="marker">•</span><span>Current training phase continues uninterrupted</span></div>
+          <div class="diff-item"><span class="marker">•</span><span>Logged history preserved</span></div>
+        </div>
+      </div>`;
+    document.getElementById("goal-confirm-modal").classList.add("show");
+  } else {
+    toast_show("Goal saved");
+    back_to_main();
+  }
+}
+
+function cancel_goal_change() {
+  state.goalType = goalOriginal;
+  refresh_displays();
+  document.getElementById("goal-confirm-modal").classList.remove("show");
+}
+
+function apply_goal_change() {
+  goalOriginal = state.goalType;
+  document.getElementById("goal-confirm-modal").classList.remove("show");
+  show_plan_banner(`Plan updates <strong>${next_monday_string()}</strong>`, "Macros applied today · workouts shift Mon");
+  back_to_main();
+}
+
+// ─── Training save flow with diff confirmation ───
+let trainingOriginal = null;
+
+function snapshot_training() {
+  trainingOriginal = {
+    experience: state.experience,
+    equipment: state.equipment,
+    daysPerWeek: state.daysPerWeek,
+    injuries: [...state.injuries],
+  };
+}
+
+function get_training_diff() {
+  if (!trainingOriginal) return [];
+  const changes = [];
+  if (state.experience !== trainingOriginal.experience) {
+    changes.push({ label: "Experience",
+      from: label_for("experience", trainingOriginal.experience),
+      to: label_for("experience", state.experience), planAffecting: true });
+  }
+  if (state.equipment !== trainingOriginal.equipment) {
+    changes.push({ label: "Equipment",
+      from: label_for("equipment", trainingOriginal.equipment),
+      to: label_for("equipment", state.equipment), planAffecting: true });
+  }
+  if (state.daysPerWeek !== trainingOriginal.daysPerWeek) {
+    changes.push({ label: "Days per week",
+      from: String(trainingOriginal.daysPerWeek),
+      to: String(state.daysPerWeek), planAffecting: true });
+  }
+  const origSorted = [...trainingOriginal.injuries].sort().join(",");
+  const curSorted = [...state.injuries].sort().join(",");
+  if (origSorted !== curSorted) {
+    const fmt = (arr) => arr.length === 0 ? "None"
+      : arr.length <= 2 ? arr.map(i => label_for("injuries", i)).join(", ")
+      : `${arr.length} selected`;
+    changes.push({ label: "Injuries",
+      from: fmt(trainingOriginal.injuries),
+      to: fmt(state.injuries), injuryChange: true });
+  }
+  return changes;
+}
+
+function save_training() {
+  const diff = get_training_diff();
+  if (diff.length === 0) {
+    toast_show("Nothing to save");
+    back_to_main();
+    return;
+  }
+
+  // Populate "What you changed"
+  const changesEl = document.getElementById("training-diff-list");
+  changesEl.innerHTML = "";
+  diff.forEach(c => {
+    const div = document.createElement("div");
+    div.className = "diff-item";
+    div.innerHTML = `<span class="marker">•</span><span>${c.label}: <strong>${c.from}</strong> <span class="arrow">→</span> <strong>${c.to}</strong></span>`;
+    changesEl.appendChild(div);
+  });
+
+  // Populate "What happens"
+  const effectsEl = document.getElementById("training-effects-list");
+  effectsEl.innerHTML = "";
+  const effects = [];
+  const hasPlanChange = diff.some(c => c.planAffecting);
+  const hasInjuryChange = diff.some(c => c.injuryChange);
+
+  if (hasPlanChange) {
+    effects.push(`New plan starts <strong>${next_monday_string()}</strong>`);
+    effects.push("This week's remaining workouts stay as planned");
+  }
+  if (hasInjuryChange) {
+    effects.push("Injury filter applies to your <strong>next workout</strong>");
+  }
+  effects.push("Current training phase continues uninterrupted");
+  effects.push("Logged history preserved");
+
+  effects.forEach(e => {
+    const div = document.createElement("div");
+    div.className = "diff-item";
+    div.innerHTML = `<span class="marker">•</span><span>${e}</span>`;
+    effectsEl.appendChild(div);
+  });
+
+  document.getElementById("training-confirm-modal").classList.add("show");
+}
+
+function cancel_training_change() {
+  // Revert state back to snapshot
+  if (trainingOriginal) {
+    state.experience  = trainingOriginal.experience;
+    state.equipment   = trainingOriginal.equipment;
+    state.daysPerWeek = trainingOriginal.daysPerWeek;
+    state.injuries    = [...trainingOriginal.injuries];
+    refresh_displays();
+  }
+  document.getElementById("training-confirm-modal").classList.remove("show");
+}
+
+function apply_training_change() {
+  document.getElementById("training-confirm-modal").classList.remove("show");
+  const diff = get_training_diff();
+  const hasPlanChange = diff.some(c => c.planAffecting);
+  const hasInjuryChange = diff.some(c => c.injuryChange);
+  snapshot_training();
+
+  let headline, sub;
+  if (hasPlanChange) {
+    headline = `Plan updates <strong>${next_monday_string()}</strong>`;
+    sub = hasInjuryChange ? "Injury filter applies from your next workout" : "This week's workouts stay as planned";
+  } else if (hasInjuryChange) {
+    headline = "Injury filter applied";
+    sub = "Affected exercises swap on your next workout";
+  } else {
+    headline = "Training updated";
+    sub = "Changes applied";
+  }
+  show_plan_banner(headline, sub);
+  back_to_main();
+}
+
+// Day picker active
+document.querySelectorAll(".day-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    btn.parentElement.querySelectorAll(".day-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  });
+});
+
+// ─── Contact sheet (Mail / Gmail / Copy) and long-press to copy ───
+const SUPPORT_EMAIL = "support@revive.app";
+
+function open_contact_sheet() {
+  const choice = window.prompt(
+    `Contact us: ${SUPPORT_EMAIL}\n\nType:\n  1 — Open in Gmail\n  2 — Open in Mail\n  3 — Copy email\n\nLeave blank to cancel.`,
+    ""
+  );
+  if (!choice) return;
+  if (choice === "1") {
+    window.open(`https://mail.google.com/mail/?view=cm&to=${SUPPORT_EMAIL}`, "_blank");
+  } else if (choice === "2") {
+    window.location.href = `mailto:${SUPPORT_EMAIL}`;
+  } else if (choice === "3") {
+    copy_email();
+  }
+}
+
+async function copy_email(e) {
+  if (e && e.preventDefault) e.preventDefault();
+  try {
+    await navigator.clipboard.writeText(SUPPORT_EMAIL);
+    toast_show("Copied · " + SUPPORT_EMAIL);
+  } catch {
+    toast_show(SUPPORT_EMAIL);
+  }
+}
+
+// Long-press detection on the contact row
+(function wireLongPress() {
+  document.querySelectorAll('[data-longpress="copy_email"]').forEach(el => {
+    let timer = null;
+    let fired = false;
+    const start = () => {
+      fired = false;
+      timer = setTimeout(() => {
+        fired = true;
+        copy_email();
+      }, 500);
+    };
+    const cancel = () => {
+      if (timer) { clearTimeout(timer); timer = null; }
+    };
+    el.addEventListener("mousedown", start);
+    el.addEventListener("touchstart", start, { passive: true });
+    el.addEventListener("mouseup", cancel);
+    el.addEventListener("mouseleave", cancel);
+    el.addEventListener("touchend", cancel);
+    el.addEventListener("touchcancel", cancel);
+    // Prevent the click handler from also opening the sheet if long-press fired
+    el.addEventListener("click", (ev) => {
+      if (fired) {
+        ev.stopImmediatePropagation();
+        ev.preventDefault();
+        fired = false;
+      }
+    }, true);
+  });
+})();
+
+// ─── DOB picker ───
+const MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const NOW = new Date();
+const MIN_AGE = 13;
+const MAX_AGE = 100;
+
+// Current selection (defaults match the displayed value: Jun 15, 1997)
+let dobSel = { m: 5, d: 15, y: 1997 };
+
+function days_in_month(y, m) { return new Date(y, m + 1, 0).getDate(); }
+
+function build_wheel(el, values, selected) {
+  el.innerHTML = "";
+  values.forEach((v, i) => {
+    const div = document.createElement("div");
+    div.className = "dob-wheel-item";
+    div.dataset.value = String(v);
+    div.dataset.index = String(i);
+    div.textContent = String(v);
+    el.appendChild(div);
+  });
+  // Position scroll so the selected index is centered
+  requestAnimationFrame(() => {
+    el.scrollTop = selected * 40;
+    update_center(el);
+  });
+}
+
+function update_center(el) {
+  const idx = Math.round(el.scrollTop / 40);
+  el.querySelectorAll(".dob-wheel-item").forEach((item, i) => {
+    item.classList.toggle("center", i === idx);
+  });
+  return idx;
+}
+
+function format_dob_display(y, m, d) {
+  return `${MONTHS[m]} ${d}, ${y}`;
+}
+
+function calc_age(y, m, d) {
+  const today = NOW;
+  let age = today.getFullYear() - y;
+  const md = today.getMonth() - m;
+  if (md < 0 || (md === 0 && today.getDate() < d)) age--;
+  return age;
+}
+
+function rebuild_wheels() {
+  const monthEl = document.getElementById("dob-wheel-month");
+  const dayEl = document.getElementById("dob-wheel-day");
+  const yearEl = document.getElementById("dob-wheel-year");
+
+  // Years: maxYear (current - 13) down to minYear (current - 100)
+  const maxYear = NOW.getFullYear() - MIN_AGE;
+  const minYear = NOW.getFullYear() - MAX_AGE;
+  const years = [];
+  for (let y = maxYear; y >= minYear; y--) years.push(y);
+
+  // Clamp day to month length
+  const maxDay = days_in_month(dobSel.y, dobSel.m);
+  if (dobSel.d > maxDay) dobSel.d = maxDay;
+  const days = Array.from({ length: maxDay }, (_, i) => i + 1);
+
+  build_wheel(monthEl, MONTHS, dobSel.m);
+  build_wheel(dayEl, days, dobSel.d - 1);
+  build_wheel(yearEl, years, years.indexOf(dobSel.y));
+
+  // Wire scroll → snap detection
+  [monthEl, dayEl, yearEl].forEach(el => {
+    let scrollTimer;
+    el.onscroll = () => {
+      update_center(el);
+      clearTimeout(scrollTimer);
+      scrollTimer = setTimeout(() => {
+        const idx = Math.round(el.scrollTop / 40);
+        if (el === monthEl) dobSel.m = idx;
+        if (el === dayEl) dobSel.d = idx + 1;
+        if (el === yearEl) dobSel.y = years[idx];
+        if (el === monthEl || el === yearEl) {
+          // Month/year change may invalidate day — rebuild day wheel
+          const newMaxDay = days_in_month(dobSel.y, dobSel.m);
+          if (dobSel.d > newMaxDay) dobSel.d = newMaxDay;
+          const newDays = Array.from({ length: newMaxDay }, (_, i) => i + 1);
+          build_wheel(dayEl, newDays, dobSel.d - 1);
+        }
+      }, 80);
+    };
+  });
+}
+
+function open_dob_picker() {
+  rebuild_wheels();
+  document.getElementById("dob-modal").classList.add("show");
+}
+
+function close_dob_picker() {
+  document.getElementById("dob-modal").classList.remove("show");
+}
+
+function confirm_dob() {
+  document.getElementById("dob-display-text").textContent = format_dob_display(dobSel.y, dobSel.m, dobSel.d);
+  document.getElementById("age-derived-text").textContent = String(calc_age(dobSel.y, dobSel.m, dobSel.d));
+  close_dob_picker();
+  toast_show("Date of birth updated");
+}
+</script>
+</body>
+</html>

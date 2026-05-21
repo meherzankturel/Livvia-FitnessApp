@@ -1,5 +1,5 @@
 /**
- * Layout B: Livvia Home — inspired by Kinetic's structure.
+ * Layout B: Revive Home — inspired by Kinetic's structure.
  * Light theme. Bold workout title with accent bar. Week dates. Stat columns on exercises.
  */
 import { View, Text, Pressable } from "react-native";

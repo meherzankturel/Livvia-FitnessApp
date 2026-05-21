@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Meal Swap Picker (Categorized)</title>
+<style>
+  :root{
+    --earth:#2D2A24; --sand:#F6F5F0; --stone:#EDEBE5; --rock:#8E8E7A; --trail:#34D399;
+    --board:#0f0d0a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--board);color:#F6F5F0;min-height:100vh}
+
+  .header{padding:40px 24px 0;text-align:center}
+  .header h1{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-0.4px}
+  .header p{margin:0;color:#9b958a;font-size:13px;max-width:760px;margin:0 auto;line-height:1.5}
+
+  .stage{display:flex;justify-content:center;align-items:flex-start;padding:40px 24px;gap:40px;flex-wrap:wrap}
+
+  .col-anno{max-width:300px;padding-top:60px;display:flex;flex-direction:column;gap:14px}
+  .col-anno h2{font-size:16px;font-weight:700;margin:0;color:#F6F5F0}
+  .col-anno p{font-size:13px;color:#cfc8b8;line-height:1.55;margin:0}
+  .anno-card{background:#252220;border-radius:12px;padding:14px}
+  .anno-card h3{font-size:13px;font-weight:700;color:#F6F5F0;margin:0 0 6px}
+  .anno-card ul{margin:4px 0 0;padding-left:18px;font-size:12px;color:#cfc8b8;line-height:1.55}
+  .anno-card li{margin-bottom:3px}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+  .screen{width:100%;height:852px;background:#1a1714;border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:44px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5;color:#F6F5F0}
+
+  /* Dimmed background showing the meals screen behind */
+  .behind{position:absolute;inset:0;padding:50px 16px 0;opacity:0.22;pointer-events:none}
+  .behind .h1{font-size:24px;font-weight:800;color:var(--earth);background:var(--sand);padding:14px 18px;margin:0 -16px 12px;letter-spacing:-0.4px}
+  .behind .day{background:var(--sand);padding:8px 18px 14px;display:flex;gap:6px;margin:-12px -16px 12px}
+  .behind .day .dy{flex:1;aspect-ratio:0.85;border-radius:14px;background:var(--stone)}
+  .behind .mc{background:var(--sand);border-radius:18px;padding:12px;margin-bottom:10px;height:80px}
+  .behind .mc.sel{border:2px solid var(--earth);background:#fff}
+
+  /* Modal that slides up from bottom */
+  .modal-wrap{position:absolute;inset:0;background:rgba(28,25,21,0.5);display:flex;align-items:flex-end;z-index:6}
+  .modal{width:100%;background:var(--sand);border-top-left-radius:24px;border-top-right-radius:24px;padding:0;max-height:78%;display:flex;flex-direction:column;animation:slide-up 360ms cubic-bezier(0.16,1,0.3,1) backwards}
+  @keyframes slide-up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+
+  .modal .handle{width:36px;height:4px;background:rgba(45,42,36,0.18);border-radius:99px;margin:10px auto 6px}
+  .modal-head{display:flex;align-items:center;justify-content:space-between;padding:6px 20px 8px}
+  .modal-title{font-size:18px;font-weight:800;color:var(--earth);letter-spacing:-0.3px}
+  .modal-cancel{font-size:14px;color:var(--rock);font-weight:600}
+  .modal-hint{font-size:12px;color:var(--rock);padding:0 20px 12px;line-height:1.5}
+  .modal-hint b{color:var(--earth)}
+
+  /* Filter chip row */
+  .chips{display:flex;gap:6px;padding:0 16px 8px;overflow-x:auto}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;padding:7px 12px;border-radius:99px;background:var(--stone);font-size:12px;font-weight:700;color:var(--earth);letter-spacing:-0.1px}
+  .chip.on{background:var(--earth);color:var(--sand)}
+  .chip .ct{font-size:10px;opacity:0.55;font-weight:700;margin-left:4px}
+  .chip.on .ct{opacity:0.7}
+
+  /* List */
+  .list{flex:1;overflow-y:auto;padding:8px 16px 0}
+  .list::-webkit-scrollbar{display:none}
+
+  .grp{margin-bottom:14px}
+  .grp-head{display:flex;align-items:center;gap:8px;padding:6px 4px 8px}
+  .grp-head .bar{width:3px;height:14px;background:var(--earth);border-radius:99px}
+  .grp-head .nm{font-size:11px;font-weight:800;letter-spacing:0.16em;color:var(--earth);text-transform:uppercase}
+  .grp-head .ct{margin-left:auto;font-size:10px;color:var(--rock);font-weight:700;letter-spacing:0.1em;text-transform:uppercase}
+
+  .opt{display:flex;align-items:center;padding:12px 14px;background:#fff;border-radius:14px;margin-bottom:6px;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.04)}
+  .opt-body{flex:1;min-width:0}
+  .opt-name{font-size:14px;font-weight:700;color:var(--earth);letter-spacing:-0.2px;margin-bottom:3px}
+  .opt-macros{font-size:11px;color:var(--rock);font-weight:600}
+  .opt-macros .d{color:var(--earth);font-weight:700}
+  .opt-chip{font-size:9px;font-weight:800;letter-spacing:0.06em;padding:3px 7px;border-radius:99px;background:rgba(52,211,153,0.16);color:#0e8a52;margin-left:auto;flex-shrink:0}
+  .opt-chip.warn{background:rgba(245,158,11,0.16);color:#a35e07}
+  .opt-arrow{font-size:18px;color:#bbb;font-weight:300;line-height:18px}
+
+  /* Bottom action */
+  .modal-action{padding:12px 16px 20px;border-top:1px solid var(--stone);background:var(--sand)}
+  .btn{width:100%;height:44px;border-radius:14px;background:var(--earth);color:var(--sand);font-size:14px;font-weight:700;border:none;display:flex;align-items:center;justify-content:center;gap:6px}
+  .btn-icon{font-size:14px;opacity:0.8}
+
+  /* Active veg pill */
+  .veg-pill{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:99px;background:rgba(34,197,94,0.14);color:#16a34a;font-size:9px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;margin-left:8px}
+  .veg-pill .vd{width:5px;height:5px;border-radius:50%;background:#16a34a}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Meal Swap Picker · Categorized by Cuisine</h1>
+  <p>Alternatives grouped by cuisine with a filter chip row. The example user has Indian + Mediterranean + East Asian selected and is vegetarian — so only veg meals appear in every group, even when the algorithm has non-veg options available.</p>
+</div>
+
+<div class="stage">
+
+  <div class="frame">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="statusbar"><span style="color:#F6F5F0">9:41</span><span style="color:#F6F5F0">●●● ◗</span></div>
+
+      <!-- Dimmed meals screen behind -->
+      <div class="behind">
+        <div class="h1">Meals</div>
+        <div class="day"><div class="dy"></div><div class="dy"></div><div class="dy"></div><div class="dy"></div><div class="dy"></div><div class="dy"></div><div class="dy"></div></div>
+        <div class="mc"></div>
+        <div class="mc sel"></div>
+        <div class="mc"></div>
+      </div>
+
+      <!-- The modal -->
+      <div class="modal-wrap">
+        <div class="modal">
+          <div class="handle"></div>
+          <div class="modal-head">
+            <div class="modal-title">Swap meal</div>
+            <div class="modal-cancel">Cancel</div>
+          </div>
+          <div class="modal-hint">
+            Replacing <b>Grilled Chicken Bowl</b>. Tap any option to swap.
+            <span class="veg-pill"><span class="vd"></span>VEGETARIAN ONLY</span>
+          </div>
+
+          <!-- Cuisine filter chips (no emojis — just names) -->
+          <div class="chips">
+            <div class="chip on">All<span class="ct">12</span></div>
+            <div class="chip">Indian<span class="ct">5</span></div>
+            <div class="chip">Mediterranean<span class="ct">4</span></div>
+            <div class="chip">East Asian<span class="ct">3</span></div>
+          </div>
+
+          <!-- Categorized list -->
+          <div class="list">
+            <!-- INDIAN -->
+            <div class="grp">
+              <div class="grp-head">
+                <div class="bar" style="background:#E68A6F"></div>
+                <div class="nm">Indian</div>
+                <div class="ct">5 options</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Paneer Tikka Masala</div>
+                  <div class="opt-macros"><span class="d">520 kcal</span> · 38P · 45C · 18F</div>
+                </div>
+                <div class="opt-chip">+8 P</div>
+                <div class="opt-arrow">›</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Chana Masala with Brown Rice</div>
+                  <div class="opt-macros"><span class="d">490 kcal</span> · 22P · 70C · 12F</div>
+                </div>
+                <div class="opt-chip warn">−40 kcal</div>
+                <div class="opt-arrow">›</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Dal Tadka & Roti</div>
+                  <div class="opt-macros"><span class="d">460 kcal</span> · 24P · 58C · 14F</div>
+                </div>
+                <div class="opt-arrow">›</div>
+              </div>
+            </div>
+
+            <!-- MEDITERRANEAN -->
+            <div class="grp">
+              <div class="grp-head">
+                <div class="bar" style="background:#06B6D4"></div>
+                <div class="nm">Mediterranean</div>
+                <div class="ct">4 options</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Greek Falafel Bowl</div>
+                  <div class="opt-macros"><span class="d">510 kcal</span> · 26P · 55C · 22F</div>
+                </div>
+                <div class="opt-chip">+2 P</div>
+                <div class="opt-arrow">›</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Hummus & Roasted Veg Plate</div>
+                  <div class="opt-macros"><span class="d">540 kcal</span> · 22P · 50C · 28F</div>
+                </div>
+                <div class="opt-arrow">›</div>
+              </div>
+            </div>
+
+            <!-- EAST ASIAN -->
+            <div class="grp">
+              <div class="grp-head">
+                <div class="bar" style="background:#84CC16"></div>
+                <div class="nm">East Asian</div>
+                <div class="ct">3 options</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Tofu Pad Thai</div>
+                  <div class="opt-macros"><span class="d">530 kcal</span> · 28P · 62C · 18F</div>
+                </div>
+                <div class="opt-chip">+4 P</div>
+                <div class="opt-arrow">›</div>
+              </div>
+              <div class="opt">
+                <div class="opt-body">
+                  <div class="opt-name">Miso Tofu Bowl</div>
+                  <div class="opt-macros"><span class="d">480 kcal</span> · 32P · 48C · 14F</div>
+                </div>
+                <div class="opt-chip">+8 P</div>
+                <div class="opt-arrow">›</div>
+              </div>
+            </div>
+
+            <div style="height:12px"></div>
+          </div>
+
+          <div class="modal-action">
+            <button class="btn"><span class="btn-icon">↻</span> Show different options</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-anno">
+    <h2>What's new in the swap picker</h2>
+    <p>The picker turns a flat list into a categorized browse, while reinforcing the dietary preference at the top.</p>
+
+    <div class="anno-card">
+      <h3>Categorization</h3>
+      <ul>
+        <li>Cuisine filter chips at top — "All" plus each selected cuisine</li>
+        <li>Below: alternatives grouped by cuisine with thin section dividers</li>
+        <li>Each group shows option count + a small category color bar</li>
+      </ul>
+    </div>
+
+    <div class="anno-card">
+      <h3>Dietary safety</h3>
+      <ul>
+        <li>"VEGETARIAN ONLY" pill in the hint line reminds the user their preference is locked</li>
+        <li>The algorithm already filters non-veg out — this is just the visual reinforcement</li>
+        <li>If the user later changes diet in Settings, this pill updates</li>
+      </ul>
+    </div>
+
+    <div class="anno-card">
+      <h3>Macro hint chips (optional)</h3>
+      <ul>
+        <li>"+8 P" or "−40 kcal" badges show how the alternative compares to the current meal</li>
+        <li>Goal-aware: muscle-gain users see protein deltas; fat-loss users see calorie deltas</li>
+      </ul>
+    </div>
+
+    <div class="anno-card">
+      <h3>No more icons</h3>
+      <ul>
+        <li>Cuisine emojis removed — clean text-only labels</li>
+        <li>"Indian" instead of "🇮🇳 Indian", etc.</li>
+        <li>Visual differentiation comes from category color bars only</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

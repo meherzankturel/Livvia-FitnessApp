@@ -1,0 +1,2386 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Meal Macro Audit — 3-way</title>
+<style>
+  body{margin:0;padding:0;background:#0f0d0a;color:#f5f1e8;font-family:-apple-system,sans-serif}
+  .head{padding:32px 32px 8px}
+  .head h1{font-size:24px;font-weight:800;margin:0 0 6px;letter-spacing:-0.4px}
+  .head p{color:#9b958a;font-size:13px;max-width:920px;line-height:1.55;margin:0 0 16px}
+  .summary{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+  .pill{background:#1a1714;border-radius:99px;padding:6px 14px;font-size:12px;font-weight:700}
+  .pill.verified{background:rgba(52,211,153,0.16);color:#4ade80}
+  .pill.minor_adjust{background:rgba(234,179,8,0.16);color:#facc15}
+  .pill.major_diff{background:rgba(239,68,68,0.16);color:#fca5a5}
+  .pill.needs_review{background:rgba(168,168,173,0.16);color:#d4d4d8}
+  .legend{font-size:12px;color:#9b958a;margin:6px 0 0;line-height:1.5}
+  .table{padding:8px 32px 64px}
+  .row{display:grid;grid-template-columns:24px 220px 110px 100px 1fr;gap:14px;align-items:center;padding:10px 14px;border-radius:10px;margin-bottom:4px;font-size:13px;background:#1a1714}
+  .row.verified{background:rgba(52,211,153,0.06)}
+  .row.minor_adjust{background:rgba(234,179,8,0.07)}
+  .row.major_diff{background:rgba(239,68,68,0.08);border-left:3px solid #ef4444}
+  .row.needs_review{background:rgba(168,168,173,0.06)}
+  .row .nm{font-weight:700;letter-spacing:-0.1px}
+  .row .cui{font-size:10px;color:#9b958a;text-transform:uppercase;letter-spacing:0.1em;font-weight:700}
+  .row .vals{display:flex;gap:6px;align-items:center;font-size:11px}
+  .row .vals .b{padding:3px 7px;border-radius:6px;background:#252220;color:#cfc8b8;font-variant-numeric:tabular-nums;font-weight:600}
+  .row .vals .b.cur{background:#2b2722;color:#f5f1e8}
+  .row .vals .b.local{background:rgba(52,211,153,0.18);color:#86efac}
+  .row .vals .b.edamam{background:rgba(239,68,68,0.18);color:#fca5a5}
+  .row .vals .lbl{font-size:9px;color:#807a72;font-weight:700;letter-spacing:0.08em}
+  .row .unr{font-size:10px;color:#fcd34d}
+  .row .recommend{font-size:11px;font-weight:700;letter-spacing:-0.1px}
+  .row .recommend.keep{color:#86efac}
+  .row .recommend.consider_local{color:#facc15}
+  .row .recommend.update_to_local{color:#fca5a5}
+  .row .recommend.manual{color:#d4d4d8}
+  .icon{text-align:center;font-size:14px}
+  details{margin:8px 0;background:#1a1714;border-radius:10px;padding:10px 14px}
+  details summary{cursor:pointer;font-weight:700;font-size:13px;color:#d4d4d8;letter-spacing:-0.1px}
+  details ul{margin:8px 0 0;padding-left:20px;font-size:11px;color:#9b958a;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="head">
+  <h1>Meal Macro Audit — 3-Way Cross-Check</h1>
+  <p>For each of 131 meals, comparing <b>current authored value</b> against <b>Local DB</b> (computed from USDA per-ingredient values with corrected unit weights) and <b>Edamam</b> (API; over-estimates "slices"/"pieces" by 2-3×, so values are advisory only).</p>
+  <div class="summary">
+    <div class="pill verified">✓ Verified ≤10% delta · 18</div>
+    <div class="pill minor_adjust">~ Minor 10-20% · 9</div>
+    <div class="pill major_diff">⚠ Major &gt;20% · 28</div>
+    <div class="pill needs_review">? Needs review · 76</div>
+  </div>
+  <div class="legend">
+    <b>Recommendation column:</b> keep = current is accurate (≤10% from Local DB)
+    · consider_local = small adjustment (Local DB suggests 10-20% change)
+    · update_to_local = strong recommendation (&gt;20% diff)
+    · manual = too many unresolved ingredients in Local DB — needs human review
+  </div>
+</div>
+
+<div class="table">
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Idli Sambar</div>
+      <div class="cui">indian · breakfast · 69% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">290 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">846 cal (+192%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">535 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Idli Sambar</summary><ul><li>1 tbsp Sambar powder</li><li>1 tsp Tamarind paste</li><li>1 piece Drumstick (cut into pieces)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Turkey Sandwich</div>
+      <div class="cui">american · lunch · 0% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">339 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Turkey Sandwich</summary><ul><li>4 oz Sliced turkey</li><li>2 slices Whole grain bread</li><li>2 leaves Lettuce</li><li>2 slices Tomato</li><li>1 tbsp Mustard</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Protein Bar</div>
+      <div class="cui">american · snack · 0% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">250 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">—</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Protein Bar</summary><ul><li>1 bar Protein bar</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Trail Mix</div>
+      <div class="cui">american · snack · 0% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">300 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">277 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Trail Mix</summary><ul><li>1/4 cup Mixed nuts</li><li>1 tbsp Sunflower seeds</li><li>2 tbsp Dried cranberries</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">String Cheese & Crackers</div>
+      <div class="cui">american · snack · 0% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">220 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">330 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in String Cheese & Crackers</summary><ul><li>2 sticks String cheese</li><li>8 crackers Whole wheat crackers</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Beef Jerky</div>
+      <div class="cui">american · snack · 0% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">120 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">116 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Beef Jerky</summary><ul><li>1 oz Beef jerky</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Rice Cake with Almond Butter</div>
+      <div class="cui">american · snack · 0% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">200 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">185 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Rice Cake with Almond Butter</summary><ul><li>1 cake Rice cake</li><li>1 tbsp Almond butter</li><li>1/2 sliced Banana</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Edamame</div>
+      <div class="cui">american · snack · 0% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">190 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">129 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Edamame</summary><ul><li>1 cup Frozen edamame (in shell)</li><li>1 pinch Sea salt</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Pesto Pasta with Chicken</div>
+      <div class="cui">italian · dinner · 20% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">563 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Pesto Pasta with Chicken</summary><ul><li>2 oz dry Penne pasta</li><li>4 oz grilled Chicken breast</li><li>2 tbsp Basil pesto</li><li>1 tbsp grated Parmesan cheese</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Roasted Chana</div>
+      <div class="cui">indian · snack · 60% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">160 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">3 cal (-98%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">381 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Roasted Chana</summary><ul><li>1 cup Kala chana (black chickpeas, roasted)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chicken Caesar Wrap</div>
+      <div class="cui">american · lunch · 20% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">—</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Caesar Wrap</summary><ul><li>4 oz sliced Grilled chicken breast</li><li>2 tbsp shaved Parmesan cheese</li><li>2 tbsp Caesar dressing</li><li>1 large Whole wheat tortilla</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Keto Burger Bowl</div>
+      <div class="cui">american · lunch · 17% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">528 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Keto Burger Bowl</summary><ul><li>5 oz Ground beef</li><li>1 slice Cheddar cheese</li><li>3 slices Dill pickles</li><li>2 slices Tomato</li><li>1 tbsp each Ketchup and mustard</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Aloo Dum (Bengali Style Spiced Baby Potatoes)</div>
+      <div class="cui">indian · dinner · 58% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">300 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">16 cal (-95%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">167 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Aloo Dum (Bengali Style Spiced Baby Potatoes)</summary><ul><li>10-12 pieces Baby potatoes</li><li>1/2 cup Tomato puree</li><li>1 tsp Ginger paste</li><li>1/2 tsp Cumin powder</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Pasta with Meat Sauce</div>
+      <div class="cui">italian · dinner · 17% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">604 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">648 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Pasta with Meat Sauce</summary><ul><li>2 oz dry Whole wheat pasta</li><li>4 oz Ground beef</li><li>1/2 cup Crushed tomatoes</li><li>2 cloves minced Garlic</li><li>2 tbsp grated Parmesan cheese</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Cottage Cheese Bowl</div>
+      <div class="cui">american · breakfast · 33% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">280 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">21 cal (-92%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">283 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Cottage Cheese Bowl</summary><ul><li>1 cup Cottage cheese</li><li>1/2 cup Pineapple chunks</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Thepla with Yogurt</div>
+      <div class="cui">indian · breakfast · 44% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">320 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">25 cal (-92%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">562 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Thepla with Yogurt</summary><ul><li>1 cup Whole wheat flour</li><li>1 cup Fresh fenugreek leaves (methi)</li><li>2 tbsp Yogurt</li><li>1/2 cup Plain yogurt (side)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Shorshe Ilish (Hilsa in Mustard Sauce)</div>
+      <div class="cui">indian · dinner · 43% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">320 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">25 cal (-92%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">332 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Shorshe Ilish (Hilsa in Mustard Sauce)</summary><ul><li>200 g Hilsa fish steaks</li><li>2 tbsp Mustard seeds</li><li>1 tbsp Poppy seeds</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Tuna Salad Bowl</div>
+      <div class="cui">mediterranean · lunch · 50% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">45 cal (-88%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">171 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Tuna Salad Bowl</summary><ul><li>1 can (5oz) Canned tuna</li><li>1 stalk diced Celery</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Pesarattu</div>
+      <div class="cui">indian · breakfast · 44% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">260 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">31 cal (-88%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">80 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Pesarattu</summary><ul><li>1 cup Whole green moong dal (soaked 6 hrs)</li><li>2 tbsp Rice (soaked)</li><li>1 inch piece Ginger</li><li>as needed  Water</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Paneer Tikka + Green Salad</div>
+      <div class="cui">indian · dinner · 62% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">360 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">673 cal (+87%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">822 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Paneer Tikka + Green Salad</summary><ul><li>3 tbsp Yogurt (thick)</li><li>1 tbsp Tandoori masala</li><li>4 leaves Lettuce leaves</li><li>6 pieces Cherry tomatoes</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Dalia Khichdi</div>
+      <div class="cui">indian · breakfast · 56% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">310 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">45 cal (-85%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">131 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Dalia Khichdi</summary><ul><li>1/2 cup Dalia (broken wheat)</li><li>1/4 cup Yellow moong dal</li><li>1/2 cup Mixed vegetables (carrot, beans, peas)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Undhiyu (Gujarati Mixed Veg)</div>
+      <div class="cui">indian · dinner · 25% resolved · 8 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">310 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1340 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Undhiyu (Gujarati Mixed Veg)</summary><ul><li>1/2 cup Surti papdi (flat beans)</li><li>4 pieces Small brinjal</li><li>1 small Sweet potato</li><li>1 piece Raw banana</li><li>1/4 cup Purple yam</li><li>1/2 cup Fresh fenugreek leaves</li><li>2 tbsp Green garlic</li><li>1 tsp Ginger-chili paste</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Baked Vada Pav Bites</div>
+      <div class="cui">indian · snack · 56% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">200 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">32 cal (-84%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">414 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Baked Vada Pav Bites</summary><ul><li>2 medium Potatoes (boiled/mashed)</li><li>6 pieces Curry leaves</li><li>3 pieces Mini pav/slider buns</li><li>1 tbsp Dry garlic chutney</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Sandesh (Bengali Cottage Cheese Sweet)</div>
+      <div class="cui">indian · snack · 20% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">130 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">84 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Sandesh (Bengali Cottage Cheese Sweet)</summary><ul><li>1 cup Paneer/chenna (fresh)</li><li>1/4 tsp Cardamom powder</li><li>4-5 pieces Saffron strands</li><li>1 tsp Pistachios (chopped)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Steak with Roasted Vegetables</div>
+      <div class="cui">american · dinner · 17% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">581 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">668 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Steak with Roasted Vegetables</summary><ul><li>6 oz Sirloin steak</li><li>1 cup halved Baby potatoes</li><li>2 medium chopped Carrots</li><li>6 spears Asparagus</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Stuffed Bell Peppers</div>
+      <div class="cui">american · dinner · 17% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">450 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">485 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Stuffed Bell Peppers</summary><ul><li>2 large Bell peppers</li><li>4 oz Ground turkey</li><li>1/4 cup Tomato sauce</li><li>1/4 cup Shredded cheese</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Tofu Pad Thai</div>
+      <div class="cui">asian · dinner · 14% resolved · 6 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">500 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">890 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Tofu Pad Thai</summary><ul><li>4 oz Rice noodles</li><li>1/2 block cubed Firm tofu</li><li>1/2 cup Bean sprouts</li><li>2 tbsp crushed Peanuts</li><li>3 tbsp Pad Thai sauce</li><li>1/2 wedge Lime</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Smoked Salmon Bagel</div>
+      <div class="cui">american · breakfast · 17% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">400 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">437 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Smoked Salmon Bagel</summary><ul><li>1 whole (use half) Bagel</li><li>2 oz Smoked salmon</li><li>1 tsp Capers</li><li>2 thin slices Red onion</li><li>1 sprig Fresh dill</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Grilled Tandoori Chicken + Salad</div>
+      <div class="cui">indian · dinner · 62% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">350 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">87 cal (-75%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">366 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Grilled Tandoori Chicken + Salad</summary><ul><li>250 g Chicken leg/thigh (skinless)</li><li>3 tbsp Yogurt (thick)</li><li>1 tbsp Tandoori masala</li><li>1 piece Lemon wedge</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Bacon & Egg Wrap</div>
+      <div class="cui">american · breakfast · 40% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">500 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">140 cal (-72%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">669 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Bacon & Egg Wrap</summary><ul><li>2 strips Bacon</li><li>1 large Whole wheat tortilla</li><li>1/4 cup shredded Cheddar cheese</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Baked Salmon with Sweet Potato</div>
+      <div class="cui">mediterranean · dinner · 33% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">546 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">154 cal (-72%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">628 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Baked Salmon with Sweet Potato</summary><ul><li>6 oz Salmon fillet</li><li>1 medium Sweet potato</li><li>1/2 sliced Lemon</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Aloo Posto (Potatoes in Poppy Seed Paste)</div>
+      <div class="cui">indian · lunch · 62% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">330 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">91 cal (-72%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">329 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Aloo Posto (Potatoes in Poppy Seed Paste)</summary><ul><li>2 medium Potatoes</li><li>2 tbsp Poppy seeds (khus khus)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Jhalmuri (Spiced Puffed Rice)</div>
+      <div class="cui">indian · snack · 60% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">120 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">35 cal (-71%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">63 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Jhalmuri (Spiced Puffed Rice)</summary><ul><li>2 cups Puffed rice (muri)</li><li>1 tbsp Chanachur/bhujia</li><li>1/2 tsp Chat masala</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Misal Pav</div>
+      <div class="cui">indian · breakfast · 60% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">113 cal (-70%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">362 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Misal Pav</summary><ul><li>1 cup Sprouted moth beans</li><li>1 tbsp Misal masala</li><li>2 pieces Pav bread</li><li>2 tbsp Farsan/sev</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Pav Bhaji</div>
+      <div class="cui">indian · lunch · 40% resolved · 6 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">125 cal (-70%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">698 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Pav Bhaji</summary><ul><li>2 medium Potatoes</li><li>1/2 cup Cauliflower</li><li>1/4 cup Peas</li><li>1 small Capsicum</li><li>1.5 tbsp Pav bhaji masala</li><li>2 pieces Pav bread</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Roasted Makhana</div>
+      <div class="cui">indian · snack · 60% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">120 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">39 cal (-68%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">253 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Roasted Makhana</summary><ul><li>2 cups Makhana (fox nuts)</li><li>1/4 tsp Rock salt (sendha namak)</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Kolhapuri Chicken</div>
+      <div class="cui">indian · dinner · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">123 cal (-68%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">397 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Kolhapuri Chicken</summary><ul><li>250 g Chicken thigh pieces</li><li>2 tbsp Kolhapuri masala</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chickpea & Spinach Stew</div>
+      <div class="cui">mediterranean · dinner · 43% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">141 cal (-66%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">664 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chickpea & Spinach Stew</summary><ul><li>1 can drained Chickpeas</li><li>1 can (14oz) Diced tomatoes</li><li>1 small diced Onion</li><li>1 slice Crusty bread</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Protein Smoothie</div>
+      <div class="cui">american · breakfast · 20% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">300 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">316 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Protein Smoothie</summary><ul><li>1 scoop Plant protein powder</li><li>1 handful Spinach</li><li>1 cup Almond milk</li><li>4-5 cubes Ice cubes</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Tofu Scramble</div>
+      <div class="cui">american · breakfast · 14% resolved · 6 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">320 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">431 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Tofu Scramble</summary><ul><li>1/2 block Firm tofu</li><li>1/4 diced Onion</li><li>1/2 diced Bell pepper</li><li>1/2 tsp Turmeric</li><li>1 tbsp Nutritional yeast</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Lentil Soup & Bread</div>
+      <div class="cui">mediterranean · lunch · 29% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">400 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">940 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Lentil Soup & Bread</summary><ul><li>1 cup dry Green or brown lentils</li><li>1 small diced Onion</li><li>1 diced Carrot</li><li>1 stalk diced Celery</li><li>1 slice Crusty bread</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Upma with Vegetables</div>
+      <div class="cui">indian · breakfast · 50% resolved · 7 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">340 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">139 cal (-59%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1171 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Upma with Vegetables</summary><ul><li>1 cup Rava (semolina)</li><li>1/2 cup Mixed vegetables (beans, carrot, peas)</li><li>1 tsp Urad dal</li><li>1 tsp Chana dal</li><li>5 pieces Cashews</li><li>10 pieces Roasted cashews</li><li>1 tbsp Roasted chana dal</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chicken Thigh with Mashed Potatoes</div>
+      <div class="cui">american · dinner · 33% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">242 cal (-58%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1474 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Thigh with Mashed Potatoes</summary><ul><li>2 bone-in Chicken thighs</li><li>2 medium peeled Potatoes</li><li>1/2 cup Frozen peas</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Machher Jhol (Bengali Fish Curry) + Rice</div>
+      <div class="cui">indian · lunch · 67% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">430 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">182 cal (-58%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">575 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Machher Jhol (Bengali Fish Curry) + Rice</summary><ul><li>200 g Rohu or catla fish</li><li>1 medium Potatoes</li><li>1/2 tsp Cumin powder</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Grilled Chicken Salad</div>
+      <div class="cui">american · lunch · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">400 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">170 cal (-57%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">375 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Grilled Chicken Salad</summary><ul><li>4 oz grilled Chicken breast</li><li>1/2 sliced Cucumber</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Grilled Fish Tacos</div>
+      <div class="cui">mexican · dinner · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">218 cal (-55%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">542 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Grilled Fish Tacos</summary><ul><li>6 oz White fish fillet</li><li>1/2 mashed Avocado</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Moong Dal Khichdi + Papad</div>
+      <div class="cui">indian · dinner · 64% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">340 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">152 cal (-55%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">411 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Moong Dal Khichdi + Papad</summary><ul><li>1/4 cup Yellow moong dal</li><li>1 piece Papad</li><li>1 piece Lemon wedge</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Salmon Poke Bowl</div>
+      <div class="cui">asian · lunch · 50% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">240 cal (-54%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">734 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Salmon Poke Bowl</summary><ul><li>5 oz cubed Sushi-grade salmon</li><li>1/2 sliced Avocado</li><li>1/4 cup shelled Edamame</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chicken Quesadilla</div>
+      <div class="cui">mexican · lunch · 60% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">500 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">230 cal (-54%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">590 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Quesadilla</summary><ul><li>4 oz Shredded chicken</li><li>1/3 cup Shredded cheese</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Beef Stir Fry</div>
+      <div class="cui">asian · lunch · 50% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">550 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">261 cal (-53%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">731 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Beef Stir Fry</summary><ul><li>5 oz sliced thin Beef sirloin</li><li>1.5 cups Mixed vegetables</li><li>2 cloves minced Garlic</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Shrimp & Grits</div>
+      <div class="cui">american · dinner · 33% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">242 cal (-53%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">683 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Shrimp & Grits</summary><ul><li>6 oz peeled Shrimp</li><li>1/2 cup dry Stone-ground grits</li><li>2 cloves minced Garlic</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Hummus & Veggies</div>
+      <div class="cui">american · snack · 25% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">200 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">197 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Hummus & Veggies</summary><ul><li>1 medium Carrot sticks</li><li>2 stalks Celery sticks</li><li>1/2 pepper Bell pepper strips</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Shrimp Tacos</div>
+      <div class="cui">mexican · lunch · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">450 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">228 cal (-49%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">479 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Shrimp Tacos</summary><ul><li>6 oz peeled Shrimp</li><li>1 tbsp Chipotle mayo</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Black Bean Burrito Bowl</div>
+      <div class="cui">mexican · lunch · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">550 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">285 cal (-48%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">673 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Black Bean Burrito Bowl</summary><ul><li>1/2 can drained Black beans</li><li>1/2 sliced Avocado</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Bean & Cheese Enchiladas</div>
+      <div class="cui">mexican · dinner · 50% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">268 cal (-48%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">786 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Bean & Cheese Enchiladas</summary><ul><li>1/2 can drained Black beans</li><li>1/2 cup Shredded cheese</li><li>1 cup Red enchilada sauce</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chicken Breast with Quinoa</div>
+      <div class="cui">mediterranean · dinner · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">519 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">716 cal (+38%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">703 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Breast with Quinoa</summary><ul><li>1 medium diced Zucchini</li><li>1 diced Bell pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Khandvi</div>
+      <div class="cui">indian · snack · 60% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">150 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">94 cal (-37%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">121 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Khandvi</summary><ul><li>1 cup Buttermilk</li><li>1 tsp Ginger-green chili paste</li><li>6 pieces Curry leaves</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Mediterranean Plate</div>
+      <div class="cui">mediterranean · lunch · 40% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">340 cal (-35%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">—</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Mediterranean Plate</summary><ul><li>1/2 cup Tabbouleh</li><li>1 round Pita bread</li><li>2 tbsp Mixed olives</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Vegetable Curry with Rice</div>
+      <div class="cui">mediterranean · dinner · 33% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">500 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">329 cal (-34%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1333 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Vegetable Curry with Rice</summary><ul><li>2 cups chopped Mixed vegetables</li><li>1 can (14oz) Coconut milk</li><li>2 tbsp Curry paste</li><li>1 small diced Onion</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Veggie Stir Fry with Tofu</div>
+      <div class="cui">asian · lunch · 29% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">— (—)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">710 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Veggie Stir Fry with Tofu</summary><ul><li>1/2 block cubed Firm tofu</li><li>1 cup florets Broccoli</li><li>1 sliced Bell pepper</li><li>1/2 cup Snap peas</li><li>2 tbsp Teriyaki sauce</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Overnight Oats</div>
+      <div class="cui">american · breakfast · 60% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">400 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">290 cal (-28%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">444 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Overnight Oats</summary><ul><li>1 tbsp Chia seeds</li><li>2 tbsp chopped Mixed nuts</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Gujarati Dal + Rice + Sabzi</div>
+      <div class="cui">indian · lunch · 58% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">524 cal (+25%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">611 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Gujarati Dal + Rice + Sabzi</summary><ul><li>1 tsp Jaggery</li><li>1 tsp Kokum or tamarind</li><li>6 pieces Curry leaves</li><li>1 cup Seasonal vegetables</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Masala Chaas</div>
+      <div class="cui">indian · snack · 62% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">75 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">58 cal (-23%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">63 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Masala Chaas</summary><ul><li>1 cup Cold water</li><li>1/2 tsp Roasted cumin powder</li><li>6 leaves Fresh mint leaves</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Keto Egg Cups</div>
+      <div class="cui">american · breakfast · 40% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">350 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">427 cal (+22%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">915 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Keto Egg Cups</summary><ul><li>1/2 cup Diced ham</li><li>1/2 cup Shredded cheese</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Keto Chicken Alfredo</div>
+      <div class="cui">italian · dinner · 50% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">586 cal (+22%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">657 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Keto Chicken Alfredo</summary><ul><li>2 medium spiralized Zucchini</li><li>2 tbsp grated Parmesan cheese</li><li>2 cloves minced Garlic</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Luchi with Cholar Dal</div>
+      <div class="cui">indian · breakfast · 50% resolved · 5 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">340 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">415 cal (+22%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">934 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Luchi with Cholar Dal</summary><ul><li>1 cup Maida (refined flour)</li><li>1 tsp Ginger paste</li><li>5 pieces Raisins</li><li>1 tbsp Coconut bits</li><li>1/2 tsp Oil for air frying/light brushing</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Grilled Chicken & Rice</div>
+      <div class="cui">american · lunch · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">504 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">611 cal (+21%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">602 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Grilled Chicken & Rice</summary><ul><li>1 cup Broccoli</li><li>1 pinch each Salt and pepper</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Besan Chilla with Mint Chutney</div>
+      <div class="cui">indian · breakfast · 69% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">300 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">239 cal (-20%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">245 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Besan Chilla with Mint Chutney</summary><ul><li>1/4 tsp Ajwain (carom seeds)</li><li>1/2 cup Fresh mint leaves</li><li>1/4 cup Coriander leaves</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Pitha (Rice Flour Pancakes)</div>
+      <div class="cui">indian · breakfast · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">250 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">296 cal (+18%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">—</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Pitha (Rice Flour Pancakes)</summary><ul><li>1/4 tsp Cardamom powder</li><li>as needed  Water</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Chicken Tikka + Raita</div>
+      <div class="cui">indian · dinner · 58% resolved · 4 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">340 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">283 cal (-17%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">241 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Tikka + Raita</summary><ul><li>3 tbsp Yogurt (thick)</li><li>1 tbsp Tikka masala</li><li>2 tbsp Onion (finely chopped, for raita)</li><li>1/4 tsp Roasted cumin powder</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Dal Pakhala (Fermented Rice with Lentils)</div>
+      <div class="cui">indian · lunch · 67% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">350 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">406 cal (+16%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">298 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Dal Pakhala (Fermented Rice with Lentils)</summary><ul><li>1 small Raw onion</li><li>1 piece Fried dry red chili</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Dhokla</div>
+      <div class="cui">indian · breakfast · 64% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">180 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">155 cal (-14%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">155 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Dhokla</summary><ul><li>1 tsp Ginger-green chili paste</li><li>1 tsp Eno / baking soda</li><li>8 pieces Curry leaves</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Ragi Dosa with Coconut Chutney</div>
+      <div class="cui">indian · breakfast · 69% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">320 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">284 cal (-11%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">919 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Ragi Dosa with Coconut Chutney</summary><ul><li>3/4 cup Ragi (finger millet) flour</li><li>1/2 cup Fresh coconut (grated)</li><li>1 tbsp Roasted chana dal</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Fish Curry + Steamed Rice</div>
+      <div class="cui">indian · lunch · 69% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">450 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">418 cal (-7%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">928 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Fish Curry + Steamed Rice</summary><ul><li>200 g Fish fillets (rohu/surmai)</li><li>1 tsp Tamarind paste</li><li>2 tsp Coconut oil</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Paneer Tikka Bites</div>
+      <div class="cui">indian · snack · 62% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">220 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">222 cal (+1%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">267 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Paneer Tikka Bites</summary><ul><li>2 tbsp Yogurt (thick)</li><li>1/2 tbsp Tikka masala</li></ul></details>
+  <div class="row needs_review">
+    <div class="icon">?</div>
+    <div>
+      <div class="nm">Goan Fish Curry + Rice</div>
+      <div class="cui">indian · lunch · 67% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">450 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">451 cal (+0%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">656 cal</span></div>
+      <div class="recommend manual">? needs manual</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Goan Fish Curry + Rice</summary><ul><li>200 g White fish fillets</li><li>2 pieces Kokum</li><li>1 tsp Tamarind paste</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Dal Palak + Multigrain Roti</div>
+      <div class="cui">indian · dinner · 92% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">934 cal (+146%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1076 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Rajma Chawal</div>
+      <div class="cui">indian · lunch · 92% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">460 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">955 cal (+108%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1165 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Mujadara</div>
+      <div class="cui">middle_eastern · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">540 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">1044 cal (+93%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1042 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Moong Dal Cheela</div>
+      <div class="cui">indian · breakfast · 78% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">280 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">32 cal (-89%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">42 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Moong Dal Cheela</summary><ul><li>1 cup Green moong dal (soaked 4 hrs)</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Quiche Lorraine</div>
+      <div class="cui">french · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">882 cal (+84%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">700 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Dal Tadka + Brown Rice + Cucumber Raita</div>
+      <div class="cui">indian · lunch · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">794 cal (+65%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">685 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Dal Tadka + Brown Rice + Cucumber Raita</summary><ul><li>1/4 tsp Roasted cumin powder</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Ratatouille</div>
+      <div class="cui">french · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">280 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">458 cal (+64%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">488 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Chicken Shawarma Bowl</div>
+      <div class="cui">middle_eastern · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">877 cal (+51%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">846 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Poha with Peanuts</div>
+      <div class="cui">indian · breakfast · 79% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">360 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">176 cal (-51%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">805 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Poha with Peanuts</summary><ul><li>1.5 cups Thick poha (flattened rice)</li><li>1/4 cup Sprouted moong</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Sprouts Chaat</div>
+      <div class="cui">indian · snack · 78% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">180 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">90 cal (-50%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">176 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Sprouts Chaat</summary><ul><li>1 cup Mixed sprouts (moong, chana, moth)</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Sushi Bowl</div>
+      <div class="cui">asian · lunch · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">560 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">311 cal (-44%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">593 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Sushi Bowl</summary><ul><li>120 g Sashimi-grade salmon</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Chicken Souvlaki Plate</div>
+      <div class="cui">mediterranean · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">600 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">846 cal (+41%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">776 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Italian Meatball Bowl</div>
+      <div class="cui">italian · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">620 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">867 cal (+40%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">978 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Chole + Multigrain Roti</div>
+      <div class="cui">indian · lunch · 71% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">440 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">600 cal (+36%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">687 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chole + Multigrain Roti</summary><ul><li>1 tbsp Chole masala</li><li>1 bag Tea bag (for dark color)</li><li>1 piece Lemon wedge</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Coq au Vin</div>
+      <div class="cui">french · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">781 cal (+35%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">715 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Greek Yogurt & Honey</div>
+      <div class="cui">american · snack · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">180 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">241 cal (+34%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">272 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Pasta al Pomodoro</div>
+      <div class="cui">italian · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">697 cal (+34%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">646 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Masala Omelette with Multigrain Toast</div>
+      <div class="cui">indian · breakfast · 91% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">505 cal (+33%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">479 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Croque Monsieur</div>
+      <div class="cui">french · lunch · 83% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">396 cal (-32%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1168 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Croque Monsieur</summary><ul><li>40 g Gruyère cheese</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Chicken Piccata</div>
+      <div class="cui">italian · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">758 cal (+31%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">698 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Chicken Curry + Brown Rice</div>
+      <div class="cui">indian · lunch · 79% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">367 cal (-29%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">886 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Chicken Curry + Brown Rice</summary><ul><li>250 g Chicken (bone-in, skinless)</li><li>2 tbsp Yogurt (low-fat)</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Assamese Thali (Dal, Xaak, Rice, Fish)</div>
+      <div class="cui">indian · lunch · 73% resolved · 2 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">348 cal (-28%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">465 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Assamese Thali (Dal, Xaak, Rice, Fish)</summary><ul><li>1 cup Leafy greens (xaak)</li><li>100 g Small fish</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Greek Yogurt Parfait</div>
+      <div class="cui">mediterranean · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">350 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">433 cal (+24%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">513 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Miso Tofu Bowl</div>
+      <div class="cui">asian · breakfast · 83% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">324 cal (-23%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">342 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Miso Tofu Bowl</summary><ul><li>1 tbsp dry Wakame</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Fruit Chaat with Chaat Masala</div>
+      <div class="cui">indian · snack · 70% resolved · 3 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">170 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">131 cal (-23%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">154 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Fruit Chaat with Chaat Masala</summary><ul><li>1/4 cup Pomegranate seeds</li><li>1 small Guava (diced)</li><li>1 small Orange segments</li></ul></details>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Oatmeal with Banana & Peanut Butter</div>
+      <div class="cui">american · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">450 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">353 cal (-22%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">352 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Mushroom Risotto</div>
+      <div class="cui">italian · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">560 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">683 cal (+22%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">674 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row major_diff">
+    <div class="icon">⚠</div>
+    <div>
+      <div class="nm">Korean Chicken Lettuce Wraps</div>
+      <div class="cui">asian · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">300 cal (-21%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">297 cal</span></div>
+      <div class="recommend update_to_local">⚠ update to Local DB</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">French Onion Soup</div>
+      <div class="cui">french · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">497 cal (+18%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">477 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Lamb Kofta Skewers</div>
+      <div class="cui">middle_eastern · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">620 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">734 cal (+18%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">721 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Huevos Rancheros</div>
+      <div class="cui">mexican · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">398 cal (-17%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">553 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Banana Pancakes</div>
+      <div class="cui">american · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">350 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">297 cal (-15%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">318 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Vegetable Pad Thai</div>
+      <div class="cui">asian · lunch · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">520 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">591 cal (+14%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">635 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Vegetable Pad Thai</summary><ul><li>1 cup Bean sprouts</li></ul></details>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Avocado Toast with Eggs</div>
+      <div class="cui">mediterranean · breakfast · 83% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">541 cal (+13%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1222 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Avocado Toast with Eggs</summary><ul><li>1 pinch Red pepper flakes</li></ul></details>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Hard Boiled Eggs</div>
+      <div class="cui">american · snack · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">160 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">140 cal (-12%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">143 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Falafel Wrap</div>
+      <div class="cui">middle_eastern · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">530 cal (+10%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">—</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <div class="row minor_adjust">
+    <div class="icon">~</div>
+    <div>
+      <div class="nm">Mixed Sabzi + Dal + Roti</div>
+      <div class="cui">indian · lunch · 85% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">376 cal (-10%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">451 cal</span></div>
+      <div class="recommend consider_local">~ minor adjust</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Mixed Sabzi + Dal + Roti</summary><ul><li>1.5 cups Mixed vegetables (potato, cauliflower, beans, peas)</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Beef Bibimbap</div>
+      <div class="cui">asian · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">640 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">695 cal (+9%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">739 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Paneer Bhurji with Roti</div>
+      <div class="cui">indian · breakfast · 92% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">382 cal (-9%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">601 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Scrambled Eggs & Toast</div>
+      <div class="cui">american · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">452 cal (+8%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">478 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Black Bean Tacos</div>
+      <div class="cui">mexican · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">400 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">367 cal (-8%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">703 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Hummus & Pita Plate</div>
+      <div class="cui">middle_eastern · snack · 80% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">380 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">405 cal (+7%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">485 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Hummus & Pita Plate</summary><ul><li>8 pieces Olives</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Palak Paneer + Roti</div>
+      <div class="cui">indian · lunch · 83% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">440 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">411 cal (-7%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">654 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Palak Paneer + Roti</summary><ul><li>1 tbsp Cream (optional)</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Salmon en Papillote</div>
+      <div class="cui">french · dinner · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">460 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">488 cal (+6%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">493 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Shakshuka</div>
+      <div class="cui">middle_eastern · breakfast · 88% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">340 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">318 cal (-6%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">393 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Shakshuka</summary><ul><li>1 cup Crushed tomatoes</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Caprese Toast</div>
+      <div class="cui">italian · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">360 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">378 cal (+5%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">963 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Tabbouleh with Grilled Halloumi</div>
+      <div class="cui">middle_eastern · lunch · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">460 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">480 cal (+4%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">457 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Tabbouleh with Grilled Halloumi</summary><ul><li>1 cup Parsley (chopped)</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Teriyaki Salmon Bowl</div>
+      <div class="cui">asian · dinner · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">580 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">606 cal (+4%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">687 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Teriyaki Salmon Bowl</summary><ul><li>1/2 cup Edamame</li></ul></details>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Baingan Bharta + Roti</div>
+      <div class="cui">indian · dinner · 94% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">460 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">441 cal (-4%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">683 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Chicken Burrito Bowl</div>
+      <div class="cui">mexican · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">620 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">600 cal (-3%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">1136 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Apple & Peanut Butter</div>
+      <div class="cui">american · snack · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">280 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">285 cal (+2%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">286 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Classic French Omelette</div>
+      <div class="cui">french · breakfast · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">310 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">313 cal (+1%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">317 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Salade Niçoise</div>
+      <div class="cui">french · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">620 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">629 cal (+1%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">587 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Spinach Feta Wrap</div>
+      <div class="cui">mediterranean · lunch · 100% resolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">420 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">423 cal (+1%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">369 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <div class="row verified">
+    <div class="icon">✓</div>
+    <div>
+      <div class="nm">Egg Curry + Jeera Rice</div>
+      <div class="cui">indian · lunch · 86% resolved · 1 unresolved</div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">CUR</span><span class="b cur">480 cal</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">LOCAL</span><span class="b local">475 cal (-1%)</span></div>
+    </div>
+    <div class="vals">
+      <div><span class="lbl">EDAMAM</span><span class="b edamam">765 cal</span></div>
+      <div class="recommend keep">✓ keep current</div>
+    </div>
+  </div>
+  <details><summary>Unresolved ingredients in Egg Curry + Jeera Rice</summary><ul><li>2 tsp Oil or ghee</li></ul></details>
+</div></body></html>

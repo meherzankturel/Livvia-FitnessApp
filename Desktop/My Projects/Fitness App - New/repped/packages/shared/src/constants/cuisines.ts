@@ -1,15 +1,15 @@
 /**
- * Cuisine system for meal planning.
- * Deep focus on all regions of India + global cuisines.
+ * Cuisine system for meal planning. 8 cuisines total.
+ * Asian is a unified bucket (Thai / Chinese / Japanese / Korean / Vietnamese).
+ * Italian and French are first-class options. Mediterranean stays separate.
  */
 
 export const cuisineOptions = [
-  "indian_north",
-  "indian_south",
-  "indian_west",
-  "indian_east",
+  "indian",
+  "asian",
   "mediterranean",
-  "east_asian",
+  "italian",
+  "french",
   "mexican",
   "american",
   "middle_eastern",
@@ -18,36 +18,33 @@ export const cuisineOptions = [
 export type CuisinePreference = (typeof cuisineOptions)[number];
 
 export const cuisineLabels: Record<CuisinePreference, string> = {
-  indian_north: "North Indian",
-  indian_south: "South Indian",
-  indian_west: "West Indian",
-  indian_east: "East Indian",
+  indian: "Indian",
+  asian: "Asian",
   mediterranean: "Mediterranean",
-  east_asian: "East Asian",
+  italian: "Italian",
+  french: "French",
   mexican: "Mexican / Latin",
   american: "American / Western",
   middle_eastern: "Middle Eastern",
 };
 
 export const cuisineDescriptions: Record<CuisinePreference, string> = {
-  indian_north: "Dal, roti, paneer, tandoori — Punjab, UP, Delhi, Rajasthan",
-  indian_south: "Idli, dosa, sambar, rasam — Tamil Nadu, Kerala, Karnataka, AP",
-  indian_west: "Dhokla, thepla, poha, vada pav — Gujarat, Maharashtra, Goa",
-  indian_east: "Machher jhol, luchi, momos, thukpa — Bengal, Odisha, Assam, NE",
+  indian: "Curries, breads, rice, dosa, dhokla, momos — all regional Indian dishes",
+  asian: "Stir-fry, sushi, ramen, pad thai, bibimbap — all East and Southeast Asian dishes",
   mediterranean: "Olive oil, hummus, grilled fish, fresh vegetables",
-  east_asian: "Stir-fry, tofu, rice bowls, miso — clean and balanced",
+  italian: "Pasta, risotto, frittata, bruschetta — classic Italian cooking",
+  french: "Omelettes, ratatouille, salade niçoise — refined French staples",
   mexican: "Beans, rice, grilled meats, fresh salsa — fiber-rich",
   american: "Grilled chicken, oats, salads, wraps — classic gym food",
   middle_eastern: "Hummus, falafel, shawarma, tabbouleh — protein-rich",
 };
 
 export const cuisineEmojis: Record<CuisinePreference, string> = {
-  indian_north: "🇮🇳",
-  indian_south: "🇮🇳",
-  indian_west: "🇮🇳",
-  indian_east: "🇮🇳",
+  indian: "🇮🇳",
+  asian: "🥢",
   mediterranean: "🫒",
-  east_asian: "🥢",
+  italian: "🍝",
+  french: "🥐",
   mexican: "🌮",
   american: "🥗",
   middle_eastern: "🧆",

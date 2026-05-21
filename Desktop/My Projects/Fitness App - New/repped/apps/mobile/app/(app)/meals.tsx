@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Pressable, ActivityIndicator, Modal, RefreshControl, StyleSheet, Animated, LayoutAnimation, Platform, UIManager, Dimensions, Easing, Linking, Alert } from "react-native";
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { router } from "expo-router";
-import { useAuthStore, generateMealPlanWithAlternatives, regenerateSingleMeal, TAKEOUT_GUIDES, getNutritionGuidance, getGuiltFreeStatus, getGuiltFreeDates, cuisineLabels, cuisineEmojis } from "@repped/shared";
+import { useAuthStore, generateMealPlanWithAlternatives, regenerateSingleMeal, TAKEOUT_GUIDES, getNutritionGuidance, getGuiltFreeStatus, getGuiltFreeDates, cuisineLabels } from "@repped/shared";
 import type { Meal, MacroTargets, CuisinePreference } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -43,7 +43,7 @@ const COMMON_ALLERGENS = [
   "Dairy", "Gluten", "Nuts", "Shellfish", "Soy", "Eggs", "Peanuts", "Fish",
 ];
 
-const DISLIKED_MEALS_KEY = "livvia_disliked_meals";
+const DISLIKED_MEALS_KEY = "revive_disliked_meals";
 
 function getRestaurantSearchQuery(mealName: string, category: string): string {
   const lower = mealName.toLowerCase();
@@ -227,9 +227,12 @@ export default function Meals() {
   const [profile, setProfile] = useState<any>(null);
 
   const [showAllergyModal, setShowAllergyModal] = useState(false);
+  // Slot index whose swap picker modal is open; null = closed
+  const [swapPickerIdx, setSwapPickerIdx] = useState<number | null>(null);
   const [selectedExclusions, setSelectedExclusions] = useState<string[]>([]);
 
-  const [selectedCuisines, setSelectedCuisines] = useState<string[]>(["american"]);
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>([]);
+  const [cuisinesInitialized, setCuisinesInitialized] = useState(false);
   const deliveryServices = useMemo(() => getDeliveryServices(), []);
   const [showCuisineSelector, setShowCuisineSelector] = useState(false);
 
@@ -443,7 +446,7 @@ export default function Meals() {
       return new Promise((resolve) => {
         Alert.alert(
           "Find Restaurants Near You",
-          "To show nearby restaurants and grocery stores for your meals, Livvia needs access to your location. Your location is never stored or shared.",
+          "To show nearby restaurants and grocery stores for your meals, Revive needs access to your location. Your location is never stored or shared.",
           [
             { text: "Not Now", style: "cancel", onPress: () => resolve(null) },
             {
@@ -494,14 +497,20 @@ export default function Meals() {
       }
       const p = data as any;
       setProfile(p);
-      // Use the fetched exclusions directly instead of setting state (avoids re-render loop)
+      // Use the fetched values directly instead of setting state (avoids re-render loop)
       const exclusions = p?.food_exclusions || [];
       setSelectedExclusions(exclusions);
+      // Initialize cuisine selection from profile on first load
+      const cuisines = p?.cuisine_preferences?.length > 0 ? p.cuisine_preferences : selectedCuisines;
+      if (p?.cuisine_preferences?.length > 0 && !cuisinesInitialized) {
+        setSelectedCuisines(cuisines);
+        setCuisinesInitialized(true);
+      }
       if (!p?.tdee) { setLoading(false); return; }
 
       const plan = generateMealPlanWithAlternatives(
         p.tdee, p.goal, p.weight_kg, p.dietary_preference, exclusions,
-        dislikedMeals, selectedCuisines
+        dislikedMeals, cuisines, p.meat_preferences || []
       );
 
       setTargets(plan.targets);
@@ -531,7 +540,8 @@ export default function Meals() {
       selectedExclusions,
       [slot.selected.name, ...slot.alternatives.map(a => a.name), ...dislikedMeals],
       selectedCuisines,
-      profile.goal as any
+      profile.goal as any,
+      profile.meat_preferences || []
     );
     const updated = [...slots];
     updated[index] = { ...updated[index], selected: newMeal as any };
@@ -552,6 +562,40 @@ export default function Meals() {
     const picked = slot.alternatives[altIdx];
     slot.alternatives[altIdx] = slot.selected;
     slot.selected = picked;
+    setSlots(updated);
+    setSwapPickerIdx(null);
+  };
+
+  /**
+   * Fetch a fresh batch of 5 alternative meals for a slot. Calls
+   * regenerateSingleMeal repeatedly with growing exclusions so each pick is
+   * distinct. Used by the swap picker's "Show different options" button.
+   */
+  const fetchMoreAlternatives = (slotIdx: number) => {
+    if (!profile || !targets) return;
+    const slot = slots[slotIdx];
+    const calorieShare = [0.25, 0.35, 0.30, 0.10][slotIdx] ?? 0.25;
+    const slotCalories = targets.calories * calorieShare;
+    const baseExclusions = [
+      slot.selected.name,
+      ...dislikedMeals,
+    ];
+    const fresh: any[] = [];
+    for (let i = 0; i < 5; i++) {
+      const m = regenerateSingleMeal(
+        slot.category as any,
+        slotCalories,
+        profile.dietary_preference,
+        selectedExclusions,
+        [...baseExclusions, ...fresh.map((a) => a.name)],
+        selectedCuisines,
+        profile.goal as any,
+        profile.meat_preferences || []
+      );
+      if (m && m.name !== "No match") fresh.push(m);
+    }
+    const updated = [...slots];
+    updated[slotIdx] = { ...updated[slotIdx], alternatives: fresh };
     setSlots(updated);
   };
 
@@ -865,7 +909,7 @@ export default function Meals() {
         <Pressable onPress={() => router.push("/(app)/grocery-list" as any)} style={s.groceryLink}>
           <BagIcon />
           <Text style={s.groceryLinkTitle}>Grocery List</Text>
-          <Text style={s.groceryLinkMeta}>14 items · ~$45</Text>
+          <Text style={s.groceryLinkMeta}>View your weekly list</Text>
           <Text style={s.groceryLinkArrow}>›</Text>
         </Pressable>
 
@@ -877,7 +921,7 @@ export default function Meals() {
           </Pressable>
         </View>
 
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.cuisineScroll}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.cuisineChipScroll}>
           {(Object.keys(cuisineLabels) as CuisinePreference[]).map((cuisine, i) => {
             const isActive = selectedCuisines.includes(cuisine);
             const animIdx = Math.min(i, cuisineTileAnims.length - 1);
@@ -889,16 +933,8 @@ export default function Meals() {
                   transform: [{ translateY: cuisineTileAnims[animIdx].translateY }],
                 }}
               >
-                <Pressable onPress={() => toggleCuisine(cuisine)} style={[s.cuisineTile, isActive && s.cuisineTileActive]}>
-                  {isActive && (
-                    <View style={s.cuisineCheckBadge}>
-                      <Text style={s.cuisineCheckText}>✓</Text>
-                    </View>
-                  )}
-                  <Text style={[s.cuisineFlag, isActive && { transform: [{ scale: 1.15 }] }]}>
-                    {cuisineEmojis[cuisine]}
-                  </Text>
-                  <Text style={[s.cuisineName, isActive && s.cuisineNameActive]}>
+                <Pressable onPress={() => toggleCuisine(cuisine)} style={[s.cuisineChip, isActive && s.cuisineChipActive]}>
+                  <Text style={[s.cuisineChipName, isActive && s.cuisineChipNameActive]}>
                     {cuisineLabels[cuisine]}
                   </Text>
                 </Pressable>
@@ -964,9 +1000,14 @@ export default function Meals() {
 
                   {/* Footer */}
                   <View style={s.mealCardFooter}>
-                    <Text style={[s.mealCalNum, isDark && s.mealCalNumDark]}>
-                      {slot.selected.calories}
-                    </Text>
+                    <View style={{ flexDirection: "row", alignItems: "baseline" }}>
+                      <Text style={[s.mealCalNum, isDark && s.mealCalNumDark]}>
+                        {slot.selected.calories}
+                      </Text>
+                      <Text style={[s.mealCalUnit, isDark && s.mealCalUnitDark]}>
+                        {" "}cal
+                      </Text>
+                    </View>
                     <Text style={[s.mealMacroShort, isDark && s.mealMacroShortDark]}>
                       {slot.selected.protein_g}P · {slot.selected.carbs_g}C · {slot.selected.fat_g}F
                     </Text>
@@ -1013,7 +1054,7 @@ export default function Meals() {
                 onPress: () => toggleLogMeal(selectedMealIndex),
               },
               { label: "Recipe", bg: C.earth, icon: <PotIcon />, onPress: () => { setMode(selectedMealIndex, "cook"); openRecipe(selectedSlot?.selected); } },
-              { label: "Swap", bg: "rgba(52,211,153,0.12)", icon: <SwapArrowsIcon />, onPress: () => handleRegenerate(selectedMealIndex) },
+              { label: "Swap", bg: "rgba(52,211,153,0.12)", icon: <SwapArrowsIcon />, onPress: () => setSwapPickerIdx(selectedMealIndex) },
               { label: "Eat Out", bg: "rgba(245,158,11,0.12)", icon: <ForkLocationIcon />, onPress: () => setMode(selectedMealIndex, "eatout") },
               { label: "Nah", bg: "rgba(0,0,0,0.04)", icon: <XIcon />, onPress: () => handleDislike(selectedMealIndex) },
             ].map((action, i) => (
@@ -1043,7 +1084,7 @@ export default function Meals() {
                 {deliveryServices.map((svc) => (
                   <Pressable
                     key={svc.name}
-                    onPress={() => Linking.openURL(svc.openSearch(selectedSlot.selected.name))}
+                    onPress={() => selectedSlot?.selected?.name && Linking.openURL(svc.openSearch(selectedSlot.selected.name))}
                     style={[s.orderBtn, { flex: 1 }]}
                   >
                     <Text style={s.orderBtnText}>{svc.icon} {svc.name}</Text>
@@ -1093,6 +1134,56 @@ export default function Meals() {
             </View>
           )}
         </Animated.View>
+
+        {/* 8. Swap Picker Modal — shows alternative meals for the slot */}
+        <Modal visible={swapPickerIdx !== null} animationType="slide" transparent>
+          <View style={s.modalBackdrop}>
+            <View style={s.modalCard}>
+              <View style={s.modalHeader}>
+                <Text style={s.modalTitle}>Swap meal</Text>
+                <Pressable onPress={() => setSwapPickerIdx(null)}>
+                  <Text style={s.modalCancel}>Cancel</Text>
+                </Pressable>
+              </View>
+              {swapPickerIdx !== null && slots[swapPickerIdx] && (
+                <>
+                  <Text style={s.modalHint}>
+                    Replacing <Text style={{ fontWeight: "700", color: C.earth }}>{slots[swapPickerIdx].selected.name}</Text>. Tap any option below to swap.
+                  </Text>
+                  <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
+                    {slots[swapPickerIdx].alternatives.length === 0 ? (
+                      <Text style={{ color: C.rock, fontSize: 13, textAlign: "center", paddingVertical: 24 }}>
+                        No alternatives loaded — tap "Show different options" below.
+                      </Text>
+                    ) : (
+                      slots[swapPickerIdx].alternatives.map((alt, altIdx) => (
+                        <Pressable
+                          key={`${alt.name}-${altIdx}`}
+                          onPress={() => handlePickAlt(swapPickerIdx, altIdx)}
+                          style={s.swapOptionRow}
+                        >
+                          <View style={{ flex: 1 }}>
+                            <Text style={s.swapOptionName}>{alt.name}</Text>
+                            <Text style={s.swapOptionMacros}>
+                              {Math.round(alt.calories)} kcal · {Math.round(alt.protein_g)}P · {Math.round(alt.carbs_g)}C · {Math.round(alt.fat_g)}F
+                            </Text>
+                          </View>
+                          <Text style={s.swapOptionArrow}>→</Text>
+                        </Pressable>
+                      ))
+                    )}
+                  </ScrollView>
+                  <Pressable
+                    onPress={() => fetchMoreAlternatives(swapPickerIdx)}
+                    style={s.swapMoreBtn}
+                  >
+                    <Text style={s.swapMoreBtnText}>Show different options</Text>
+                  </Pressable>
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
 
         {/* 9. Allergy Modal */}
         <Modal visible={showAllergyModal} animationType="slide" transparent>
@@ -1326,53 +1417,36 @@ const s = StyleSheet.create({
     fontWeight: "600",
     color: "#EF4444",
   },
-  cuisineScroll: {
+  // Cuisine chip row — compact horizontal scroll, emoji + name inline
+  cuisineChipScroll: {
     paddingLeft: 24,
-    paddingRight: 12,
+    paddingRight: 24,
     gap: 8,
   },
-  cuisineTile: {
-    width: 100,
-    height: 72,
-    borderRadius: 18,
-    backgroundColor: C.white,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.06)",
-    justifyContent: "center",
+  cuisineChip: {
+    flexDirection: "row",
     alignItems: "center",
-    overflow: "visible",
+    gap: 8,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 100,
+    backgroundColor: C.stone,
+    borderWidth: 1.5,
+    borderColor: "transparent",
   },
-  cuisineTileActive: {
+  cuisineChipActive: {
     backgroundColor: C.earth,
     borderColor: C.earth,
   },
-  cuisineCheckBadge: {
-    position: "absolute",
-    top: -4,
-    right: -4,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: C.trail,
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 1,
+  cuisineChipEmoji: {
+    fontSize: 16,
   },
-  cuisineCheckText: {
-    fontSize: 10,
-    fontWeight: "700",
-    color: C.white,
-  },
-  cuisineFlag: {
-    fontSize: 32,
-  },
-  cuisineName: {
-    fontSize: 10,
+  cuisineChipName: {
+    fontSize: 13,
     fontWeight: "600",
     color: C.earth,
-    marginTop: 4,
   },
-  cuisineNameActive: {
+  cuisineChipNameActive: {
     color: "#F6F5F0",
   },
 
@@ -1458,6 +1532,15 @@ const s = StyleSheet.create({
   },
   mealCalNumDark: {
     color: "#F6F5F0",
+  },
+  mealCalUnit: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: C.rock,
+    marginLeft: 2,
+  },
+  mealCalUnitDark: {
+    color: "rgba(246,245,240,0.5)",
   },
   mealMacroShort: {
     fontSize: 11,
@@ -1703,6 +1786,47 @@ const s = StyleSheet.create({
     color: C.rock,
     fontSize: 13,
     marginBottom: 16,
+  },
+  // Swap picker
+  swapOptionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 14,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
+  },
+  swapOptionName: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: C.earth,
+    marginBottom: 4,
+  },
+  swapOptionMacros: {
+    fontSize: 11,
+    color: C.rock,
+    fontWeight: "500",
+  },
+  swapOptionArrow: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: C.trail,
+    marginLeft: 10,
+  },
+  swapMoreBtn: {
+    marginTop: 14,
+    backgroundColor: C.stone,
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+  },
+  swapMoreBtnText: {
+    color: C.earth,
+    fontSize: 14,
+    fontWeight: "700",
   },
   pillRow: {
     flexDirection: "row",

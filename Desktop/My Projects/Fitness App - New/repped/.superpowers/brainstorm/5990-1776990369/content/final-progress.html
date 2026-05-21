@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livvia — Progress Screen Final</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 30px 16px 60px; gap: 40px; flex-wrap: wrap; }
+
+  h1 { width: 100%; text-align: center; color: #fff; font-size: 22px; font-weight: 700; margin-bottom: 0; }
+  .page-sub { width: 100%; text-align: center; color: #555; font-size: 12px; margin-bottom: 24px; }
+
+  .phone-label { text-align: center; color: #888; font-size: 13px; font-weight: 600; margin-bottom: 10px; letter-spacing: 0.5px; }
+
+  .phone {
+    width: 375px; height: 812px; border-radius: 44px; overflow: hidden;
+    background: #F6F5F0; position: relative;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.05);
+  }
+  .scr { width: 100%; height: 100%; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
+  .scr::-webkit-scrollbar { display: none; }
+  .notch { width: 120px; height: 34px; background: #000; border-radius: 0 0 20px 20px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 20; }
+
+  /* ── Status bar ── */
+  .status { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px 0; font-size: 14px; font-weight: 600; color: #2D2A24; position: relative; z-index: 10; height: 48px; }
+
+  /* ── Header ── */
+  .hdr { padding: 6px 22px 14px; }
+  .hdr-greeting { font-size: 13px; color: #8E8E7A; font-weight: 500; }
+  .hdr-title { font-size: 26px; font-weight: 800; color: #2D2A24; letter-spacing: -0.8px; margin-top: 1px; }
+
+  /* ── Day Selector ── */
+  .day-strip { display: flex; gap: 6px; padding: 0 22px 16px; }
+  .day-pill {
+    flex: 1; text-align: center; padding: 8px 0 10px;
+    border-radius: 14px; background: #EDEBE5; position: relative;
+    transition: all 0.2s;
+  }
+  .day-pill .dn { font-size: 10px; color: #8E8E7A; font-weight: 600; letter-spacing: 0.3px; }
+  .day-pill .dd { font-size: 18px; font-weight: 800; color: #2D2A24; margin-top: 2px; }
+  .day-pill.active { background: #2D2A24; }
+  .day-pill.active .dn { color: rgba(246,245,240,0.6); }
+  .day-pill.active .dd { color: #F6F5F0; }
+  .day-pill.done::after {
+    content: ''; width: 5px; height: 5px; border-radius: 50%;
+    background: #34D399; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+  }
+  .day-pill.active.done::after { background: #34D399; }
+
+  /* ── Content ── */
+  .content { padding: 0 18px 100px; }
+
+  /* ── Completion Ring Card ── */
+  .ring-card {
+    background: #fff; border-radius: 22px; padding: 20px;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 18px;
+    box-shadow: 0 2px 12px rgba(45,42,36,0.06);
+  }
+  .ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-pct { font-size: 26px; font-weight: 900; color: #2D2A24; line-height: 1; }
+  .ring-label { font-size: 9px; color: #8E8E7A; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .ring-stats { flex: 1; }
+  .ring-stat { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .ring-stat:not(:last-child) { border-bottom: 1px solid rgba(45,42,36,0.05); }
+  .ring-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .ring-stat-info { flex: 1; }
+  .ring-stat-name { font-size: 11px; color: #8E8E7A; font-weight: 500; }
+  .ring-stat-val { font-size: 16px; font-weight: 800; color: #2D2A24; }
+
+  /* ── Apple Health Section ── */
+  .section-head { display: flex; justify-content: space-between; align-items: center; margin: 18px 4px 10px; }
+  .section-title { font-size: 14px; font-weight: 700; color: #2D2A24; }
+  .section-link { font-size: 11px; color: #34D399; font-weight: 600; }
+
+  .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 4px; }
+  .health-card {
+    background: #fff; border-radius: 18px; padding: 14px;
+    box-shadow: 0 2px 10px rgba(45,42,36,0.05); position: relative; overflow: hidden;
+  }
+  .health-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  }
+  .health-card.steps::before { background: linear-gradient(90deg, #34D399, #6EE7B7); }
+  .health-card.cals::before { background: linear-gradient(90deg, #FF6B6B, #FF8E8E); }
+  .health-card.hr::before { background: linear-gradient(90deg, #EF4444, #F87171); }
+  .health-card.sleep::before { background: linear-gradient(90deg, #6366F1, #818CF8); }
+  .hc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .hc-icon { font-size: 16px; }
+  .hc-badge { font-size: 8px; font-weight: 700; color: #fff; padding: 2px 6px; border-radius: 6px; }
+  .hc-badge.watch { background: #FF2D55; }
+  .hc-badge.phone { background: #8E8E7A; }
+  .hc-label { font-size: 9px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+  .hc-val { font-size: 24px; font-weight: 900; color: #2D2A24; line-height: 1.1; }
+  .hc-unit { font-size: 11px; color: #8E8E7A; font-weight: 500; }
+  .hc-sub { font-size: 9px; margin-top: 3px; font-weight: 600; }
+  .hc-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 24px; margin-top: 8px; }
+  .hc-spark { flex: 1; border-radius: 2px; min-height: 3px; }
+
+  /* ── Trends Card ── */
+  .trends-card {
+    background: #fff; border-radius: 22px; padding: 18px;
+    box-shadow: 0 2px 12px rgba(45,42,36,0.06); margin-bottom: 12px;
+  }
+  .trends-title { font-size: 13px; font-weight: 700; color: #2D2A24; margin-bottom: 12px; }
+  .trends-row { display: flex; gap: 10px; }
+  .trend-item { flex: 1; text-align: center; background: #F6F5F0; border-radius: 14px; padding: 12px 6px; }
+  .trend-emoji { font-size: 18px; margin-bottom: 4px; }
+  .trend-val { font-size: 20px; font-weight: 900; color: #2D2A24; line-height: 1; }
+  .trend-label { font-size: 8px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; font-weight: 600; }
+  .trend-change { font-size: 9px; font-weight: 700; margin-top: 2px; }
+  .green { color: #34D399; }
+  .amber { color: #F59E0B; }
+  .muted { color: #8E8E7A; }
+
+  /* ── Heatmap ── */
+  .heatmap-card {
+    background: #fff; border-radius: 22px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(45,42,36,0.06); margin-bottom: 12px;
+  }
+  .heatmap-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .heatmap-title { font-size: 13px; font-weight: 700; color: #2D2A24; }
+  .heatmap-meta { font-size: 10px; color: #8E8E7A; }
+  .heatmap-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+  .hm { aspect-ratio: 1; border-radius: 3px; }
+  .h0 { background: rgba(45,42,36,0.04); }
+  .h1 { background: rgba(45,42,36,0.12); }
+  .h2 { background: rgba(45,42,36,0.25); }
+  .h3 { background: #2D2A24; }
+  .ht { background: #34D399; }
+  .heatmap-legend { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 8px; }
+  .heatmap-legend span { font-size: 8px; color: #8E8E7A; }
+  .lg { width: 10px; height: 10px; border-radius: 2px; }
+
+  /* ── Weekly Card ── */
+  .week-card {
+    background: #fff; border-radius: 22px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(45,42,36,0.06); margin-bottom: 12px;
+  }
+  .week-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .week-title { font-size: 13px; font-weight: 700; color: #2D2A24; }
+  .week-meta { font-size: 10px; color: #8E8E7A; }
+  .week-stats { display: flex; gap: 14px; margin-bottom: 12px; }
+  .week-stat .wv { font-size: 22px; font-weight: 900; color: #2D2A24; line-height: 1; }
+  .week-stat .wl { font-size: 8px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+  .week-stat .wc { font-size: 9px; font-weight: 700; margin-top: 1px; }
+  .week-bar { height: 6px; background: rgba(45,42,36,0.06); border-radius: 3px; overflow: hidden; }
+  .week-bar-fill { height: 100%; border-radius: 3px; background: #34D399; }
+
+  /* ── Monthly Card ── */
+  .month-card {
+    background: #2D2A24; border-radius: 22px; padding: 18px;
+    box-shadow: 0 4px 20px rgba(45,42,36,0.15); margin-bottom: 12px;
+  }
+  .month-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .month-title { font-size: 13px; font-weight: 700; color: #F6F5F0; }
+  .month-badge { font-size: 10px; font-weight: 700; color: #34D399; background: rgba(52,211,153,0.15); padding: 3px 10px; border-radius: 8px; }
+  .month-stats { display: flex; gap: 16px; }
+  .month-stat .mv { font-size: 22px; font-weight: 900; color: #F6F5F0; line-height: 1; }
+  .month-stat .ml { font-size: 8px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; }
+  .month-stat .mc { font-size: 9px; font-weight: 700; color: #34D399; margin-top: 1px; }
+
+  /* ── Nutrition Card ── */
+  .nutr-card {
+    background: #fff; border-radius: 22px; padding: 16px;
+    box-shadow: 0 2px 12px rgba(45,42,36,0.06); margin-bottom: 12px;
+  }
+  .nutr-title { font-size: 13px; font-weight: 700; color: #2D2A24; margin-bottom: 12px; }
+  .nutr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .nutr-item { }
+  .nutr-item .nl { font-size: 9px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
+  .nutr-item .nv { font-size: 20px; font-weight: 900; color: #2D2A24; line-height: 1.1; }
+  .nutr-item .ns { font-size: 9px; color: #8E8E7A; margin-top: 1px; }
+  .nutr-bar { height: 5px; background: rgba(45,42,36,0.06); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+  .nutr-bar-fill { height: 100%; border-radius: 3px; }
+
+  /* ── Achievements ── */
+  .ach-row { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; }
+  .ach-row::-webkit-scrollbar { display: none; }
+  .ach-item {
+    min-width: 90px; background: #fff; border-radius: 18px; padding: 12px 8px;
+    text-align: center; box-shadow: 0 2px 10px rgba(45,42,36,0.05);
+    position: relative;
+  }
+  .ach-item.earned { border: 1.5px solid rgba(52,211,153,0.3); }
+  .ach-item.locked { opacity: 0.35; }
+  .ach-new { position: absolute; top: 6px; right: 6px; width: 7px; height: 7px; border-radius: 50%; background: #34D399; }
+  .ach-emoji { font-size: 26px; margin-bottom: 4px; }
+  .ach-name { font-size: 9px; font-weight: 600; color: #2D2A24; line-height: 1.2; }
+  .ach-tier { display: flex; gap: 3px; justify-content: center; margin-top: 5px; }
+  .ach-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 84px;
+    background: rgba(246,245,240,0.92); backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    display: flex; justify-content: space-around; align-items: flex-start;
+    padding-top: 12px; border-top: 1px solid rgba(45,42,36,0.06);
+    z-index: 15;
+  }
+  .tab { text-align: center; font-size: 10px; font-weight: 500; color: #B8B3A8; }
+  .tab.active { color: #2D2A24; }
+  .tab .ti { font-size: 18px; margin-bottom: 2px; }
+
+  /* ── Recovery Card ── */
+  .recovery-card {
+    background: linear-gradient(135deg, #E8F5E9, #F1F8E9); border-radius: 22px;
+    padding: 16px; margin-bottom: 12px; display: flex; align-items: center; gap: 14px;
+    border: 1px solid rgba(52,211,153,0.15);
+  }
+  .recovery-circle {
+    width: 52px; height: 52px; border-radius: 50%; display: flex;
+    align-items: center; justify-content: center; flex-shrink: 0;
+    border: 3px solid rgba(52,211,153,0.2); position: relative;
+  }
+  .recovery-circle::before {
+    content: ''; position: absolute; inset: -3px; border-radius: 50%;
+    border: 3px solid transparent; border-top-color: #34D399; border-right-color: #34D399;
+    border-bottom-color: #34D399; transform: rotate(-30deg);
+  }
+  .recovery-score { font-size: 18px; font-weight: 900; color: #2D2A24; }
+  .recovery-info { flex: 1; }
+  .recovery-title { font-size: 12px; font-weight: 700; color: #2D2A24; }
+  .recovery-desc { font-size: 10px; color: #5D8A68; margin-top: 2px; }
+  .recovery-tags { display: flex; gap: 6px; margin-top: 6px; }
+  .recovery-tag { font-size: 8px; color: #5D8A68; background: rgba(52,211,153,0.12); padding: 2px 8px; border-radius: 6px; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<h1>Livvia — Progress Screen</h1>
+<p class="page-sub">Inspired by your Dribbble references. Scroll inside the phone to see the full screen.</p>
+
+<!-- PHONE 1: Full Design -->
+<div>
+  <div class="phone-label">FULL PROGRESS SCREEN</div>
+  <div class="phone">
+    <div class="notch"></div>
+    <div class="scr">
+      <!-- Status bar -->
+      <div class="status"><span>11:08</span><span style="display:flex;gap:4px;align-items:center;font-size:12px;">&#9679;&#9679;&#9679; &#128267;</span></div>
+
+      <!-- Header -->
+      <div class="hdr">
+        <div class="hdr-greeting">Good morning, Meherzan</div>
+        <div class="hdr-title">Your Progress</div>
+      </div>
+
+      <!-- Day Strip -->
+      <div class="day-strip">
+        <div class="day-pill done"><div class="dn">Mon</div><div class="dd">21</div></div>
+        <div class="day-pill done"><div class="dn">Tue</div><div class="dd">22</div></div>
+        <div class="day-pill active done"><div class="dn">Wed</div><div class="dd">23</div></div>
+        <div class="day-pill"><div class="dn">Thu</div><div class="dd">24</div></div>
+        <div class="day-pill"><div class="dn">Fri</div><div class="dd">25</div></div>
+        <div class="day-pill" style="opacity:0.5;"><div class="dn">Sat</div><div class="dd">26</div></div>
+        <div class="day-pill" style="opacity:0.5;"><div class="dn">Sun</div><div class="dd">27</div></div>
+      </div>
+
+      <div class="content">
+
+        <!-- Completion Ring -->
+        <div class="ring-card">
+          <div class="ring-wrap">
+            <svg viewBox="0 0 100 100" width="100" height="100">
+              <!-- Workout ring (outer) -->
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(45,42,36,0.06)" stroke-width="8"/>
+              <circle cx="50" cy="50" r="44" fill="none" stroke="#34D399" stroke-width="8" stroke-linecap="round"
+                stroke-dasharray="276" stroke-dashoffset="110" transform="rotate(-90 50 50)"/>
+              <!-- Volume ring (inner) -->
+              <circle cx="50" cy="50" r="33" fill="none" stroke="rgba(45,42,36,0.06)" stroke-width="7"/>
+              <circle cx="50" cy="50" r="33" fill="none" stroke="#F59E0B" stroke-width="7" stroke-linecap="round"
+                stroke-dasharray="207" stroke-dashoffset="62" transform="rotate(-90 50 50)"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-pct">60%</div>
+              <div class="ring-label">Complete</div>
+            </div>
+          </div>
+          <div class="ring-stats">
+            <div class="ring-stat">
+              <div class="ring-dot" style="background: #34D399;"></div>
+              <div class="ring-stat-info">
+                <div class="ring-stat-name">Workouts</div>
+                <div class="ring-stat-val">3 <span style="font-size:12px;color:#8E8E7A;font-weight:500;">/ 5</span></div>
+              </div>
+            </div>
+            <div class="ring-stat">
+              <div class="ring-dot" style="background: #F59E0B;"></div>
+              <div class="ring-stat-info">
+                <div class="ring-stat-name">Volume</div>
+                <div class="ring-stat-val">2.1k <span style="font-size:10px;color:#34D399;font-weight:700;">+8%</span></div>
+              </div>
+            </div>
+            <div class="ring-stat">
+              <div class="ring-dot" style="background: #2D2A24;"></div>
+              <div class="ring-stat-info">
+                <div class="ring-stat-name">Streak</div>
+                <div class="ring-stat-val">5 days <span style="font-size:10px;color:#F59E0B;font-weight:700;">&#128293;</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Apple Health -->
+        <div class="section-head">
+          <div class="section-title">Health & Fitness</div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:12px;">&#10084;&#65039;</span>
+            <span class="section-link">Apple Health</span>
+          </div>
+        </div>
+        <div class="health-grid">
+          <div class="health-card steps">
+            <div class="hc-top">
+              <div class="hc-icon">&#128694;</div>
+              <div class="hc-badge watch">Watch</div>
+            </div>
+            <div class="hc-label">Steps</div>
+            <div class="hc-val">8,432</div>
+            <div class="hc-sub green">Goal: 10,000</div>
+            <div class="hc-sparkline">
+              <div class="hc-spark" style="height:40%;background:rgba(52,211,153,0.2);"></div>
+              <div class="hc-spark" style="height:65%;background:rgba(52,211,153,0.3);"></div>
+              <div class="hc-spark" style="height:80%;background:rgba(52,211,153,0.4);"></div>
+              <div class="hc-spark" style="height:55%;background:rgba(52,211,153,0.3);"></div>
+              <div class="hc-spark" style="height:90%;background:rgba(52,211,153,0.5);"></div>
+              <div class="hc-spark" style="height:70%;background:rgba(52,211,153,0.3);"></div>
+              <div class="hc-spark" style="height:100%;background:#34D399;"></div>
+            </div>
+          </div>
+          <div class="health-card cals">
+            <div class="hc-top">
+              <div class="hc-icon">&#128293;</div>
+              <div class="hc-badge watch">Watch</div>
+            </div>
+            <div class="hc-label">Active Cal</div>
+            <div class="hc-val">420</div>
+            <div class="hc-unit">kcal</div>
+            <div class="hc-sub green">Goal: 500</div>
+          </div>
+          <div class="health-card hr">
+            <div class="hc-top">
+              <div class="hc-icon">&#10084;&#65039;</div>
+              <div class="hc-badge watch">Watch</div>
+            </div>
+            <div class="hc-label">Heart Rate</div>
+            <div class="hc-val">68</div>
+            <div class="hc-unit">bpm resting</div>
+            <div class="hc-sparkline">
+              <div class="hc-spark" style="height:60%;background:rgba(239,68,68,0.15);"></div>
+              <div class="hc-spark" style="height:75%;background:rgba(239,68,68,0.2);"></div>
+              <div class="hc-spark" style="height:50%;background:rgba(239,68,68,0.15);"></div>
+              <div class="hc-spark" style="height:80%;background:rgba(239,68,68,0.25);"></div>
+              <div class="hc-spark" style="height:55%;background:rgba(239,68,68,0.15);"></div>
+              <div class="hc-spark" style="height:65%;background:rgba(239,68,68,0.2);"></div>
+              <div class="hc-spark" style="height:70%;background:#EF4444;"></div>
+            </div>
+          </div>
+          <div class="health-card sleep">
+            <div class="hc-top">
+              <div class="hc-icon">&#128164;</div>
+              <div class="hc-badge watch">Watch</div>
+            </div>
+            <div class="hc-label">Sleep</div>
+            <div class="hc-val">7h 24m</div>
+            <div class="hc-sub" style="color:#6366F1;">Deep: 1h 45m</div>
+          </div>
+        </div>
+
+        <!-- Recovery Score (Apple Health derived) -->
+        <div class="recovery-card">
+          <div class="recovery-circle">
+            <div class="recovery-score">82</div>
+          </div>
+          <div class="recovery-info">
+            <div class="recovery-title">Recovery Score</div>
+            <div class="recovery-desc">Good to train — your body is well rested</div>
+            <div class="recovery-tags">
+              <div class="recovery-tag">HRV: 48ms</div>
+              <div class="recovery-tag">Sleep: 7.4h</div>
+              <div class="recovery-tag">RHR: 68</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Heatmap -->
+        <div class="heatmap-card">
+          <div class="heatmap-head">
+            <div class="heatmap-title">Activity</div>
+            <div class="heatmap-meta">Last 12 weeks</div>
+          </div>
+          <div class="heatmap-grid">
+            <div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h2"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm ht"></div>
+            <div class="hm h1"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h0"></div>
+            <div class="hm h0"></div><div class="hm h2"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h2"></div><div class="hm h0"></div>
+            <div class="hm h3"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h0"></div><div class="hm h2"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h1"></div>
+            <div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h2"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div><div class="hm h1"></div><div class="hm h0"></div><div class="hm h0"></div><div class="hm h3"></div><div class="hm h0"></div>
+          </div>
+          <div class="heatmap-legend">
+            <span>Less</span>
+            <div class="lg h0"></div><div class="lg h1"></div><div class="lg h2"></div><div class="lg h3"></div>
+            <span>More</span>
+          </div>
+        </div>
+
+        <!-- Weekly Summary -->
+        <div class="week-card">
+          <div class="week-head">
+            <div class="week-title">This Week</div>
+            <div class="week-meta">Apr 21 – 27</div>
+          </div>
+          <div class="week-stats">
+            <div class="week-stat"><div class="wv">3<span style="font-size:12px;color:#8E8E7A;">/5</span></div><div class="wl">Workouts</div></div>
+            <div class="week-stat"><div class="wv">2.1k</div><div class="wl">Volume</div><div class="wc green">+8%</div></div>
+            <div class="week-stat"><div class="wv">5</div><div class="wl">Streak</div><div class="wc amber">&#128293;</div></div>
+            <div class="week-stat"><div class="wv">42m</div><div class="wl">Avg Time</div></div>
+          </div>
+          <div class="week-bar"><div class="week-bar-fill" style="width: 60%;"></div></div>
+        </div>
+
+        <!-- Monthly Summary (dark card) -->
+        <div class="month-card">
+          <div class="month-head">
+            <div class="month-title">April Summary</div>
+            <div class="month-badge">72% complete</div>
+          </div>
+          <div class="month-stats">
+            <div class="month-stat"><div class="mv">12</div><div class="ml">Workouts</div><div class="mc">+3 vs Mar</div></div>
+            <div class="month-stat"><div class="mv">4.2k</div><div class="ml">Volume</div><div class="mc">+12%</div></div>
+            <div class="month-stat"><div class="mv">45m</div><div class="ml">Avg Time</div></div>
+            <div class="month-stat"><div class="mv">3</div><div class="ml">PRs</div><div class="mc">&#127942;</div></div>
+          </div>
+        </div>
+
+        <!-- Nutrition -->
+        <div class="nutr-card">
+          <div class="nutr-title">Nutrition &times; Training</div>
+          <div class="nutr-grid">
+            <div class="nutr-item">
+              <div class="nl">Meal Adherence</div>
+              <div class="nv">60%</div>
+              <div class="nutr-bar"><div class="nutr-bar-fill" style="width:60%;background:#34D399;"></div></div>
+            </div>
+            <div class="nutr-item">
+              <div class="nl">Avg Protein</div>
+              <div class="nv">142g</div>
+              <div class="ns">target: 150g</div>
+              <div class="nutr-bar"><div class="nutr-bar-fill" style="width:94%;background:#F59E0B;"></div></div>
+            </div>
+            <div class="nutr-item">
+              <div class="nl">Avg Calories</div>
+              <div class="nv">2,340</div>
+              <div class="ns">18 days logged</div>
+            </div>
+            <div class="nutr-item">
+              <div class="nl">PRs on Meal Days</div>
+              <div class="nv" style="color:#34D399;">80%</div>
+              <div class="ns">4 of 5 PRs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="section-head">
+          <div class="section-title">Achievements</div>
+          <div class="section-link">3 of 20 &#8250;</div>
+        </div>
+        <div class="ach-row">
+          <div class="ach-item earned">
+            <div class="ach-new"></div>
+            <div class="ach-emoji">&#127942;</div>
+            <div class="ach-name">First PR</div>
+            <div class="ach-tier">
+              <div class="ach-dot" style="background:#34D399;"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+            </div>
+          </div>
+          <div class="ach-item earned">
+            <div class="ach-emoji">&#128293;</div>
+            <div class="ach-name">3-Day Streak</div>
+            <div class="ach-tier">
+              <div class="ach-dot" style="background:#F59E0B;"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+            </div>
+          </div>
+          <div class="ach-item earned">
+            <div class="ach-emoji">&#128170;</div>
+            <div class="ach-name">10 Workouts</div>
+            <div class="ach-tier">
+              <div class="ach-dot" style="background:#6366F1;"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+            </div>
+          </div>
+          <div class="ach-item locked">
+            <div class="ach-emoji">&#127775;</div>
+            <div class="ach-name">7-Day Streak</div>
+            <div class="ach-tier">
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+            </div>
+          </div>
+          <div class="ach-item locked">
+            <div class="ach-emoji">&#127941;</div>
+            <div class="ach-name">50 Workouts</div>
+            <div class="ach-tier">
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+              <div class="ach-dot" style="background:rgba(0,0,0,0.06);"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab"><div class="ti">&#9901;</div>Today</div>
+        <div class="tab"><div class="ti">&#127860;</div>Nutrition</div>
+        <div class="tab active"><div class="ti">&#9650;</div>Progress</div>
+        <div class="tab"><div class="ti">&#9881;</div>Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

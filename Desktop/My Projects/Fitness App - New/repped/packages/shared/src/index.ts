@@ -55,6 +55,7 @@ export * from "./algorithms/injury-assessment";
 
 // Utils
 export * from "./utils/formatting";
+export * from "./utils/age";
 
 // Stores
 export * from "./stores/auth";

@@ -1,0 +1,2135 @@
+{
+  "uri": "http://www.edamam.com/ontologies/edamam.owl#recipe_a00f4e98f8134b21a72b682a3ef519fb",
+  "yield": 4.0,
+  "dietLabels": [],
+  "healthLabels": [],
+  "cautions": [
+    "TREE_NUTS",
+    "SULFITES"
+  ],
+  "ingredients": [
+    {
+      "text": "1 cup Maida",
+      "parsed": [
+        {
+          "quantity": 1.0,
+          "measure": "cup",
+          "foodMatch": "Maida",
+          "food": "maida",
+          "foodId": "food_aztt2m5aujsurrbbyeayras0c131",
+          "weight": 125.0,
+          "retainedWeight": 125.0,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 455.0,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 1.2249999999999999,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.19375,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.10875,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.51625,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 95.375,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 92.0,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 3.3750000000000004,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.3375,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 12.875000000000002,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 2.5,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 18.75,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 27.5,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 133.75,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 5.8,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.8749999999999999,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 135.0,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.9812500000000002,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.6174999999999999,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 7.375000000000001,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.05499999999999999,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 363.75,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 36.25,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 192.5,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.075,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.375,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 14.875000000000002,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_cup",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1 tsp Ghee",
+      "parsed": [
+        {
+          "quantity": 1.0,
+          "measure": "teaspoon",
+          "foodMatch": "Ghee",
+          "food": "ghee",
+          "foodId": "food_bt9uvvxacpohzjblxojh1behk63g",
+          "weight": 4.270833333549955,
+          "retainedWeight": 4.270833333549955,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 37.412500001897605,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 4.249479166882206,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 2.6436458334674224,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 1.225729166728837,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.15759375000799336,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.011958333333939877,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 10.933333333887886,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.0854166666709991,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 0.1708333333419982,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 0.21354166667749777,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.00042708333335499555,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 0.12812500000649865,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 35.87500000181963,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 4.2708333335499555e-05,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.00021354166667749777,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.00012812500000649866,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 4.2708333335499555e-05,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.00042708333335499555,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.11958333333939873,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.3672916666852961,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.010250000000519892,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1/2 cup Chana dal",
+      "parsed": [
+        {
+          "quantity": 0.5,
+          "measure": "cup",
+          "foodMatch": "Chana dal",
+          "food": "chickpeas",
+          "foodId": "food_baux5rqbkto336asd7w3lbbi1koo",
+          "weight": 100.0,
+          "retainedWeight": 100.0,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 378.0,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 6.04,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.603,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 1.38,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 2.73,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 63.0,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 50.8,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 12.2,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 10.7,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 20.5,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 24.0,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 57.00000000000001,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 79.0,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 718.0,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 4.31,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 2.76,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 252.0,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 3.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 4.0,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.477,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.212,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 1.54,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.535,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 557.0,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 557.0,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.8199999999999998,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 9.0,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 7.68,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_cup",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1 piece Bay leaf",
+      "parsed": [
+        {
+          "quantity": 1.0,
+          "measure": "whole",
+          "foodMatch": "Bay leaf",
+          "food": "bay leaf",
+          "foodId": "food_asx39x4ayja4jab6ivj6zayvkblo",
+          "weight": 0.6,
+          "retainedWeight": 0.6,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 1.878,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.050159999999999996,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.013679999999999998,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.009839999999999998,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.01374,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.44999999999999996,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.29219999999999996,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.1578,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.04566,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.138,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 5.004,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.72,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 3.174,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.258,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.0222,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 0.678,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 1.8539999999999999,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.279,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 5.399999999999999e-05,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.002526,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.012,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.01044,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 1.08,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 1.08,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.03264,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_unit",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1/2 tsp Cumin seeds",
+      "parsed": [
+        {
+          "quantity": 0.5,
+          "measure": "teaspoon",
+          "foodMatch": "Cumin seeds",
+          "food": "cumin",
+          "foodId": "food_a8jjbx4biqndasapojdb5by3e92e",
+          "weight": 1.05,
+          "retainedWeight": 1.05,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 3.9375,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.23415000000000002,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.01617,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.14700000000000002,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.03444,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.46410000000000007,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.35385000000000005,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.11025,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.023625,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.18690000000000004,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 1.764,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 9.775500000000001,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 3.8430000000000004,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 18.795,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.6972,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.0504,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 5.2395000000000005,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.672,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.08085,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.006594,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.0034335000000000004,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.04809,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0045674999999999995,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.10500000000000001,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.10500000000000001,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.034965,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.05670000000000001,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.08463000000000001,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1/4 tsp Turmeric powder",
+      "parsed": [
+        {
+          "quantity": 0.25,
+          "measure": "teaspoon",
+          "foodMatch": "Turmeric",
+          "food": "turmeric",
+          "foodId": "food_bc3ig84amucgmwba3vixyatnyd9b",
+          "weight": 0.75,
+          "retainedWeight": 0.75,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 2.34,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.024375,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.0138,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.00042,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.0033675,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.00567,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.50325,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.33299999999999996,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.17025,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.024075000000000003,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.0726,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.2025,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 1.26,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 1.56,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 15.600000000000001,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.41250000000000003,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.03375,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 2.2425,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0052499999999999995,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.000435,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.0011250000000000001,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.010125000000000002,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0008025,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.15000000000000002,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.15000000000000002,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.033225,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.1005,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.096,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1 tsp Ginger paste",
+      "parsed": [
+        {
+          "quantity": 1.0,
+          "measure": "teaspoon",
+          "foodMatch": "Ginger",
+          "food": "ginger",
+          "foodId": "food_bi2ki2xb5zmmvbaiwf7ztbgktzp6",
+          "weight": 2.0,
+          "retainedWeight": 2.0,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 1.6,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.015,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.00406,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.00308,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.00308,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.35600000000000004,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.31600000000000006,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.04,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.034,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.0364,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.26,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 0.32,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.86,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 8.3,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.012,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.0068000000000000005,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 0.68,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.1,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.0005,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.00068,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.015,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0032,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.22,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.22,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.005200000000000001,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.002,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 1.578,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "5 pieces Raisins",
+      "parsed": [
+        {
+          "quantity": 5.0,
+          "measure": "whole",
+          "foodMatch": "Raisins",
+          "food": "raisin",
+          "foodId": "food_a3qcdxyb09op1hbwstv5cbmoqc3d",
+          "weight": 2.6,
+          "retainedWeight": 2.6,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 7.774000000000001,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.006500000000000001,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.002444,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 2.6000000000000002e-05,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.000624,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.001378,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 2.0618000000000003,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 1.9448000000000003,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.11699999999999999,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 1.6952,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.0858,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.676,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 1.612,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.9359999999999999,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 19.344,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.04654,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.00936,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 2.548,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0598,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.002756,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.0032500000000000003,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.019916,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.004524,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.13,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.13,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.00312,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.09100000000000001,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.403,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_unit",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1 tbsp Coconut bits",
+      "parsed": [
+        {
+          "quantity": 1.0,
+          "measure": "tablespoon",
+          "foodMatch": "Coconut",
+          "food": "coconut",
+          "foodId": "food_a0671ieawy879qbaiagcrapnmo84",
+          "weight": 5.0,
+          "retainedWeight": 5.0,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 17.7,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 1.675,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 1.4849999999999999,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.071,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.0183,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.76,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.31000000000000005,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.44999999999999996,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.31150000000000005,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.1665,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 1.0,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 0.7000000000000001,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 1.6,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 17.8,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.12150000000000001,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.05500000000000001,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 5.65,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.165,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.0033,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.001,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.027000000000000003,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0027,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 1.3,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 1.3,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.011999999999999999,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.01,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 2.35,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_tablespoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1/2 tsp Sugar",
+      "parsed": [
+        {
+          "quantity": 0.5,
+          "measure": "teaspoon",
+          "foodMatch": "Sugar",
+          "food": "sugar",
+          "foodId": "food_axi2ijobrk819yb0adceobnhm1c2",
+          "weight": 2.1,
+          "retainedWeight": 2.1,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 8.127,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 2.1,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 2.1,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 2.0958,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 2.0958,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.021,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 0.021,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 0.042,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.0010500000000000002,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.00021,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.00039900000000000005,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.00042,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    },
+    {
+      "text": "1/2 tsp Oil for air frying/light brushing",
+      "parsed": [
+        {
+          "quantity": 0.5,
+          "measure": "teaspoon",
+          "foodMatch": "Oil",
+          "food": "oil",
+          "foodId": "food_bk9p9aaavhvoq4bqsnprobpsiuxs",
+          "weight": 2.25,
+          "retainedWeight": 2.25,
+          "nutrients": {
+            "ENERC_KCAL": {
+              "label": "Energy",
+              "quantity": 19.89,
+              "unit": "kcal"
+            },
+            "FAT": {
+              "label": "Fat",
+              "quantity": 2.25,
+              "unit": "g"
+            },
+            "FASAT": {
+              "label": "Saturated",
+              "quantity": 0.1656,
+              "unit": "g"
+            },
+            "FATRN": {
+              "label": "Trans",
+              "quantity": 0.008887500000000001,
+              "unit": "g"
+            },
+            "FAMS": {
+              "label": "Monounsaturated",
+              "quantity": 1.42425,
+              "unit": "g"
+            },
+            "FAPU": {
+              "label": "Polyunsaturated",
+              "quantity": 0.6322500000000001,
+              "unit": "g"
+            },
+            "CHOCDF": {
+              "label": "Carbs",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "CHOCDF.net": {
+              "label": "Carbohydrates (net)",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "FIBTG": {
+              "label": "Fiber",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR": {
+              "label": "Sugars",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "SUGAR.added": {
+              "label": "Sugars, added",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "PROCNT": {
+              "label": "Protein",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "CHOLE": {
+              "label": "Cholesterol",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NA": {
+              "label": "Sodium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "CA": {
+              "label": "Calcium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "MG": {
+              "label": "Magnesium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "K": {
+              "label": "Potassium",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "FE": {
+              "label": "Iron",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "ZN": {
+              "label": "Zinc",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "P": {
+              "label": "Phosphorus",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITA_RAE": {
+              "label": "Vitamin A",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITC": {
+              "label": "Vitamin C",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "THIA": {
+              "label": "Thiamin (B1)",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "RIBF": {
+              "label": "Riboflavin (B2)",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "NIA": {
+              "label": "Niacin (B3)",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "VITB6A": {
+              "label": "Vitamin B6",
+              "quantity": 0.0,
+              "unit": "mg"
+            },
+            "FOLDFE": {
+              "label": "Folate equivalent (total)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLFD": {
+              "label": "Folate (food)",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "FOLAC": {
+              "label": "Folic acid",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITB12": {
+              "label": "Vitamin B12",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "VITD": {
+              "label": "Vitamin D",
+              "quantity": 0.0,
+              "unit": "\u00b5g"
+            },
+            "TOCPHA": {
+              "label": "Vitamin E",
+              "quantity": 0.39375000000000004,
+              "unit": "mg"
+            },
+            "VITK1": {
+              "label": "Vitamin K",
+              "quantity": 1.60425,
+              "unit": "\u00b5g"
+            },
+            "Sugar.alcohol": {
+              "label": "Sugar alcohol",
+              "quantity": 0.0,
+              "unit": "g"
+            },
+            "WATER": {
+              "label": "Water",
+              "quantity": 0.0,
+              "unit": "g"
+            }
+          },
+          "measureURI": "http://www.edamam.com/ontologies/edamam.owl#Measure_teaspoon",
+          "status": "OK"
+        }
+      ]
+    }
+  ]
+}

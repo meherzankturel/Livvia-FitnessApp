@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { View, Text, Pressable } from "react-native";
 import { router } from "expo-router";
 import { useOnboardingStore } from "@repped/shared";
-import type { DietaryPreference } from "@repped/shared";
+import type { DietaryPreference, MeatPreference } from "@repped/shared";
 import { OnboardingLayout } from "../../src/components/onboarding/OnboardingLayout";
 
 const C = {
@@ -13,7 +14,7 @@ const C = {
 };
 
 const dietOptions: { value: DietaryPreference; label: string }[] = [
-  { value: "no_preference", label: "No Preference" },
+  { value: "no_preference", label: "Non-Veg" },
   { value: "vegetarian", label: "Vegetarian" },
   { value: "vegan", label: "Vegan" },
   { value: "pescatarian", label: "Pescatarian" },
@@ -22,19 +23,58 @@ const dietOptions: { value: DietaryPreference; label: string }[] = [
 
 const allergyOptions = ["Dairy", "Gluten", "Nuts", "Shellfish", "Soy", "Eggs", "Peanuts", "Fish"];
 
-const cuisineOptions: { emoji: string; label: string; value: string }[] = [
-  { emoji: "\u{1F1FA}\u{1F1F8}", label: "American", value: "american" },
-  { emoji: "\u{1F1EE}\u{1F1F9}", label: "Italian", value: "italian" },
-  { emoji: "\u{1F1EE}\u{1F1F3}", label: "Indian", value: "indian_north" },
-  { emoji: "\u{1F1F2}\u{1F1FD}", label: "Mexican", value: "mexican" },
-  { emoji: "\u{1F30A}", label: "Mediterranean", value: "mediterranean" },
-  { emoji: "\u{1F962}", label: "Asian", value: "asian" },
+type MeatPresetId = "any" | "chicken" | "beef" | "white" | "no_pork_beef";
+
+// Each preset maps to a structured meat_preferences array used by the
+// meal-planner. Letting the user pick a preset instead of every individual
+// meat keeps the onboarding short.
+const MEAT_PRESETS: { id: MeatPresetId; label: string; meats: MeatPreference[] }[] = [
+  { id: "any",          label: "Any meat",                       meats: ["chicken", "turkey", "beef", "lamb", "pork", "fish", "shrimp"] },
+  { id: "chicken",      label: "Chicken only",                   meats: ["chicken"] },
+  { id: "beef",         label: "Beef / Steak focused",           meats: ["beef", "lamb", "chicken"] },
+  { id: "white",        label: "White meat only (no red meat)",  meats: ["chicken", "turkey", "fish"] },
+  { id: "no_pork_beef", label: "No pork or beef",                meats: ["chicken", "turkey", "lamb", "fish", "shrimp"] },
 ];
+
+// Auto-derive sensible meat defaults from dietary preference. The Non-Veg
+// branch is overridden by the preset dropdown below.
+function defaultMeatsFor(diet: DietaryPreference): MeatPreference[] {
+  if (diet === "vegetarian" || diet === "vegan") return [];
+  if (diet === "pescatarian") return ["fish", "shrimp"];
+  // no_preference / keto: common everyday proteins (Non-Veg preset will refine)
+  return ["chicken", "turkey", "beef", "fish"];
+}
 
 export default function StepNutrition() {
   const { data, updateData } = useOnboardingStore();
+  const [presetOpen, setPresetOpen] = useState(false);
 
   const canContinue = data.dietary_preference !== null;
+  const isNonVeg = data.dietary_preference === "no_preference";
+  const currentPreset = MEAT_PRESETS.find((p) => p.id === data.meat_preset) ?? MEAT_PRESETS[0];
+
+  const selectDiet = (diet: DietaryPreference) => {
+    // When switching to Non-Veg, apply the current meat preset.
+    // Otherwise, use the dietary-derived defaults.
+    const meats = diet === "no_preference"
+      ? (MEAT_PRESETS.find((p) => p.id === data.meat_preset) ?? MEAT_PRESETS[0]).meats
+      : defaultMeatsFor(diet);
+    updateData({
+      dietary_preference: diet,
+      meat_preferences: meats,
+      cuisine_preferences: data.cuisine_preferences.length > 0
+        ? data.cuisine_preferences
+        : ["american"],
+    });
+    // Close the preset dropdown if the user switched away from Non-Veg
+    if (diet !== "no_preference") setPresetOpen(false);
+  };
+
+  const selectPreset = (id: MeatPresetId) => {
+    const preset = MEAT_PRESETS.find((p) => p.id === id) ?? MEAT_PRESETS[0];
+    updateData({ meat_preset: id, meat_preferences: preset.meats });
+    setPresetOpen(false);
+  };
 
   const toggleAllergy = (allergy: string) => {
     const val = allergy.toLowerCase();
@@ -43,15 +83,6 @@ export default function StepNutrition() {
       updateData({ food_exclusions: current.filter((a) => a !== val) });
     } else {
       updateData({ food_exclusions: [...current, val] });
-    }
-  };
-
-  const toggleCuisine = (value: string) => {
-    const current = data.cuisine_preferences;
-    if (current.includes(value)) {
-      updateData({ cuisine_preferences: current.filter((c) => c !== value) });
-    } else {
-      updateData({ cuisine_preferences: [...current, value] });
     }
   };
 
@@ -77,13 +108,13 @@ export default function StepNutrition() {
       <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 12 }}>
         Dietary Preference
       </Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
         {dietOptions.map((option) => {
           const isSelected = data.dietary_preference === option.value;
           return (
             <Pressable
               key={option.value}
-              onPress={() => updateData({ dietary_preference: option.value })}
+              onPress={() => selectDiet(option.value)}
               style={{
                 borderRadius: 100,
                 paddingHorizontal: 16,
@@ -105,14 +136,71 @@ export default function StepNutrition() {
         })}
       </View>
 
+      {/* Section 1b: Meat preset dropdown — only when Non-Veg is selected */}
+      {isNonVeg && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 11, fontWeight: "700", color: C.rock, letterSpacing: 0.6, textTransform: "uppercase", marginBottom: 8 }}>
+            Meat preference
+          </Text>
+          <Pressable
+            onPress={() => setPresetOpen((v) => !v)}
+            style={{
+              backgroundColor: C.stone,
+              borderRadius: 14,
+              height: 48,
+              paddingHorizontal: 16,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "space-between",
+              borderWidth: 1.5,
+              borderColor: presetOpen ? C.earth : "transparent",
+            }}
+          >
+            <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth }}>
+              {currentPreset.label}
+            </Text>
+            <Text style={{ fontSize: 14, fontWeight: "700", color: C.rock, transform: [{ rotate: presetOpen ? "180deg" : "0deg" }] }}>
+              ▾
+            </Text>
+          </Pressable>
+          {presetOpen && (
+            <View style={{ marginTop: 8, backgroundColor: C.stone, borderRadius: 14, overflow: "hidden" }}>
+              {MEAT_PRESETS.map((p, idx) => {
+                const active = data.meat_preset === p.id;
+                return (
+                  <Pressable
+                    key={p.id}
+                    onPress={() => selectPreset(p.id)}
+                    style={{
+                      paddingVertical: 14,
+                      paddingHorizontal: 16,
+                      backgroundColor: active ? "rgba(52,211,153,0.12)" : "transparent",
+                      borderTopWidth: idx === 0 ? 0 : 1,
+                      borderTopColor: "rgba(45,42,36,0.06)",
+                    }}
+                  >
+                    <Text style={{ fontSize: 14, fontWeight: active ? "700" : "500", color: active ? C.trail : C.earth }}>
+                      {p.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </View>
+          )}
+        </View>
+      )}
+
       {/* Divider */}
-      <View style={{ height: 1, backgroundColor: "rgba(45,42,36,0.06)", marginBottom: 24 }} />
+      <View style={{ height: 1, backgroundColor: "rgba(45,42,36,0.06)", marginTop: 24, marginBottom: 24 }} />
 
       {/* Section 2: Allergies */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 12 }}>
+      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 4 }}>
         Any food allergies?
       </Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 24 }}>
+      <Text style={{ fontSize: 13, color: C.rock, marginBottom: 12 }}>
+        Tap any that apply. Skip if none.
+      </Text>
+      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
         {allergyOptions.map((allergy) => {
           const isSelected = data.food_exclusions.includes(allergy.toLowerCase());
           return (
@@ -142,49 +230,9 @@ export default function StepNutrition() {
         })}
       </View>
 
-      {/* Divider */}
-      <View style={{ height: 1, backgroundColor: "rgba(45,42,36,0.06)", marginBottom: 24 }} />
-
-      {/* Section 3: Cuisine Preferences */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 4 }}>
-        Cuisine Preferences
+      <Text style={{ fontSize: 12, color: C.rock, marginTop: 20, lineHeight: 18 }}>
+        You can refine cuisine preferences later in the Meals tab.
       </Text>
-      <Text style={{ fontSize: 13, color: C.rock, marginBottom: 14 }}>
-        Pick as many as you like.
-      </Text>
-      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10 }}>
-        {cuisineOptions.map((cuisine) => {
-          const isSelected = data.cuisine_preferences.includes(cuisine.value);
-          return (
-            <Pressable
-              key={cuisine.value}
-              onPress={() => toggleCuisine(cuisine.value)}
-              style={{
-                width: "48%",
-                borderRadius: 16,
-                padding: 16,
-                backgroundColor: isSelected ? "rgba(52,211,153,0.08)" : C.stone,
-                borderWidth: 2,
-                borderColor: isSelected ? C.trail : "transparent",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 8,
-              }}
-            >
-              <Text style={{ fontSize: 20 }}>{cuisine.emoji}</Text>
-              <Text
-                style={{
-                  fontSize: 15,
-                  fontWeight: "500",
-                  color: C.earth,
-                }}
-              >
-                {cuisine.label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
     </OnboardingLayout>
   );
 }

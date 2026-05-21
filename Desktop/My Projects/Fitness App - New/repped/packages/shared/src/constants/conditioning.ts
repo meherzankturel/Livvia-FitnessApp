@@ -1,7 +1,15 @@
 /**
  * Conditioning day templates.
- * For users training 4+ days/week, 1-2 days can be dedicated conditioning.
- * Follows Cavaliere's 60/40 strength-to-cardio ratio recommendation.
+ *
+ * Day allocation follows ACSM weight-loss guidelines:
+ *   - 2018 Physical Activity Guidelines for Americans (HHS): 150-300 min/wk
+ *     moderate-intensity aerobic activity for general health.
+ *   - ACSM 2009 Position Stand "Appropriate Physical Activity Intervention
+ *     Strategies for Weight Loss" (Donnelly et al.): 250-300+ min/wk
+ *     moderate-intensity for clinically meaningful weight loss.
+ *   - ACSM minimum: at least 3 days/wk of resistance training preserved.
+ *
+ * Day-count mapping reflects these targets — see getConditioningDayCount.
  */
 
 import type { Equipment } from "../types/user";
@@ -112,13 +120,77 @@ export function getConditioningTemplates(equipment: Equipment): ConditioningDay[
 }
 
 /**
+ * Deterministic round-robin template picker. Two conditioning days in the
+ * same week alternate templates (e.g. HIIT on day 2, Cardio Endurance on
+ * day 4 for full_gym users) so the user gets variety without random churn
+ * across plan regenerations.
+ *
+ * @param equipment — user's available equipment
+ * @param conditioningDayIndex — 0-based index among that user's conditioning
+ *   days this week (not the calendar day-of-week)
+ */
+export function pickConditioningTemplateForDay(
+  equipment: Equipment,
+  conditioningDayIndex: number
+): ConditioningDay {
+  const templates = getConditioningTemplates(equipment);
+  if (templates.length === 0) {
+    // Fallback to bodyweight if equipment somehow maps to empty
+    return CONDITIONING_TEMPLATES.bodyweight[0];
+  }
+  return templates[conditioningDayIndex % templates.length];
+}
+
+/**
+ * Compute which day indices (0-based, within the daysPerWeek training days)
+ * should be conditioning days. Distributes evenly so conditioning is rarely
+ * back-to-back, supporting recovery between sessions.
+ *
+ *   4 days, n=1 →  S S C S
+ *   5 days, n=2 →  S C S C S
+ *   6 days, n=2 →  S S C S C S
+ *   7 days, n=3 →  S C S C S C S
+ *
+ * Always places at least 1 strength session before the first conditioning
+ * day (so users open the week with their primary modality).
+ */
+export function getConditioningDayIndices(
+  daysPerWeek: number,
+  conditioningDayCount: number
+): Set<number> {
+  const slots = new Set<number>();
+  if (conditioningDayCount === 0 || daysPerWeek === 0) return slots;
+  for (let i = 0; i < conditioningDayCount; i++) {
+    slots.add(Math.floor(((i + 1) * daysPerWeek) / (conditioningDayCount + 1)));
+  }
+  return slots;
+}
+
+/**
  * Calculate how many conditioning days to include per week.
- * Follows 60/40 strength-to-cardio ratio.
+ *
+ * Grounded in ACSM 2009 Position Stand on weight-loss exercise (Donnelly et al.)
+ * and 2018 Physical Activity Guidelines for Americans (HHS). Each conditioning
+ * day is 20-30 min, so the table below targets 250-300+ min/wk for higher
+ * frequencies while preserving ACSM's 3-day resistance-training minimum.
+ *
+ * | daysPerWeek | strength | conditioning | weekly cardio min (~25 min/day) |
+ * |-------------|----------|--------------|---------------------------------|
+ * | <=3         | all      | 0            | 0 (resistance minimum priority) |
+ * | 4           | 3        | 1            | ~25                              |
+ * | 5           | 3        | 2            | ~50                              |
+ * | 6           | 4        | 2            | ~50                              |
+ * | 7           | 4        | 3            | ~75                              |
+ *
+ * Users on the low end still get sub-clinical cardio benefits; daily-walking
+ * NEAT (not yet tracked) fills the rest of the ACSM weight-loss target.
+ *
  * @param daysPerWeek - Total training days per week
- * @returns Number of conditioning days (0 for ≤3 days, 1 for 4, 2 for 5+)
  */
 export function getConditioningDayCount(daysPerWeek: number): number {
-  if (daysPerWeek <= 3) return 0; // All strength for low-frequency trainers
-  if (daysPerWeek === 4) return 1; // 3 strength + 1 conditioning
-  return 2; // 3-4 strength + 2 conditioning for 5+ days
+  if (daysPerWeek <= 3) return 0;
+  if (daysPerWeek === 4) return 1;
+  if (daysPerWeek === 5) return 2;
+  if (daysPerWeek === 6) return 2;
+  return 3; // 7 days
 }

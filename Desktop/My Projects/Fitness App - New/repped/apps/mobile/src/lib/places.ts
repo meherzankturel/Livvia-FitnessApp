@@ -120,7 +120,7 @@ export async function findNearbyGroceryStores(
         headers: {
           "Content-Type": "application/json",
           "X-Goog-Api-Key": PLACES_API_KEY,
-          "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.currentOpeningHours,places.googleMapsUri,places.location",
+          "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.currentOpeningHours,places.googleMapsUri,places.photos,places.location",
         },
         body: JSON.stringify({
           textQuery: "grocery store supermarket",
@@ -136,17 +136,29 @@ export async function findNearbyGroceryStores(
     );
 
     const data = await response.json();
+    if (data.error) {
+      console.warn("Places API grocery error:", data.error.message || JSON.stringify(data.error));
+      return [];
+    }
     if (!data.places) return [];
 
     return data.places.map((place: any) => {
-      const pLat = place.location?.latitude ?? lat;
-      const pLng = place.location?.longitude ?? lng;
+      // Skip places with missing location data
+      if (!place.location?.latitude || !place.location?.longitude) return null;
+
+      const pLat = place.location.latitude;
+      const pLng = place.location.longitude;
       const dist = getDistanceKm(lat, lng, pLat, pLng);
 
       const priceLevels: Record<string, string> = {
         PRICE_LEVEL_INEXPENSIVE: "$", PRICE_LEVEL_MODERATE: "$$",
         PRICE_LEVEL_EXPENSIVE: "$$$", PRICE_LEVEL_VERY_EXPENSIVE: "$$$$",
       };
+
+      let photoUrl: string | null = null;
+      if (place.photos?.[0]?.name) {
+        photoUrl = `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxHeightPx=200&maxWidthPx=300&key=${PLACES_API_KEY}`;
+      }
 
       return {
         name: place.displayName?.text ?? "Unknown",
@@ -155,11 +167,11 @@ export async function findNearbyGroceryStores(
         priceLevel: priceLevels[place.priceLevel] ?? "$$",
         distance: dist < 1 ? `${Math.round(dist * 1000)}m` : `${dist.toFixed(1)}km`,
         isOpen: place.currentOpeningHours?.openNow ?? false,
-        mapsUrl: place.googleMapsUri ?? "",
-        photoUrl: null,
+        mapsUrl: place.googleMapsUri ?? `https://www.google.com/maps/search/${encodeURIComponent(place.displayName?.text ?? "grocery store")}/@${lat},${lng},14z`,
+        photoUrl,
         type: "grocery" as const,
       };
-    }).sort((a: PlaceResult, b: PlaceResult) => {
+    }).filter(Boolean).sort((a: PlaceResult, b: PlaceResult) => {
       // Sort by distance (nearest first) — convert everything to meters
       const toMeters = (d: string): number => {
         const num = parseFloat(d) || 999;

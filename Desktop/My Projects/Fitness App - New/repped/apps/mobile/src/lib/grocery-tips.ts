@@ -1,28 +1,35 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// ─── Smart Grocery Save Tips ─────────────────────────────────────────────────
-// Pre-generates personalized savings tips using Gemini AI when the grocery
-// list loads. Cached so the card flip is instant — no loading spinner.
+// ─── Smart Grocery Tips ─────────────────────────────────────────────────────
+// Generates personalized shopping & nutrition tips from the grocery list
+// using Gemini AI. Cached for 24 hours so the card flip is instant.
 //
-// Flow: Grocery list loads → generateSaveTips() fires in background →
-//       Tips cached in AsyncStorage → Card flip reads from cache (instant)
+// Tips are globally relevant — no currency, no region-specific pricing.
 
 const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
 const CACHE_KEY = "grocery_save_tips";
-const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours (tips refresh daily)
+const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export interface SaveTip {
   icon: string;
   text: string;
-  savings: string;
+  detail: string;
 }
 
-// Default tips shown while real ones load (or if Gemini fails)
+// ─── Curated fallback tips (globally applicable, no currency) ───────────────
 const FALLBACK_TIPS: SaveTip[] = [
-  { icon: "🥦", text: "Buy seasonal produce for lower prices", savings: "Save ~$2-4" },
-  { icon: "🧊", text: "Frozen proteins are cheaper than fresh", savings: "Save ~$3-5" },
-  { icon: "📦", text: "Buy grains & staples in bulk", savings: "Save ~$2-3" },
+  { icon: "🥦", text: "Buy seasonal produce", detail: "In-season fruits & vegetables are fresher and more affordable everywhere" },
+  { icon: "📦", text: "Buy grains & lentils in bulk", detail: "Rice, oats, and lentils last months and cost less per kg when bought in larger packs" },
+  { icon: "🍗", text: "Prep proteins in batches", detail: "Cook chicken or tofu for 2-3 days at once — saves time and reduces waste" },
+  { icon: "🧊", text: "Freeze what you won't use", detail: "Bread, berries, and cooked rice freeze well — use within the week to cut waste" },
+  { icon: "🥚", text: "Eggs are your best value protein", detail: "High protein, versatile, and among the most affordable protein sources globally" },
 ];
+
+/** Pick 3 random tips from the pool to keep it fresh */
+function pickFallbackTips(): SaveTip[] {
+  const shuffled = [...FALLBACK_TIPS].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3);
+}
 
 // ─── Get cached tips (instant) ───────────────────────────────────────────────
 export async function getCachedTips(): Promise<SaveTip[]> {
@@ -35,47 +42,48 @@ export async function getCachedTips(): Promise<SaveTip[]> {
       }
     }
   } catch {}
-  return FALLBACK_TIPS;
+  return pickFallbackTips();
 }
 
 // ─── Generate personalized tips from Gemini (background) ─────────────────────
 export async function generateSaveTips(
   items: { name: string; price: number }[]
 ): Promise<SaveTip[]> {
-  if (!GEMINI_API_KEY || items.length === 0) return FALLBACK_TIPS;
+  const fallback = pickFallbackTips();
+  if (!GEMINI_API_KEY || items.length === 0) return fallback;
 
-  // Check cache first — don't re-generate if fresh
+  // Build a fingerprint of the current list so tips refresh when meals change
+  const listSummary = items
+    .slice(0, 20)
+    .map((i) => i.name)
+    .join(", ");
+  const listHash = listSummary.length.toString() + "_" + items.length;
+
+  // Check cache — only use if same grocery list and still fresh
   try {
     const cached = await AsyncStorage.getItem(CACHE_KEY);
     if (cached) {
       const parsed = JSON.parse(cached);
-      if (Date.now() - parsed.timestamp < CACHE_EXPIRY_MS) {
+      if (Date.now() - parsed.timestamp < CACHE_EXPIRY_MS && parsed.listHash === listHash) {
         return parsed.tips;
       }
     }
   } catch {}
 
-  // Build the grocery list summary for Gemini
-  const listSummary = items
-    .slice(0, 20) // Limit to 20 items to keep prompt short
-    .map((i) => `${i.name}: $${i.price.toFixed(2)}`)
-    .join(", ");
-
-  const totalCost = items.reduce((sum, i) => sum + i.price, 0);
-
-  const prompt = `You are a smart grocery savings assistant. Given this grocery list (total ~$${totalCost.toFixed(0)}):
+  const prompt = `You are a smart grocery shopping assistant for a global fitness app. Given this weekly grocery list:
 ${listSummary}
 
-Generate exactly 3 money-saving tips. Each tip must:
-- Be specific to items in this list
-- Be under 8 words
-- Include a realistic savings estimate
+Generate exactly 3 helpful shopping tips. Each tip must:
+- Be specific to items in this list (reference actual ingredients)
+- Be globally applicable (no specific currencies, no region-specific stores)
+- Focus on: reducing waste, smart shopping, meal prep efficiency, or nutrition optimization
+- Be practical and actionable
 
 Respond ONLY in this exact JSON format, no other text:
 [
-  {"icon": "emoji", "text": "tip text here", "savings": "Save ~$X.XX"},
-  {"icon": "emoji", "text": "tip text here", "savings": "Save ~$X.XX"},
-  {"icon": "emoji", "text": "tip text here", "savings": "Save ~$X.XX"}
+  {"icon": "single emoji", "text": "Short title (under 6 words)", "detail": "One sentence explanation (under 20 words)"},
+  {"icon": "single emoji", "text": "Short title (under 6 words)", "detail": "One sentence explanation (under 20 words)"},
+  {"icon": "single emoji", "text": "Short title (under 6 words)", "detail": "One sentence explanation (under 20 words)"}
 ]`;
 
   try {
@@ -87,49 +95,41 @@ Respond ONLY in this exact JSON format, no other text:
         body: JSON.stringify({
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 200,
+            temperature: 0.4,
+            maxOutputTokens: 300,
           },
         }),
       }
     );
 
-    if (!response.ok) return FALLBACK_TIPS;
+    if (!response.ok) return fallback;
 
     const data = await response.json();
-    const text =
-      data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
-    // Extract JSON from response (handle markdown code blocks)
     const jsonMatch = text.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) return FALLBACK_TIPS;
+    if (!jsonMatch) return fallback;
 
     const tips: SaveTip[] = JSON.parse(jsonMatch[0]);
 
-    // Validate structure
-    if (
-      !Array.isArray(tips) ||
-      tips.length < 1 ||
-      !tips[0].icon ||
-      !tips[0].text ||
-      !tips[0].savings
-    ) {
-      return FALLBACK_TIPS;
+    if (!Array.isArray(tips) || tips.length < 1 || !tips[0].icon || !tips[0].text || !tips[0].detail) {
+      return fallback;
     }
 
-    // Cache the tips
+    const validTips = tips.slice(0, 3);
+
     await AsyncStorage.setItem(
       CACHE_KEY,
-      JSON.stringify({ tips: tips.slice(0, 3), timestamp: Date.now() })
+      JSON.stringify({ tips: validTips, timestamp: Date.now(), listHash })
     );
 
-    return tips.slice(0, 3);
+    return validTips;
   } catch {
-    return FALLBACK_TIPS;
+    return fallback;
   }
 }
 
-// ─── Clear cached tips (e.g., when grocery list changes) ─────────────────────
+// ─── Clear cached tips ──────────────────────────────────────────────────────
 export async function clearTipsCache(): Promise<void> {
   try {
     await AsyncStorage.removeItem(CACHE_KEY);

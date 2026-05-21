@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
-import { useOnboardingStore, useAuthStore, calculateTDEE, INJURY_DEFINITIONS } from "@repped/shared";
+import { useOnboardingStore, useAuthStore, calculateTDEE, INJURY_DEFINITIONS, calcAge } from "@repped/shared";
 import { OnboardingLayout } from "../../src/components/onboarding/OnboardingLayout";
 import { supabase } from "../../src/lib/supabase";
 import { useState } from "react";
@@ -27,6 +27,12 @@ export default function StepInjuries() {
   const [error, setError] = useState<string | null>(null);
 
   const selectedKeys = data.current_injuries.map((i) => i.key);
+  type Severity = "mild" | "moderate" | "severe";
+  const SEVERITIES: { value: Severity; label: string }[] = [
+    { value: "mild", label: "Mild" },
+    { value: "moderate", label: "Moderate" },
+    { value: "severe", label: "Severe" },
+  ];
 
   const toggleInjury = (key: string) => {
     if (selectedKeys.includes(key)) {
@@ -41,17 +47,27 @@ export default function StepInjuries() {
     }
   };
 
+  const setSeverity = (key: string, severity: Severity) => {
+    updateData({
+      current_injuries: data.current_injuries.map((i) =>
+        i.key === key ? { ...i, severity } : i
+      ),
+    });
+  };
+
   const handleComplete = async () => {
     if (!session?.user?.id) return;
-    if (!data.age || !data.weight_kg || !data.height_cm || !data.sex || !data.activity_level) return;
+    if (!data.date_of_birth || !data.weight_kg || !data.height_cm || !data.sex || !data.activity_level) return;
 
     setLoading(true);
     setError(null);
 
+    const age = calcAge(data.date_of_birth);
+
     const tdee = calculateTDEE(
       data.weight_kg,
       data.height_cm,
-      data.age,
+      age,
       data.sex,
       data.activity_level
     );
@@ -59,18 +75,20 @@ export default function StepInjuries() {
     const { error: dbError } = await supabase.from("profiles").upsert({
       id: session.user.id,
       display_name: data.display_name,
-      age: data.age,
+      date_of_birth: data.date_of_birth,
       weight_kg: data.weight_kg,
       height_cm: data.height_cm,
       sex: data.sex,
       activity_level: data.activity_level,
       training_history: data.training_history!,
       goal: data.goal!,
+      target_weight_kg: data.target_weight_kg,
       equipment: data.equipment!,
       days_per_week: data.days_per_week!,
       dietary_preference: data.dietary_preference!,
       food_exclusions: data.food_exclusions,
       cuisine_preferences: data.cuisine_preferences,
+      meat_preferences: data.meat_preferences,
       current_injuries: data.current_injuries,
       tdee,
       // Health screening (PAR-Q+)
@@ -93,7 +111,7 @@ export default function StepInjuries() {
     }
 
     reset();
-    await AsyncStorage.removeItem("livvia_onboarding_progress");
+    await AsyncStorage.removeItem("revive_onboarding_progress");
     router.replace("/(app)");
   };
 
@@ -146,6 +164,50 @@ export default function StepInjuries() {
           );
         })}
       </View>
+
+      {/* Per-injury severity picker — only shown for selected injuries */}
+      {data.current_injuries.length > 0 && (
+        <View style={{ marginTop: 28 }}>
+          <Text style={{ fontSize: 13, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
+            How severe?
+          </Text>
+          <View style={{ gap: 12 }}>
+            {data.current_injuries.map((injury) => {
+              const def = injuryOptions.find((o) => o.key === injury.key);
+              if (!def) return null;
+              return (
+                <View key={injury.key} style={{ backgroundColor: C.stone, borderRadius: 14, padding: 14 }}>
+                  <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth, marginBottom: 10 }}>
+                    {def.icon} {def.label}
+                  </Text>
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    {SEVERITIES.map((s) => {
+                      const active = injury.severity === s.value;
+                      return (
+                        <Pressable
+                          key={s.value}
+                          onPress={() => setSeverity(injury.key, s.value)}
+                          style={{
+                            flex: 1,
+                            paddingVertical: 10,
+                            borderRadius: 10,
+                            alignItems: "center",
+                            backgroundColor: active ? C.earth : C.bg,
+                          }}
+                        >
+                          <Text style={{ fontSize: 13, fontWeight: "600", color: active ? C.bg : C.rock }}>
+                            {s.label}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </View>
+              );
+            })}
+          </View>
+        </View>
+      )}
 
       {error && (
         <Text style={{ color: "#EF4444", textAlign: "center", marginTop: 20, fontSize: 14 }}>

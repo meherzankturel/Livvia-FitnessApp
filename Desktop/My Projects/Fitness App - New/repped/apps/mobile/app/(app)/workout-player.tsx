@@ -101,6 +101,8 @@ export default function WorkoutPlayer() {
   const [rpeValues, setRpeValues] = useState<number[]>([]);
   const [sessionAvgRpe, setSessionAvgRpe] = useState<number | null>(null);
   const rpeSelectorOpacity = useRef(new Animated.Value(0)).current;
+  // Tracks the most recently inserted set_log so RPE taps can attach to it
+  const lastSetLogIdRef = useRef<string | null>(null);
 
   // Profile data for weight suggestions
   const [profileData, setProfileData] = useState<{
@@ -150,7 +152,7 @@ export default function WorkoutPlayer() {
       .single();
 
     if (!plan) {
-      router.back();
+      router.replace("/(app)" as any);
       return;
     }
 
@@ -430,6 +432,12 @@ export default function WorkoutPlayer() {
       setSessionAvgRpe(avg);
       return updated;
     });
+    // Persist RPE on the set_log row this selector belongs to
+    const setLogId = lastSetLogIdRef.current;
+    lastSetLogIdRef.current = null;
+    if (setLogId) {
+      void (supabase.from("set_logs").update({ rpe } as any).eq("id", setLogId) as any);
+    }
     // Fade out RPE selector
     Animated.timing(rpeSelectorOpacity, {
       toValue: 0,
@@ -459,13 +467,18 @@ export default function WorkoutPlayer() {
     const reps = parseInt(repsInput, 10) || currentEx.targetReps;
     const weight = parseFloat(weightInput) || currentEx.suggestedWeight || 0;
 
-    await supabase.from("set_logs").insert({
-      workout_log_id: workoutLogId,
-      exercise_id: currentEx.exerciseId,
-      set_number: currentSet,
-      reps,
-      weight_kg: weight,
-    });
+    const { data: insertedSet } = await (supabase
+      .from("set_logs")
+      .insert({
+        workout_log_id: workoutLogId,
+        exercise_id: currentEx.exerciseId,
+        set_number: currentSet,
+        reps,
+        weight_kg: weight,
+      } as any)
+      .select("id")
+      .single() as any);
+    lastSetLogIdRef.current = (insertedSet as { id?: string } | null)?.id ?? null;
 
     // Add to logged sets table
     setLoggedSets((prev) => [...prev, { setNumber: currentSet, reps, weightKg: weight }]);
@@ -1016,7 +1029,7 @@ export default function WorkoutPlayer() {
           <Text style={{ fontSize: 12, color: C.rock, marginLeft: 8 }}>
             {currentExIdx + 1} / {exercises.length}
           </Text>
-          <Pressable onPress={() => router.back()} style={{ marginLeft: "auto" }}>
+          <Pressable onPress={() => router.replace("/(app)" as any)} style={{ marginLeft: "auto" }}>
             <Text style={{ color: C.rock, fontSize: 13 }}>End</Text>
           </Pressable>
         </View>

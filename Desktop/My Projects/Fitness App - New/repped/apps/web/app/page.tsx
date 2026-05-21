@@ -50,7 +50,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-black flex flex-col items-center justify-center px-6">
-      <h1 className="text-white text-5xl font-bold mb-2">Livvia</h1>
+      <h1 className="text-white text-5xl font-bold mb-2">Revive</h1>
       <p className="text-gray-400 text-xl mb-12">Your workout, simplified.</p>
 
       <form onSubmit={handleSubmit} className="w-full max-w-sm space-y-4">

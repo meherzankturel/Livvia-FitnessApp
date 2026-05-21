@@ -1,19 +1,19 @@
 {
   "expo": {
-    "name": "Livvia",
-    "slug": "livvia",
+    "name": "Revive",
+    "slug": "revive",
     "version": "1.0.0",
     "orientation": "portrait",
-    "scheme": "livvia",
+    "scheme": "revive",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.livvia.app",
+      "bundleIdentifier": "com.revive.app",
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Livvia uses your location to find nearby restaurants and grocery stores for your meal plan.",
-        "NSCameraUsageDescription": "Livvia uses your camera to take a profile photo.",
-        "NSPhotoLibraryUsageDescription": "Livvia accesses your photos to set a profile picture.",
+        "NSLocationWhenInUseUsageDescription": "Revive uses your location to find nearby restaurants and grocery stores for your meal plan.",
+        "NSCameraUsageDescription": "Revive uses your camera to take a profile photo.",
+        "NSPhotoLibraryUsageDescription": "Revive accesses your photos to set a profile picture.",
         "LSApplicationQueriesSchemes": [
           "youtube",
           "vnd.youtube",
@@ -28,7 +28,7 @@
       "adaptiveIcon": {
         "backgroundColor": "#000000"
       },
-      "package": "com.livvia.app"
+      "package": "com.revive.app"
     },
     "web": {
       "bundler": "metro",

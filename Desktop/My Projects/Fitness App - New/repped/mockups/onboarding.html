@@ -1,0 +1,499 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Revive · Onboarding Mockup (all 9 steps)</title>
+  <style>
+    :root {
+      --earth: #2D2A24;
+      --sand:  #F6F5F0;
+      --stone: #EDEBE5;
+      --rock:  #8E8E7A;
+      --trail: #34D399;
+      --amber: #F59E0B;
+      --amber-bg: rgba(245, 158, 11, 0.12);
+      --amber-bdr: rgba(245, 158, 11, 0.30);
+      --red:   #EF4444;
+      --board: #1a1815;
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      background: var(--board);
+      color: var(--sand);
+      min-height: 100%;
+    }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      padding: 16px 28px;
+      background: var(--board);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .topbar h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: 0.02em; }
+    .topbar h1 span { color: var(--trail); }
+    .topbar .meta { font-size: 12px; color: rgba(255,255,255,0.55); }
+    .legend {
+      display: flex; gap: 14px; font-size: 11px; color: rgba(255,255,255,0.6);
+      flex-wrap: wrap;
+    }
+    .legend .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: middle; }
+    .legend .dot.new { background: var(--trail); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 28px;
+      padding: 28px;
+      max-width: 1600px;
+      margin: 0 auto;
+    }
+
+    /* Phone frame */
+    .phone {
+      background: #000;
+      border-radius: 38px;
+      padding: 8px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+      display: flex; flex-direction: column;
+    }
+    .screen {
+      background: var(--sand);
+      border-radius: 30px;
+      overflow: hidden;
+      color: var(--earth);
+      width: 100%;
+      aspect-ratio: 390 / 844;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 24px; background: #000;
+      border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
+      z-index: 5;
+    }
+    .statusbar {
+      padding: 12px 24px 4px;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 600; color: var(--earth);
+    }
+    .content {
+      flex: 1;
+      padding: 20px 22px 12px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .progress {
+      height: 4px; background: var(--stone); border-radius: 2px; overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .progress > div { height: 100%; background: var(--earth); }
+    .step-label {
+      font-size: 9px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--rock); margin-bottom: 6px;
+    }
+    .title {
+      font-size: 24px; font-weight: 800; color: var(--earth); margin-bottom: 6px; line-height: 1.15;
+    }
+    .title .accent { color: var(--trail); }
+    .subtitle {
+      font-size: 12px; color: var(--rock); margin-bottom: 18px; line-height: 1.4;
+    }
+
+    /* Form inputs */
+    .label-sm { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rock); margin-bottom: 6px; }
+    .label-md { font-size: 13px; font-weight: 600; color: var(--earth); margin-bottom: 10px; }
+    .field {
+      background: var(--stone); border-radius: 12px; height: 42px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 14px;
+    }
+    .row { display: flex; gap: 10px; margin-bottom: 16px; }
+    .pill {
+      display: inline-flex; align-items: center; justify-content: center;
+      border-radius: 100px; padding: 8px 14px; font-size: 12px; font-weight: 600;
+      background: var(--stone); color: var(--earth);
+    }
+    .pill.active { background: var(--earth); color: var(--sand); }
+    .pill.tag    { font-size: 11px; padding: 7px 12px; }
+    .pill.tag.amber { background: var(--amber-bg); color: var(--amber); border: 1px solid var(--amber-bdr); }
+    .pill.tag.trail { background: rgba(52,211,153,0.12); color: var(--trail); border: 1px solid rgba(52,211,153,0.3); }
+    .pill.tag.new::after {
+      content: "NEW"; display: inline-block; margin-left: 6px;
+      background: var(--trail); color: #062f1d; font-size: 8px; font-weight: 800; padding: 1px 4px; border-radius: 4px; letter-spacing: 0.04em;
+    }
+
+    .card {
+      background: var(--stone); border-radius: 14px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+    }
+    .card.selected { background: var(--earth); color: var(--sand); }
+    .card .opt-title { font-size: 13px; font-weight: 700; margin-bottom: 2px; }
+    .card.selected .opt-title { color: var(--sand); }
+    .card .opt-desc  { font-size: 11px; color: var(--rock); line-height: 1.3; }
+    .card.selected .opt-desc { color: rgba(246,245,240,0.65); }
+
+    .day-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 18px; }
+    .day { aspect-ratio: 1 / 1; border-radius: 10px; background: var(--stone); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+    .day.active { background: var(--earth); color: var(--sand); }
+    .day.new-flag { position: relative; }
+    .day.new-flag::after {
+      content: ""; position: absolute; top: -3px; right: -3px; width: 8px; height: 8px;
+      background: var(--trail); border-radius: 50%; box-shadow: 0 0 0 2px var(--sand);
+    }
+
+    /* Health screening Q card */
+    .qcard {
+      background: var(--stone); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px;
+    }
+    .qcard .q { font-size: 11px; font-weight: 600; line-height: 1.35; margin-bottom: 8px; color: var(--earth); }
+    .qcard .yn { display: flex; gap: 6px; }
+    .yn .ans { flex: 1; padding: 6px 0; text-align: center; font-size: 10px; font-weight: 700; border-radius: 7px; background: rgba(45,42,36,0.05); color: var(--rock); }
+    .yn .ans.yes-on { background: var(--red); color: white; }
+    .yn .ans.no-on  { background: var(--trail); color: white; }
+
+    .cta {
+      margin: 12px 18px 18px;
+      background: var(--earth); color: var(--sand);
+      border-radius: 18px; padding: 13px 0;
+      text-align: center; font-size: 14px; font-weight: 700;
+    }
+    .cta.muted { background: var(--stone); color: rgba(45,42,36,0.4); }
+    .cta-skip { margin: -6px 18px 14px; text-align: center; color: var(--rock); font-size: 11px; }
+
+    /* Special elements */
+    .hero {
+      height: 95px; background: linear-gradient(135deg, #2D2A24, #5d5448);
+      margin: -20px -22px 16px; position: relative;
+      display: flex; align-items: flex-end; justify-content: center;
+    }
+    .hero::after {
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, var(--sand) 100%);
+    }
+    .ruler {
+      background: var(--stone); border-radius: 12px; padding: 10px 12px;
+      margin-bottom: 10px;
+    }
+    .ruler .val { font-size: 20px; font-weight: 800; text-align: center; color: var(--earth); }
+    .ruler .unit { font-size: 10px; color: var(--rock); text-align: center; margin-top: -2px; }
+    .ruler .ticks {
+      margin-top: 4px;
+      height: 18px; display: flex; align-items: end; gap: 2px; justify-content: center; overflow: hidden;
+    }
+    .ruler .ticks span { width: 1px; background: var(--rock); opacity: 0.35; }
+    .ruler .ticks span:nth-child(odd) { height: 8px; }
+    .ruler .ticks span:nth-child(even) { height: 14px; }
+    .ruler .ticks span.center { background: var(--trail); width: 2px; height: 18px; opacity: 1; }
+
+    /* Severity picker */
+    .sev-card { background: var(--stone); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; }
+    .sev-card .injury { font-size: 12px; font-weight: 600; margin-bottom: 8px; }
+    .sev-card .opts { display: flex; gap: 6px; }
+    .sev-card .opts > div { flex: 1; padding: 7px 0; text-align: center; font-size: 11px; font-weight: 600; border-radius: 8px; background: var(--sand); color: var(--rock); }
+    .sev-card .opts > div.active { background: var(--earth); color: var(--sand); }
+
+    /* Footer hint */
+    .hint {
+      font-size: 10px; color: var(--rock); margin-top: 14px; line-height: 1.4;
+    }
+
+    .caption {
+      text-align: center; color: rgba(255,255,255,0.55); font-size: 11px;
+      margin-top: 10px; letter-spacing: 0.03em;
+    }
+    .caption strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+    .badge-new {
+      display: inline-block; background: var(--trail); color: #062f1d;
+      font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 5px;
+      letter-spacing: 0.06em; margin-left: 6px; vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <h1>Revive · <span>Onboarding Mockup</span></h1>
+    <div class="legend">
+      <span><span class="dot new"></span>green badge = newly added in this pass</span>
+      <span>9 steps · ~2 minutes for the user</span>
+    </div>
+  </header>
+
+  <main class="grid">
+
+    <!-- ─────────── STEP 1 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:11%"></div></div>
+          <div class="hero"></div>
+          <div class="step-label">Step 1 of 9</div>
+          <div class="title">Welcome</div>
+          <div class="subtitle">Let's get to know you. First — what should we call you?</div>
+          <div class="label-sm">Your name</div>
+          <div class="field" style="justify-content: flex-start; padding-left: 14px; color: var(--rock); font-weight: 500;">Alex</div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Welcome</strong> · single field, low friction</div>
+    </div>
+
+    <!-- ─────────── STEP 2 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:22%"></div></div>
+          <div class="step-label">Step 2 of 9</div>
+          <div class="title">About <span class="accent">You</span></div>
+          <div class="subtitle">This helps us calculate your targets and tailor your plan.</div>
+          <div class="row">
+            <div style="flex:1">
+              <div class="label-sm">Age</div>
+              <div class="field">25</div>
+            </div>
+            <div style="flex:1.5">
+              <div class="label-sm">Sex</div>
+              <div class="row" style="margin-bottom:0">
+                <div class="field" style="flex:1; background: var(--earth); color: var(--sand);">Male</div>
+                <div class="field" style="flex:1">Female</div>
+              </div>
+            </div>
+          </div>
+          <div class="ruler">
+            <div class="label-sm" style="margin-bottom: 4px;">Weight · 70 kg</div>
+            <div class="ticks">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span class="center"></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="ruler">
+            <div class="label-sm" style="margin-bottom: 4px;">Height · 175 cm</div>
+            <div class="ticks">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span class="center"></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>About</strong> · age + sex + ruler pickers for weight/height</div>
+    </div>
+
+    <!-- ─────────── STEP 3 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:33%"></div></div>
+          <div class="step-label">Step 3 of 9</div>
+          <div class="title">Quick <span class="accent">health</span> check</div>
+          <div class="subtitle">Standard fitness screening (PAR-Q). Answer honestly — no wrong answers.</div>
+          <div class="qcard"><div class="q">Has a doctor ever said you have a heart condition?</div><div class="yn"><div class="ans">Yes</div><div class="ans no-on">No</div></div></div>
+          <div class="qcard"><div class="q">Do you feel pain in your chest during activity?</div><div class="yn"><div class="ans">Yes</div><div class="ans no-on">No</div></div></div>
+          <div class="qcard"><div class="q">In the past month, chest pain at rest?</div><div class="yn"><div class="ans">Yes</div><div class="ans no-on">No</div></div></div>
+          <div class="qcard"><div class="q">Dizziness or loss of consciousness?</div><div class="yn"><div class="ans">Yes</div><div class="ans">No</div></div></div>
+          <div class="qcard"><div class="q">Bone/joint problem worsened by activity?</div><div class="yn"><div class="ans">Yes</div><div class="ans">No</div></div></div>
+        </div>
+        <div class="cta muted">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Health (PAR-Q)</strong> · 7 standard safety questions</div>
+    </div>
+
+    <!-- ─────────── STEP 4 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:44%"></div></div>
+          <div class="step-label">Step 4 of 9</div>
+          <div class="title">What's your <span class="accent">goal</span>?</div>
+          <div class="subtitle">We'll program every workout and meal around this.</div>
+          <div class="card selected"><div class="opt-title">Lose Fat</div><div class="opt-desc">Drop body fat while keeping muscle</div></div>
+          <div class="card"><div class="opt-title">Build Muscle</div><div class="opt-desc">Get bigger and stronger</div></div>
+          <div class="card"><div class="opt-title">Stay Fit</div><div class="opt-desc">Maintain your current physique</div></div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Goal</strong> · 3 options · drives macros + workout selection</div>
+    </div>
+
+    <!-- ─────────── STEP 5 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:55%"></div></div>
+          <div class="step-label">Step 5 of 9</div>
+          <div class="title">Your <span class="accent">experience</span></div>
+          <div class="subtitle">This determines exercise difficulty and volume.</div>
+          <div class="card selected"><div class="opt-title">Beginner</div><div class="opt-desc">New to lifting or less than 6 months</div></div>
+          <div class="card"><div class="opt-title">Intermediate</div><div class="opt-desc">6 months to 2 years of consistent training</div></div>
+          <div class="card"><div class="opt-title">Advanced</div><div class="opt-desc">2+ years of serious training</div></div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Experience</strong> · drives NASM phase + exercise difficulty</div>
+    </div>
+
+    <!-- ─────────── STEP 6 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:66%"></div></div>
+          <div class="step-label">Step 6 of 9</div>
+          <div class="title">Your <span class="accent">equipment</span></div>
+          <div class="subtitle">We'll only suggest exercises you can actually do.</div>
+          <div class="card selected"><div class="opt-title">Full Gym</div><div class="opt-desc">Barbells, dumbbells, cables, machines</div></div>
+          <div class="card"><div class="opt-title">Home Gym</div><div class="opt-desc">Dumbbells, bands, kettlebells, bench</div></div>
+          <div class="card"><div class="opt-title">Dumbbells Only</div><div class="opt-desc">A pair of dumbbells and a bench</div></div>
+          <div class="card"><div class="opt-title">Bodyweight</div><div class="opt-desc">No equipment needed</div></div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Equipment</strong> · 4 options · filters exercise library</div>
+    </div>
+
+    <!-- ─────────── STEP 7 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:77%"></div></div>
+          <div class="step-label">Step 7 of 9</div>
+          <div class="title">Your <span class="accent">schedule</span></div>
+          <div class="subtitle">We'll build your plan around your life.</div>
+          <div class="label-md">Days per week you can train</div>
+          <div class="day-grid" style="grid-template-columns: repeat(6, 1fr);">
+            <div class="day">2</div>
+            <div class="day active">3</div>
+            <div class="day">4</div>
+            <div class="day">5</div>
+            <div class="day">6</div>
+            <div class="day new-flag">7</div>
+          </div>
+          <div class="label-md">Activity outside the gym</div>
+          <div class="card"><div class="opt-title">Sedentary</div><div class="opt-desc">Desk job, minimal movement</div></div>
+          <div class="card selected"><div class="opt-title">Lightly Active</div><div class="opt-desc">Walking, light daily activity</div></div>
+          <div class="card"><div class="opt-title">Moderately Active</div><div class="opt-desc">On your feet most of the day</div></div>
+          <div class="card"><div class="opt-title">Very Active</div><div class="opt-desc">Physical job or active lifestyle</div></div>
+          <div class="card" style="position: relative;">
+            <div class="opt-title">Extremely Active<span class="badge-new">NEW</span></div>
+            <div class="opt-desc">Manual labor or twice-daily training</div>
+          </div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Schedule</strong> · added <strong style="color:var(--trail)">7-day option</strong> and <strong style="color:var(--trail)">"Extremely Active"</strong> (5th ACSM level)</div>
+    </div>
+
+    <!-- ─────────── STEP 8 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:88%"></div></div>
+          <div class="step-label">Step 8 of 9</div>
+          <div class="title">Your <span class="accent">nutrition</span></div>
+          <div class="subtitle">We'll tailor meal plans to your preferences.</div>
+          <div class="label-md">Dietary Preference</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:18px;">
+            <div class="pill active">No Preference</div>
+            <div class="pill">Vegetarian</div>
+            <div class="pill">Vegan</div>
+            <div class="pill">Pescatarian</div>
+            <div class="pill">Keto</div>
+          </div>
+          <div style="height:1px; background:rgba(45,42,36,0.06); margin-bottom:14px;"></div>
+          <div class="label-md" style="margin-bottom:4px;">Any food allergies?</div>
+          <div style="font-size:11px; color:var(--rock); margin-bottom:10px;">Tap any that apply. Skip if none.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px;">
+            <div class="pill">Dairy</div>
+            <div class="pill">Gluten</div>
+            <div class="pill tag amber">Nuts</div>
+            <div class="pill">Shellfish</div>
+            <div class="pill">Soy</div>
+            <div class="pill">Eggs</div>
+            <div class="pill">Peanuts</div>
+            <div class="pill">Fish</div>
+          </div>
+          <div class="hint">You can refine cuisine and meat preferences later in the Meals tab.</div>
+        </div>
+        <div class="cta">Continue</div>
+      </div></div>
+      <div class="caption"><strong>Nutrition</strong> · <strong style="color:var(--trail)">simplified</strong> — meat &amp; cuisine pickers moved to Meals tab</div>
+    </div>
+
+    <!-- ─────────── STEP 9 ─────────── -->
+    <div>
+      <div class="phone"><div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● ● ●</span></div>
+        <div class="content">
+          <div class="progress"><div style="width:100%"></div></div>
+          <div class="step-label">Step 9 of 9</div>
+          <div class="title">Any <span class="accent">injuries</span>?</div>
+          <div class="subtitle">We'll modify exercises to keep you safe. Skip if none.</div>
+          <div style="display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px;">
+            <div class="pill tag amber">🦾 Shoulder</div>
+            <div class="pill tag">🔙 Lower Back</div>
+            <div class="pill tag amber">🦵 Knee</div>
+            <div class="pill tag">✋ Wrist</div>
+            <div class="pill tag">💪 Elbow</div>
+            <div class="pill tag">🦶 Ankle</div>
+            <div class="pill tag">🦴 Hip</div>
+            <div class="pill tag">😬 Neck</div>
+          </div>
+          <div class="label-sm" style="margin-bottom: 10px;">How severe? <span class="badge-new">NEW</span></div>
+          <div class="sev-card">
+            <div class="injury">🦾 Shoulder</div>
+            <div class="opts">
+              <div>Mild</div>
+              <div class="active">Moderate</div>
+              <div>Severe</div>
+            </div>
+          </div>
+          <div class="sev-card">
+            <div class="injury">🦵 Knee</div>
+            <div class="opts">
+              <div class="active">Mild</div>
+              <div>Moderate</div>
+              <div>Severe</div>
+            </div>
+          </div>
+        </div>
+        <div class="cta-skip">Skip — no injuries</div>
+        <div class="cta">Let's Go</div>
+      </div></div>
+      <div class="caption"><strong>Injuries</strong> · added <strong style="color:var(--trail)">per-injury severity</strong> (mild/moderate/severe)</div>
+    </div>
+
+  </main>
+
+  <footer style="padding: 28px; text-align: center; color: rgba(255,255,255,0.5); font-size: 11px; line-height: 1.6;">
+    Onboarding mockup · Revive · matches actual app palette (earth #2D2A24, sand #F6F5F0, trail #34D399)<br/>
+    4 changes in this pass: <strong style="color:var(--trail)">7-day option</strong>, <strong style="color:var(--trail)">Extremely Active</strong>, <strong style="color:var(--trail)">per-injury severity</strong>, <strong style="color:var(--trail)">simplified nutrition</strong>
+  </footer>
+</body>
+</html>

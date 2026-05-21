@@ -16,7 +16,7 @@ export const EDUCATIONAL_TIPS: EducationalTip[] = [
   { id: 8, title: "Calorie Deficit vs Surplus", body: "To lose fat, eat slightly less than you burn (300-500 cal deficit). To build muscle, eat slightly more (200-300 surplus). Small adjustments, big difference.", category: "nutrition" },
   { id: 9, title: "Rest Between Sets", body: "For strength (1-5 reps): rest 3-5 min. For hypertrophy (6-12 reps): rest 60-90 sec. For endurance (15+ reps): rest 30-60 sec. Rest matters.", category: "training" },
   { id: 10, title: "Consistency Beats Intensity", body: "3 solid workouts per week for a year beats 6 intense weeks followed by months off. Show up regularly, even when motivation is low.", category: "mindset" },
-  { id: 11, title: "Track Your Workouts", body: "You can't improve what you don't measure. Log your weights, reps, and sets. Look for trends. This is why Livvia exists.", category: "training" },
+  { id: 11, title: "Track Your Workouts", body: "You can't improve what you don't measure. Log your weights, reps, and sets. Look for trends. This is why Revive exists.", category: "training" },
   { id: 12, title: "Fiber Keeps You Full", body: "High-fiber foods (vegetables, beans, oats) keep you full longer on fewer calories. Great for fat loss. Aim for 25-35g of fiber daily.", category: "nutrition" },
   { id: 13, title: "Active Recovery Works", body: "On rest days, light movement (walking, stretching, yoga) increases blood flow and speeds recovery. Total rest isn't always best rest.", category: "recovery" },
   { id: 14, title: "Form Over Ego", body: "Lifting heavier with bad form leads to injuries and less muscle growth. Drop the weight, nail the form, then progress. Your joints will thank you.", category: "training" },

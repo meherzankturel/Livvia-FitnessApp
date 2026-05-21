@@ -29,11 +29,11 @@ export default function WeeklySummaryCard({
   const volumeChangeStr = volumeChange >= 0 ? `+${volumeChange}%` : `${volumeChange}%`;
   const volumeChangeColor = volumeChange >= 0 ? "#2DB877" : "#E25B5B";
 
-  // Normalize bar heights: max = 50px, minimum for completed = 14px, stub for no workout = 4px
+  // Normalize bar heights: max = 50px, minimum for completed = 14px, stub for no workout = 6px
   const maxDuration = Math.max(...dayDurations, 1);
   const MAX_BAR_HEIGHT = 50;
   const MIN_BAR_HEIGHT = 14;
-  const STUB_HEIGHT = 4;
+  const STUB_HEIGHT = 6;
 
   const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
 
@@ -106,9 +106,12 @@ export default function WeeklySummaryCard({
               : String(Math.round(volume))}
             <Text style={styles.bottomValueUnit}> kg</Text>
           </Text>
-          <Text style={[styles.changeIndicator, { color: volumeChangeColor }]}>
-            {volumeChangeStr}
-          </Text>
+          <View style={styles.changeRow}>
+            <View style={[styles.changeDash, { backgroundColor: volumeChangeColor }]} />
+            <Text style={[styles.changeIndicator, { color: volumeChangeColor }]}>
+              {volumeChangeStr}
+            </Text>
+          </View>
         </View>
 
         {/* Vertical divider */}
@@ -121,10 +124,10 @@ export default function WeeklySummaryCard({
             <>
               <Text style={styles.bottomValue}>
                 {bestLift.weight}
-                <Text style={styles.bottomValueUnit}> kg</Text>
-                {bestLift.isPR ? " 🏆" : ""}
+                <Text style={styles.bottomValueUnit}>kg</Text>
               </Text>
               <Text style={styles.highlightDetail} numberOfLines={1}>
+                {bestLift.isPR ? "🏆 " : ""}
                 {bestLift.exercise}
                 {bestLift.isPR ? " · PR" : ""}
               </Text>
@@ -179,8 +182,8 @@ const styles = StyleSheet.create({
   topSection: {
     flexDirection: "row",
     alignItems: "flex-end",
-    justifyContent: "space-between",
     marginBottom: 14,
+    gap: 18,
   },
   workoutCount: {
     justifyContent: "flex-end",
@@ -213,25 +216,28 @@ const styles = StyleSheet.create({
   },
   // Bars
   barsSection: {
+    flex: 1,
     flexDirection: "row",
     alignItems: "flex-end",
-    gap: 6,
+    justifyContent: "space-between",
   },
   barCol: {
+    flex: 1,
     alignItems: "center",
-    gap: 4,
+    gap: 5,
   },
   barContainer: {
     justifyContent: "flex-end",
     height: 50,
   },
   bar: {
-    width: 7,
-    borderRadius: 3.5,
+    width: 8,
+    borderRadius: 4,
   },
   barLabel: {
-    fontSize: 8,
+    fontSize: 10,
     color: "#999",
+    fontWeight: "500",
   },
   // Divider
   divider: {
@@ -263,6 +269,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: "400",
     color: "#999",
+  },
+  changeRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    marginTop: 3,
+  },
+  changeDash: {
+    width: 16,
+    height: 1.5,
+    borderRadius: 1,
   },
   changeIndicator: {
     fontSize: 11,

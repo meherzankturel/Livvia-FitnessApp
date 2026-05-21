@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
-import ProgressRing from "./ProgressRing";
+import DottedSemiArc from "./DottedSemiArc";
+import LineWaveform from "./LineWaveform";
 
 interface Props {
   steps: number;
@@ -9,8 +10,17 @@ interface Props {
   heartRate: number;
 }
 
-// Heights for the ECG waveform bars (28 values simulate a heartbeat pattern)
-const ECG_HEIGHTS = [3, 3, 4, 3, 3, 4, 10, 22, 6, 2, 8, 14, 3, 3, 4, 3, 3, 4, 10, 22, 6, 2, 8, 14, 3, 3, 4, 3];
+// ECG-like pattern — flat baseline punctuated by occasional P-Q-R-S-T-style spikes.
+// Values represent height; LineWaveform connects them as a smooth polyline.
+const ECG_PATTERN = [
+  10, 10, 10, 10, 10, 10, 10, 10, 11, 12, 11, 10,
+  10, 10, 10, 14, 9, 18, 4, 14, 8, 12, 10, 10,
+  10, 10, 10, 10, 10, 11, 11, 10, 10, 10, 10, 10,
+  10, 13, 10, 14, 9, 18, 4, 14, 8, 12, 10, 10,
+  10, 10, 10, 10, 10, 10, 10, 10,
+];
+
+const formatNum = (n: number) => n.toLocaleString();
 
 export default function OverviewBento({ steps, stepsGoal, calories, heartRate }: Props) {
   const stepsProgress = stepsGoal > 0 ? Math.min(steps / stepsGoal, 1) : 0;
@@ -19,18 +29,28 @@ export default function OverviewBento({ steps, stepsGoal, calories, heartRate }:
     <View style={styles.row}>
       {/* ── Left: Steps card ─────────────────────────────────────────── */}
       <View style={[styles.card, styles.stepsCard]}>
-        <Text style={styles.cardTitle}>Steps</Text>
-        <View style={styles.ringWrapper}>
-          <ProgressRing size={110} strokeWidth={9} progress={stepsProgress} color="#2DB877" trackColor="#E0F4EB">
-            <Image
-              source={require("../../../assets/progress/icon-steps-ring.png")}
-              style={styles.stepsIcon}
-              resizeMode="contain"
-            />
-          </ProgressRing>
+        <View style={styles.stepsHeader}>
+          <Image
+            source={require("../../../assets/progress/icon-steps.png")}
+            style={styles.headerIcon}
+            resizeMode="contain"
+          />
+          <Text style={styles.cardTitle}>Steps</Text>
         </View>
-        <Text style={styles.stepsNumber}>{steps.toLocaleString()}</Text>
-        <Text style={styles.stepsGoal}>/ {stepsGoal.toLocaleString()} goal</Text>
+
+        <View style={styles.arcWrapper}>
+          <DottedSemiArc size={180} progress={stepsProgress} color="#7CC78A" trackColor="#C9C7BD" minFilled={4}>
+            <View style={styles.arcCenter}>
+              <Image
+                source={require("../../../assets/progress/icon-steps-ring.png")}
+                style={styles.shoeIcon}
+                resizeMode="contain"
+              />
+              <Text style={styles.stepsNumber}>{formatNum(steps)}</Text>
+              <Text style={styles.stepsLabel}>Steps</Text>
+            </View>
+          </DottedSemiArc>
+        </View>
       </View>
 
       {/* ── Right column ─────────────────────────────────────────────── */}
@@ -46,7 +66,7 @@ export default function OverviewBento({ steps, stepsGoal, calories, heartRate }:
             <Text style={styles.cardTitle}>Calories</Text>
           </View>
           <View style={styles.statRow}>
-            <Text style={styles.bigNumber}>{calories.toLocaleString()}</Text>
+            <Text style={styles.bigNumber}>{formatNum(calories)}</Text>
             <Text style={styles.unit}>kcal</Text>
           </View>
         </View>
@@ -61,25 +81,23 @@ export default function OverviewBento({ steps, stepsGoal, calories, heartRate }:
             />
             <Text style={styles.cardTitle}>Heart Rate</Text>
           </View>
-          {/* ECG waveform */}
+          {/* ECG line — continuous polyline with layered soft glow underneath */}
           <View style={styles.ecgWrapper}>
-            {/* Shadow layer */}
-            <View style={[styles.ecgRow, styles.ecgShadow]}>
-              {ECG_HEIGHTS.map((h, i) => (
-                <View
-                  key={`shadow-${i}`}
-                  style={[styles.ecgBar, { height: h, backgroundColor: "rgba(226,91,91,0.18)" }]}
-                />
-              ))}
+            {/* Outer glow — widest, most transparent, furthest down */}
+            <View style={[styles.ecgShadowLayer, { top: 4 }]} pointerEvents="none">
+              <LineWaveform values={ECG_PATTERN} height={28} color="rgba(226,91,91,0.08)" thickness={7} />
             </View>
-            {/* Main waveform */}
-            <View style={styles.ecgRow}>
-              {ECG_HEIGHTS.map((h, i) => (
-                <View
-                  key={`ecg-${i}`}
-                  style={[styles.ecgBar, { height: h, backgroundColor: "#E25B5B" }]}
-                />
-              ))}
+            {/* Mid glow */}
+            <View style={[styles.ecgShadowLayer, { top: 2.5 }]} pointerEvents="none">
+              <LineWaveform values={ECG_PATTERN} height={28} color="rgba(226,91,91,0.12)" thickness={4.5} />
+            </View>
+            {/* Close shadow — closest to the line */}
+            <View style={[styles.ecgShadowLayer, { top: 1 }]} pointerEvents="none">
+              <LineWaveform values={ECG_PATTERN} height={28} color="rgba(226,91,91,0.20)" thickness={2.5} />
+            </View>
+            {/* Main line — crisp on top */}
+            <View style={StyleSheet.absoluteFill}>
+              <LineWaveform values={ECG_PATTERN} height={28} color="#E25B5B" thickness={1.5} />
             </View>
           </View>
           <View style={styles.statRow}>
@@ -110,9 +128,7 @@ const styles = StyleSheet.create({
   },
   stepsCard: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 20,
+    paddingVertical: 16,
   },
   rightCol: {
     flex: 1,
@@ -128,7 +144,16 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "500",
     color: "#888",
+  },
+  stepsHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
     marginBottom: 4,
+  },
+  headerIcon: {
+    width: 16,
+    height: 16,
   },
   cardHeader: {
     flexDirection: "row",
@@ -140,21 +165,28 @@ const styles = StyleSheet.create({
     width: 16,
     height: 16,
   },
-  ringWrapper: {
-    marginVertical: 12,
+  arcWrapper: {
+    alignItems: "center",
+    justifyContent: "center",
+    marginTop: 4,
   },
-  stepsIcon: {
-    width: 32,
-    height: 32,
+  arcCenter: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  shoeIcon: {
+    width: 56,
+    height: 56,
+    marginBottom: 6,
   },
   stepsNumber: {
-    fontSize: 16,
+    fontSize: 22,
     fontWeight: "700",
     color: "#1a1a1a",
-    marginTop: 6,
+    letterSpacing: -0.5,
   },
-  stepsGoal: {
-    fontSize: 10,
+  stepsLabel: {
+    fontSize: 11,
     color: "#888",
     marginTop: 1,
   },
@@ -176,24 +208,14 @@ const styles = StyleSheet.create({
   },
   ecgWrapper: {
     height: 28,
-    marginVertical: 6,
-    justifyContent: "flex-end",
+    marginVertical: 4,
+    justifyContent: "center",
+    position: "relative",
   },
-  ecgRow: {
-    flexDirection: "row",
-    alignItems: "flex-end",
-    gap: 1.5,
+  ecgShadowLayer: {
     position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
-  },
-  ecgShadow: {
-    bottom: -2,
-    opacity: 0.6,
-  },
-  ecgBar: {
-    width: 3,
-    borderRadius: 1.5,
+    bottom: 0,
   },
 });

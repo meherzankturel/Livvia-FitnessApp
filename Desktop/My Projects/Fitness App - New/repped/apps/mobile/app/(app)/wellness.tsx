@@ -1,4 +1,4 @@
-import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Animated, StyleSheet, PanResponder } from "react-native";
 import { router } from "expo-router";
 import { useState, useEffect, useRef } from "react";
 import { useAuthStore } from "@repped/shared";
@@ -14,8 +14,8 @@ const SCALE_LABELS: Record<string, [string, string]> = {
 };
 
 // ——— Thumb Notch ———
-function Notch({ value, isSelected, isPassed, onPress }: {
-  value: number; isSelected: boolean; isPassed: boolean; onPress: () => void;
+function Notch({ value, isSelected, isPassed }: {
+  value: number; isSelected: boolean; isPassed: boolean;
 }) {
   const scale = useRef(new Animated.Value(isSelected ? 1 : 0)).current;
 
@@ -27,11 +27,10 @@ function Notch({ value, isSelected, isPassed, onPress }: {
     }).start();
   }, [isSelected]);
 
-  const thumbSize = scale.interpolate({ inputRange: [0, 1], outputRange: [8, 28] });
   const numOpacity = scale.interpolate({ inputRange: [0, 0.5, 1], outputRange: [0, 0, 1] });
 
   return (
-    <Pressable onPress={onPress} style={s.notch}>
+    <View style={s.notch}>
       <Animated.View style={[
         s.nMark,
         isPassed && !isSelected && s.nPassed,
@@ -41,7 +40,6 @@ function Notch({ value, isSelected, isPassed, onPress }: {
           shadowColor: "#2D2A24", shadowOffset: { width: 0, height: 3 },
           shadowOpacity: 0.2, shadowRadius: 8, elevation: 4,
         },
-        { transform: [{ scale: scale.interpolate({ inputRange: [0, 1], outputRange: [1, 1] }) }] },
       ]}>
         {isSelected && (
           <Animated.View style={{ opacity: numOpacity }}>
@@ -49,7 +47,7 @@ function Notch({ value, isSelected, isPassed, onPress }: {
           </Animated.View>
         )}
       </Animated.View>
-    </Pressable>
+    </View>
   );
 }
 
@@ -59,29 +57,50 @@ function SliderMetric({ label, scaleKey, value, onSelect }: {
 }) {
   const labels = SCALE_LABELS[scaleKey] || ["Low", "High"];
   const fillWidth = value > 0 ? `${((value - 1) / 4) * 100}%` : "0%";
+  const stateRef = useRef({ trackWidth: 0, value, onSelect });
+  stateRef.current.value = value;
+  stateRef.current.onSelect = onSelect;
+
+  const handleAt = (x: number) => {
+    const { trackWidth, value: v, onSelect: sel } = stateRef.current;
+    if (trackWidth <= 0) return;
+    const clamped = Math.max(0, Math.min(trackWidth, x));
+    const next = Math.max(1, Math.min(5, Math.round((clamped / trackWidth) * 4) + 1));
+    if (next !== v) sel(next);
+  };
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponderCapture: () => true,
+      onMoveShouldSetPanResponderCapture: () => true,
+      onPanResponderGrant: (evt) => handleAt(evt.nativeEvent.locationX),
+      onPanResponderMove: (evt) => handleAt(evt.nativeEvent.locationX),
+      onPanResponderTerminationRequest: () => false,
+    })
+  ).current;
 
   return (
     <View style={s.metric}>
       <View style={s.mTop}>
         <Text style={s.mLabel}>{label}</Text>
-        <Text style={[s.mVal, value === 0 && { color: "#DEDBD4" }]}>
-          {value > 0 ? value : "—"}
-        </Text>
       </View>
-      <View style={s.track}>
+      <View
+        style={s.track}
+        onLayout={(e) => { stateRef.current.trackWidth = e.nativeEvent.layout.width; }}
+        {...panResponder.panHandlers}
+      >
         {/* Background track */}
-        <View style={s.trackBg} />
+        <View style={s.trackBg} pointerEvents="none" />
         {/* Green fill */}
-        <View style={[s.trackFill, { width: fillWidth as any }]} />
-        {/* Notches */}
-        <View style={s.notches}>
+        <View style={[s.trackFill, { width: fillWidth as any }]} pointerEvents="none" />
+        {/* Notches (visual only — track owns gestures) */}
+        <View style={s.notches} pointerEvents="none">
           {STAR_OPTIONS.map((v) => (
             <Notch
               key={v}
               value={v}
               isSelected={value === v}
               isPassed={value > 0 && v < value}
-              onPress={() => onSelect(v)}
             />
           ))}
         </View>
@@ -122,18 +141,21 @@ export default function Wellness() {
     setSaved(true);
   };
 
+  useEffect(() => {
+    if (!saved) return;
+    const t = setTimeout(() => router.navigate("/(app)"), 900);
+    return () => clearTimeout(t);
+  }, [saved]);
+
   if (saved) {
     return (
       <View style={{ flex: 1, backgroundColor: "#F6F5F0", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
         <Text style={{ fontSize: 48, marginBottom: 16 }}>✓</Text>
         <Text style={{ color: "#2D2A24", fontSize: 24, fontWeight: "700", marginBottom: 8 }}>Logged!</Text>
-        <Text style={{ color: "#8E8E7A", textAlign: "center", marginBottom: 24, fontSize: 14 }}>
+        <Text style={{ color: "#8E8E7A", textAlign: "center", fontSize: 14 }}>
           Tracking wellness helps us optimize your training.
         </Text>
-        <Pressable onPress={() => router.navigate("/(app)")} style={s.saveBtn}>
-          <Text style={{ color: "#F6F5F0", fontSize: 16, fontWeight: "700" }}>Back</Text>
-        </Pressable>
       </View>
     );
   }

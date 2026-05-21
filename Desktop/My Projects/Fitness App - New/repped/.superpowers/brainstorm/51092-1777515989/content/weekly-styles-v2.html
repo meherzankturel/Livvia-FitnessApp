@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Card — Premium Styles</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; padding: 30px 16px 60px; -webkit-font-smoothing: antialiased; }
+  h1 { text-align: center; color: #fff; font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .sub { text-align: center; color: #555; font-size: 12px; margin-bottom: 32px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 920px; margin: 0 auto; }
+  .option { cursor: pointer; transition: transform 0.2s; }
+  .option:hover { transform: translateY(-3px); }
+  .option.selected .phone-card { box-shadow: 0 0 0 2px #2DB877, 0 8px 30px rgba(45,184,119,0.2); }
+  .label { color: #888; font-size: 12px; font-weight: 600; margin-bottom: 8px; text-align: center; letter-spacing: 0.3px; }
+  .phone-card { background: #F8F7F4; border-radius: 24px; padding: 16px; transition: box-shadow 0.2s; }
+</style>
+</head>
+<body>
+
+<h1>Weekly Summary — Premium Styles</h1>
+<p class="sub">Click to select your favourite</p>
+
+<div class="grid">
+
+<!-- ═══ STYLE 1: Gradient Ring Hero ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">1 — Gradient Ring Hero</div>
+  <div class="phone-card">
+    <div style="background:#fff; border-radius:20px; padding:16px; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+        <span style="font-size:10px; color:#888; font-weight:400;">Apr 21 – 27</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:18px;">
+        <!-- Gradient ring -->
+        <div style="position:relative; width:80px; height:80px; flex-shrink:0;">
+          <svg viewBox="0 0 80 80" width="80" height="80">
+            <defs>
+              <linearGradient id="wg1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#2DB877"/>
+                <stop offset="100%" stop-color="#6366F1"/>
+              </linearGradient>
+            </defs>
+            <circle cx="40" cy="40" r="33" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="6"/>
+            <circle cx="40" cy="40" r="33" fill="none" stroke="url(#wg1)" stroke-width="6" stroke-linecap="round"
+              stroke-dasharray="207" stroke-dashoffset="83" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+            <div style="font-size:20px; font-weight:700; color:#1a1a1a; line-height:1;">60<span style="font-size:11px; color:#bbb;">%</span></div>
+          </div>
+        </div>
+        <!-- Stats column -->
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <span style="font-size:11px; color:#999; font-weight:400;">Workouts</span>
+            <div>
+              <span style="font-size:18px; font-weight:700; color:#1a1a1a;">3</span>
+              <span style="font-size:11px; color:#bbb;"> / 5</span>
+            </div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;">
+            <span style="font-size:11px; color:#999; font-weight:400;">Volume</span>
+            <div>
+              <span style="font-size:18px; font-weight:700; color:#1a1a1a;">2.1k</span>
+              <span style="font-size:10px; color:#2DB877; font-weight:600; margin-left:3px;">+8%</span>
+            </div>
+          </div>
+          <div style="display:flex; gap:16px;">
+            <div>
+              <span style="font-size:14px; font-weight:700; color:#1a1a1a;">42m</span>
+              <span style="font-size:9px; color:#bbb;"> avg</span>
+            </div>
+            <div>
+              <span style="font-size:14px; font-weight:700; color:#1a1a1a;">1</span>
+              <span style="font-size:9px; color:#bbb;"> PR</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STYLE 2: Stacked Bars + Glow ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">2 — Metric Bars</div>
+  <div class="phone-card">
+    <div style="background:#fff; border-radius:20px; padding:16px; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+        <span style="font-size:10px; color:#888;">Apr 21 – 27</span>
+      </div>
+      <!-- Workouts bar -->
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+          <span style="font-size:11px; color:#888; font-weight:500;">Workouts</span>
+          <span style="font-size:13px; font-weight:700; color:#1a1a1a;">3 <span style="color:#bbb; font-weight:400;">/ 5</span></span>
+        </div>
+        <div style="height:6px; background:rgba(0,0,0,0.04); border-radius:3px; overflow:hidden;">
+          <div style="height:100%; width:60%; border-radius:3px; background:linear-gradient(90deg, #2DB877, #34D399);"></div>
+        </div>
+      </div>
+      <!-- Volume bar -->
+      <div style="margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+          <span style="font-size:11px; color:#888; font-weight:500;">Volume</span>
+          <div>
+            <span style="font-size:13px; font-weight:700; color:#1a1a1a;">2.1k</span>
+            <span style="font-size:10px; color:#2DB877; font-weight:600; margin-left:3px;">+8%</span>
+          </div>
+        </div>
+        <div style="height:6px; background:rgba(0,0,0,0.04); border-radius:3px; overflow:hidden;">
+          <div style="height:100%; width:72%; border-radius:3px; background:linear-gradient(90deg, #6366F1, #818CF8);"></div>
+        </div>
+      </div>
+      <!-- Bottom stats -->
+      <div style="display:flex; gap:20px; padding-top:4px;">
+        <div>
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">42<span style="font-size:10px; color:#bbb; font-weight:400;">m</span></div>
+          <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:2px;">Avg Time</div>
+        </div>
+        <div>
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">1</div>
+          <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:2px;">PR</div>
+        </div>
+        <div>
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">5</div>
+          <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:2px;">Streak</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STYLE 3: Glass Morphism ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">3 — Soft Glass</div>
+  <div class="phone-card">
+    <div style="background:linear-gradient(135deg, rgba(255,255,255,0.95), rgba(240,248,244,0.9)); border-radius:20px; padding:16px; box-shadow:0 2px 12px rgba(45,184,119,0.06); border:0.5px solid rgba(45,184,119,0.1);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+        <span style="font-size:10px; color:#2DB877; font-weight:500; background:rgba(45,184,119,0.08); padding:3px 8px; border-radius:6px;">60% done</span>
+      </div>
+      <div style="display:flex; gap:10px; margin-bottom:14px;">
+        <div style="flex:1; background:rgba(255,255,255,0.7); border-radius:14px; padding:10px; text-align:center; border:0.5px solid rgba(0,0,0,0.04);">
+          <div style="font-size:22px; font-weight:700; color:#1a1a1a; line-height:1;">3<span style="font-size:11px; color:#bbb;">/5</span></div>
+          <div style="font-size:8px; color:#999; text-transform:uppercase; margin-top:3px; font-weight:500; letter-spacing:0.3px;">Workouts</div>
+        </div>
+        <div style="flex:1; background:rgba(255,255,255,0.7); border-radius:14px; padding:10px; text-align:center; border:0.5px solid rgba(0,0,0,0.04);">
+          <div style="font-size:22px; font-weight:700; color:#1a1a1a; line-height:1;">2.1k</div>
+          <div style="font-size:8px; color:#999; text-transform:uppercase; margin-top:3px; font-weight:500;">Volume</div>
+          <div style="font-size:9px; color:#2DB877; font-weight:600;">+8%</div>
+        </div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1; background:rgba(255,255,255,0.7); border-radius:14px; padding:10px; text-align:center; border:0.5px solid rgba(0,0,0,0.04);">
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">42m</div>
+          <div style="font-size:8px; color:#999; text-transform:uppercase; margin-top:3px; font-weight:500;">Avg Time</div>
+        </div>
+        <div style="flex:1; background:rgba(255,255,255,0.7); border-radius:14px; padding:10px; text-align:center; border:0.5px solid rgba(0,0,0,0.04);">
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">1</div>
+          <div style="font-size:8px; color:#999; text-transform:uppercase; margin-top:3px; font-weight:500;">PR</div>
+        </div>
+        <div style="flex:1; background:rgba(255,255,255,0.7); border-radius:14px; padding:10px; text-align:center; border:0.5px solid rgba(0,0,0,0.04);">
+          <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">5</div>
+          <div style="font-size:8px; color:#999; text-transform:uppercase; margin-top:3px; font-weight:500;">Streak</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STYLE 4: Dark Premium ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">4 — Dark Premium</div>
+  <div class="phone-card">
+    <div style="background:#1a1a1a; border-radius:20px; padding:16px; box-shadow:0 2px 12px rgba(0,0,0,0.1);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <span style="font-size:13px; font-weight:500; color:#777;">This Week</span>
+        <span style="font-size:10px; color:#2DB877; font-weight:500; background:rgba(45,184,119,0.12); padding:3px 8px; border-radius:6px;">Apr 21 – 27</span>
+      </div>
+      <!-- Hero number -->
+      <div style="text-align:center; margin-bottom:14px;">
+        <div style="font-size:48px; font-weight:800; color:#fff; line-height:1; letter-spacing:-2px;">3<span style="font-size:20px; color:#555; font-weight:400;">/5</span></div>
+        <div style="font-size:10px; color:#555; margin-top:2px; font-weight:500; text-transform:uppercase; letter-spacing:0.5px;">Workouts Completed</div>
+        <div style="height:3px; background:rgba(255,255,255,0.06); border-radius:1.5px; margin:10px 20px 0; overflow:hidden;">
+          <div style="height:100%; width:60%; border-radius:1.5px; background:linear-gradient(90deg, #2DB877, #34D399);"></div>
+        </div>
+      </div>
+      <!-- Stats row -->
+      <div style="display:flex; justify-content:space-around; padding-top:6px; border-top:0.5px solid rgba(255,255,255,0.06);">
+        <div style="text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#eee;">2.1k</div>
+          <div style="font-size:8px; color:#555; text-transform:uppercase; margin-top:1px;">Volume</div>
+          <div style="font-size:9px; color:#2DB877; font-weight:600;">+8%</div>
+        </div>
+        <div style="width:0.5px; background:rgba(255,255,255,0.06);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#eee;">42m</div>
+          <div style="font-size:8px; color:#555; text-transform:uppercase; margin-top:1px;">Avg</div>
+        </div>
+        <div style="width:0.5px; background:rgba(255,255,255,0.06);"></div>
+        <div style="text-align:center;">
+          <div style="font-size:16px; font-weight:700; color:#eee;">1</div>
+          <div style="font-size:8px; color:#555; text-transform:uppercase; margin-top:1px;">PR</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STYLE 5: Activity Sparkline ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">5 — Activity Sparkline</div>
+  <div class="phone-card">
+    <div style="background:#fff; border-radius:20px; padding:16px; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+        <span style="font-size:10px; color:#888;">Apr 21 – 27</span>
+      </div>
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+        <div>
+          <span style="font-size:28px; font-weight:700; color:#1a1a1a; letter-spacing:-1px;">3</span>
+          <span style="font-size:13px; color:#bbb;"> / 5 workouts</span>
+        </div>
+        <span style="font-size:10px; color:#2DB877; font-weight:600;">60%</span>
+      </div>
+      <!-- Sparkline area chart -->
+      <div style="margin-bottom:12px;">
+        <svg viewBox="0 0 300 50" width="100%" height="40" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2DB877" stop-opacity="0.15"/>
+              <stop offset="100%" stop-color="#2DB877" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          <polygon fill="url(#sparkFill)" points="0,45 43,30 86,20 129,10 172,45 215,45 258,45 300,45 300,50 0,50"/>
+          <polyline fill="none" stroke="#2DB877" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+            points="0,45 43,30 86,20 129,10 172,45 215,45 258,45"/>
+          <!-- Dots for workout days -->
+          <circle cx="43" cy="30" r="3.5" fill="#2DB877"/>
+          <circle cx="86" cy="20" r="3.5" fill="#2DB877"/>
+          <circle cx="129" cy="10" r="3.5" fill="#2DB877"/>
+          <circle cx="172" cy="45" r="3" fill="#ddd" stroke="#fff" stroke-width="1"/>
+          <circle cx="215" cy="45" r="3" fill="#ddd" stroke="#fff" stroke-width="1"/>
+        </svg>
+      </div>
+      <div style="display:flex; gap:20px;">
+        <div>
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">2.1k</span>
+          <span style="font-size:9px; color:#bbb;"> vol</span>
+          <span style="font-size:9px; color:#2DB877; font-weight:600;"> +8%</span>
+        </div>
+        <div>
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">42m</span>
+          <span style="font-size:9px; color:#bbb;"> avg</span>
+        </div>
+        <div>
+          <span style="font-size:15px; font-weight:700; color:#1a1a1a;">1</span>
+          <span style="font-size:9px; color:#bbb;"> PR</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STYLE 6: Split Accent ═══ -->
+<div class="option" onclick="sel(this)">
+  <div class="label">6 — Split Accent</div>
+  <div class="phone-card">
+    <div style="background:#fff; border-radius:20px; overflow:hidden; box-shadow:0 1px 6px rgba(0,0,0,0.04);">
+      <!-- Green accent header -->
+      <div style="background:linear-gradient(135deg, #2DB877, #27A56A); padding:12px 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="font-size:13px; font-weight:600; color:rgba(255,255,255,0.85);">This Week</span>
+          <span style="font-size:10px; color:rgba(255,255,255,0.6);">Apr 21 – 27</span>
+        </div>
+        <div style="display:flex; align-items:baseline; gap:6px; margin-top:6px;">
+          <span style="font-size:30px; font-weight:700; color:#fff; letter-spacing:-1px;">3</span>
+          <span style="font-size:13px; color:rgba(255,255,255,0.6);">/ 5 workouts</span>
+        </div>
+      </div>
+      <!-- White body -->
+      <div style="padding:12px 16px;">
+        <div style="display:flex; justify-content:space-between;">
+          <div style="text-align:center; flex:1;">
+            <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">2.1k</div>
+            <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:3px; font-weight:500;">Volume</div>
+            <div style="font-size:9px; color:#2DB877; font-weight:600;">+8%</div>
+          </div>
+          <div style="width:0.5px; background:rgba(0,0,0,0.06); margin:0 4px;"></div>
+          <div style="text-align:center; flex:1;">
+            <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">42m</div>
+            <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:3px; font-weight:500;">Avg Time</div>
+          </div>
+          <div style="width:0.5px; background:rgba(0,0,0,0.06); margin:0 4px;"></div>
+          <div style="text-align:center; flex:1;">
+            <div style="font-size:18px; font-weight:700; color:#1a1a1a; line-height:1;">1</div>
+            <div style="font-size:8px; color:#bbb; text-transform:uppercase; margin-top:3px; font-weight:500;">PR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function sel(el) {
+  document.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

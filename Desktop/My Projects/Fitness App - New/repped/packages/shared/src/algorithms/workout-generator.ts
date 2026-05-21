@@ -3,12 +3,47 @@ import type { Equipment, TrainingHistory, Goal, Sex } from "../types/user";
 import { shouldAvoidExercise, type UserInjury } from "../constants/injuries";
 import { inferMovementPattern, type MovementPattern } from "../constants/movement-patterns";
 import { type TrainingPhase, TRAINING_PHASES } from "../constants/training-phases";
+import {
+  getConditioningDayCount,
+  getConditioningDayIndices,
+  pickConditioningTemplateForDay,
+} from "../constants/conditioning";
+
+/**
+ * Generator output version. Bump whenever a code change would meaningfully
+ * alter the generated plan for existing users (FOCUS_MUSCLE_MAP rebalance,
+ * NASM phase parameter correction, conditioning-day insertion, etc.).
+ *
+ * Stored on each workout_plans row. On home-screen load, if
+ * plan.plan_version < CURRENT_PLAN_VERSION, the app silently regenerates the
+ * plan so the user sees the corrected programming on next open — no SQL
+ * migration, no user action, fully automatic.
+ *
+ * Bump history:
+ *   1: initial
+ *   2: Full Body A/B/C rebalanced for NSCA 2x/wk frequency (2026-05-13)
+ *   3: Conditioning days injected for lose_fat users (2026-05-13)
+ *   4: ACSM beginner conditioning exclusion (no conditioning during NASM
+ *      Phase 1 Stabilization); removed app-chosen 70% adherence threshold
+ *      in favor of NASM's "trained at all" engagement criterion (2026-05-13)
+ *   5: Beginner full_body cap 5→6 to honor NSCA 2x/wk frequency across all
+ *      muscle groups; previous cap dropped one muscle per session below
+ *      NSCA minimum frequency (2026-05-14)
+ *   6: Training days now spread across the week (e.g. 3-day → M/W/F instead
+ *      of M/T/W) to honor NSCA 4th ed. / ACSM 2018 48-hour recovery rule
+ *      for muscle groups trained on multiple days (2026-05-14)
+ */
+export const CURRENT_PLAN_VERSION = 6;
 
 export interface WorkoutDay {
   day: number;
   focus: string;
   isRestDay: boolean;
   exercises: PlannedExercise[];
+  /** Strength day (default) or ACSM conditioning day (fat-loss users only) */
+  kind?: "strength" | "conditioning";
+  /** For conditioning days: which template to render (e.g. "HIIT Circuit") */
+  conditioningTemplateName?: string;
 }
 
 export interface PlannedExercise {
@@ -137,10 +172,19 @@ const FEMALE_PREFERRED_PATTERNS = [
 // Muscle groups per focus — balanced to produce 4-7 exercises per session.
 // Large muscles (chest, back, quads) get 2 exercises; small (biceps, triceps,
 // calves, core) get 1. This is managed by getExercisesPerGroup().
+//
+// Full Body A/B/C rotation aligns with NSCA / Schoenfeld (2016) weekly
+// frequency standards:
+//   - Major muscle groups (chest, back, quads, hams, glutes, shoulders): 2-3×/wk
+//   - Arms / calves / core: 1×/wk direct work + indirect work via compounds
+// Every day stays balanced (push pattern, pull pattern, legs, accessory).
 const FOCUS_MUSCLE_MAP: Record<string, MuscleGroup[]> = {
-  "Full Body A": ["chest", "back", "quads", "shoulders"],
-  "Full Body B": ["back", "hamstrings", "glutes", "shoulders"],
-  "Full Body C": ["chest", "quads", "hamstrings", "core"],
+  // Push-emphasis full body — adds triceps + calves accessories
+  "Full Body A": ["chest", "back", "quads", "shoulders", "triceps", "calves"],
+  // Pull-emphasis full body — adds biceps + core accessories
+  "Full Body B": ["chest", "back", "hamstrings", "glutes", "biceps", "core"],
+  // Posterior-chain + shoulders full body — closes the 2×/wk gap on hams/glutes
+  "Full Body C": ["chest", "back", "quads", "hamstrings", "glutes", "shoulders"],
   "Upper": ["chest", "back", "shoulders", "biceps", "triceps"],
   "Lower": ["quads", "hamstrings", "glutes", "calves"],
   "Push": ["chest", "shoulders", "triceps"],
@@ -158,6 +202,40 @@ function getSplitType(daysPerWeek: number): string {
   if (daysPerWeek <= 3) return "full_body";
   if (daysPerWeek === 4) return "upper_lower";
   return "push_pull_legs";
+}
+
+/**
+ * Distribute daysPerWeek training sessions across the 7-day calendar to honor
+ * NSCA Essentials of Strength Training & Conditioning 4th ed. and ACSM 2018
+ * Resistance Training Guidelines:
+ *   "Allow ≥48 hours of recovery between resistance training sessions of
+ *    the same muscle group."
+ *
+ * Since Full Body splits hit chest/back on every training day, consecutive
+ * training days violate the 48-hour rule. This function spreads the sessions
+ * evenly across calendar slots 0..6 (Monday..Sunday).
+ *
+ *   3 days → [0, 2, 4]    = Mon/Wed/Fri  (canonical full-body schedule)
+ *   4 days → [0, 1, 3, 5] = Mon/Tue/Thu/Sat
+ *   5 days → [0, 1, 2, 4, 5] = Mon/Tue/Wed/Fri/Sat
+ *   6 days → [0..5]       = Mon-Sat
+ *   7 days → [0..6]       = every day
+ *
+ * Returns calendar-day indices (0=Monday). The Nth training session within
+ * the week (used by conditioning placement) is independent of these.
+ */
+function getTrainingDayIndices(daysPerWeek: number): Set<number> {
+  const slots = new Set<number>();
+  if (daysPerWeek <= 0) return slots;
+  if (daysPerWeek >= 7) {
+    for (let i = 0; i < 7; i++) slots.add(i);
+    return slots;
+  }
+  const step = 7 / daysPerWeek;
+  for (let i = 0; i < daysPerWeek; i++) {
+    slots.add(Math.floor(i * step));
+  }
+  return slots;
 }
 
 // ─── Day Order Optimization ─────────────────────────────────────────────────────
@@ -275,25 +353,25 @@ function getPositionalVolume(
     };
   } else if (goal === "build_muscle") {
     // Schoenfeld et al. (2017): 10+ sets/muscle/week, 6-12 reps
-    // Schoenfeld et al. (2016): longer rest (2-3 min) = better hypertrophy
+    // NASM OPT Phase 3 (Hypertrophy): 0-60s rest between sets
     base = {
       compound: {
         sets: baseSets,
         reps: history === "beginner" ? 10 : 8,
         rpe: history === "beginner" ? 6.5 : 7.5,
-        restSeconds: 150, // 2.5 min — Schoenfeld (2016): 3 min > 1 min
+        restSeconds: 60, // NASM hypertrophy: 0-60s
       },
       mid: {
         sets: baseSets,
         reps: history === "beginner" ? 10 : 10,
         rpe: history === "beginner" ? 7 : 8,
-        restSeconds: 120, // 2 min
+        restSeconds: 60, // NASM hypertrophy: 0-60s
       },
       isolation: {
         sets: baseSets,
         reps: history === "beginner" ? 12 : 10,
         rpe: history === "beginner" ? 7.5 : 8.5,
-        restSeconds: 90, // 1.5 min
+        restSeconds: 45, // NASM hypertrophy: 0-60s
       },
     };
   } else {
@@ -527,11 +605,69 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
   const phase = input.trainingPhase ?? (trainingHistory === "beginner" ? "stabilization" : "hypertrophy");
   const phaseConfig = TRAINING_PHASES[phase];
 
+  // ── ACSM Conditioning Day Allocation ──────────────────────────────────────
+  // Fat-loss users training 4+ days/wk get conditioning days inserted into
+  // their plan. Day counts and spacing are ACSM-aligned (see conditioning.ts).
+  //
+  // Excluded: beginners still in NASM Phase 1 (Stabilization).
+  //   ACSM 2014 GETP 10th ed.: HIIT and metabolic conditioning are not
+  //   appropriate for sedentary or low-fit individuals during the initial
+  //   weeks of a program.
+  //   NASM Essentials Ch. 14: Phase 1 is for building movement competency
+  //   and stability — additional metabolic stress is added in later phases.
+  // Such users get a strength-only plan until they advance to Phase 2
+  // (strength_endurance), at which point the next plan regen includes
+  // conditioning automatically.
+  const isBeginnerInStabilization =
+    trainingHistory === "beginner" && phase === "stabilization";
+  const conditioningCount =
+    goal === "lose_fat" && daysPerWeek >= 4 && !isBeginnerInStabilization
+      ? getConditioningDayCount(daysPerWeek)
+      : 0;
+  const conditioningDayIndices = getConditioningDayIndices(daysPerWeek, conditioningCount);
+
+  // Track conditioning slot index for template round-robin
+  let conditioningSlotIdx = 0;
+  // Track strength day position in the focus rotation (separate from calendar
+  // day index so conditioning/rest insertion doesn't skip a focus slot)
+  let strengthFocusIdx = 0;
+  // Track which training session we're on (0-indexed within the week's
+  // training sessions, not the calendar day). Used to align conditioning
+  // placement with the Nth training session.
+  let trainingSessionIdx = 0;
+
+  // NSCA 48-hour recovery: distribute training across the week instead of
+  // clumping at the start (Mon..daysPerWeek). See getTrainingDayIndices.
+  const trainingCalendarIndices = getTrainingDayIndices(daysPerWeek);
+
   const days: WorkoutDay[] = [];
 
   for (let i = 0; i < 7; i++) {
-    if (i < daysPerWeek) {
-      const focus = optimizedFocusList[i % optimizedFocusList.length];
+    if (!trainingCalendarIndices.has(i)) {
+      days.push({ day: i + 1, focus: "Rest", isRestDay: true, exercises: [] });
+      continue;
+    }
+    // This calendar slot is a training day. Determine strength vs conditioning.
+    {
+      // ── Conditioning day? ──
+      if (conditioningDayIndices.has(trainingSessionIdx)) {
+        const template = pickConditioningTemplateForDay(equipment, conditioningSlotIdx);
+        conditioningSlotIdx++;
+        trainingSessionIdx++;
+        days.push({
+          day: i + 1,
+          focus: "Conditioning",
+          isRestDay: false,
+          exercises: [],
+          kind: "conditioning",
+          conditioningTemplateName: template.name,
+        });
+        continue;
+      }
+      trainingSessionIdx++;
+
+      const focus = optimizedFocusList[strengthFocusIdx % optimizedFocusList.length];
+      strengthFocusIdx++;
       const muscleGroups = FOCUS_MUSCLE_MAP[focus] || [];
       const exercises: PlannedExercise[] = [];
 
@@ -606,15 +742,21 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
       });
 
       // ── Cap total exercises per session ──
-      // Research (Simao et al. 2012): performance degrades after 6th exercise.
-      // Caps are split-aware: PPL has fewer muscle groups → fewer exercises.
+      // Research-based per-session caps:
+      //   - NSCA Essentials 4th ed.: beginners 5-8 exercises full body; PPL fewer per day
+      //   - ACSM GETP 10th ed.: beginners 8-10 resistance exercises per session
+      //   - Simão et al. (2012): performance degrades AFTER the 6th exercise
+      //
+      // Caps are split-aware: PPL days have 3 muscle groups so 4 caps fine;
+      // Full Body and Upper/Lower days have 5-6 muscle groups so cap must
+      // be ≥6 to preserve NSCA 2x/wk frequency per muscle (Schoenfeld 2016).
       // Cap trims from the END (lowest priority = isolation/core), preserving
       // all compound movements which are the foundation of the program.
       const currentSplit = getSplitType(daysPerWeek);
       const isPPL = currentSplit === "push_pull_legs";
       let maxExercises: number;
       if (trainingHistory === "beginner") {
-        maxExercises = isPPL ? 4 : 5;
+        maxExercises = isPPL ? 4 : 6;
       } else if (trainingHistory === "intermediate") {
         maxExercises = isPPL ? 5 : 6;
       } else {
@@ -667,8 +809,6 @@ export function generateWorkoutPlan(input: GeneratorInput): WorkoutDay[] {
       }
 
       days.push({ day: i + 1, focus, isRestDay: false, exercises });
-    } else {
-      days.push({ day: i + 1, focus: "Rest", isRestDay: true, exercises: [] });
     }
   }
 

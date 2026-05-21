@@ -1,7 +1,7 @@
-# Livvia — Session Context & Progress
+# Revive — Session Context & Progress
 
 **Last Updated:** 2026-03-23 (evening)
-**App:** Livvia — AI Fitness App (React Native / Expo / Supabase)
+**App:** Revive — AI Fitness App (React Native / Expo / Supabase)
 **Location:** `/Users/meherzan/Desktop/My Projects/Fitness App - New/repped/`
 
 ---

@@ -1,17 +1,20 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import type { ImageSourcePropType } from "react-native";
 
 // ─── Dish Image Manager ──────────────────────────────────────────────────────
-// Static mapping of 100 dish names → HD Pexels image URLs.
-// Pre-fetched at build time. Instant lookup, zero runtime API calls.
-// For new dishes not in the mapping, falls back to Pexels API search.
+// Three sources, in order of preference:
+//   1. LOCAL_MEAL_IMAGES — bundled AI-generated JPEGs (instant, offline)
+//   2. DISH_IMAGE_MAP    — pre-fetched Pexels CDN URLs (instant, online)
+//   3. Pexels API search — runtime fetch for unknown dishes (cached 30 days)
 
 import DISH_IMAGE_MAP from "./dish-image-urls.json";
+import { LOCAL_MEAL_IMAGES } from "./meal-image-assets";
 
 const PEXELS_API_KEY = process.env.EXPO_PUBLIC_PEXELS_API_KEY || "";
 const CACHE_PREFIX = "dish_img_v3_";
 const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
-// ─── Get image URL for a dish (instant) ──────────────────────────────────────
+// ─── Get image URL for a dish (instant, URL-only) ────────────────────────────
 export function getDishImageUrl(dishName: string): string | null {
   // 1. Check static mapping first (instant, covers all 100 dishes)
   const staticUrl = (DISH_IMAGE_MAP as Record<string, string>)[dishName];
@@ -24,6 +27,24 @@ export function getDishImageUrl(dishName: string): string | null {
   }
 
   return null;
+}
+
+// ─── Get a React-Native-ready image source (instant) ─────────────────────────
+// Returns the right shape for <Image source={...} />:
+//   - ImageSourcePropType (from require()) for local AI-generated meals
+//   - { uri: string } for remote Pexels CDN URLs
+//   - null when nothing is found (caller may then trigger the async fetch)
+export function getDishImageSource(dishName: string): ImageSourcePropType | null {
+  // 1. Local bundled image wins (AI-generated, no network needed)
+  if (LOCAL_MEAL_IMAGES[dishName]) return LOCAL_MEAL_IMAGES[dishName];
+  // 2. Fuzzy local match
+  const lower = dishName.toLowerCase().trim();
+  for (const [key, src] of Object.entries(LOCAL_MEAL_IMAGES)) {
+    if (key.toLowerCase().trim() === lower) return src;
+  }
+  // 3. Fall back to remote URL from the static Pexels map
+  const url = getDishImageUrl(dishName);
+  return url ? { uri: url } : null;
 }
 
 // ─── Get image URL with async fallback for unknown dishes ────────────────────

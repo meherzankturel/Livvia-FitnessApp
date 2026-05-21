@@ -1,7 +1,7 @@
-# Livvia — Business Strategy & Revenue Plan
+# Revive — Business Strategy & Revenue Plan
 
 **Date:** March 2026
-**App:** Livvia — AI Workout Planner, Meal Guide & Fitness Tracker
+**App:** Revive — AI Workout Planner, Meal Guide & Fitness Tracker
 
 ---
 
@@ -18,7 +18,7 @@
 
 ---
 
-## 2. Revenue Projections for Livvia
+## 2. Revenue Projections for Revive
 
 ### Conservative Estimates
 
@@ -50,7 +50,7 @@
 - Educational tips on rest days
 - Basic progress stats (workout count, streak)
 
-#### Livvia Pro — $6.99/mo or $49.99/yr
+#### Revive Pro — $6.99/mo or $49.99/yr
 - Unlimited plan regeneration
 - Full workout history with progress graphs
 - Mind-muscle focus cues on every exercise
@@ -65,7 +65,7 @@
 - Exercise swap with alternatives
 - Meal alternatives and regeneration
 
-#### Livvia Elite — $12.99/mo or $89.99/yr
+#### Revive Elite — $12.99/mo or $89.99/yr
 - Everything in Pro
 - Apple Health integration with readiness scoring
 - AI-powered workout adjustments based on performance trends
@@ -76,7 +76,7 @@
 - Advanced analytics (muscle group distribution, strength levels)
 
 ### Pricing Rationale
-- **$6.99/mo** undercuts Fitbod ($12.99) by 46% — positions Livvia as "better value"
+- **$6.99/mo** undercuts Fitbod ($12.99) by 46% — positions Revive as "better value"
 - **$49.99/yr** offers 40% savings vs monthly — drives annual commitments
 - **No lifetime option at launch** — lifetime purchases cannibalize recurring revenue
 - Consider adding lifetime ($99.99) after 12+ months once you have stable recurring revenue
@@ -88,9 +88,9 @@
 
 ---
 
-## 4. Competitive Advantages — What Makes Livvia Unique
+## 4. Competitive Advantages — What Makes Revive Unique
 
-| Feature | Fitbod | Hevy | Strong | Livvia |
+| Feature | Fitbod | Hevy | Strong | Revive |
 |---------|--------|------|--------|--------|
 | AI workout generation | Yes | Basic | No | **Yes** |
 | Exercise science-based | Partial | No | No | **Yes (periodization, RPE, progressive overload)** |
@@ -108,7 +108,7 @@
 | HIIT & core finisher | No | No | No | **Yes** |
 
 ### Unique Positioning Statement
-> "Livvia is the only fitness app that handles your workouts, nutrition, and grocery shopping in one place — built on peer-reviewed exercise science, not guesswork. It's like having a personal trainer, nutritionist, and meal planner in your pocket for $6.99/month."
+> "Revive is the only fitness app that handles your workouts, nutrition, and grocery shopping in one place — built on peer-reviewed exercise science, not guesswork. It's like having a personal trainer, nutritionist, and meal planner in your pocket for $6.99/month."
 
 ### Key Selling Points (For Marketing)
 1. **All-in-one:** Workout + meals + grocery — competitors only do ONE of these
@@ -124,7 +124,7 @@
 ### Phase 1: Pre-Launch (2-4 Weeks Before App Store Submission)
 
 #### Landing Page
-- Domain: livvia.app or getlivvia.com
+- Domain: revive.app or getrevive.com
 - Simple one-page design with:
   - Hero: "Your AI Personal Trainer, Nutritionist & Meal Planner — $6.99/mo"
   - 3-4 app screenshots (workout player, meal plan, progress, grocery list)
@@ -134,10 +134,10 @@
 - Tools: Carrd.co ($19/yr), or Framer, or simple Next.js page
 
 #### Social Media Setup
-- **Instagram** (@livviaapp): App screenshots, workout tips, feature reveals
-- **TikTok** (@livviaapp): Short-form gym content showing the app in action
-- **Twitter/X** (@livviaapp): Building in public, fitness science threads
-- **YouTube** (Livvia): Longer educational content, app walkthroughs
+- **Instagram** (@reviveapp): App screenshots, workout tips, feature reveals
+- **TikTok** (@reviveapp): Short-form gym content showing the app in action
+- **Twitter/X** (@reviveapp): Building in public, fitness science threads
+- **YouTube** (Revive): Longer educational content, app walkthroughs
 
 #### Pre-Launch Content (30 Posts Before Launch)
 1. "I'm building a fitness app that does what a $200/mo trainer does" (founder story)
@@ -163,7 +163,7 @@
 ### Phase 2: Launch Week
 
 #### App Store Optimization (ASO)
-- **Title:** "Livvia: AI Workout Planner"
+- **Title:** "Revive: AI Workout Planner"
 - **Subtitle:** "Gym Tracker, Meals & Nutrition"
 - **Keywords:** workout tracker, gym planner, strength training, meal plan, fitness AI, exercise tracker, weight lifting, nutrition guide, grocery list, workout log
 - **Screenshots (6 required):**
@@ -207,8 +207,8 @@
 
 - **YouTube** (weekly uploads):
   - "I Let an App Plan My Workouts for 30 Days — Here's What Happened"
-  - "Fitbod vs Hevy vs Livvia — Honest Comparison"
-  - "The Science Behind How Livvia Generates Your Workout"
+  - "Fitbod vs Hevy vs Revive — Honest Comparison"
+  - "The Science Behind How Revive Generates Your Workout"
   - Target: 1,000 subscribers in first 6 months
 
 - **TikTok/Instagram Reels** (3-5x per week):
@@ -219,7 +219,7 @@
 
 #### Influencer Marketing
 - Partner with **micro-influencers** (1K-50K followers) in fitness niche
-- Offer: Free Livvia Pro lifetime access + $50-$200 per post
+- Offer: Free Revive Pro lifetime access + $50-$200 per post
 - Target: 5-10 influencers per month
 - Expected ROI: 50-200 downloads per influencer post
 - Platform priority: TikTok > Instagram > YouTube
@@ -336,7 +336,7 @@
 ### This Week
 1. Create Apple Developer Account ($99)
 2. Set up RevenueCat account (free)
-3. Register domain (livvia.app)
+3. Register domain (revive.app)
 4. Create Instagram and TikTok accounts
 5. Build a simple landing page with email waitlist
 

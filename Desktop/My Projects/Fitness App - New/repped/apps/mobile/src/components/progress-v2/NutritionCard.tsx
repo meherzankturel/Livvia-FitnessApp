@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import ProgressRing from "./ProgressRing";
 
 interface Props {
@@ -11,6 +11,8 @@ interface Props {
   carbsGoal: number;
   fat: number;
   fatGoal: number;
+  /** Tap handler for the "History ›" link. When omitted, the link still renders but does nothing. */
+  onHistoryPress?: () => void;
 }
 
 interface MacroRowProps {
@@ -27,8 +29,8 @@ function MacroRow({ label, value, goal, color }: MacroRowProps) {
       <View style={styles.macroLabelRow}>
         <Text style={styles.macroLabel}>{label}</Text>
         <Text style={styles.macroValue}>
-          {value}
-          <Text style={styles.macroGoal}>/{goal}g</Text>
+          {value}g
+          <Text style={styles.macroGoal}> / {goal}g</Text>
         </Text>
       </View>
       <View style={styles.barTrack}>
@@ -47,27 +49,36 @@ export default function NutritionCard({
   carbsGoal,
   fat,
   fatGoal,
+  onHistoryPress,
 }: Props) {
   const calProgress = caloriesGoal > 0 ? Math.min(calories / caloriesGoal, 1) : 0;
 
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Nutrition</Text>
+      <View style={styles.titleRow}>
+        <View style={styles.titleLeft}>
+          <Text style={styles.titleEmoji}>🍴</Text>
+          <Text style={styles.title}>Nutrition</Text>
+        </View>
+        <Pressable onPress={onHistoryPress} hitSlop={8}>
+          <Text style={styles.viewDetails}>History ›</Text>
+        </Pressable>
+      </View>
+
       <View style={styles.body}>
         {/* Left: calories ring */}
         <View style={styles.ringSection}>
-          <ProgressRing size={90} strokeWidth={5} progress={calProgress} color="#2DB877" trackColor="#E0F4EB">
+          <ProgressRing size={108} strokeWidth={6} progress={calProgress} color="#2DB877" trackColor="#E2E2DA">
             <View style={styles.ringCenter}>
-              <Text style={styles.calNumber}>{calories}</Text>
-              <Text style={styles.calUnit}>kcal</Text>
+              <Text style={styles.calNumber}>{calories.toLocaleString()}</Text>
+              <Text style={styles.calGoal}>/ {caloriesGoal.toLocaleString()} kcal</Text>
             </View>
           </ProgressRing>
-          <Text style={styles.ringLabel}>of {caloriesGoal}</Text>
         </View>
 
         {/* Right: macro bars */}
         <View style={styles.macrosSection}>
-          <MacroRow label="Protein" value={protein} goal={proteinGoal} color="#D4930D" />
+          <MacroRow label="Protein" value={protein} goal={proteinGoal} color="#F4A933" />
           <MacroRow label="Carbs" value={carbs} goal={carbsGoal} color="#6366F1" />
           <MacroRow label="Fat" value={fat} goal={fatGoal} color="#E25B5B" />
         </View>
@@ -80,7 +91,7 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
     borderRadius: 20,
-    padding: 16,
+    padding: 18,
     marginHorizontal: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
@@ -88,45 +99,60 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 1,
   },
+  titleRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  titleLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+  },
+  titleEmoji: {
+    fontSize: 16,
+  },
   title: {
-    fontSize: 13,
-    fontWeight: "500",
-    color: "#888",
-    marginBottom: 14,
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#1a1a1a",
+  },
+  viewDetails: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#2DB877",
   },
   body: {
     flexDirection: "row",
     alignItems: "center",
-    gap: 16,
+    gap: 18,
   },
   ringSection: {
     alignItems: "center",
-    gap: 6,
   },
   ringCenter: {
     alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 4,
   },
   calNumber: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "700",
     color: "#1a1a1a",
     letterSpacing: -0.5,
   },
-  calUnit: {
+  calGoal: {
     fontSize: 9,
     color: "#999",
-    marginTop: 1,
-  },
-  ringLabel: {
-    fontSize: 10,
-    color: "#999",
+    marginTop: 2,
   },
   macrosSection: {
     flex: 1,
-    gap: 12,
+    gap: 14,
   },
   macroRow: {
-    gap: 4,
+    gap: 5,
   },
   macroLabelRow: {
     flexDirection: "row",
@@ -134,9 +160,9 @@ const styles = StyleSheet.create({
     alignItems: "baseline",
   },
   macroLabel: {
-    fontSize: 12,
+    fontSize: 13,
     fontWeight: "500",
-    color: "#888",
+    color: "#1a1a1a",
   },
   macroValue: {
     fontSize: 14,
@@ -150,9 +176,9 @@ const styles = StyleSheet.create({
     color: "#bbb",
   },
   barTrack: {
-    height: 3,
-    backgroundColor: "#F0F0F0",
-    borderRadius: 1.5,
+    height: 6,
+    backgroundColor: "#F0EFEA",
+    borderRadius: 3,
     overflow: "hidden",
   },
   barFill: {

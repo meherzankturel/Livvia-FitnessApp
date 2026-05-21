@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Livvia — Your Workout, Simplified",
+  title: "Revive — Your Workout, Simplified",
   description: "Personalized workout and diet plans. One thing at a time.",
 };
 

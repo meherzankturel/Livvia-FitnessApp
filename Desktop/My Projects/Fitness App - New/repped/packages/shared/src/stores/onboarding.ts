@@ -1,11 +1,12 @@
 import { create } from "zustand";
-import type { Sex, ActivityLevel, TrainingHistory, Goal, Equipment, DietaryPreference } from "../types/user";
+import type { Sex, ActivityLevel, TrainingHistory, Goal, Equipment, DietaryPreference, MeatPreference } from "../types/user";
 
 export interface OnboardingData {
   // Step 1: Welcome
   display_name: string | null;
   // Step 2: About You
-  age: number | null;
+  /** ISO date string (YYYY-MM-DD). Age is derived via calcAge() so it stays correct year over year. */
+  date_of_birth: string | null;
   sex: Sex | null;
   weight_kg: number | null;
   height_cm: number | null;
@@ -14,6 +15,8 @@ export interface OnboardingData {
   health_cleared: boolean;
   // Step 4: Goal
   goal: Goal | null;
+  /** Target weight in kg. Only meaningful when goal === "lose_fat" or "build_muscle". */
+  target_weight_kg: number | null;
   // Step 5: Experience
   training_history: TrainingHistory | null;
   // Step 6: Equipment
@@ -23,10 +26,13 @@ export interface OnboardingData {
   activity_level: ActivityLevel | null;
   // Step 8: Nutrition
   dietary_preference: DietaryPreference | null;
+  /** Preset id for the Non-Veg meat picker; mapped to meat_preferences on save. */
+  meat_preset: "any" | "chicken" | "beef" | "white" | "no_pork_beef";
+  meat_preferences: MeatPreference[];
   food_exclusions: string[];
   cuisine_preferences: string[];
   // Step 9: Injuries
-  current_injuries: { key: string; severity: "moderate"; since: string }[];
+  current_injuries: { key: string; severity: "mild" | "moderate" | "severe"; since: string }[];
 }
 
 export interface OnboardingState {
@@ -45,18 +51,21 @@ export interface OnboardingState {
 
 const initialData: OnboardingData = {
   display_name: null,
-  age: null,
+  date_of_birth: null,
   sex: null,
   weight_kg: null,
   height_cm: null,
   health_conditions: [],
   health_cleared: true,
   goal: null,
+  target_weight_kg: null,
   training_history: null,
   equipment: null,
   days_per_week: null,
   activity_level: null,
   dietary_preference: null,
+  meat_preset: "any",
+  meat_preferences: [],
   food_exclusions: [],
   cuisine_preferences: [],
   current_injuries: [],

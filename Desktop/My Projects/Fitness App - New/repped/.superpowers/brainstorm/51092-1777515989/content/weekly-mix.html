@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Card — Mix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; padding: 30px 16px 60px; -webkit-font-smoothing: antialiased; }
+  .phone { width: 393px; margin: 0 auto; background: #F8F7F4; border-radius: 28px; padding: 18px 16px 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div style="background:#fff; border-radius:22px; padding:24px; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:24px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#bbb;">Apr 21 – 27</span>
+    </div>
+
+    <!-- Hero number + Day bars side by side -->
+    <div style="display:flex; align-items:flex-end; gap:16px; margin-bottom:24px;">
+      <!-- Big number left -->
+      <div style="min-width:90px;">
+        <div style="display:flex; align-items:baseline; gap:2px; margin-bottom:6px;">
+          <span style="font-size:44px; font-weight:800; color:#2DB877; line-height:0.85; letter-spacing:-2px;">3</span>
+          <span style="font-size:18px; font-weight:300; color:#ccc;">/</span>
+          <span style="font-size:20px; font-weight:600; color:#ccc; letter-spacing:-0.5px;">5</span>
+        </div>
+        <div style="font-size:11px; color:#999; font-weight:500;">workouts</div>
+      </div>
+
+      <!-- Day volume bars right -->
+      <div style="flex:1; display:flex; align-items:flex-end; justify-content:space-between; height:60px; padding-bottom:14px; position:relative;">
+        <div style="position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between;">
+          <span style="font-size:8px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">M</span>
+          <span style="font-size:8px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">T</span>
+          <span style="font-size:8px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">W</span>
+          <span style="font-size:8px; color:#ccc; font-weight:500; width:14%; text-align:center;">T</span>
+          <span style="font-size:8px; color:#ccc; font-weight:500; width:14%; text-align:center;">F</span>
+          <span style="font-size:8px; color:#ccc; font-weight:500; width:14%; text-align:center;">S</span>
+          <span style="font-size:8px; color:#ccc; font-weight:500; width:14%; text-align:center;">S</span>
+        </div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:32px; border-radius:4px; background:linear-gradient(180deg, #2DB877, #34D399);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:24px; border-radius:4px; background:linear-gradient(180deg, #34D399, #6EE7B7);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:42px; border-radius:4px; background:linear-gradient(180deg, #2DB877, #22A56A);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:5px; border-radius:4px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:5px; border-radius:4px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:5px; border-radius:4px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:8px; height:5px; border-radius:4px; background:rgba(0,0,0,0.04);"></div></div>
+      </div>
+    </div>
+
+    <!-- Two metrics from Style 3 -->
+    <div style="display:flex;">
+      <div style="flex:1; padding-right:20px; border-right:0.5px solid rgba(0,0,0,0.06);">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Total Volume</div>
+        <div style="display:flex; align-items:baseline; gap:4px;">
+          <span style="font-size:24px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">2.1k</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:3px; margin-top:4px;">
+          <div style="width:16px; height:3px; border-radius:1.5px; background:#2DB877;"></div>
+          <span style="font-size:10px; color:#2DB877; font-weight:600;">+8%</span>
+        </div>
+      </div>
+      <div style="flex:1; padding-left:20px;">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:6px;">Highlight</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <span style="font-size:16px;">&#127942;</span>
+          <div>
+            <div style="font-size:14px; font-weight:700; color:#1a1a1a;">80kg</div>
+            <div style="font-size:10px; color:#888;">Bench · PR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

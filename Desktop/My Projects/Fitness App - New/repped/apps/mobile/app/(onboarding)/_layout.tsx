@@ -3,7 +3,7 @@ import { useEffect, useRef } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useOnboardingStore } from "@repped/shared";
 
-const ONBOARDING_KEY = "livvia_onboarding_progress";
+const ONBOARDING_KEY = "revive_onboarding_progress";
 
 export default function OnboardingLayout() {
   const hydrate = useOnboardingStore((s) => s.hydrate);

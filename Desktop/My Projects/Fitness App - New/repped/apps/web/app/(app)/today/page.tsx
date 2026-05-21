@@ -150,7 +150,7 @@ export default function Today() {
   if (noPlan) return (
     <main className="flex flex-col items-center justify-center min-h-screen px-6">
       <span className="text-5xl mb-4">{"\uD83D\uDCAA"}</span>
-      <h1 className="text-white text-3xl font-bold mb-4">Welcome to Livvia</h1>
+      <h1 className="text-white text-3xl font-bold mb-4">Welcome to Revive</h1>
       <p className="text-gray-400 text-lg text-center mb-8">Your personalized workout plan hasn&apos;t been generated yet.</p>
       <button onClick={handleGeneratePlan} disabled={generating}
         className="bg-[#0090ff] hover:bg-[#0070dd] disabled:bg-gray-800 text-white rounded-2xl px-8 py-4 text-lg font-semibold transition-colors">

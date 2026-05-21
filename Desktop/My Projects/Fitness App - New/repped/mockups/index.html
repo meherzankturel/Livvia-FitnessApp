@@ -1,0 +1,941 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Revive · Interactive Onboarding</title>
+  <style>
+    :root {
+      --earth:#2D2A24;
+      --sand: #F6F5F0;
+      --stone:#EDEBE5;
+      --rock: #8E8E7A;
+      --trail:#34D399;
+      --amber:#F59E0B;
+      --amber-bg:rgba(245,158,11,0.12);
+      --amber-bdr:rgba(245,158,11,0.30);
+      --red:#EF4444;
+      --board:#1a1815;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin:0; padding:0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      background: var(--board); color: var(--sand);
+      min-height: 100vh; overflow-x: hidden;
+    }
+    .stage {
+      min-height: 100vh; display:flex; align-items:center; justify-content:center;
+      padding: 24px 16px;
+    }
+    .frame {
+      width: min(420px, 100%);
+      background: #000; border-radius: 44px; padding: 8px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .screen {
+      background: var(--sand); color: var(--earth);
+      border-radius: 36px; overflow:hidden;
+      width: 100%; aspect-ratio: 390 / 844;
+      display:flex; flex-direction:column; position:relative;
+    }
+    .notch {
+      position:absolute; top:0; left:50%; transform:translateX(-50%);
+      width: 110px; height: 24px; background:#000;
+      border-bottom-left-radius:16px; border-bottom-right-radius:16px; z-index:5;
+    }
+    .statusbar {
+      padding: 14px 28px 0;
+      display:flex; justify-content:space-between; align-items:center;
+      font-size:12px; font-weight:700; color: var(--earth);
+    }
+    .content {
+      flex:1; padding: 18px 24px 8px; overflow-y:auto; overflow-x:hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+    .progress {
+      height: 4px; background: var(--stone); border-radius: 2px;
+      margin: 8px 24px 0; overflow: hidden;
+    }
+    .progress > div { height:100%; background: var(--earth); transition: width 250ms ease; }
+
+    .step-label { font-size:10px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase; color: var(--rock); margin-bottom:6px; margin-top: 4px; }
+    .title { font-size: 26px; font-weight: 800; color: var(--earth); margin-bottom: 6px; line-height: 1.15; }
+    .title .accent { color: var(--trail); }
+    .subtitle { font-size: 13px; color: var(--rock); margin-bottom: 24px; line-height: 1.45; }
+
+    .label-sm { font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--rock); margin-bottom: 8px; }
+    .label-md { font-size: 14px; font-weight: 600; color: var(--earth); margin-bottom: 10px; }
+
+    .input {
+      width:100%; background: var(--stone); border: none;
+      border-radius: 14px; height: 50px; padding: 0 16px;
+      font-size: 16px; font-weight: 600; color: var(--earth);
+      outline: none; font-family: inherit;
+    }
+    .input::placeholder { color: var(--rock); opacity: 0.55; }
+
+    .pill {
+      display:inline-flex; align-items:center; justify-content:center;
+      border-radius: 100px; padding: 9px 14px;
+      font-size: 13px; font-weight: 600; background: var(--stone); color: var(--earth);
+      cursor: pointer; border: 1px solid transparent;
+      transition: background 150ms, color 150ms, border-color 150ms;
+    }
+    .pill.active { background: var(--earth); color: var(--sand); }
+    .pill.allergy.active { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bdr); }
+    .pill.injury.active { background: var(--amber-bg); color: var(--amber); border-color: var(--amber-bdr); }
+
+    .block-btn {
+      flex:1; height: 50px; border-radius: 14px;
+      background: var(--stone); color: var(--earth);
+      display:flex; align-items:center; justify-content:center;
+      font-size: 14px; font-weight: 600; cursor: pointer;
+      transition: background 150ms, color 150ms;
+    }
+    .block-btn.active { background: var(--earth); color: var(--sand); }
+
+    .card {
+      background: var(--stone); color: var(--earth);
+      border-radius: 16px; padding: 16px 18px; margin-bottom: 10px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background 150ms, color 150ms, border-color 150ms;
+    }
+    .card.active { background: var(--earth); color: var(--sand); border-color: var(--earth); }
+    .card .opt-title { font-size: 15px; font-weight: 700; margin-bottom: 3px; }
+    .card .opt-desc  { font-size: 12px; color: var(--rock); line-height: 1.4; }
+    .card.active .opt-desc { color: rgba(246,245,240,0.65); }
+
+    .day-row { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 22px; }
+    .day { aspect-ratio:1/1; border-radius: 12px; background: var(--stone); color: var(--earth); display:flex; align-items:center; justify-content:center; font-size: 15px; font-weight: 700; cursor:pointer; transition: background 150ms, color 150ms; }
+    .day.active { background: var(--earth); color: var(--sand); }
+
+    .qcard { background: var(--stone); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+    .qcard .q { font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 10px; color: var(--earth); }
+    .yn { display:flex; gap: 8px; }
+    .ans { flex:1; padding: 9px 0; text-align:center; font-size: 13px; font-weight: 700; border-radius: 9px; background: rgba(45,42,36,0.05); color: var(--rock); cursor: pointer; transition: background 150ms, color 150ms; border:1.5px solid transparent; }
+    .ans.yes-on { background: var(--red); color: #fff; border-color: var(--red); }
+    .ans.no-on  { background: var(--trail); color: #fff; border-color: var(--trail); }
+
+    .sev-card { background: var(--stone); border-radius: 14px; padding: 12px 14px; margin-bottom: 10px; }
+    .sev-card .sev-name { font-size: 13px; font-weight: 600; margin-bottom: 10px; color: var(--earth); }
+    .sev-row { display:flex; gap:8px; }
+    .sev-btn { flex:1; padding: 9px 0; text-align:center; font-size: 12px; font-weight: 700; background: var(--sand); color: var(--rock); border-radius: 9px; cursor:pointer; transition: background 150ms, color 150ms; }
+    .sev-btn.active { background: var(--earth); color: var(--sand); }
+
+    /* Ruler picker */
+    .ruler {
+      background: var(--stone); border-radius: 16px; padding: 14px 16px 14px;
+      margin-bottom: 14px; position: relative;
+    }
+    .ruler .ruler-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 6px;
+    }
+    .ruler .ruler-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+      text-transform: uppercase; color: var(--rock);
+    }
+    .ruler .ruler-value-row {
+      text-align: center; margin-bottom: 8px;
+      font-variant-numeric: tabular-nums;
+    }
+    .ruler .ruler-value {
+      font-size: 32px; font-weight: 800; color: var(--earth); line-height: 1;
+    }
+    .ruler .ruler-unit {
+      font-size: 13px; font-weight: 600; color: var(--rock); margin-left: 6px;
+    }
+    .ruler .track-wrap {
+      position: relative; height: 48px;
+      overflow:hidden; border-radius: 8px;
+    }
+    .ruler .track {
+      position:absolute; inset: 0; overflow-x: auto; overflow-y: hidden;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+    .ruler .track::-webkit-scrollbar { display:none; }
+    .ruler .tape {
+      display:flex; align-items:flex-end; height: 100%; padding: 0 50%;
+    }
+    .ruler .tick {
+      flex: 0 0 8px; height: 100%; display:flex; align-items:flex-end; justify-content:center;
+      scroll-snap-align: center; position: relative;
+    }
+    .ruler .tick > span {
+      display:block; width: 1px; background: var(--rock); opacity: 0.4; height: 12px;
+    }
+    .ruler .tick.major > span { height: 22px; opacity: 0.7; }
+    .ruler .tick.major::after {
+      content: attr(data-val);
+      position: absolute; top: 4px; left: 50%; transform: translateX(-50%);
+      font-size: 9px; color: var(--rock); font-weight: 600; white-space: nowrap;
+    }
+    .ruler .center-line {
+      position: absolute; left: 50%; top: 4px; bottom: 4px; width: 2px;
+      background: var(--trail); pointer-events: none; border-radius: 1px;
+      transform: translateX(-50%);
+    }
+    .ruler .unit-toggle {
+      background: var(--sand); border-radius: 100px; padding: 3px;
+      display: flex; gap: 0;
+    }
+    .ruler .unit-toggle button {
+      background: transparent; border: none; padding: 4px 10px;
+      border-radius: 100px; color: var(--rock); font-weight: 700; cursor: pointer; font-size: 10px;
+      font-family: inherit;
+    }
+    .ruler .unit-toggle button.active { background: var(--earth); color: var(--sand); }
+
+    .footer {
+      padding: 14px 24px 22px;
+      background: var(--sand);
+      border-top: 1px solid rgba(45,42,36,0.05);
+    }
+    .cta {
+      width:100%; height: 52px; border-radius: 18px;
+      background: var(--earth); color: var(--sand);
+      font-size: 15px; font-weight: 700; border:none; cursor:pointer;
+      font-family: inherit;
+      transition: background 150ms, opacity 150ms;
+    }
+    .cta:disabled { background: var(--stone); color: rgba(45,42,36,0.4); cursor: not-allowed; }
+    .footer-row { display:flex; gap: 10px; align-items:center; }
+    .back-btn {
+      width: 52px; height: 52px; border-radius: 18px;
+      background: var(--stone); color: var(--earth);
+      font-size: 22px; font-weight: 700; border:none; cursor:pointer;
+      font-family: inherit;
+    }
+    .skip-link { text-align:center; font-size: 12px; color: var(--rock); margin-top: 10px; cursor: pointer; }
+    .skip-link:hover { color: var(--earth); }
+
+    .badge-new {
+      display:inline-block; background: var(--trail); color: #062f1d;
+      font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 5px;
+      letter-spacing: 0.06em; margin-left: 6px; vertical-align: middle;
+    }
+
+    .hero {
+      height: 180px; margin: -18px -24px 16px;
+      background: linear-gradient(135deg, #5d5448 0%, #2D2A24 100%);
+      position: relative;
+    }
+    .hero::after {
+      content:""; position:absolute; inset:0;
+      background: linear-gradient(to bottom, transparent 50%, var(--sand) 100%);
+    }
+    .hero-mark {
+      position:absolute; bottom: 36px; left: 50%; transform: translateX(-50%);
+      color: rgba(246,245,240,0.85); font-weight: 800; font-size: 32px; letter-spacing: 0.04em;
+    }
+    .hero-mark .accent { color: var(--trail); }
+
+    .hflex { display:flex; align-items:center; gap: 10px; }
+    .gap-2 { gap: 8px; }
+    .wrap { flex-wrap: wrap; }
+    .mb-16 { margin-bottom: 16px; }
+    .mb-24 { margin-bottom: 24px; }
+    .mt-12 { margin-top: 12px; }
+    .mt-20 { margin-top: 20px; }
+
+    .summary { padding-top: 16px; }
+    .summary-row {
+      display:flex; justify-content:space-between; align-items:baseline;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(45,42,36,0.08);
+    }
+    .summary-row .lbl { font-size: 12px; color: var(--rock); font-weight: 600; }
+    .summary-row .val { font-size: 14px; color: var(--earth); font-weight: 700; text-align: right; max-width: 60%; }
+
+    .hint { font-size: 11px; color: var(--rock); margin-top: 16px; line-height: 1.45; }
+
+    /* Meat dropdown */
+    .dropdown { margin-top: 14px; margin-bottom: 8px; }
+    .dropdown-label {
+      font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--rock); margin-bottom: 8px;
+    }
+    .dropdown-wrap { position: relative; }
+    .dropdown-wrap select {
+      width: 100%;
+      appearance: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      background: var(--stone);
+      border: 1.5px solid transparent;
+      border-radius: 14px;
+      height: 48px;
+      padding: 0 40px 0 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--earth);
+      cursor: pointer;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 150ms;
+    }
+    .dropdown-wrap select:focus { border-color: var(--earth); }
+    .dropdown-wrap .chevron {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--rock);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .dev-banner {
+      position: fixed; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.7); color: rgba(255,255,255,0.7);
+      font-size: 11px; padding: 6px 10px; border-radius: 8px;
+      z-index: 100; pointer-events: none;
+    }
+    .dev-banner b { color: var(--trail); }
+  </style>
+</head>
+<body>
+  <div class="dev-banner">Interactive · Step <b id="dev-step">1</b>/9 · Drag the rulers · Click anything</div>
+  <div class="stage">
+    <div class="frame">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span style="font-size:11px; letter-spacing:0;">●●●  📶 📵</span></div>
+        <div class="progress"><div id="progress-fill" style="width: 11%"></div></div>
+        <div class="content" id="content"></div>
+        <div class="footer" id="footer"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const TOTAL_STEPS = 9;
+const state = {
+  step: 1,
+  display_name: "",
+  age: 25,
+  sex: null,
+  weight_kg: 70,
+  height_cm: 175,
+  weight_unit: "kg",
+  height_unit: "cm",
+  parq: {},
+  goal: null,
+  training_history: null,
+  equipment: null,
+  days_per_week: null,
+  activity_level: null,
+  dietary_preference: null,
+  food_exclusions: [],
+  meat_preset: "any",
+  target_weight_kg: null,
+  current_injuries: [],
+};
+
+const PARQ = [
+  { id: "heart",       q: "Has a doctor ever said you have a heart condition?" },
+  { id: "chest_act",   q: "Do you feel pain in your chest during activity?" },
+  { id: "chest_rest",  q: "In the past month, chest pain at rest?" },
+  { id: "dizzy",       q: "Dizziness or loss of consciousness?" },
+  { id: "joint",       q: "Bone/joint problem worsened by activity?" },
+  { id: "bp_meds",     q: "On medication for blood pressure or heart?" },
+  { id: "other",       q: "Any other reason to avoid physical activity?" },
+];
+
+const GOALS = [
+  { v:"lose_fat",      t:"Lose Fat",      d:"Drop body fat while keeping muscle" },
+  { v:"build_muscle",  t:"Build Muscle",  d:"Get bigger and stronger" },
+  { v:"maintain",      t:"Stay Fit",      d:"Maintain your current physique" },
+];
+
+const EXPERIENCE = [
+  { v:"beginner",     t:"Beginner",      d:"New to lifting or less than 6 months" },
+  { v:"intermediate", t:"Intermediate",  d:"6 months to 2 years of consistent training" },
+  { v:"advanced",     t:"Advanced",      d:"2+ years of serious training" },
+];
+
+const EQUIP = [
+  { v:"full_gym",       t:"Full Gym",        d:"Barbells, dumbbells, cables, machines" },
+  { v:"home_gym",       t:"Home Gym",        d:"Dumbbells, bands, kettlebells, bench" },
+  { v:"dumbbells_only", t:"Dumbbells Only",  d:"A pair of dumbbells and a bench" },
+  { v:"bodyweight",     t:"Bodyweight",      d:"No equipment needed" },
+];
+
+const ACTIVITY = [
+  { v:"sedentary",          t:"Sedentary",          d:"Desk job, minimal movement" },
+  { v:"lightly_active",     t:"Lightly Active",     d:"Walking, light daily activity" },
+  { v:"moderately_active",  t:"Moderately Active",  d:"On your feet most of the day" },
+  { v:"very_active",        t:"Very Active",        d:"Physical job or active lifestyle" },
+  { v:"extremely_active",   t:"Extremely Active",   d:"Manual labor or twice-daily training" },
+];
+
+const DIET = [
+  { v:"no_preference", t:"Non-Veg" },
+  { v:"vegetarian",    t:"Vegetarian" },
+  { v:"vegan",         t:"Vegan" },
+  { v:"pescatarian",   t:"Pescatarian" },
+  { v:"keto",          t:"Keto" },
+];
+
+// Meat presets for Non-Veg users — clean dropdown instead of picking each meat individually
+const MEAT_PRESETS = [
+  { id:"any",          t:"Any meat",                meats: ["chicken","turkey","beef","lamb","pork","fish","shrimp"] },
+  { id:"chicken",      t:"Chicken only",            meats: ["chicken"] },
+  { id:"beef",         t:"Beef / Steak focused",    meats: ["beef","lamb","chicken"] },
+  { id:"white",        t:"White meat only (no red meat)", meats: ["chicken","turkey","fish"] },
+  { id:"no_pork_beef", t:"No pork or beef",         meats: ["chicken","turkey","lamb","fish","shrimp"] },
+];
+
+const ALLERGIES = ["Dairy","Gluten","Nuts","Shellfish","Soy","Eggs","Peanuts","Fish"];
+
+const INJURIES = [
+  { k:"shoulder",   t:"Shoulder",   i:"🦾" },
+  { k:"lower_back", t:"Lower Back", i:"🔙" },
+  { k:"knee",       t:"Knee",       i:"🦵" },
+  { k:"wrist",      t:"Wrist",      i:"✋" },
+  { k:"elbow",      t:"Elbow",      i:"💪" },
+  { k:"ankle",      t:"Ankle",      i:"🦶" },
+  { k:"hip",        t:"Hip",        i:"🦴" },
+  { k:"neck",       t:"Neck",       i:"😬" },
+];
+
+const $ = (sel) => document.querySelector(sel);
+const el = (tag, attrs, ...kids) => {
+  const e = document.createElement(tag);
+  if (attrs) for (const [k,v] of Object.entries(attrs)) {
+    if (v == null) continue;
+    if (k === "class") e.className = v;
+    else if (k === "style") e.style.cssText = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (k === "html") e.innerHTML = v;
+    else e.setAttribute(k, v);
+  }
+  for (const kid of kids) {
+    if (kid == null) continue;
+    e.appendChild(typeof kid === "string" ? document.createTextNode(kid) : kid);
+  }
+  return e;
+};
+
+function kgToLbs(v){ return Math.round(v*2.20462); }
+function lbsToKg(v){ return Math.round(v/2.20462); }
+function cmToIn(v){ return Math.round(v/2.54); }
+function inToCm(v){ return Math.round(v*2.54); }
+function labelFor(list, v) { const f = list.find(x => x.v === v); return f ? f.t : "—"; }
+
+function buildRuler({ label, min, max, displayValue, unit, altUnit, currentUnit, onChange, onUnitToggle }) {
+  const wrap = el("div", { class: "ruler" });
+
+  // Top row: small label on left, unit toggle on right
+  const top = el("div", { class: "ruler-top" });
+  top.appendChild(el("div", { class: "ruler-label" }, label));
+  const toggle = el("div", { class: "unit-toggle" });
+  toggle.appendChild(el("button", {
+    class: currentUnit === unit ? "active" : "",
+    onclick: (e) => { e.stopPropagation(); onUnitToggle(unit); }
+  }, unit));
+  toggle.appendChild(el("button", {
+    class: currentUnit === altUnit ? "active" : "",
+    onclick: (e) => { e.stopPropagation(); onUnitToggle(altUnit); }
+  }, altUnit));
+  top.appendChild(toggle);
+  wrap.appendChild(top);
+
+  // Big centered value row — this is the live display the user sees while dragging
+  const valRow = el("div", { class: "ruler-value-row" });
+  const valNum = el("span", { class: "ruler-value" }, String(displayValue));
+  const valUnit = el("span", { class: "ruler-unit" }, currentUnit);
+  valRow.appendChild(valNum);
+  valRow.appendChild(valUnit);
+  wrap.appendChild(valRow);
+
+  // Track with tape and center line
+  const trackWrap = el("div", { class: "track-wrap" });
+  const track = el("div", { class: "track" });
+  const tape = el("div", { class: "tape" });
+
+  const tickWidth = 8;
+  for (let i = min; i <= max; i++) {
+    const isMajor = (i % 5 === 0);
+    const tick = el("div", { class: "tick" + (isMajor ? " major" : ""), "data-val": isMajor ? String(i) : "" });
+    tick.appendChild(el("span"));
+    tape.appendChild(tick);
+  }
+  track.appendChild(tape);
+  trackWrap.appendChild(track);
+  trackWrap.appendChild(el("div", { class: "center-line" }));
+  wrap.appendChild(trackWrap);
+
+  requestAnimationFrame(() => { track.scrollLeft = (displayValue - min) * tickWidth; });
+
+  let rafId = null;
+  track.addEventListener("scroll", () => {
+    if (rafId) return;
+    rafId = requestAnimationFrame(() => {
+      const idx = Math.round(track.scrollLeft / tickWidth);
+      const newVal = Math.max(min, Math.min(max, min + idx));
+      valNum.textContent = String(newVal);
+      onChange(newVal);
+      rafId = null;
+    });
+  });
+
+  return wrap;
+}
+
+function renderStep1() {
+  const c = el("div");
+  const hero = el("div", { class: "hero" });
+  const mark = el("div", { class: "hero-mark" });
+  mark.innerHTML = 'Liv<span class="accent">via</span>';
+  hero.appendChild(mark);
+  c.appendChild(hero);
+  c.appendChild(el("div", { class: "step-label" }, "Step 1 of 9"));
+  c.appendChild(el("div", { class: "title" }, "Welcome"));
+  c.appendChild(el("div", { class: "subtitle" }, "Let's get to know you. What should we call you?"));
+  c.appendChild(el("div", { class: "label-sm" }, "Your name"));
+  c.appendChild(el("input", {
+    class: "input", type: "text", placeholder: "Alex", value: state.display_name,
+    oninput: (e) => { state.display_name = e.target.value; updateFooter(); }
+  }));
+  return c;
+}
+
+function renderStep2() {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, "Step 2 of 9"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'About <span class="accent">You</span>'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "This helps us calculate your targets and tailor your plan."));
+
+  const row = el("div", { class: "hflex gap-2 mb-16", style: "align-items: flex-end;" });
+  const ageCol = el("div", { style: "flex: 1;" });
+  ageCol.appendChild(el("div", { class: "label-sm" }, "Age"));
+  ageCol.appendChild(el("input", {
+    class: "input", type: "number", value: String(state.age), min: "13", max: "100",
+    style: "text-align: center;",
+    oninput: (e) => { state.age = parseInt(e.target.value, 10) || 0; updateFooter(); }
+  }));
+  row.appendChild(ageCol);
+
+  const sexCol = el("div", { style: "flex: 1.5;" });
+  sexCol.appendChild(el("div", { class: "label-sm" }, "Sex"));
+  const sexRow = el("div", { class: "hflex gap-2" });
+  ["male","female"].forEach(v => {
+    sexRow.appendChild(el("div", {
+      class: "block-btn" + (state.sex === v ? " active" : ""),
+      onclick: () => { state.sex = v; render(); }
+    }, v.charAt(0).toUpperCase() + v.slice(1)));
+  });
+  sexCol.appendChild(sexRow);
+  row.appendChild(sexCol);
+  c.appendChild(row);
+
+  const wMin = state.weight_unit === "kg" ? 30 : 66;
+  const wMax = state.weight_unit === "kg" ? 200 : 440;
+  const wDisplay = state.weight_unit === "kg" ? state.weight_kg : kgToLbs(state.weight_kg);
+  c.appendChild(buildRuler({
+    label: "Weight", min: wMin, max: wMax, displayValue: wDisplay,
+    unit: "kg", altUnit: "lbs", currentUnit: state.weight_unit,
+    onChange: (v) => { state.weight_kg = state.weight_unit === "kg" ? v : lbsToKg(v); },
+    onUnitToggle: (u) => { state.weight_unit = u; render(); }
+  }));
+
+  const hMin = state.height_unit === "cm" ? 100 : 40;
+  const hMax = state.height_unit === "cm" ? 230 : 90;
+  const hDisplay = state.height_unit === "cm" ? state.height_cm : cmToIn(state.height_cm);
+  c.appendChild(buildRuler({
+    label: "Height", min: hMin, max: hMax, displayValue: hDisplay,
+    unit: "cm", altUnit: "in", currentUnit: state.height_unit,
+    onChange: (v) => { state.height_cm = state.height_unit === "cm" ? v : inToCm(v); },
+    onUnitToggle: (u) => { state.height_unit = u; render(); }
+  }));
+
+  return c;
+}
+
+function renderStep3() {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, "Step 3 of 9"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'Quick <span class="accent">health</span> check'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "Standard fitness screening (PAR-Q). Answer honestly — no wrong answers."));
+
+  PARQ.forEach(({ id, q }) => {
+    const card = el("div", { class: "qcard" });
+    card.appendChild(el("div", { class: "q" }, q));
+    const yn = el("div", { class: "yn" });
+    yn.appendChild(el("div", {
+      class: "ans" + (state.parq[id] === true ? " yes-on" : ""),
+      onclick: () => { state.parq[id] = true; render(); }
+    }, "Yes"));
+    yn.appendChild(el("div", {
+      class: "ans" + (state.parq[id] === false ? " no-on" : ""),
+      onclick: () => { state.parq[id] = false; render(); }
+    }, "No"));
+    card.appendChild(yn);
+    c.appendChild(card);
+  });
+  return c;
+}
+
+function renderCardChoice(stepLabel, titleHtml, subtitle, options, key) {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, stepLabel));
+  const t = el("div", { class: "title" }); t.innerHTML = titleHtml; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, subtitle));
+  options.forEach(opt => {
+    const active = state[key] === opt.v;
+    const card = el("div", { class: "card" + (active ? " active" : ""), onclick: () => {
+      // When changing goal, reset target_weight_kg so the default re-applies
+      if (key === "goal" && state[key] !== opt.v) state.target_weight_kg = null;
+      state[key] = opt.v;
+      render();
+    } });
+    const titleEl = el("div", { class: "opt-title" });
+    titleEl.innerHTML = opt.t + (opt.isNew ? ' <span class="badge-new">NEW</span>' : "");
+    card.appendChild(titleEl);
+    card.appendChild(el("div", { class: "opt-desc" }, opt.d));
+    c.appendChild(card);
+  });
+  return c;
+}
+
+function renderStep4() {
+  const c = renderCardChoice("Step 4 of 9", 'What\'s your <span class="accent">goal</span>?', "We'll program every workout and meal around this.", GOALS, "goal");
+
+  // Target weight only matters for lose_fat / build_muscle. Maintain skips it.
+  if (state.goal === "lose_fat" || state.goal === "build_muscle") {
+    // Default the target relative to current weight (~5kg cut / ~3kg gain typical 12wk targets)
+    const defaultDelta = state.goal === "lose_fat" ? -5 : 3;
+    const defaultTargetKg = Math.max(35, Math.min(180, state.weight_kg + defaultDelta));
+    if (state.target_weight_kg == null) {
+      state.target_weight_kg = defaultTargetKg;
+    }
+
+    c.appendChild(el("div", { class: "label-md", style: "margin-top: 22px;" },
+      state.goal === "lose_fat" ? "Target weight" : "Target weight"
+    ));
+
+    const tDisplay = state.weight_unit === "kg" ? state.target_weight_kg : kgToLbs(state.target_weight_kg);
+    const tMin = state.weight_unit === "kg" ? 30 : 66;
+    const tMax = state.weight_unit === "kg" ? 200 : 440;
+
+    c.appendChild(buildRuler({
+      label: "GOAL",
+      min: tMin, max: tMax, displayValue: tDisplay,
+      unit: "kg", altUnit: "lbs", currentUnit: state.weight_unit,
+      onChange: (v) => {
+        const kg = state.weight_unit === "kg" ? v : lbsToKg(v);
+        state.target_weight_kg = kg;
+        // Live-update delta hint
+        updateDeltaHint();
+      },
+      onUnitToggle: (u) => { state.weight_unit = u; render(); }
+    }));
+
+    // Inline delta hint ("Lose 5 kg from 70 kg")
+    const deltaWrap = el("div", { class: "hint", id: "delta-hint" });
+    deltaWrap.textContent = computeDeltaHint();
+    c.appendChild(deltaWrap);
+  }
+
+  return c;
+}
+
+function computeDeltaHint() {
+  if (!state.target_weight_kg) return "";
+  const delta = state.target_weight_kg - state.weight_kg;
+  if (delta === 0) return `Already at your target weight.`;
+  const absKg = Math.abs(delta);
+  const absLbs = Math.round(absKg * 2.20462);
+  const unitStr = state.weight_unit === "kg" ? `${absKg} kg` : `${absLbs} lbs`;
+  if (state.goal === "lose_fat") {
+    if (delta > 0) return `Heads up — your target is heavier than your current weight. Switch to Build Muscle if that's your goal.`;
+    return `Lose ${unitStr} from your current weight.`;
+  }
+  if (state.goal === "build_muscle") {
+    if (delta < 0) return `Heads up — your target is lighter than your current weight. Switch to Lose Fat if that's your goal.`;
+    return `Gain ${unitStr} from your current weight.`;
+  }
+  return "";
+}
+
+function updateDeltaHint() {
+  const node = document.getElementById("delta-hint");
+  if (node) node.textContent = computeDeltaHint();
+}
+function renderStep5() { return renderCardChoice("Step 5 of 9", 'Your <span class="accent">experience</span>', "This determines exercise difficulty and volume.", EXPERIENCE, "training_history"); }
+function renderStep6() { return renderCardChoice("Step 6 of 9", 'Your <span class="accent">equipment</span>', "We'll only suggest exercises you can actually do.", EQUIP, "equipment"); }
+
+function renderStep7() {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, "Step 7 of 9"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'Your <span class="accent">schedule</span>'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "We'll build your plan around your life."));
+
+  c.appendChild(el("div", { class: "label-md" }, "Days per week you can train"));
+  const dayRow = el("div", { class: "day-row" });
+  [2,3,4,5,6,7].forEach(d => {
+    const btn = el("div", {
+      class: "day" + (state.days_per_week === d ? " active" : ""),
+      onclick: () => { state.days_per_week = d; render(); }
+    }, String(d));
+    dayRow.appendChild(btn);
+  });
+  c.appendChild(dayRow);
+
+  c.appendChild(el("div", { class: "label-md" }, "Activity outside the gym"));
+  ACTIVITY.forEach(opt => {
+    const active = state.activity_level === opt.v;
+    const card = el("div", { class: "card" + (active ? " active" : ""), onclick: () => { state.activity_level = opt.v; render(); } });
+    const titleEl = el("div", { class: "opt-title" });
+    titleEl.innerHTML = opt.t + (opt.isNew ? ' <span class="badge-new">NEW</span>' : "");
+    card.appendChild(titleEl);
+    card.appendChild(el("div", { class: "opt-desc" }, opt.d));
+    c.appendChild(card);
+  });
+  return c;
+}
+
+function renderStep8() {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, "Step 8 of 9"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'Your <span class="accent">nutrition</span>'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "We'll tailor meal plans to your preferences."));
+
+  c.appendChild(el("div", { class: "label-md" }, "Dietary Preference"));
+  const dRow = el("div", { class: "hflex wrap gap-2" });
+  DIET.forEach(opt => {
+    dRow.appendChild(el("div", {
+      class: "pill" + (state.dietary_preference === opt.v ? " active" : ""),
+      onclick: () => { state.dietary_preference = opt.v; render(); }
+    }, opt.t));
+  });
+  c.appendChild(dRow);
+
+  // Meat preset dropdown — only when Non-Veg is selected
+  if (state.dietary_preference === "no_preference") {
+    const dd = el("div", { class: "dropdown" });
+    dd.appendChild(el("div", { class: "dropdown-label" }, "Meat preference"));
+    const wrap = el("div", { class: "dropdown-wrap" });
+    const sel = el("select", {
+      onchange: (e) => {
+        state.meat_preset = e.target.value;
+        render();
+      }
+    });
+    MEAT_PRESETS.forEach(p => {
+      const opt = el("option", { value: p.id }, p.t);
+      if (state.meat_preset === p.id) opt.setAttribute("selected", "");
+      sel.appendChild(opt);
+    });
+    wrap.appendChild(sel);
+    wrap.appendChild(el("span", { class: "chevron" }, "▾"));
+    dd.appendChild(wrap);
+    c.appendChild(dd);
+  }
+
+  // Add bottom margin before allergies section
+  c.appendChild(el("div", { style: "height: 18px;" }));
+
+  c.appendChild(el("div", { class: "label-md" }, "Any food allergies?"));
+  c.appendChild(el("div", { class: "subtitle", style: "margin-bottom: 12px;" }, "Tap any that apply. Skip if none."));
+  const aRow = el("div", { class: "hflex wrap gap-2" });
+  ALLERGIES.forEach(a => {
+    const av = a.toLowerCase();
+    const active = state.food_exclusions.includes(av);
+    aRow.appendChild(el("div", {
+      class: "pill allergy" + (active ? " active" : ""),
+      onclick: () => {
+        if (active) state.food_exclusions = state.food_exclusions.filter(x => x !== av);
+        else state.food_exclusions = [...state.food_exclusions, av];
+        render();
+      }
+    }, a));
+  });
+  c.appendChild(aRow);
+
+  c.appendChild(el("div", { class: "hint" }, "You can refine cuisine and meat preferences later in the Meals tab."));
+  return c;
+}
+
+function renderStep9() {
+  const c = el("div");
+  c.appendChild(el("div", { class: "step-label" }, "Step 9 of 9"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'Any <span class="accent">injuries</span>?'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "We'll modify exercises to keep you safe. Skip if none."));
+
+  const chips = el("div", { class: "hflex wrap gap-2 mb-16" });
+  INJURIES.forEach(({k,t,i}) => {
+    const active = state.current_injuries.find(x => x.key === k);
+    chips.appendChild(el("div", {
+      class: "pill injury" + (active ? " active" : ""),
+      onclick: () => {
+        if (active) state.current_injuries = state.current_injuries.filter(x => x.key !== k);
+        else state.current_injuries = [...state.current_injuries, { key:k, label:t, icon:i, severity:"moderate" }];
+        render();
+      }
+    }, `${i} ${t}`));
+  });
+  c.appendChild(chips);
+
+  if (state.current_injuries.length > 0) {
+    const wrap = el("div", { class: "mt-20" });
+    wrap.appendChild(el("div", { class: "label-sm" }, "How severe?"));
+    state.current_injuries.forEach(inj => {
+      const card = el("div", { class: "sev-card" });
+      card.appendChild(el("div", { class: "sev-name" }, `${inj.icon} ${inj.label}`));
+      const row = el("div", { class: "sev-row" });
+      ["mild","moderate","severe"].forEach(sev => {
+        row.appendChild(el("div", {
+          class: "sev-btn" + (inj.severity === sev ? " active" : ""),
+          onclick: () => { inj.severity = sev; render(); }
+        }, sev.charAt(0).toUpperCase() + sev.slice(1)));
+      });
+      card.appendChild(row);
+      wrap.appendChild(card);
+    });
+    c.appendChild(wrap);
+  }
+  return c;
+}
+
+function renderDone() {
+  const c = el("div", { class: "summary" });
+  c.appendChild(el("div", { class: "step-label" }, "Complete"));
+  const t = el("div", { class: "title" }); t.innerHTML = 'Welcome to <span class="accent">Revive</span>'; c.appendChild(t);
+  c.appendChild(el("div", { class: "subtitle" }, "Here's what we captured. Tap Start Over to try again."));
+
+  const allParqAnswered = Object.keys(state.parq).length === PARQ.length;
+  const cleared = allParqAnswered && Object.values(state.parq).every(v => v === false);
+
+  const rows = [
+    ["Name", state.display_name],
+    ["Age", state.age + " yrs"],
+    ["Sex", state.sex],
+    ["Weight", state.weight_kg + " kg (" + kgToLbs(state.weight_kg) + " lbs)"],
+    ["Height", state.height_cm + " cm (" + cmToIn(state.height_cm) + " in)"],
+    ["Health cleared", cleared ? "Yes" : "Doctor consult advised"],
+    ["Goal", labelFor(GOALS, state.goal)],
+    ...((state.goal === "lose_fat" || state.goal === "build_muscle") && state.target_weight_kg
+      ? [["Target weight", state.target_weight_kg + " kg (" + kgToLbs(state.target_weight_kg) + " lbs)"]]
+      : []),
+    ["Experience", labelFor(EXPERIENCE, state.training_history)],
+    ["Equipment", labelFor(EQUIP, state.equipment)],
+    ["Days / week", state.days_per_week],
+    ["Activity level", labelFor(ACTIVITY, state.activity_level)],
+    ["Dietary", labelFor(DIET, state.dietary_preference)],
+    ...(state.dietary_preference === "no_preference"
+      ? [["Meat preset", (MEAT_PRESETS.find(p => p.id === state.meat_preset) || {}).t || "Any meat"]]
+      : []),
+    ["Allergies", state.food_exclusions.length ? state.food_exclusions.join(", ") : "None"],
+    ["Injuries", state.current_injuries.length ? state.current_injuries.map(i => `${i.label} (${i.severity})`).join(", ") : "None"],
+  ];
+  rows.forEach(([lbl, val]) => {
+    const r = el("div", { class: "summary-row" });
+    r.appendChild(el("div", { class: "lbl" }, lbl));
+    r.appendChild(el("div", { class: "val" }, String(val || "—")));
+    c.appendChild(r);
+  });
+  return c;
+}
+
+function canContinue() {
+  switch (state.step) {
+    case 1: return state.display_name.trim().length > 0;
+    case 2: return state.age > 0 && state.sex && state.weight_kg > 0 && state.height_cm > 0;
+    case 3: return PARQ.every(q => state.parq[q.id] !== undefined);
+    case 4: return !!state.goal;
+    case 5: return !!state.training_history;
+    case 6: return !!state.equipment;
+    case 7: return !!state.days_per_week && !!state.activity_level;
+    case 8: return !!state.dietary_preference;
+    case 9: return true;
+    default: return true;
+  }
+}
+
+function canSkip() { return state.step === 9; }
+
+function render() {
+  const content = $("#content");
+  content.innerHTML = "";
+  let node;
+  switch (state.step) {
+    case 1: node = renderStep1(); break;
+    case 2: node = renderStep2(); break;
+    case 3: node = renderStep3(); break;
+    case 4: node = renderStep4(); break;
+    case 5: node = renderStep5(); break;
+    case 6: node = renderStep6(); break;
+    case 7: node = renderStep7(); break;
+    case 8: node = renderStep8(); break;
+    case 9: node = renderStep9(); break;
+    case 10: node = renderDone(); break;
+  }
+  content.appendChild(node);
+
+  const pct = state.step <= TOTAL_STEPS ? (state.step / TOTAL_STEPS) * 100 : 100;
+  $("#progress-fill").style.width = pct + "%";
+  $("#dev-step").textContent = state.step <= TOTAL_STEPS ? state.step : "Done";
+  content.scrollTop = 0;
+  updateFooter();
+}
+
+function updateFooter() {
+  const footer = $("#footer");
+  footer.innerHTML = "";
+
+  if (state.step === 10) {
+    footer.appendChild(el("button", { class: "cta", onclick: () => { resetState(); render(); } }, "Start Over"));
+    return;
+  }
+
+  const row = el("div", { class: "footer-row" });
+  if (state.step > 1) {
+    row.appendChild(el("button", { class: "back-btn", onclick: () => { state.step--; render(); } }, "‹"));
+  }
+  const ctaLabel = state.step === 9 ? "Let's Go" : "Continue";
+  const cta = el("button", {
+    class: "cta",
+    onclick: () => { if (canContinue()) { state.step++; render(); } }
+  }, ctaLabel);
+  if (!canContinue()) cta.setAttribute("disabled", "");
+  row.appendChild(cta);
+  footer.appendChild(row);
+
+  if (canSkip()) {
+    footer.appendChild(el("div", { class: "skip-link", onclick: () => { state.step++; render(); } }, "Skip — no injuries"));
+  }
+}
+
+function resetState() {
+  state.step = 1;
+  state.display_name = "";
+  state.age = 25;
+  state.sex = null;
+  state.weight_kg = 70;
+  state.height_cm = 175;
+  state.weight_unit = "kg";
+  state.height_unit = "cm";
+  state.parq = {};
+  state.goal = null;
+  state.training_history = null;
+  state.equipment = null;
+  state.days_per_week = null;
+  state.activity_level = null;
+  state.dietary_preference = null;
+  state.food_exclusions = [];
+  state.meat_preset = "any";
+  state.target_weight_kg = null;
+  state.current_injuries = [];
+}
+
+render();
+</script>
+</body>
+</html>

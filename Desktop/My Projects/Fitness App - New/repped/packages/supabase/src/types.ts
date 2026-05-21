@@ -4,7 +4,7 @@ export type Database = {
       profiles: {
         Row: {
           id: string;
-          age: number;
+          date_of_birth: string;
           weight_kg: number;
           height_cm: number;
           sex: string;
@@ -22,7 +22,7 @@ export type Database = {
         };
         Insert: {
           id: string;
-          age: number;
+          date_of_birth: string;
           weight_kg: number;
           height_cm: number;
           sex: string;
@@ -38,7 +38,7 @@ export type Database = {
         };
         Update: {
           id?: string;
-          age?: number;
+          date_of_birth?: string;
           weight_kg?: number;
           height_cm?: number;
           sex?: string;

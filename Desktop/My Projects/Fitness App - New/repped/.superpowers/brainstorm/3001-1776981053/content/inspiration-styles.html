@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Progress Screen — Style Inspiration</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #111; font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', system-ui, sans-serif; color: #fff; padding: 30px 16px 60px; }
+  h1 { text-align: center; font-size: 24px; font-weight: 700; margin-bottom: 4px; }
+  .sub { text-align: center; color: #777; font-size: 13px; margin-bottom: 32px; }
+
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 28px; max-width: 1500px; margin: 0 auto; }
+
+  .card-wrap {
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;
+    border-radius: 36px; overflow: hidden; position: relative;
+  }
+  .card-wrap:hover { transform: translateY(-4px); }
+  .card-wrap.selected { box-shadow: 0 0 0 3px #34D399, 0 12px 40px rgba(52,211,153,0.25); transform: translateY(-4px); }
+
+  .phone {
+    width: 100%; max-width: 380px; margin: 0 auto; aspect-ratio: 9/19.5;
+    border-radius: 36px; overflow: hidden; position: relative;
+  }
+  .phone-inner {
+    width: 100%; height: 100%; overflow-y: auto;
+    -ms-overflow-style: none; scrollbar-width: none;
+  }
+  .phone-inner::-webkit-scrollbar { display: none; }
+
+  .notch { width: 90px; height: 26px; background: #000; border-radius: 0 0 18px 18px; position: absolute; top: 0; left: 50%; transform: translateX(-50%); z-index: 10; }
+
+  .style-label {
+    text-align: center; padding: 16px 0 6px;
+    font-size: 16px; font-weight: 700;
+  }
+  .style-desc { text-align: center; font-size: 11px; color: #888; padding: 0 20px 12px; }
+
+  /* Click indicator */
+  .pick-badge {
+    position: absolute; top: 16px; right: 16px; z-index: 20;
+    background: #34D399; color: #000; font-size: 10px; font-weight: 800;
+    padding: 4px 10px; border-radius: 8px; display: none;
+  }
+  .selected .pick-badge { display: block; }
+
+  /* ════════════════════════════════════════════════════ */
+  /* STYLE 1: Apple Fitness Rings Style                  */
+  /* ════════════════════════════════════════════════════ */
+  .apple-bg { background: #000; }
+  .apple-status { display: flex; justify-content: space-between; padding: 16px 20px 0; font-size: 13px; font-weight: 600; color: #fff; }
+  .apple-header { text-align: center; padding: 12px 20px 20px; }
+  .apple-header h2 { font-size: 28px; font-weight: 800; color: #fff; }
+  .apple-header .date { font-size: 11px; color: #666; margin-bottom: 4px; }
+
+  .rings-container { display: flex; justify-content: center; padding: 10px 0 20px; }
+  .rings-svg { width: 180px; height: 180px; }
+
+  .ring-labels { display: flex; justify-content: center; gap: 20px; padding-bottom: 20px; }
+  .ring-label { text-align: center; }
+  .ring-label .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+  .ring-label .name { font-size: 10px; color: #888; }
+  .ring-label .val { font-size: 16px; font-weight: 800; color: #fff; }
+
+  .apple-card { background: #1C1C1E; border-radius: 16px; margin: 0 16px 10px; padding: 16px; }
+  .apple-card-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .apple-stat-row { display: flex; justify-content: space-between; align-items: center; }
+  .apple-stat { }
+  .apple-stat .v { font-size: 22px; font-weight: 800; color: #fff; }
+  .apple-stat .l { font-size: 9px; color: #666; }
+  .apple-stat .c { font-size: 10px; font-weight: 600; }
+
+  .apple-heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; margin-top: 8px; }
+  .ah-cell { aspect-ratio: 1; border-radius: 2px; }
+  .ah-0 { background: #1a1a1a; }
+  .ah-1 { background: #0A3D2A; }
+  .ah-2 { background: #0F6B3F; }
+  .ah-3 { background: #34D399; }
+
+  .apple-ach { display: flex; gap: 8px; overflow-x: auto; padding: 0 16px 20px; -ms-overflow-style: none; scrollbar-width: none; }
+  .apple-ach::-webkit-scrollbar { display: none; }
+  .apple-ach-card { min-width: 80px; background: #1C1C1E; border-radius: 14px; padding: 10px 8px; text-align: center; }
+  .apple-ach-card.earned { background: #1a2e24; }
+  .apple-ach-card .emoji { font-size: 24px; }
+  .apple-ach-card .name { font-size: 8px; color: #888; margin-top: 4px; font-weight: 600; }
+
+  /* ════════════════════════════════════════════════════ */
+  /* STYLE 2: Duolingo Gamified                          */
+  /* ════════════════════════════════════════════════════ */
+  .duo-bg { background: #58CC02; }
+  .duo-top { background: #58CC02; padding: 16px 20px 24px; }
+  .duo-status { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #fff; margin-bottom: 8px; }
+  .duo-header { text-align: center; }
+  .duo-header h2 { font-size: 24px; font-weight: 800; color: #fff; }
+
+  .duo-streak-hero { text-align: center; padding: 20px 0; }
+  .duo-fire { font-size: 56px; }
+  .duo-streak-num { font-size: 42px; font-weight: 900; color: #fff; line-height: 1; }
+  .duo-streak-label { font-size: 14px; color: rgba(255,255,255,0.8); font-weight: 600; }
+
+  .duo-body { background: #fff; border-radius: 24px 24px 0 0; padding: 20px 16px 100px; margin-top: -12px; }
+
+  .duo-xp-bar { background: #E5E5E5; border-radius: 12px; height: 16px; margin-bottom: 6px; overflow: hidden; }
+  .duo-xp-fill { height: 100%; background: linear-gradient(90deg, #58CC02, #7FE030); border-radius: 12px; }
+  .duo-xp-label { font-size: 10px; color: #888; margin-bottom: 16px; text-align: center; }
+
+  .duo-card { background: #F7F7F7; border-radius: 16px; padding: 14px; margin-bottom: 10px; border: 2px solid #E5E5E5; }
+  .duo-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .duo-card-title { font-size: 13px; font-weight: 800; color: #333; }
+  .duo-card-badge { font-size: 9px; font-weight: 700; color: #58CC02; background: #E8F8D8; padding: 2px 8px; border-radius: 6px; }
+  .duo-stat-row { display: flex; gap: 12px; }
+  .duo-stat .v { font-size: 20px; font-weight: 900; color: #333; }
+  .duo-stat .l { font-size: 9px; color: #999; }
+
+  .duo-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .duo-badge { width: 60px; height: 72px; background: #F7F7F7; border-radius: 14px; border: 2px solid #E5E5E5; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .duo-badge.gold { border-color: #FFC800; background: #FFFBEB; }
+  .duo-badge .emoji { font-size: 24px; }
+  .duo-badge .name { font-size: 7px; font-weight: 700; color: #666; margin-top: 2px; }
+
+  /* ════════════════════════════════════════════════════ */
+  /* STYLE 3: Minimal Earthy (Livvia native)             */
+  /* ════════════════════════════════════════════════════ */
+  .liv-bg { background: #F6F5F0; }
+  .liv-status { display: flex; justify-content: space-between; padding: 16px 20px 0; font-size: 13px; font-weight: 600; color: #2D2A24; }
+  .liv-header { padding: 12px 20px 16px; }
+  .liv-header .date { font-size: 10px; color: #8E8E7A; text-transform: uppercase; letter-spacing: 1px; }
+  .liv-header h2 { font-size: 22px; font-weight: 800; color: #2D2A24; }
+  .liv-content { padding: 0 16px 100px; }
+
+  .liv-hero { display: flex; align-items: center; gap: 16px; background: #EDEBE5; border-radius: 18px; padding: 18px; margin-bottom: 12px; }
+  .liv-hero-left { }
+  .liv-hero-num { font-size: 44px; font-weight: 900; color: #2D2A24; line-height: 1; }
+  .liv-hero-label { font-size: 11px; color: #34D399; font-weight: 700; }
+  .liv-hero-right { flex: 1; display: flex; gap: 12px; }
+  .liv-mini { text-align: center; flex: 1; }
+  .liv-mini .v { font-size: 18px; font-weight: 800; color: #2D2A24; }
+  .liv-mini .l { font-size: 8px; color: #8E8E7A; text-transform: uppercase; }
+  .liv-mini .c { font-size: 9px; font-weight: 600; }
+
+  .liv-card { background: #EDEBE5; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+  .liv-card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .liv-card-title { font-size: 11px; font-weight: 700; color: #2D2A24; }
+  .liv-card-meta { font-size: 9px; color: #8E8E7A; }
+
+  .liv-heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; }
+  .lh-cell { aspect-ratio: 1; border-radius: 2.5px; }
+  .lh-0 { background: rgba(45,42,36,0.05); }
+  .lh-1 { background: rgba(45,42,36,0.15); }
+  .lh-2 { background: rgba(45,42,36,0.30); }
+  .lh-3 { background: #2D2A24; }
+  .lh-t { background: #34D399; }
+
+  .liv-nutr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .liv-nutr-item { }
+  .liv-nutr-item .nl { font-size: 8px; color: #8E8E7A; text-transform: uppercase; }
+  .liv-nutr-item .nv { font-size: 18px; font-weight: 800; color: #2D2A24; }
+  .liv-nutr-item .ns { font-size: 9px; color: #8E8E7A; }
+  .liv-nutr-bar { height: 4px; background: rgba(45,42,36,0.08); border-radius: 2px; margin-top: 4px; }
+  .liv-nutr-fill { height: 100%; border-radius: 2px; background: #34D399; }
+
+  .liv-week-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .liv-week-day { text-align: center; flex: 1; }
+  .liv-week-day .wd { font-size: 9px; color: #8E8E7A; font-weight: 600; margin-bottom: 4px; }
+  .liv-week-dot { width: 20px; height: 20px; border-radius: 50%; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 8px; }
+  .wd-done { background: #2D2A24; color: #F6F5F0; }
+  .wd-today { background: #34D399; color: #fff; }
+  .wd-rest { background: rgba(45,42,36,0.06); color: #8E8E7A; }
+  .wd-future { background: rgba(45,42,36,0.04); color: #C8C3B9; }
+
+  .liv-ach-scroll { display: flex; gap: 8px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; margin-bottom: 16px; }
+  .liv-ach-scroll::-webkit-scrollbar { display: none; }
+  .liv-ach { min-width: 82px; border-radius: 14px; padding: 10px 6px; text-align: center; }
+  .liv-ach.a1 { background: rgba(52,211,153,0.08); }
+  .liv-ach.a2 { background: rgba(245,158,11,0.08); }
+  .liv-ach.locked { background: rgba(45,42,36,0.04); opacity: 0.35; }
+  .liv-ach .emoji { font-size: 24px; }
+  .liv-ach .name { font-size: 8px; font-weight: 600; color: #2D2A24; margin-top: 3px; }
+
+  /* ════════════════════════════════════════════════════ */
+  /* STYLE 4: Dark Athletic                              */
+  /* ════════════════════════════════════════════════════ */
+  .dark-bg { background: #0D0D0D; }
+  .dark-status { display: flex; justify-content: space-between; padding: 16px 20px 0; font-size: 13px; font-weight: 600; color: #fff; }
+  .dark-header { padding: 12px 20px 16px; }
+  .dark-header .date { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; }
+  .dark-header h2 { font-size: 22px; font-weight: 800; color: #fff; }
+  .dark-content { padding: 0 16px 100px; }
+
+  .dark-hero { text-align: center; padding: 16px 0 20px; }
+  .dark-hero-row { display: flex; justify-content: center; gap: 28px; }
+  .dark-hero-stat { }
+  .dark-hero-stat .v { font-size: 32px; font-weight: 900; color: #fff; line-height: 1; }
+  .dark-hero-stat .l { font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 2px; }
+  .dark-hero-stat .c { font-size: 10px; font-weight: 700; }
+
+  .dark-card { background: #1A1A1A; border-radius: 16px; padding: 14px; margin-bottom: 10px; }
+  .dark-card-title { font-size: 11px; font-weight: 700; color: #fff; margin-bottom: 8px; }
+  .dark-card-meta { font-size: 9px; color: #555; }
+
+  .dark-heatmap { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2px; }
+  .dh-cell { aspect-ratio: 1; border-radius: 2px; }
+  .dh-0 { background: #1a1a1a; }
+  .dh-1 { background: #1a3328; }
+  .dh-2 { background: #1a5c3a; }
+  .dh-3 { background: #34D399; }
+
+  .dark-progress-bar { height: 6px; background: #222; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+  .dark-progress-fill { height: 100%; border-radius: 3px; }
+
+  .dark-week-dots { display: flex; justify-content: space-between; margin-bottom: 12px; }
+  .dark-wd { text-align: center; flex: 1; }
+  .dark-wd .dl { font-size: 9px; color: #444; font-weight: 600; margin-bottom: 4px; }
+  .dark-wd-dot { width: 22px; height: 22px; border-radius: 50%; margin: 0 auto; }
+  .dwd-done { background: #34D399; }
+  .dwd-today { background: #fff; }
+  .dwd-off { background: #1a1a1a; border: 1px solid #333; }
+  .dwd-future { background: #1a1a1a; }
+
+  .dark-ach { display: flex; gap: 8px; overflow-x: auto; -ms-overflow-style: none; scrollbar-width: none; }
+  .dark-ach::-webkit-scrollbar { display: none; }
+  .dark-ach-card { min-width: 76px; background: #1A1A1A; border-radius: 14px; padding: 10px 6px; text-align: center; }
+  .dark-ach-card.earned { border: 1px solid #34D399; }
+  .dark-ach-card .emoji { font-size: 22px; }
+  .dark-ach-card .name { font-size: 8px; color: #666; font-weight: 600; margin-top: 3px; }
+
+  /* Tab bars */
+  .mock-tab {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 76px;
+    display: flex; justify-content: space-around; align-items: flex-start; padding-top: 10px;
+  }
+  .mock-tab-item { text-align: center; font-size: 9px; font-weight: 500; }
+  .mock-tab-item .icon { font-size: 16px; margin-bottom: 2px; }
+
+  .tab-apple { background: rgba(0,0,0,0.9); backdrop-filter: blur(20px); border-top: 1px solid #222; }
+  .tab-apple .mock-tab-item { color: #555; }
+  .tab-apple .mock-tab-item.active { color: #34D399; }
+
+  .tab-duo { background: #fff; border-top: 2px solid #E5E5E5; }
+  .tab-duo .mock-tab-item { color: #CCC; }
+  .tab-duo .mock-tab-item.active { color: #58CC02; }
+
+  .tab-liv { background: rgba(246,245,240,0.92); backdrop-filter: blur(20px); border-top: 1px solid rgba(45,42,36,0.06); }
+  .tab-liv .mock-tab-item { color: #8E8E7A; }
+  .tab-liv .mock-tab-item.active { color: #2D2A24; }
+
+  .tab-dark { background: rgba(13,13,13,0.92); backdrop-filter: blur(20px); border-top: 1px solid #222; }
+  .tab-dark .mock-tab-item { color: #444; }
+  .tab-dark .mock-tab-item.active { color: #fff; }
+</style>
+</head>
+<body>
+
+<h1>Which Style Speaks to You?</h1>
+<p class="sub">Click the phone that feels right. Scroll inside each to explore. Pick the vibe, not the exact layout.</p>
+
+<div class="grid">
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 1. APPLE FITNESS STYLE                    -->
+<!-- ══════════════════════════════════════════ -->
+<div class="card-wrap" onclick="sel(this,'apple-fitness')">
+  <div class="pick-badge">SELECTED</div>
+  <div class="style-label">1. Apple Fitness Style</div>
+  <div class="style-desc">Dark background, activity rings, clean cards. Premium & motivational.</div>
+  <div class="phone apple-bg">
+    <div class="notch"></div>
+    <div class="phone-inner">
+      <div class="apple-status"><span>11:08</span><span>100%</span></div>
+      <div class="apple-header">
+        <div class="date">WEDNESDAY, APR 23</div>
+        <h2>Progress</h2>
+      </div>
+
+      <div class="rings-container">
+        <svg class="rings-svg" viewBox="0 0 180 180">
+          <!-- Outer ring: Move (red) -->
+          <circle cx="90" cy="90" r="78" fill="none" stroke="#3a0a0a" stroke-width="14"/>
+          <circle cx="90" cy="90" r="78" fill="none" stroke="#FF2D55" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="490" stroke-dashoffset="147" transform="rotate(-90 90 90)"/>
+          <!-- Middle ring: Exercise (green) -->
+          <circle cx="90" cy="90" r="60" fill="none" stroke="#0a2a12" stroke-width="14"/>
+          <circle cx="90" cy="90" r="60" fill="none" stroke="#34D399" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="377" stroke-dashoffset="75" transform="rotate(-90 90 90)"/>
+          <!-- Inner ring: Workouts (blue) -->
+          <circle cx="90" cy="90" r="42" fill="none" stroke="#0a1a2a" stroke-width="14"/>
+          <circle cx="90" cy="90" r="42" fill="none" stroke="#30D5C8" stroke-width="14" stroke-linecap="round"
+            stroke-dasharray="264" stroke-dashoffset="106" transform="rotate(-90 90 90)"/>
+        </svg>
+      </div>
+
+      <div class="ring-labels">
+        <div class="ring-label"><div class="dot" style="background:#FF2D55;"></div><div class="val">420</div><div class="name">cal burned</div></div>
+        <div class="ring-label"><div class="dot" style="background:#34D399;"></div><div class="val">45</div><div class="name">min exercise</div></div>
+        <div class="ring-label"><div class="dot" style="background:#30D5C8;"></div><div class="val">3/5</div><div class="name">workouts</div></div>
+      </div>
+
+      <div class="apple-card">
+        <div class="apple-card-title">This Week</div>
+        <div class="apple-stat-row">
+          <div class="apple-stat"><div class="v">5</div><div class="l">Day Streak</div></div>
+          <div class="apple-stat"><div class="v">2.1k</div><div class="l">Volume</div><div class="c" style="color:#34D399;">+8%</div></div>
+          <div class="apple-stat"><div class="v">142g</div><div class="l">Avg Protein</div></div>
+        </div>
+      </div>
+
+      <div class="apple-card">
+        <div class="apple-card-title">Activity — 12 Weeks</div>
+        <div class="apple-heatmap">
+          <div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-2"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-3"></div>
+          <div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div>
+          <div class="ah-cell ah-0"></div><div class="ah-cell ah-2"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-2"></div><div class="ah-cell ah-0"></div>
+          <div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-2"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div>
+          <div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-2"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-1"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-0"></div><div class="ah-cell ah-3"></div><div class="ah-cell ah-0"></div>
+        </div>
+      </div>
+
+      <div class="apple-card">
+        <div class="apple-card-title">April Summary</div>
+        <div class="apple-stat-row">
+          <div class="apple-stat"><div class="v">12</div><div class="l">Workouts</div><div class="c" style="color:#34D399;">+3</div></div>
+          <div class="apple-stat"><div class="v">4.2k</div><div class="l">Volume</div><div class="c" style="color:#34D399;">+12%</div></div>
+          <div class="apple-stat"><div class="v">72%</div><div class="l">Completion</div></div>
+        </div>
+      </div>
+
+      <div style="padding: 0 16px 4px;"><div style="font-size:11px; font-weight:700; color:#fff; margin-bottom:8px;">Achievements</div></div>
+      <div class="apple-ach">
+        <div class="apple-ach-card earned"><div class="emoji">&#127942;</div><div class="name">First PR</div></div>
+        <div class="apple-ach-card earned"><div class="emoji">&#128293;</div><div class="name">3-Day Streak</div></div>
+        <div class="apple-ach-card"><div class="emoji">&#127775;</div><div class="name">7-Day Streak</div></div>
+        <div class="apple-ach-card"><div class="emoji">&#128170;</div><div class="name">10 Workouts</div></div>
+      </div>
+
+      <div class="mock-tab tab-apple">
+        <div class="mock-tab-item"><div class="icon">&#9901;</div>Today</div>
+        <div class="mock-tab-item"><div class="icon">&#127860;</div>Nutrition</div>
+        <div class="mock-tab-item active"><div class="icon">&#9650;</div>Progress</div>
+        <div class="mock-tab-item"><div class="icon">&#9881;</div>Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 2. DUOLINGO GAMIFIED                      -->
+<!-- ══════════════════════════════════════════ -->
+<div class="card-wrap" onclick="sel(this,'duolingo-gamified')">
+  <div class="pick-badge">SELECTED</div>
+  <div class="style-label">2. Duolingo Gamified</div>
+  <div class="style-desc">Streak-driven, XP bars, badge collection. Fun & addictive. Makes you want to come back.</div>
+  <div class="phone duo-bg">
+    <div class="notch"></div>
+    <div class="phone-inner">
+      <div class="duo-top">
+        <div class="duo-status"><span>11:08</span><span>100%</span></div>
+        <div class="duo-streak-hero">
+          <div class="duo-fire">&#128293;</div>
+          <div class="duo-streak-num">5</div>
+          <div class="duo-streak-label">Day Streak!</div>
+        </div>
+      </div>
+
+      <div class="duo-body">
+        <div class="duo-xp-bar"><div class="duo-xp-fill" style="width: 68%;"></div></div>
+        <div class="duo-xp-label">680 / 1000 XP to next level</div>
+
+        <div class="duo-card">
+          <div class="duo-card-head">
+            <div class="duo-card-title">This Week</div>
+            <div class="duo-card-badge">+8% volume</div>
+          </div>
+          <div class="duo-stat-row">
+            <div class="duo-stat"><div class="v">3<span style="font-size:12px;color:#999;">/5</span></div><div class="l">Workouts</div></div>
+            <div class="duo-stat"><div class="v">2.1k</div><div class="l">Volume</div></div>
+            <div class="duo-stat"><div class="v">142g</div><div class="l">Avg Protein</div></div>
+          </div>
+        </div>
+
+        <div class="duo-card">
+          <div class="duo-card-head">
+            <div class="duo-card-title">April</div>
+            <div class="duo-card-badge">72% complete</div>
+          </div>
+          <div class="duo-stat-row">
+            <div class="duo-stat"><div class="v">12</div><div class="l">Workouts</div></div>
+            <div class="duo-stat"><div class="v">4.2k</div><div class="l">Volume</div></div>
+            <div class="duo-stat"><div class="v">45m</div><div class="l">Avg Duration</div></div>
+          </div>
+        </div>
+
+        <div style="font-size:14px; font-weight:800; color:#333; margin: 14px 0 10px;">Badges Earned</div>
+        <div class="duo-badges">
+          <div class="duo-badge gold"><div class="emoji">&#127942;</div><div class="name">First PR</div></div>
+          <div class="duo-badge gold"><div class="emoji">&#128293;</div><div class="name">Streak 3</div></div>
+          <div class="duo-badge gold"><div class="emoji">&#128170;</div><div class="name">10 Done</div></div>
+          <div class="duo-badge"><div class="emoji" style="opacity:0.3;">&#127775;</div><div class="name">Streak 7</div></div>
+          <div class="duo-badge"><div class="emoji" style="opacity:0.3;">&#127941;</div><div class="name">50 Done</div></div>
+          <div class="duo-badge"><div class="emoji" style="opacity:0.3;">&#128081;</div><div class="name">100 Done</div></div>
+        </div>
+      </div>
+
+      <div class="mock-tab tab-duo">
+        <div class="mock-tab-item"><div class="icon">&#127968;</div>Home</div>
+        <div class="mock-tab-item"><div class="icon">&#127860;</div>Meals</div>
+        <div class="mock-tab-item active"><div class="icon">&#128200;</div>Progress</div>
+        <div class="mock-tab-item"><div class="icon">&#9881;</div>Profile</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 3. MINIMAL EARTHY (Livvia Native)         -->
+<!-- ══════════════════════════════════════════ -->
+<div class="card-wrap" onclick="sel(this,'livvia-earthy')">
+  <div class="pick-badge">SELECTED</div>
+  <div class="style-label">3. Minimal Earthy (Livvia)</div>
+  <div class="style-desc">Matches your current app design. Warm, minimal, organic. Consistent brand.</div>
+  <div class="phone liv-bg">
+    <div class="notch"></div>
+    <div class="phone-inner">
+      <div class="liv-status"><span>11:08</span><span>100%</span></div>
+      <div class="liv-header">
+        <div class="date">Wednesday &middot; Progress</div>
+        <h2>Your Journey</h2>
+      </div>
+
+      <div class="liv-content">
+        <!-- Hero row -->
+        <div class="liv-hero">
+          <div class="liv-hero-left">
+            <div class="liv-hero-num">5</div>
+            <div class="liv-hero-label">day streak</div>
+          </div>
+          <div class="liv-hero-right">
+            <div class="liv-mini"><div class="v">12</div><div class="l">Workouts</div><div class="c" style="color:#34D399;">+3</div></div>
+            <div class="liv-mini"><div class="v">4.2k</div><div class="l">Volume</div><div class="c" style="color:#34D399;">+12%</div></div>
+          </div>
+        </div>
+
+        <!-- Week dots -->
+        <div class="liv-card">
+          <div class="liv-card-head">
+            <div class="liv-card-title">This Week</div>
+            <div class="liv-card-meta">3 of 5</div>
+          </div>
+          <div class="liv-week-row">
+            <div class="liv-week-day"><div class="wd">M</div><div class="liv-week-dot wd-done">&#10003;</div></div>
+            <div class="liv-week-day"><div class="wd">T</div><div class="liv-week-dot wd-done">&#10003;</div></div>
+            <div class="liv-week-day"><div class="wd">W</div><div class="liv-week-dot wd-today">&#8226;</div></div>
+            <div class="liv-week-day"><div class="wd">T</div><div class="liv-week-dot wd-future"></div></div>
+            <div class="liv-week-day"><div class="wd">F</div><div class="liv-week-dot wd-future"></div></div>
+            <div class="liv-week-day"><div class="wd">S</div><div class="liv-week-dot wd-rest">R</div></div>
+            <div class="liv-week-day"><div class="wd">S</div><div class="liv-week-dot wd-rest">R</div></div>
+          </div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="liv-card">
+          <div class="liv-card-head">
+            <div class="liv-card-title">Activity</div>
+            <div class="liv-card-meta">12 weeks</div>
+          </div>
+          <div class="liv-heatmap">
+            <div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-2"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-t"></div>
+            <div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div>
+            <div class="lh-cell lh-0"></div><div class="lh-cell lh-2"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-2"></div><div class="lh-cell lh-0"></div>
+            <div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-2"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div>
+            <div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-2"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-1"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-0"></div><div class="lh-cell lh-3"></div><div class="lh-cell lh-0"></div>
+          </div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="liv-card">
+          <div class="liv-card-head">
+            <div class="liv-card-title">April</div>
+            <div class="liv-card-meta" style="color: #34D399;">72% completion</div>
+          </div>
+          <div style="display: flex; gap: 16px;">
+            <div><div style="font-size:20px;font-weight:900;color:#2D2A24;">12</div><div style="font-size:8px;color:#8E8E7A;text-transform:uppercase;">workouts</div></div>
+            <div><div style="font-size:20px;font-weight:900;color:#2D2A24;">4.2k</div><div style="font-size:8px;color:#8E8E7A;text-transform:uppercase;">volume</div></div>
+            <div><div style="font-size:20px;font-weight:900;color:#2D2A24;">45m</div><div style="font-size:8px;color:#8E8E7A;text-transform:uppercase;">avg time</div></div>
+          </div>
+        </div>
+
+        <!-- Nutrition -->
+        <div class="liv-card">
+          <div class="liv-card-title" style="font-size:11px;font-weight:700;color:#2D2A24;margin-bottom:10px;">Nutrition &times; Training</div>
+          <div class="liv-nutr-grid">
+            <div class="liv-nutr-item">
+              <div class="nl">Adherence</div>
+              <div class="nv">60%</div>
+              <div class="liv-nutr-bar"><div class="liv-nutr-fill" style="width:60%;"></div></div>
+            </div>
+            <div class="liv-nutr-item">
+              <div class="nl">Avg Protein</div>
+              <div class="nv">142g</div>
+              <div class="ns">target: 150g</div>
+            </div>
+            <div class="liv-nutr-item">
+              <div class="nl">Avg Calories</div>
+              <div class="nv">2,340</div>
+              <div class="ns">18 days logged</div>
+            </div>
+            <div class="liv-nutr-item">
+              <div class="nl">PRs on Meal Days</div>
+              <div class="nv">80%</div>
+              <div class="ns" style="color:#34D399;">4 of 5 PRs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:14px 0 8px;">
+          <div style="font-size:12px;font-weight:700;color:#2D2A24;">Achievements</div>
+          <div style="font-size:10px;color:#34D399;font-weight:600;">3 of 20 &#8250;</div>
+        </div>
+        <div class="liv-ach-scroll">
+          <div class="liv-ach a1"><div class="emoji">&#127942;</div><div class="name">First PR</div></div>
+          <div class="liv-ach a2"><div class="emoji">&#128293;</div><div class="name">3-Day Streak</div></div>
+          <div class="liv-ach a1"><div class="emoji">&#128170;</div><div class="name">10 Workouts</div></div>
+          <div class="liv-ach locked"><div class="emoji">&#127775;</div><div class="name">7-Day Streak</div></div>
+          <div class="liv-ach locked"><div class="emoji">&#127941;</div><div class="name">50 Workouts</div></div>
+        </div>
+      </div>
+
+      <div class="mock-tab tab-liv">
+        <div class="mock-tab-item"><div class="icon">&#9901;</div>Today</div>
+        <div class="mock-tab-item"><div class="icon">&#127860;</div>Nutrition</div>
+        <div class="mock-tab-item active"><div class="icon">&#9650;</div>Progress</div>
+        <div class="mock-tab-item"><div class="icon">&#9881;</div>Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- 4. DARK ATHLETIC                          -->
+<!-- ══════════════════════════════════════════ -->
+<div class="card-wrap" onclick="sel(this,'dark-athletic')">
+  <div class="pick-badge">SELECTED</div>
+  <div class="style-label">4. Dark Athletic</div>
+  <div class="style-desc">Pure black, neon green accents. Performance-focused. Serious gym vibe.</div>
+  <div class="phone dark-bg">
+    <div class="notch"></div>
+    <div class="phone-inner">
+      <div class="dark-status"><span>11:08</span><span>100%</span></div>
+      <div class="dark-header">
+        <div class="date">Wednesday &middot; Progress</div>
+        <h2>Your Journey</h2>
+      </div>
+
+      <div class="dark-content">
+        <!-- Hero stats -->
+        <div class="dark-hero">
+          <div class="dark-hero-row">
+            <div class="dark-hero-stat"><div class="v">5</div><div class="l">Streak</div><div class="c" style="color:#34D399;">&#128293;</div></div>
+            <div class="dark-hero-stat"><div class="v">12</div><div class="l">Workouts</div><div class="c" style="color:#34D399;">+3</div></div>
+            <div class="dark-hero-stat"><div class="v">4.2k</div><div class="l">Volume</div><div class="c" style="color:#34D399;">+12%</div></div>
+          </div>
+        </div>
+
+        <!-- Week dots -->
+        <div class="dark-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:10px;">
+            <div class="dark-card-title">This Week</div>
+            <div class="dark-card-meta">3 / 5</div>
+          </div>
+          <div class="dark-week-dots">
+            <div class="dark-wd"><div class="dl">M</div><div class="dark-wd-dot dwd-done"></div></div>
+            <div class="dark-wd"><div class="dl">T</div><div class="dark-wd-dot dwd-done"></div></div>
+            <div class="dark-wd"><div class="dl">W</div><div class="dark-wd-dot dwd-today"></div></div>
+            <div class="dark-wd"><div class="dl">T</div><div class="dark-wd-dot dwd-future"></div></div>
+            <div class="dark-wd"><div class="dl">F</div><div class="dark-wd-dot dwd-future"></div></div>
+            <div class="dark-wd"><div class="dl">S</div><div class="dark-wd-dot dwd-off"></div></div>
+            <div class="dark-wd"><div class="dl">S</div><div class="dark-wd-dot dwd-off"></div></div>
+          </div>
+        </div>
+
+        <!-- Heatmap -->
+        <div class="dark-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <div class="dark-card-title">Activity</div>
+            <div class="dark-card-meta">12 weeks</div>
+          </div>
+          <div class="dark-heatmap">
+            <div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-2"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-3"></div>
+            <div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div>
+            <div class="dh-cell dh-0"></div><div class="dh-cell dh-2"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-2"></div><div class="dh-cell dh-0"></div>
+            <div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-2"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div>
+            <div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-2"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-1"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-0"></div><div class="dh-cell dh-3"></div><div class="dh-cell dh-0"></div>
+          </div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="dark-card">
+          <div style="display:flex;justify-content:space-between;margin-bottom:8px;">
+            <div class="dark-card-title">April</div>
+            <div class="dark-card-meta" style="color:#34D399;">72%</div>
+          </div>
+          <div style="display:flex;gap:16px;">
+            <div><div style="font-size:20px;font-weight:900;color:#fff;">12</div><div style="font-size:8px;color:#555;text-transform:uppercase;">workouts</div></div>
+            <div><div style="font-size:20px;font-weight:900;color:#fff;">4.2k</div><div style="font-size:8px;color:#555;text-transform:uppercase;">volume</div></div>
+            <div><div style="font-size:20px;font-weight:900;color:#fff;">45m</div><div style="font-size:8px;color:#555;text-transform:uppercase;">avg time</div></div>
+          </div>
+          <div class="dark-progress-bar"><div class="dark-progress-fill" style="width:72%;background:#34D399;"></div></div>
+        </div>
+
+        <!-- Nutrition -->
+        <div class="dark-card">
+          <div class="dark-card-title">Nutrition &times; Training</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <div>
+              <div style="font-size:8px;color:#555;text-transform:uppercase;">Adherence</div>
+              <div style="font-size:18px;font-weight:900;color:#fff;">60%</div>
+              <div class="dark-progress-bar"><div class="dark-progress-fill" style="width:60%;background:#34D399;"></div></div>
+            </div>
+            <div>
+              <div style="font-size:8px;color:#555;text-transform:uppercase;">Avg Protein</div>
+              <div style="font-size:18px;font-weight:900;color:#fff;">142g</div>
+              <div style="font-size:9px;color:#555;">target: 150g</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Achievements -->
+        <div style="display:flex;justify-content:space-between;margin:12px 0 8px;">
+          <div style="font-size:11px;font-weight:700;color:#fff;">Achievements</div>
+          <div style="font-size:10px;color:#34D399;font-weight:600;">3 / 20</div>
+        </div>
+        <div class="dark-ach">
+          <div class="dark-ach-card earned"><div class="emoji">&#127942;</div><div class="name" style="color:#34D399;">First PR</div></div>
+          <div class="dark-ach-card earned"><div class="emoji">&#128293;</div><div class="name" style="color:#F59E0B;">Streak</div></div>
+          <div class="dark-ach-card"><div class="emoji" style="opacity:0.3;">&#127775;</div><div class="name">7-Day</div></div>
+          <div class="dark-ach-card"><div class="emoji" style="opacity:0.3;">&#128170;</div><div class="name">10 Done</div></div>
+        </div>
+      </div>
+
+      <div class="mock-tab tab-dark">
+        <div class="mock-tab-item"><div class="icon">&#9901;</div>Today</div>
+        <div class="mock-tab-item"><div class="icon">&#127860;</div>Nutrition</div>
+        <div class="mock-tab-item active"><div class="icon" style="color:#34D399;">&#9650;</div>Progress</div>
+        <div class="mock-tab-item"><div class="icon">&#9881;</div>Account</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<script>
+function sel(el, choice) {
+  document.querySelectorAll('.card-wrap').forEach(w => w.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+
+</body>
+</html>

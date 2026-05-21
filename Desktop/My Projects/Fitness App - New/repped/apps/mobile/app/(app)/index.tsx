@@ -1,12 +1,16 @@
-import { View, Text, Pressable, ScrollView, ActivityIndicator, RefreshControl, Alert, Modal, Animated, Image } from "react-native";
+import { View, Text, Pressable, ScrollView, ActivityIndicator, RefreshControl, Alert, Modal, Animated } from "react-native";
 import { router } from "expo-router";
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useAuthStore, suggestWeight, EDUCATIONAL_TIPS, calculateReadiness, type ReadinessLevel, getMissedDayOptions, handleMissedDay, calculateWorkoutStreak, assessInjuryForWorkout, type InjuryAssessment, applyPeriodization, TRAINING_PHASES, type TrainingPhase } from "@repped/shared";
+import { useAuthStore, suggestWeight, EDUCATIONAL_TIPS, calculateReadiness, type ReadinessLevel, getMissedDayOptions, handleMissedDay, calculateWorkoutStreak, assessInjuryForWorkout, type InjuryAssessment, applyPeriodization, getPeriodization, TRAINING_PHASES, type TrainingPhase, generateWorkoutPlan, CURRENT_PLAN_VERSION, getConditioningTemplates, type ConditioningDay, type Equipment } from "@repped/shared";
+import type { Exercise } from "@repped/shared";
 import type { MissedDayOption, MissedDayStrategy } from "@repped/shared";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { supabase } from "../../src/lib/supabase";
+import { checkAndAdvancePhase, type PhaseAdvancementResult } from "../../src/lib/phase-progression";
+import { regenerateWorkoutPlan } from "../../src/lib/regenerate-plan";
 import type { WorkoutDay } from "@repped/shared";
 import { theme } from "../../src/lib/styles";
-import { TopoBackground, BentoWidget, AliveDot, VolumeChart, ExpandableExerciseCard, TrailLine } from "../../src/components/terrain";
+import { TopoBackground, WeekStrip, ExpandableExerciseCard, TrailLine } from "../../src/components/terrain";
 import { Avatar } from "../../src/components/Avatar";
 import { AvatarPicker } from "../../src/components/AvatarPicker";
 import { HomeSkeleton } from "../../src/components/SkeletonLoader";
@@ -60,6 +64,17 @@ export default function Today() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [showAvatarPicker, setShowAvatarPicker] = useState(false);
   const [injuryAssessment, setInjuryAssessment] = useState<InjuryAssessment | null>(null);
+  const [autoGenerating, setAutoGenerating] = useState(false);
+  // Phase-advancement & mesocycle banners (read-only; auto-dismiss or persisted via AsyncStorage)
+  const [phaseAdvanceBanner, setPhaseAdvanceBanner] = useState<{ from: TrainingPhase; to: TrainingPhase; phasesSkipped: number } | null>(null);
+  const [mesocyclePhase, setMesocyclePhase] = useState<"intro" | "build" | "peak" | "deload" | null>(null);
+  const [mesocycleBannerDismissed, setMesocycleBannerDismissed] = useState(false);
+  // Guards against infinite regen loops if a regen somehow produces a plan
+  // that's still flagged as stale (shouldn't happen, but defensive).
+  const planRegenAttemptedRef = useRef(false);
+  // ACSM conditioning day state — populated when today's plan.kind === "conditioning"
+  const [conditioningTemplate, setConditioningTemplate] = useState<ConditioningDay | null>(null);
+  const [conditioningPlanId, setConditioningPlanId] = useState<string | null>(null);
 
   // Adapt modal state
   const [adaptVisible, setAdaptVisible] = useState(false);
@@ -408,11 +423,46 @@ export default function Today() {
     })();
   }, []);
 
+  // Reset mesocycle banner visibility when the periodization phase changes
+  // (e.g., week 3 peak → week 4 deload should re-surface the new banner).
   useEffect(() => {
+    setMesocycleBannerDismissed(false);
+  }, [mesocyclePhase]);
+
+  useEffect(() => {
+    // Render the current plan immediately — don't block first paint on the
+    // phase check. Phase advancement is detected in parallel below and
+    // refreshes the screen silently if it triggers.
     loadTodaysWorkout();
     checkWellnessLog();
     loadWeeklyStats();
-  }, []);
+
+    // Background: NASM phase-advancement check. For users not yet at their
+    // phase duration boundary this is one fast profile query and an early
+    // return; only at the boundary does it do the count + regen work.
+    if (!session?.user?.id) return;
+    (async () => {
+      try {
+        const result = await checkAndAdvancePhase(session.user.id);
+        if (result.advanced && result.fromPhase && result.toPhase) {
+          const key = `revive.phaseBannerShown.${session.user.id}.${result.toPhase}`;
+          const shown = await AsyncStorage.getItem(key);
+          if (!shown) {
+            setPhaseAdvanceBanner({
+              from: result.fromPhase,
+              to: result.toPhase,
+              phasesSkipped: result.phasesSkipped,
+            });
+          }
+          // Plan was regenerated inside checkAndAdvancePhase. Refresh the
+          // workout display so the new phase's programming is shown.
+          loadTodaysWorkout();
+        }
+      } catch (err) {
+        console.warn("[phase-check] failed:", err);
+      }
+    })();
+  }, [session?.user?.id]);
 
   const checkWellnessLog = async () => {
     if (!session?.user?.id) return;
@@ -658,14 +708,14 @@ export default function Today() {
     // ── BATCH 1: Fire all independent queries in parallel ──
     const [profileResult, planResult, yesterdayPlanResult] = await Promise.all([
       supabase.from("profiles")
-        .select("display_name, avatar_url, weight_kg, sex, training_history, current_injuries, health_cleared, training_phase")
+        .select("display_name, avatar_url, weight_kg, sex, training_history, current_injuries, health_cleared, training_phase, days_per_week")
         .eq("id", uid).single(),
       supabase.from("workout_plans")
         .select("*").eq("user_id", uid).eq("day", day)
-        .order("created_at", { ascending: false }).limit(1).single(),
+        .order("created_at", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("workout_plans")
         .select("*").eq("user_id", uid).eq("day", yesterdayDay).eq("is_rest_day", false)
-        .order("created_at", { ascending: false }).limit(1).single(),
+        .order("created_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     const profile = profileResult.data as any;
@@ -680,10 +730,49 @@ export default function Today() {
     }
 
     if (plan) {
+      // ─── Stale-plan auto-regen ───
+      // If the generator's output version has been bumped since this plan was
+      // saved, regenerate silently so the user sees the corrected programming
+      // on next open — no SQL migration or user action required.
+      // Keep loading=true throughout so the user sees a single continuous
+      // skeleton instead of a flash between regen and reload.
+      const planVersion = ((plan as any).plan_version ?? 1) as number;
+      if (planVersion < CURRENT_PLAN_VERSION && !planRegenAttemptedRef.current) {
+        planRegenAttemptedRef.current = true;
+        await regenerateWorkoutPlan(uid);
+        return loadTodaysWorkout();
+      }
+
       if (plan.is_rest_day) {
         setTodayWorkout({ day, focus: "Rest", isRestDay: true, exercises: [] });
+        setConditioningTemplate(null);
+        setConditioningPlanId(null);
+      } else if ((plan as any).kind === "conditioning") {
+        // ── ACSM Conditioning Day ──
+        // Timed circuit, no resistance exercises. Skip the
+        // exercise/last-logged/periodization pipeline entirely.
+        const equipment = (profile?.equipment ?? "bodyweight") as Equipment;
+        const templateName = (plan as any).conditioning_template_name as string | null;
+        const template = templateName
+          ? getConditioningTemplates(equipment).find((t) => t.name === templateName)
+          : null;
+        setConditioningTemplate(template ?? null);
+        setConditioningPlanId((plan as any).id ?? null);
+        setTodayWorkout({
+          day,
+          focus: "Conditioning",
+          isRestDay: false,
+          exercises: [],
+          kind: "conditioning",
+          conditioningTemplateName: templateName ?? undefined,
+        });
+        setExerciseData([]);
+        setLoading(false);
+        return;
       } else {
-        // ── BATCH 2: Fetch exercises + all last-logged weights in parallel ──
+        setConditioningTemplate(null);
+        setConditioningPlanId(null);
+        // ── BATCH 2: Fetch exercises in one query ──
         const { data: planExercises } = await supabase
           .from("workout_plan_exercises")
           .select("*, exercises(*)")
@@ -694,18 +783,41 @@ export default function Today() {
         const sex = profile?.sex ?? "male";
         const trainingHistory = profile?.training_history ?? "beginner";
 
-        // Fetch all last-logged weights in parallel instead of one-by-one
+        // Compute current mesocycle phase BEFORE suggesting weights so the
+        // intensityMultiplier (peak=+10%, deload=-25%) can scale lastLoggedWeight.
+        const planCreated = plan.created_at ? new Date(plan.created_at) : new Date();
+        const { count: completedSinceCount } = await supabase
+          .from("workout_logs")
+          .select("id", { count: "exact", head: true })
+          .eq("user_id", uid)
+          .eq("skipped", false)
+          .not("completed_at", "is", null)
+          .gte("started_at", planCreated.toISOString());
+        const daysPerWeek = (profile?.days_per_week ?? 3) as number;
+        // +1 counts the workout the user is about to do, so the phase shifts on the
+        // first session of a new training week instead of the second.
+        const trainingWeek = Math.max(1, Math.ceil(((completedSinceCount ?? 0) + 1) / daysPerWeek));
+        const periodization = getPeriodization(trainingWeek);
+        setMesocyclePhase(periodization.phase);
+
+        // Fetch all last-logged weights in ONE query (was N parallel queries).
+        // Limits to last 6 months of data to bound result size for active users.
         const exerciseIds = (planExercises || []).map((pe: any) => pe.exercise_id);
-        const lastLogPromises = exerciseIds.map((exId: string) =>
-          supabase.from("set_logs")
-            .select("weight_kg, exercise_id")
-            .eq("exercise_id", exId).gt("weight_kg", 0)
-            .order("created_at", { ascending: false }).limit(1).single()
-        );
-        const lastLogResults = await Promise.all(lastLogPromises);
         const lastLogMap = new Map<string, number>();
-        for (const r of lastLogResults) {
-          if (r.data) lastLogMap.set(r.data.exercise_id, r.data.weight_kg);
+        if (exerciseIds.length > 0) {
+          const sixMonthsAgo = new Date(Date.now() - 180 * 24 * 60 * 60 * 1000).toISOString();
+          const { data: allLogs } = await supabase.from("set_logs")
+            .select("weight_kg, exercise_id, created_at")
+            .in("exercise_id", exerciseIds)
+            .gt("weight_kg", 0)
+            .gte("created_at", sixMonthsAgo)
+            .order("created_at", { ascending: false });
+          for (const log of ((allLogs as any[]) ?? [])) {
+            // First row per exercise wins (results are pre-sorted desc).
+            if (!lastLogMap.has(log.exercise_id)) {
+              lastLogMap.set(log.exercise_id, log.weight_kg);
+            }
+          }
         }
 
         const enrichedExercises: ExerciseData[] = (planExercises || []).map((pe: any) => {
@@ -715,6 +827,7 @@ export default function Today() {
             trainingHistory,
             muscleGroup: pe.exercises?.muscle_group ?? "full_body",
             lastLoggedWeight: lastLogMap.get(pe.exercise_id),
+            intensityMultiplier: periodization.intensityMultiplier,
           });
 
           return {
@@ -734,11 +847,10 @@ export default function Today() {
           };
         });
 
-        // Apply mesocycle periodization (deload weeks, intro ramp-up, etc.)
-        const planCreated = plan.created_at ? new Date(plan.created_at) : new Date();
-        const weeksSincePlan = Math.max(1, Math.ceil((Date.now() - planCreated.getTime()) / (7 * 24 * 60 * 60 * 1000)));
+        // Apply mesocycle periodization to sets/reps/RPE.
+        // trainingWeek and periodization computed above (used by intensityMultiplier).
         const periodizedExercises = enrichedExercises.map((e) => {
-          const p = applyPeriodization(e.targetSets, e.targetReps, e.targetRpe, weeksSincePlan);
+          const p = applyPeriodization(e.targetSets, e.targetReps, e.targetRpe, trainingWeek);
           return { ...e, targetSets: p.sets, targetReps: p.reps, targetRpe: p.rpe };
         });
 
@@ -797,53 +909,58 @@ export default function Today() {
       setTodayWorkout(null);
     }
 
-    // ── Missed workout check (yesterdayPlan already fetched in batch 1) ──
-    const yesterdayPlan = yesterdayPlanResult.data;
-    if (yesterdayPlan) {
+    // Today's workout state is ready — render NOW. The missed-day check
+    // below makes 1 + up to 7 more queries which were previously blocking
+    // the skeleton; they don't affect today's workout card, so defer them.
+    setLoading(false);
+
+    // ── Missed workout check (fire-and-forget; populates missedDay banner) ──
+    // yesterdayPlan was fetched in BATCH 1 above.
+    (async () => {
+      const yesterdayPlan = yesterdayPlanResult.data;
+      if (!yesterdayPlan) return;
       const yesterdayStr = yesterday.toISOString().split("T")[0];
       const { data: yesterdayLog } = await supabase
         .from("workout_logs")
         .select("id")
-        .eq("workout_plan_id", yesterdayPlan.id)
+        .eq("workout_plan_id", (yesterdayPlan as any).id)
         .gte("started_at", yesterdayStr)
         .limit(1)
         .single();
 
-      if (!yesterdayLog) {
-        const missedWorkoutDay = {
-          day: yesterdayDay,
-          focus: yesterdayPlan.focus,
-          isRestDay: false,
+      if (yesterdayLog) return;
+
+      const missedWorkoutDay = {
+        day: yesterdayDay,
+        focus: (yesterdayPlan as any).focus,
+        isRestDay: false,
+        exercises: [],
+      };
+      setMissedDay(missedWorkoutDay);
+
+      // Fetch all remaining days in parallel for the missed-day options card
+      const remainingDayNums = Array.from({ length: 7 - day + 1 }, (_, i) => day + i);
+      const dayPlanResults = await Promise.all(
+        remainingDayNums.map((d) =>
+          supabase.from("workout_plans")
+            .select("focus, is_rest_day, day")
+            .eq("user_id", uid).eq("day", d)
+            .order("created_at", { ascending: false }).limit(1).single()
+        )
+      );
+
+      const remainingDays = dayPlanResults
+        .filter((r) => r.data)
+        .map((r) => ({
+          day: (r.data as any).day,
+          focus: (r.data as any).focus || "Rest",
+          isRestDay: (r.data as any).is_rest_day,
           exercises: [],
-        };
-        setMissedDay(missedWorkoutDay);
+        }));
 
-        // Fetch all remaining days in parallel instead of one-by-one loop
-        const remainingDayNums = Array.from({ length: 7 - day + 1 }, (_, i) => day + i);
-        const dayPlanResults = await Promise.all(
-          remainingDayNums.map((d) =>
-            supabase.from("workout_plans")
-              .select("focus, is_rest_day, day")
-              .eq("user_id", uid).eq("day", d)
-              .order("created_at", { ascending: false }).limit(1).single()
-          )
-        );
-
-        const remainingDays = dayPlanResults
-          .filter((r) => r.data)
-          .map((r) => ({
-            day: r.data!.day,
-            focus: r.data!.focus || "Rest",
-            isRestDay: r.data!.is_rest_day,
-            exercises: [],
-          }));
-
-        const options = getMissedDayOptions(missedWorkoutDay, remainingDays);
-        setMissedDayOptions(options);
-      }
-    }
-
-    setLoading(false);
+      const options = getMissedDayOptions(missedWorkoutDay, remainingDays);
+      setMissedDayOptions(options);
+    })().catch((err) => console.warn("[missed-day] check failed:", err));
   };
 
   const handleLifeHappens = () => {
@@ -950,8 +1067,21 @@ export default function Today() {
   const weekNum = Math.ceil(new Date().getDate() / 7);
   const completionPct = dayOfWeek > 1 ? Math.round(((dayOfWeek - 1) / 5) * 100) : 0;
 
-  const handleStartWorkout = () =>
+  const handleStartWorkout = () => {
+    // Conditioning day routes to its own player (timer-based, no weight logging)
+    if (todayWorkout?.kind === "conditioning" && conditioningTemplate && conditioningPlanId) {
+      router.push({
+        pathname: "/(app)/conditioning-player" as any,
+        params: {
+          templateName: conditioningTemplate.name,
+          equipment: activeEquipment,
+          planId: conditioningPlanId,
+        },
+      });
+      return;
+    }
     router.push({ pathname: "/(app)/injury-check" as any, params: { focus: todayWorkout?.focus } });
+  };
 
   const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const todayName = DAY_NAMES[new Date().getDay()];
@@ -967,6 +1097,43 @@ export default function Today() {
     ? Math.round(((totalVolumeThisWeek - totalVolumeLastWeek) / totalVolumeLastWeek) * 100)
     : totalVolumeThisWeek > 0 ? 100 : 0;
 
+  // ─── Auto-generate plan on first login ───
+  // When a user finishes onboarding and lands here with no plan in the DB,
+  // generate one via the shared helper (which tags plan_version so the
+  // staleness check in loadTodaysWorkout never fires on a freshly-generated plan).
+  useEffect(() => {
+    if (loading || todayWorkout || autoGenerating || !session?.user?.id) return;
+    setAutoGenerating(true);
+
+    (async () => {
+      try {
+        // Check onboarding state first — non-completed users should be routed
+        // back to onboarding instead of getting an auto-generated plan.
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("onboarding_completed")
+          .eq("id", session.user.id)
+          .single();
+        if (!profile || !(profile as any).onboarding_completed) {
+          router.replace("/(onboarding)/step1-welcome" as any);
+          return;
+        }
+
+        const result = await regenerateWorkoutPlan(session.user.id);
+        if (!result.success) {
+          console.error("Auto-generate plan failed:", result.error);
+          return;
+        }
+
+        loadTodaysWorkout();
+      } catch (err) {
+        console.error("Auto-generate plan error:", err);
+      } finally {
+        setAutoGenerating(false);
+      }
+    })();
+  }, [loading, todayWorkout, autoGenerating]);
+
   // ─── Loading ───
   if (loading) {
     return (
@@ -977,22 +1144,17 @@ export default function Today() {
     );
   }
 
-  // ─── No plan ───
+  // ─── No plan (generating) ───
   if (!todayWorkout) {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.bg, justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
-        <Text style={{ color: theme.colors.earth, fontSize: 26, fontWeight: "700", marginBottom: 8, letterSpacing: -0.8 }}>
-          Welcome to Livvia
+        <ActivityIndicator size="large" color={theme.colors.earth} style={{ marginBottom: 16 }} />
+        <Text style={{ color: theme.colors.earth, fontSize: 20, fontWeight: "700", marginBottom: 6, letterSpacing: -0.5 }}>
+          Building your plan...
         </Text>
-        <Text style={{ color: theme.colors.rock, fontSize: 15, textAlign: "center", marginBottom: 28, lineHeight: 22 }}>
-          Your personalized workout plan is being prepared. Generate one to begin your workout.
+        <Text style={{ color: theme.colors.rock, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
+          Creating a personalized workout program based on your goals.
         </Text>
-        <Pressable
-          onPress={() => router.push("/(app)/generate-plan" as any)}
-          style={{ backgroundColor: theme.colors.earth, borderRadius: 22, paddingHorizontal: 32, paddingVertical: 16 }}
-        >
-          <Text style={{ color: theme.colors.bg, fontSize: 16, fontWeight: "700" }}>Generate My Plan</Text>
-        </Pressable>
       </View>
     );
   }
@@ -1053,6 +1215,11 @@ export default function Today() {
             <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
               Rest day. <Text style={{ color: theme.colors.trail }}>Recover.</Text>
             </Text>
+          </View>
+
+          {/* WEEK STRIP */}
+          <View style={{ paddingTop: 20 }}>
+            <WeekStrip data={weekVolumeData} />
           </View>
 
           <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
@@ -1166,17 +1333,61 @@ export default function Today() {
           </View>
         )}
 
-        {/* TRAINING PHASE BADGE */}
-        {trainingPhase && trainingPhase !== "hypertrophy" && (
-          <View style={{
-            alignSelf: "flex-start", marginLeft: 24, marginBottom: 8,
-            backgroundColor: "rgba(52,211,153,0.1)", borderRadius: 10,
-            paddingHorizontal: 10, paddingVertical: 5,
-          }}>
-            <Text style={{ fontSize: 10, fontWeight: "700", color: theme.colors.trail, textTransform: "uppercase", letterSpacing: 1 }}>
-              {TRAINING_PHASES[trainingPhase]?.name ?? "Training"}
+        {/* PHASE ADVANCEMENT BANNER (NASM OPT) — shows once per advancement */}
+        {phaseAdvanceBanner && session?.user?.id && (
+          <Pressable
+            onPress={async () => {
+              const key = `revive.phaseBannerShown.${session.user.id}.${phaseAdvanceBanner.to}`;
+              await AsyncStorage.setItem(key, "1");
+              setPhaseAdvanceBanner(null);
+            }}
+            style={{
+              backgroundColor: "rgba(52,211,153,0.12)",
+              borderRadius: 14,
+              padding: 16,
+              marginHorizontal: 24,
+              marginBottom: 12,
+              borderWidth: 1,
+              borderColor: "rgba(52,211,153,0.25)",
+            }}
+          >
+            <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.trail, letterSpacing: 1.2, marginBottom: 6 }}>
+              {phaseAdvanceBanner.phasesSkipped > 1 ? "PHASES ADVANCED" : "NEW PHASE UNLOCKED"}
             </Text>
-          </View>
+            <Text style={{ fontSize: 15, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
+              {phaseAdvanceBanner.phasesSkipped > 1
+                ? `You've progressed ${phaseAdvanceBanner.phasesSkipped} phases — now in ${TRAINING_PHASES[phaseAdvanceBanner.to].name}.`
+                : `You've earned your way into the ${TRAINING_PHASES[phaseAdvanceBanner.to].name} phase.`}
+            </Text>
+            <Text style={{ fontSize: 13, color: theme.colors.rock, lineHeight: 19 }}>
+              {TRAINING_PHASES[phaseAdvanceBanner.to].description}. Your plan has been updated. Tap to dismiss.
+            </Text>
+          </Pressable>
+        )}
+
+        {/* MESOCYCLE BANNER — surfaces deload/peak weeks (no action required) */}
+        {!mesocycleBannerDismissed && (mesocyclePhase === "deload" || mesocyclePhase === "peak") && (
+          <Pressable
+            onPress={() => setMesocycleBannerDismissed(true)}
+            style={{
+              backgroundColor: mesocyclePhase === "deload" ? "rgba(99,102,241,0.08)" : "rgba(245,158,11,0.08)",
+              borderRadius: 14,
+              padding: 14,
+              marginHorizontal: 24,
+              marginBottom: 12,
+              borderWidth: 1,
+              borderColor: mesocyclePhase === "deload" ? "rgba(99,102,241,0.18)" : "rgba(245,158,11,0.18)",
+            }}
+          >
+            <Text style={{ fontSize: 11, fontWeight: "700", letterSpacing: 1.2, marginBottom: 4, color: mesocyclePhase === "deload" ? "#4338CA" : "#B45309" }}>
+              {mesocyclePhase === "deload" ? "DELOAD WEEK" : "PEAK WEEK"}
+            </Text>
+            <Text style={{ fontSize: 13, color: theme.colors.earth, lineHeight: 19 }}>
+              {mesocyclePhase === "deload"
+                ? "Recovery week — weights drop ~25% so your body adapts. Come back stronger."
+                : "Heaviest week of this cycle — weights up ~10%. Rest fully between sets."}
+            </Text>
+          </Pressable>
         )}
 
         {/* 2. PERSONAL HERO */}
@@ -1184,10 +1395,17 @@ export default function Today() {
           <Text style={{ fontSize: 11, fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, letterSpacing: 1.2, marginBottom: 10 }}>
             {todayName} · {todayWorkout.focus} · Week {weekNum}
           </Text>
-          <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
-            {exerciseData.length} exercises today.{" "}
-            <Text style={{ color: theme.colors.trail }}>Let's climb.</Text>
-          </Text>
+          {todayWorkout.kind === "conditioning" && conditioningTemplate ? (
+            <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
+              {conditioningTemplate.totalDurationMinutes} min of conditioning.{" "}
+              <Text style={{ color: theme.colors.trail }}>Let's burn.</Text>
+            </Text>
+          ) : (
+            <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
+              {exerciseData.length} exercises today.{" "}
+              <Text style={{ color: theme.colors.trail }}>Let's climb.</Text>
+            </Text>
+          )}
         </View>
 
         {/* READINESS ADJUSTMENT BANNER */}
@@ -1245,96 +1463,51 @@ export default function Today() {
           </View>
         )}
 
-        {/* 3. BENTO WIDGETS */}
-        <View style={{ flexDirection: "row", gap: 10, paddingHorizontal: 24, paddingTop: 20 }}>
-          {/* STREAK */}
-          <BentoWidget variant="stone" style={{ flex: 1, height: 108, justifyContent: "space-between", alignItems: "center" }}>
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                <Text style={{ fontSize: 26, fontWeight: "800", color: theme.colors.earth, letterSpacing: -0.5 }}>
-                  {statsLoading ? "-" : dayStreak}
-                </Text>
-                <Image source={require("../../assets/fire.png")} style={{ width: 20, height: 20 }} resizeMode="contain" />
-              </View>
-              <View style={{ height: 15 }} />
-            </View>
-            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: theme.colors.rock }}>
-              Streak
-            </Text>
-          </BentoWidget>
-
-          {/* THIS WEEK */}
-          <BentoWidget variant="stone" style={{ flex: 1, height: 108, justifyContent: "space-between", alignItems: "center" }}>
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-                <Text style={{ fontSize: 26, fontWeight: "800", color: theme.colors.earth, letterSpacing: -0.5 }}>
-                  {statsLoading ? "-" : weekWorkoutCount}
-                </Text>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: theme.colors.rock }}>
-                  / {weekPlannedCount || 4}
-                </Text>
-              </View>
-              <View style={{ height: 15 }} />
-            </View>
-            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: theme.colors.rock }}>
-              This week
-            </Text>
-          </BentoWidget>
-
-          {/* TOP WEIGHT */}
-          <BentoWidget variant="stone" style={{ flex: 1, height: 108, justifyContent: "space-between", alignItems: "center" }}>
-            <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-              <View style={{ flexDirection: "row", alignItems: "center", gap: 2 }}>
-                <Text style={{ fontSize: 26, fontWeight: "800", color: theme.colors.earth, letterSpacing: -0.5 }}>
-                  {statsLoading ? "-" : topWeight ? `${Math.round(topWeight.weight)}` : "0"}
-                </Text>
-                <Text style={{ fontSize: 13, fontWeight: "600", color: theme.colors.rock }}>kg</Text>
-              </View>
-              {!statsLoading && topWeight ? (
-                <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.accent, marginTop: 4 }} numberOfLines={1}>
-                  {topWeight.exercise}
-                </Text>
-              ) : (
-                <View style={{ height: 15 }} />
-              )}
-            </View>
-            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: theme.colors.rock }}>
-              Top weight
-            </Text>
-          </BentoWidget>
+        {/* 3. WEEK STRIP */}
+        <View style={{ paddingTop: 20 }}>
+          <WeekStrip data={weekVolumeData} />
         </View>
 
-        {/* 4. VOLUME CHART */}
-        <View style={{ marginHorizontal: 24, marginTop: 20 }}>
-          <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>Weekly Volume</Text>
-            <Text style={{ fontSize: 11, color: theme.colors.rock }}>kg per day</Text>
+        {/* 4. CONDITIONING TEMPLATE PREVIEW (fat-loss conditioning days only) */}
+        {todayWorkout.kind === "conditioning" && conditioningTemplate && (
+          <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
+            <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+              <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>Today's Circuit</Text>
+              <Text style={{ fontSize: 11, color: theme.colors.rock }}>
+                {conditioningTemplate.exercises.length} stations · {conditioningTemplate.totalDurationMinutes} min
+              </Text>
+            </View>
+            <View style={{ backgroundColor: theme.colors.stone, borderRadius: 18, padding: 18, marginBottom: 8 }}>
+              <Text style={{ fontSize: 13, color: theme.colors.rock, lineHeight: 19, marginBottom: 14 }}>
+                {conditioningTemplate.description}
+              </Text>
+              {conditioningTemplate.exercises.map((ex, i) => (
+                <View key={i} style={{ flexDirection: "row", gap: 12, paddingVertical: 10, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(0,0,0,0.05)" }}>
+                  <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: theme.colors.earth, alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.bg }}>{i + 1}</Text>
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>{ex.name}</Text>
+                    <Text style={{ fontSize: 11, color: theme.colors.trail, fontWeight: "600", marginTop: 2 }}>
+                      {ex.duration_seconds >= 60 ? `${Math.round(ex.duration_seconds / 60)} min` : `${ex.duration_seconds}s`} · {ex.type}
+                    </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
-          <VolumeChart data={weekVolumeData} />
-        </View>
+        )}
 
-        {/* 5. TRAIL SECTION */}
+        {/* 4. TRAIL SECTION (strength days) */}
+        {todayWorkout.kind !== "conditioning" && (
         <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
             <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>Today's Route</Text>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
-              <Pressable
-                onPress={openAdaptModal}
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 4,
-                  borderRadius: 100,
-                  backgroundColor: "rgba(52,211,153,0.08)",
-                  borderWidth: 1,
-                  borderColor: "rgba(52,211,153,0.15)",
-                }}
-              >
-                <Text style={{ fontSize: 10, fontWeight: "600", color: theme.colors.trail }}>Adapt</Text>
-              </Pressable>
-              <Text style={{ fontSize: 11, color: theme.colors.rock }}>
-                {exerciseData.length} · ~45 min
-              </Text>
-            </View>
+            {/* Adapt button hidden — handlers + modal kept for future re-enablement.
+                See openAdaptModal / handleEquipmentSwitch / handleFocusSwap / handleExpressMode. */}
+            <Text style={{ fontSize: 11, color: theme.colors.rock }}>
+              {exerciseData.length} · ~45 min
+            </Text>
           </View>
 
           <View style={{ position: "relative" }}>
@@ -1400,6 +1573,7 @@ export default function Today() {
             </View>
           </View>
         </View>
+        )}
 
         {/* 6. SECONDARY BUTTONS */}
         <View style={{ flexDirection: "row", gap: 12, paddingHorizontal: 24, marginTop: 4 }}>
@@ -1446,32 +1620,31 @@ export default function Today() {
             <Text style={{ color: theme.colors.rock, fontSize: 13 }}>{missedDayMessage}</Text>
           </Pressable>
         )}
+        {/* 8. BEGIN WORKOUT CTA */}
+        <View style={{ marginHorizontal: 20, marginTop: 16, marginBottom: 100 }}>
+          <Pressable
+            onPress={handleStartWorkout}
+            style={{
+              backgroundColor: theme.colors.earth,
+              borderRadius: 22,
+              paddingVertical: 18,
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 8,
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.15,
+              shadowRadius: 12,
+              elevation: 8,
+            }}
+          >
+            <Text style={{ color: theme.colors.bg, fontSize: 16, fontWeight: "700" }}>
+              Begin Workout ↗
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
-
-      {/* 8. FLOATING CTA */}
-      <View style={{ position: "absolute", bottom: 98, left: 20, right: 20 }}>
-        <Pressable
-          onPress={handleStartWorkout}
-          style={{
-            backgroundColor: theme.colors.earth,
-            borderRadius: 22,
-            paddingVertical: 18,
-            flexDirection: "row",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 8,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.15,
-            shadowRadius: 12,
-            elevation: 8,
-          }}
-        >
-          <Text style={{ color: theme.colors.bg, fontSize: 16, fontWeight: "700" }}>
-            Begin Workout ↗
-          </Text>
-        </Pressable>
-      </View>
 
       {/* ─── ADAPT MODAL ─── */}
       <Modal

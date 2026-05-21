@@ -4,13 +4,12 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { useState, useEffect, useRef } from "react";
-import { useAuthStore, generateDailyMealPlan, generateGroceryList } from "@repped/shared";
+import { useAuthStore, generateWeeklyMealPlan, generateGroceryList } from "@repped/shared";
 import type { GroceryItem } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import * as Location from "expo-location";
 import { findNearbyGroceryStores, type PlaceResult } from "../../src/lib/places";
 import { openMapsUrl, openMaps } from "../../src/lib/deeplink";
-import { generateSaveTips, getCachedTips, type SaveTip } from "../../src/lib/grocery-tips";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Clipboard from "expo-clipboard";
 import LottieView from "lottie-react-native";
@@ -18,31 +17,6 @@ import LottieView from "lottie-react-native";
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
-
-// ——— Business Logic (unchanged) ———
-const ESTIMATED_PRICES: Record<string, number> = {
-  "eggs": 4.99, "chicken breast": 8.99, "ground beef": 7.99, "salmon": 12.99,
-  "turkey": 9.99, "tuna": 2.49, "shrimp": 11.99, "tofu": 3.49, "bacon": 6.99,
-  "ham": 5.99, "steak": 14.99,
-  "greek yogurt": 5.99, "butter": 4.49, "cheese": 4.99, "cream cheese": 3.49,
-  "milk": 3.99, "sour cream": 2.99, "cottage cheese": 4.49, "parmesan": 5.99,
-  "whole wheat bread": 3.99, "rice": 4.99, "oats": 3.99, "pasta": 2.49,
-  "tortilla": 3.49, "quinoa": 5.99, "granola": 4.99,
-  "banana": 0.69, "avocado": 1.99, "spinach": 3.49, "broccoli": 2.49,
-  "tomato": 1.49, "onion": 0.99, "bell pepper": 1.49, "lettuce": 2.49,
-  "lemon": 0.59, "garlic": 0.79, "sweet potato": 1.49, "potato": 0.99,
-  "carrot": 1.29, "mixed berries": 4.99, "apple": 1.29,
-  "peanut butter": 4.99, "olive oil": 6.99, "honey": 5.99, "salt": 1.49,
-  "protein powder": 29.99, "mixed nuts": 8.99, "hummus": 3.99,
-};
-
-const getEstimatedPrice = (name: string): number => {
-  const lower = name.toLowerCase();
-  for (const [key, price] of Object.entries(ESTIMATED_PRICES)) {
-    if (lower.includes(key) || key.includes(lower)) return price;
-  }
-  return 2.99;
-};
 
 const categoryColors: Record<string, string> = {
   produce: "#34D399", protein: "#EF4444", dairy: "#F59E0B",
@@ -123,79 +97,54 @@ function MapPin() {
 
 // ——— Hero Flip Card ———
 
-function HeroFlipCard({
-  total,
+function HeroCard({
   itemsCount,
-  saveTips,
+  weeklyMacros,
 }: {
-  total: number;
   itemsCount: number;
-  saveTips: SaveTip[];
+  weeklyMacros: { protein: number; carbs: number; fat: number };
 }) {
-  const flipAnim = useRef(new Animated.Value(0)).current;
-  const [flipped, setFlipped] = useState(false);
-
-  const flipToBack = () => {
-    setFlipped(true);
-    Animated.spring(flipAnim, {
-      toValue: 1,
-      friction: 8,
-      tension: 60,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const flipToFront = () => {
-    Animated.spring(flipAnim, {
-      toValue: 0,
-      friction: 8,
-      tension: 60,
-      useNativeDriver: true,
-    }).start(() => setFlipped(false));
-  };
-
-  const frontRotate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["0deg", "180deg"],
-  });
-
-  const backRotate = flipAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ["180deg", "360deg"],
-  });
-
   return (
     <View style={s.heroWrap}>
-      {/* Front Face */}
-      <Animated.View
-        style={[
-          s.heroCard,
-          { transform: [{ perspective: 1000 }, { rotateY: frontRotate }], backfaceVisibility: "hidden" },
-        ]}
-      >
+      <View style={s.heroCard}>
         <LinearGradient
           colors={["#D4CFC5", "#E8E4DB", "#F2EFE8", "#DDD8CE"]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={StyleSheet.absoluteFill}
         />
-        {/* Subtle green glow */}
         <View style={s.heroGlow} />
 
-        {/* Top row */}
         <View style={s.heroTopRow}>
           <Text style={s.heroLabel}>WEEKLY SHOP</Text>
           <Text style={s.heroItemCount}>{itemsCount} items</Text>
         </View>
 
-        {/* Middle */}
         <View style={s.heroMiddle}>
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
-              <Text style={s.heroDollar}>$</Text>
-              <Text style={s.heroAmount}>{total.toFixed(2)}</Text>
+              <Text style={s.heroAmount}>{itemsCount}</Text>
+              <Text style={{ fontSize: 14, color: "#8E8E7A", fontWeight: "500", marginBottom: 8, marginLeft: 4 }}>items</Text>
             </View>
-            <Text style={s.heroEstLabel}>estimated total</Text>
+            <Text style={s.heroEstLabel}>for this week</Text>
+            {weeklyMacros.protein > 0 && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 6 }}>
+                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: "#EF4444" }}>{weeklyMacros.protein}g</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: "#EF4444", opacity: 0.7 }}>P</Text>
+                </View>
+                <Text style={{ fontSize: 10, color: "#C8C3B9" }}>·</Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: "#F59E0B" }}>{weeklyMacros.carbs}g</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: "#F59E0B", opacity: 0.7 }}>C</Text>
+                </View>
+                <Text style={{ fontSize: 10, color: "#C8C3B9" }}>·</Text>
+                <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
+                  <Text style={{ fontSize: 15, fontWeight: "700", color: "#6366F1" }}>{weeklyMacros.fat}g</Text>
+                  <Text style={{ fontSize: 10, fontWeight: "600", color: "#6366F1", opacity: 0.7 }}>F</Text>
+                </View>
+              </View>
+            )}
           </View>
           <View style={s.heroCartPlaceholder}>
             <LottieView
@@ -206,56 +155,7 @@ function HeroFlipCard({
             />
           </View>
         </View>
-
-        {/* Bottom row */}
-        <View style={s.heroBottomRow}>
-          <View style={{ flex: 1 }} />
-          <Pressable onPress={flipToBack} style={s.saveTipsBtn}>
-            <Text style={s.saveTipsBtnText}>💡 Save Tips</Text>
-          </Pressable>
-        </View>
-      </Animated.View>
-
-      {/* Back Face */}
-      <Animated.View
-        style={[
-          s.heroCard,
-          s.heroCardBack,
-          { transform: [{ perspective: 1000 }, { rotateY: backRotate }], backfaceVisibility: "hidden" },
-        ]}
-        pointerEvents={flipped ? "auto" : "none"}
-      >
-        <LinearGradient
-          colors={["#D4CFC5", "#E8E4DB", "#F2EFE8", "#DDD8CE"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={StyleSheet.absoluteFill}
-        />
-        <View style={s.heroGlow} />
-
-        {/* Header */}
-        <View style={s.backHeader}>
-          <Text style={s.backTitle}>💡 Smart Save Tips</Text>
-          <Pressable onPress={flipToFront} style={s.backCloseBtn}>
-            <Text style={s.backCloseBtnText}>✕ Close</Text>
-          </Pressable>
-        </View>
-
-        {/* Tips */}
-        <View style={{ marginTop: 10 }}>
-          {saveTips.map((tip, i) => (
-            <View key={i} style={s.tipRow}>
-              <View style={s.tipIconWrap}>
-                <Text style={{ fontSize: 10 }}>{tip.icon}</Text>
-              </View>
-              <View style={{ flex: 1 }}>
-                <Text style={s.tipText} numberOfLines={2}>{tip.text}</Text>
-                <Text style={s.tipSavings}>{tip.savings}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      </Animated.View>
+      </View>
     </View>
   );
 }
@@ -385,13 +285,12 @@ export default function GroceryListScreen() {
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null);
   const [storeDeals, setStoreDeals] = useState<PlaceResult[]>([]);
   const [dealsLoading, setDealsLoading] = useState(false);
-  const [saveTips, setSaveTips] = useState<SaveTip[]>([]);
   const [toastVisible, setToastVisible] = useState(false);
   const [expandedStoreIdx, setExpandedStoreIdx] = useState<number | null>(null);
+  const [weeklyMacros, setWeeklyMacros] = useState({ protein: 0, carbs: 0, fat: 0 });
+  const [locationDenied, setLocationDenied] = useState(false);
 
-  // Load cached tips immediately (instant), then refresh in background
   useEffect(() => {
-    getCachedTips().then(setSaveTips);
     loadGroceryList();
   }, []);
 
@@ -401,35 +300,37 @@ export default function GroceryListScreen() {
     const p = profile as any;
     if (!p?.tdee) { setLoading(false); return; }
 
-    const weekMeals: any[] = [];
-    for (let i = 0; i < 7; i++) {
-      const plan = generateDailyMealPlan(p.tdee, p.goal, p.weight_kg, p.dietary_preference, p.food_exclusions || []);
-      weekMeals.push(...plan.meals);
-    }
+    const weekPlans = generateWeeklyMealPlan(p.tdee, p.goal, p.weight_kg, p.dietary_preference, p.food_exclusions || [], p.cuisine_preferences, p.meat_preferences || []);
+    const weekMeals = weekPlans.flatMap((plan) => plan.meals);
 
-    const list = generateGroceryList(weekMeals);
+    // Compute weekly macro totals for hero card
+    setWeeklyMacros({
+      protein: weekPlans.reduce((s, d) => s + d.totalProtein, 0),
+      carbs: weekPlans.reduce((s, d) => s + d.totalCarbs, 0),
+      fat: weekPlans.reduce((s, d) => s + d.totalFat, 0),
+    });
+
+    const list = generateGroceryList(weekMeals as any, p.pantry_staples || []);
     setItems(list.items);
     setCategories(list.categories);
     setLoading(false);
 
-    // Generate personalized save tips in background (non-blocking)
-    const tipsInput = list.items.map((item: any) => ({
-      name: item.name,
-      price: getEstimatedPrice(item.name),
-    }));
-    generateSaveTips(tipsInput).then(setSaveTips);
-
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
-        const pos = await Location.getCurrentPositionAsync({});
+        const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
         setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
         setDealsLoading(true);
         const deals = await findNearbyGroceryStores(pos.coords.latitude, pos.coords.longitude);
         setStoreDeals(deals);
         setDealsLoading(false);
+      } else {
+        setLocationDenied(true);
       }
-    } catch {}
+    } catch (err) {
+      console.warn("Location/stores error:", err);
+      setDealsLoading(false);
+    }
   };
 
   const toggleItem = (key: string) => {
@@ -449,6 +350,17 @@ export default function GroceryListScreen() {
     showCopyToast();
   };
 
+  const copyFullList = async () => {
+    const text = categories.map((cat) => {
+      const catItems = items.filter((i) => i.category === cat);
+      const header = `${(categoryNames[cat] || cat).toUpperCase()}`;
+      const lines = catItems.map((item) => `- ${item.name}: ${item.amount} ${item.unit}`);
+      return [header, ...lines].join("\n");
+    }).join("\n\n");
+    await Clipboard.setStringAsync(text);
+    showCopyToast();
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, backgroundColor: "#F6F5F0", justifyContent: "center", alignItems: "center" }}>
@@ -457,8 +369,6 @@ export default function GroceryListScreen() {
       </View>
     );
   }
-
-  const total = items.reduce((sum, item) => sum + getEstimatedPrice(item.name), 0);
 
   // Compute per-category checked counts
   const getCatItems = (cat: string) => items.filter((item) => item.category === cat);
@@ -489,7 +399,7 @@ export default function GroceryListScreen() {
         </View>
 
         {/* ——— HERO CARD ——— */}
-        <HeroFlipCard total={total} itemsCount={items.length} saveTips={saveTips} />
+        <HeroCard itemsCount={items.length} weeklyMacros={weeklyMacros} />
 
         {/* ——— SHOPPING LIST — STORE ROUTE ——— */}
         <View style={s.routeSection}>
@@ -499,7 +409,15 @@ export default function GroceryListScreen() {
               <Text style={s.routeHeaderLabel}>Shopping List</Text>
               <View style={s.routeAccentLine} />
             </View>
-            <Text style={s.routeHeaderMeta}>{totalChecked}/{items.length}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+              <Pressable
+                onPress={copyFullList}
+                style={{ paddingHorizontal: 10, paddingVertical: 4, backgroundColor: "rgba(99,102,241,0.1)", borderRadius: 8 }}
+              >
+                <Text style={{ fontSize: 11, color: "#6366F1", fontWeight: "600" }}>Copy All</Text>
+              </Pressable>
+              <Text style={s.routeHeaderMeta}>{totalChecked}/{items.length}</Text>
+            </View>
           </View>
 
           {/* Vertical trail line */}
@@ -547,8 +465,8 @@ export default function GroceryListScreen() {
                           </Text>
                           <Text style={s.itemQty}>{item.amount} {item.unit}</Text>
                         </View>
-                        <Text style={[s.itemPrice, isChecked && { opacity: 0.25 }]}>
-                          ${getEstimatedPrice(item.name).toFixed(2)}
+                        <Text style={[s.itemQtyRight, isChecked && { opacity: 0.25 }]}>
+                          {item.amount} {item.unit}
                         </Text>
                       </Pressable>
                     );
@@ -563,7 +481,7 @@ export default function GroceryListScreen() {
                 <View style={s.finishDot}>
                   <Text style={{ fontSize: 13 }}>🛒</Text>
                 </View>
-                <Text style={s.finishText}>Est. Total  ${total.toFixed(2)}</Text>
+                <Text style={s.finishText}>{totalChecked}/{items.length} items checked</Text>
               </View>
             )}
 
@@ -607,13 +525,21 @@ export default function GroceryListScreen() {
             />
           ))}
 
-          {!dealsLoading && storeDeals.length === 0 && (
+          {!dealsLoading && storeDeals.length === 0 && !locationDenied && (
             <Pressable
               onPress={() => openMaps("grocery stores", location?.lat, location?.lng)}
               style={s.findStoresBtn}
             >
               <Text style={{ color: "#F6F5F0", fontSize: 14, fontWeight: "600" }}>Find Stores Near You</Text>
             </Pressable>
+          )}
+
+          {locationDenied && (
+            <View style={{ paddingVertical: 16, paddingHorizontal: 12, alignItems: "center" }}>
+              <Text style={{ color: "#8E8E7A", fontSize: 13, textAlign: "center", lineHeight: 18 }}>
+                Enable location access in your device settings to find nearby grocery stores.
+              </Text>
+            </View>
           )}
         </View>
 
@@ -648,7 +574,7 @@ const s = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 4,
     marginBottom: 16,
-    height: 170,
+    height: 190,
   },
   heroCard: {
     position: "absolute",
@@ -689,12 +615,6 @@ const s = StyleSheet.create({
     alignItems: "center",
     marginTop: 2,
   },
-  heroDollar: {
-    fontSize: 48, fontWeight: "400",
-    fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
-    color: "#2E7D32", opacity: 0.7,
-    marginRight: 6,
-  },
   heroAmount: {
     fontSize: 42, fontWeight: "400",
     fontFamily: Platform.OS === "ios" ? "Georgia" : "serif",
@@ -729,56 +649,56 @@ const s = StyleSheet.create({
     fontSize: 9, fontWeight: "700", color: "#2D2A24", letterSpacing: 0.3,
   },
 
-  // Back face
+  // Back face — Smart Tips card
   backHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingBottom: 8,
+    flexDirection: "row" as const,
+    justifyContent: "space-between" as const,
+    alignItems: "center" as const,
+    paddingBottom: 10,
+    marginBottom: 4,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(0,0,0,0.04)",
+    borderBottomColor: "rgba(0,0,0,0.06)",
   },
   backTitle: {
-    fontSize: 10, fontWeight: "700", letterSpacing: 1.5,
+    fontSize: 11, fontWeight: "700" as const, letterSpacing: 1.2,
     color: "#2D2A24",
-    textTransform: "uppercase",
+    textTransform: "uppercase" as const,
   },
   backCloseBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 5,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
     borderRadius: 10,
-    backgroundColor: "#C8C3B9",
-    shadowColor: "#000",
-    shadowOffset: { width: 3, height: 3 },
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 3,
+    backgroundColor: "rgba(0,0,0,0.05)",
   },
   backCloseBtnText: {
-    fontSize: 9, fontWeight: "600", color: "#8E8E7A",
+    fontSize: 10, fontWeight: "600" as const, color: "#5A5847",
+  },
+  tipsContainer: {
+    marginTop: 2,
+    gap: 2,
   },
   tipRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    paddingVertical: 6,
+    flexDirection: "row" as const,
+    alignItems: "flex-start" as const,
+    paddingVertical: 8,
     borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: "rgba(0,0,0,0.03)",
-    gap: 8,
+    borderBottomColor: "rgba(0,0,0,0.04)",
+    gap: 10,
   },
   tipIconWrap: {
-    width: 22, height: 22, borderRadius: 8,
-    backgroundColor: "rgba(0,0,0,0.03)",
-    alignItems: "center", justifyContent: "center",
+    width: 28, height: 28, borderRadius: 10,
+    backgroundColor: "rgba(0,0,0,0.04)",
+    alignItems: "center" as const, justifyContent: "center" as const,
     marginTop: 1,
   },
   tipText: {
-    fontSize: 10, fontWeight: "500",
-    color: "#2D2A24", lineHeight: 14,
+    fontSize: 12, fontWeight: "600" as const,
+    color: "#2D2A24", lineHeight: 16,
   },
-  tipSavings: {
-    fontSize: 9, fontWeight: "700",
-    color: "#2E7D32",
-    marginTop: 1,
+  tipDetail: {
+    fontSize: 10, fontWeight: "400" as const,
+    color: "#8E8E7A", lineHeight: 14,
+    marginTop: 2,
   },
 
   // Store Route
@@ -880,8 +800,8 @@ const s = StyleSheet.create({
   itemQty: {
     fontSize: 10, color: "#8E8E7A", marginTop: 1,
   },
-  itemPrice: {
-    fontSize: 12, fontWeight: "600", color: "#8E8E7A",
+  itemQtyRight: {
+    fontSize: 11, fontWeight: "500", color: "#8E8E7A",
     marginLeft: 8,
   },
 

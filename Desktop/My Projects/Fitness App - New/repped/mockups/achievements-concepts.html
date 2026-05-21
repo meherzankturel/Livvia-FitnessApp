@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Achievements — Layout Concepts</title>
+<style>
+  :root{
+    --earth:#2D2A24;
+    --sand:#F6F5F0;
+    --stone:#EDEBE5;
+    --rock:#8E8E7A;
+    --trail:#34D399;
+    --board:#1a1815;
+    --workout:#F97316;
+    --streak:#22C55E;
+    --progress:#6366F1;
+    --nutrition:#84CC16;
+    --volume:#EF4444;
+    --milestone:#06B6D4;
+    --recovery:#14B8A6;
+    --consistency:#EAB308;
+    --social:#A855F7;
+    --challenge:#EC4899;
+    --t-starter:#A8A8AD;
+    --t-pro:#6366F1;
+    --t-elite:#F97316;
+    --t-legendary:#EAB308;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",system-ui,sans-serif;background:var(--board);color:var(--sand);min-height:100vh}
+
+  .header{padding:48px 24px 16px;text-align:center}
+  .header h1{margin:0 0 6px;font-size:22px;font-weight:700;letter-spacing:-0.3px}
+  .header p{margin:0;color:#9b958a;font-size:13px;max-width:680px;margin:0 auto}
+
+  .grid{display:flex;flex-wrap:wrap;gap:32px;padding:32px;justify-content:center;align-items:flex-start}
+
+  .col{display:flex;flex-direction:column;align-items:center;gap:14px;max-width:393px}
+  .label{color:var(--sand);text-align:center}
+  .label .num{font-size:11px;font-weight:700;letter-spacing:0.18em;color:var(--trail);text-transform:uppercase;display:block;margin-bottom:6px}
+  .label .nm{font-size:17px;font-weight:700;letter-spacing:-0.2px}
+  .label .dc{font-size:12px;color:#9b958a;margin-top:4px;max-width:340px;line-height:1.45}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 20px 60px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.05)}
+  .screen{width:100%;height:852px;background:var(--sand);border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:50px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5}
+  .scroll{position:absolute;inset:0;padding-top:50px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{display:none}
+
+  /* Topo background */
+  .topo{position:absolute;inset:0;opacity:0.04;pointer-events:none;background-image:
+    radial-gradient(ellipse 600px 200px at 20% 20%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 500px 180px at 80% 50%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 700px 220px at 30% 80%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%)}
+
+  /* Common header in screen */
+  .scrn-head{padding:8px 22px 4px;display:flex;align-items:center;gap:12px}
+  .back{width:36px;height:36px;border-radius:18px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--earth)}
+  .h-title{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+
+  /* ────────────────────────────────────────────────────── */
+  /* CONCEPT 1 — Showcase Atlas                              */
+  /* ────────────────────────────────────────────────────── */
+  .c1-hero{margin:14px 18px 0;border-radius:24px;background:linear-gradient(135deg,#2D2A24 0%,#3a352c 100%);padding:20px;position:relative;overflow:hidden;color:#F6F5F0}
+  .c1-hero::before,.c1-hero::after{content:"";position:absolute;border-radius:50%;filter:blur(40px);opacity:0.5}
+  .c1-hero::before{width:160px;height:160px;background:#F59E0B;top:-40px;right:-40px;animation:c1pulse 3s ease-in-out infinite}
+  .c1-hero::after{width:120px;height:120px;background:#EAB308;bottom:-30px;left:-30px;animation:c1pulse 3s ease-in-out infinite 1.5s}
+  @keyframes c1pulse{0%,100%{opacity:0.35;transform:scale(1)}50%{opacity:0.55;transform:scale(1.1)}}
+  .c1-hero-label{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#EAB308;margin-bottom:14px;position:relative}
+  .c1-hero-row{display:flex;align-items:center;gap:16px;position:relative}
+  .c1-bigbadge{width:96px;height:96px;flex-shrink:0;position:relative}
+  .c1-bigbadge .ring{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#EAB308,#F59E0B,#EAB308,#F59E0B,#EAB308);animation:c1spin 8s linear infinite;padding:3px;box-shadow:0 0 40px rgba(234,179,8,0.5)}
+  .c1-bigbadge .core{width:100%;height:100%;border-radius:50%;background:linear-gradient(160deg,#fbcc3f,#ca8e1c);display:flex;align-items:center;justify-content:center;font-size:36px}
+  @keyframes c1spin{to{transform:rotate(360deg)}}
+  .c1-hero-meta .ttl{font-size:18px;font-weight:800;letter-spacing:-0.2px;margin-bottom:2px}
+  .c1-hero-meta .sub{font-size:12px;color:#a8a394;line-height:1.4}
+  .c1-hero-meta .badge{display:inline-block;margin-top:8px;font-size:10px;font-weight:700;letter-spacing:0.1em;padding:4px 9px;border-radius:99px;background:rgba(234,179,8,0.18);color:#EAB308}
+
+  .c1-confetti{position:absolute;width:6px;height:6px;border-radius:1px}
+  .c1-confetti:nth-child(1){top:18%;left:30%;background:#34D399;animation:c1fall 4s linear infinite}
+  .c1-confetti:nth-child(2){top:8%;left:65%;background:#EAB308;animation:c1fall 5s linear infinite 0.6s}
+  .c1-confetti:nth-child(3){top:24%;left:80%;background:#6366F1;animation:c1fall 4.5s linear infinite 1.2s}
+  .c1-confetti:nth-child(4){top:55%;left:48%;background:#EC4899;animation:c1fall 5s linear infinite 1.8s}
+  @keyframes c1fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(90px) rotate(360deg);opacity:0}}
+
+  .c1-sec-head{display:flex;justify-content:space-between;align-items:center;margin:24px 22px 12px}
+  .c1-sec-head .ttl{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--rock)}
+  .c1-sec-head .ct{font-size:12px;font-weight:700;color:var(--earth)}
+
+  .c1-almost{display:flex;gap:10px;padding:0 22px;overflow-x:auto;scroll-snap-type:x mandatory}
+  .c1-almost::-webkit-scrollbar{display:none}
+  .c1-card{flex:0 0 138px;background:#fff;border-radius:18px;padding:14px;scroll-snap-align:start;box-shadow:0 2px 8px rgba(0,0,0,0.04)}
+  .c1-card .mini{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;position:relative}
+  .c1-card .mini.locked{background:var(--stone)}
+  .c1-card .mini.locked::after{content:"🔒";font-size:18px;opacity:0.4}
+  .c1-card .nm{font-size:12px;font-weight:700;text-align:center;line-height:1.25;margin-bottom:8px;color:var(--earth)}
+  .c1-card .bar{height:5px;background:var(--stone);border-radius:99px;overflow:hidden;margin-bottom:6px}
+  .c1-card .bar > div{height:100%;background:var(--earth);border-radius:99px}
+  .c1-card .ct{font-size:10px;text-align:center;color:var(--rock);font-weight:600}
+
+  .c1-stat{margin:18px 22px 0;background:var(--stone);border-radius:20px;padding:16px 18px}
+  .c1-stat-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .c1-stat-ttl{font-size:14px;font-weight:700}
+  .c1-stat-num{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+  .c1-stat-num span{font-size:13px;font-weight:600;color:var(--rock)}
+  .c1-stat-bar{height:6px;background:#DDD9CE;border-radius:99px;overflow:hidden}
+  .c1-stat-bar > div{height:100%;background:var(--earth);width:40%;border-radius:99px;background:linear-gradient(90deg,var(--trail),var(--earth))}
+
+  .c1-cat{margin:24px 22px 0}
+  .c1-cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .c1-cat-head-l{display:flex;align-items:center;gap:8px}
+  .c1-cat-head-l .dot{width:4px;height:18px;border-radius:2px}
+  .c1-cat-head-l .nm{font-size:16px;font-weight:700;letter-spacing:-0.2px}
+  .c1-cat-head .ct{font-size:11px;font-weight:700;color:var(--rock)}
+  .c1-cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .c1-bd{background:#fff;border-radius:18px;padding:14px 12px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.03)}
+  .c1-bd .icon{width:60px;height:60px;border-radius:50%;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;position:relative}
+  .c1-bd.locked .icon{background:var(--stone);filter:grayscale(0.8) opacity(0.5)}
+  .c1-bd .nm{font-size:11px;font-weight:700;line-height:1.25;color:var(--earth)}
+  .c1-bd.locked .nm{color:#bdbdb3}
+  .c1-bd .tier-rib{display:inline-block;margin-top:6px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;letter-spacing:0.06em;text-transform:uppercase}
+
+  /* Badge shape icons */
+  .bd-circle{background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7),transparent 50%),linear-gradient(160deg,var(--workout),#c2570c)}
+  .bd-hex{background:linear-gradient(160deg,var(--streak),#178b3e);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+  .bd-shield{background:linear-gradient(160deg,var(--progress),#3b3da6);clip-path:polygon(50% 0,100% 15%,100% 70%,50% 100%,0 70%,0 15%)}
+  .bd-diamond{background:linear-gradient(160deg,var(--volume),#a72424);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+  .bd-circle-nutr{background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7),transparent 50%),linear-gradient(160deg,var(--nutrition),#558807)}
+  .bd-circle-rec{background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7),transparent 50%),linear-gradient(160deg,var(--recovery),#0c7569)}
+  .bd-circle-soc{background:radial-gradient(circle at 35% 30%, rgba(255,255,255,0.7),transparent 50%),linear-gradient(160deg,var(--social),#6e2ba6)}
+  .bd-hex-con{background:linear-gradient(160deg,var(--consistency),#a17a06);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+  .bd-shield-mile{background:linear-gradient(160deg,var(--milestone),#03657d);clip-path:polygon(50% 0,100% 15%,100% 70%,50% 100%,0 70%,0 15%)}
+  .bd-diamond-chal{background:linear-gradient(160deg,var(--challenge),#9c1e69);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+
+  .bd-circle::before,.bd-circle-nutr::before,.bd-circle-rec::before,.bd-circle-soc::before{content:"";position:absolute;inset:6px;border-radius:50%;border:1px dashed rgba(255,255,255,0.35)}
+  .bd-shield::before,.bd-shield-mile::before{content:"";position:absolute;inset:6px;clip-path:polygon(50% 0,100% 15%,100% 70%,50% 100%,0 70%,0 15%);background:transparent;border-top:1px dashed rgba(255,255,255,0.3)}
+
+  /* Glyphs inside badges */
+  .glyph{position:absolute;color:white;font-weight:700;font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;width:100%;height:100%;z-index:2;filter:drop-shadow(0 1px 2px rgba(0,0,0,0.25))}
+
+  /* ────────────────────────────────────────────────────── */
+  /* CONCEPT 2 — Tier Ladder                                 */
+  /* ────────────────────────────────────────────────────── */
+  .c2-overview{margin:14px 22px 0;background:var(--earth);color:var(--sand);border-radius:22px;padding:16px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .c2-tcell{text-align:center;padding:8px 4px;border-radius:14px;background:rgba(255,255,255,0.04);position:relative}
+  .c2-tcell .num{font-size:24px;font-weight:800;letter-spacing:-0.5px;display:block;line-height:1}
+  .c2-tcell .num span{font-size:11px;color:#a8a394;font-weight:600}
+  .c2-tcell .lbl{font-size:9px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;margin-top:6px;display:block}
+  .c2-tcell.t-starter .lbl{color:#A8A8AD}
+  .c2-tcell.t-pro .lbl{color:#818cf8}
+  .c2-tcell.t-elite .lbl{color:#FB923C}
+  .c2-tcell.t-legendary .lbl{color:#FBBF24}
+  .c2-tcell .dot{width:8px;height:8px;border-radius:50%;margin:6px auto 0}
+  .c2-tcell.t-starter .dot{background:#A8A8AD}
+  .c2-tcell.t-pro .dot{background:#818cf8}
+  .c2-tcell.t-elite .dot{background:#FB923C}
+  .c2-tcell.t-legendary .dot{background:#FBBF24;box-shadow:0 0 12px rgba(251,191,36,0.7);animation:c2glow 2s ease-in-out infinite}
+  @keyframes c2glow{0%,100%{box-shadow:0 0 12px rgba(251,191,36,0.6)}50%{box-shadow:0 0 22px rgba(251,191,36,0.9)}}
+
+  .c2-cat-head{margin:24px 22px 10px;display:flex;align-items:center;gap:8px}
+  .c2-cat-head .bar{width:4px;height:16px;border-radius:2px}
+  .c2-cat-head .nm{font-size:13px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--earth)}
+  .c2-cat-head .ct{margin-left:auto;font-size:11px;font-weight:700;color:var(--rock)}
+
+  .c2-card{margin:0 22px 10px;background:#fff;border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 6px rgba(0,0,0,0.03);position:relative}
+  .c2-card.next{background:linear-gradient(135deg,#fff,#fff7e4);border:1.5px solid rgba(234,179,8,0.55);box-shadow:0 4px 16px rgba(234,179,8,0.18)}
+  .c2-card .icon{width:48px;height:48px;flex-shrink:0;border-radius:50%;display:flex;align-items:center;justify-content:center;position:relative}
+  .c2-card .icon.locked{background:var(--stone);filter:grayscale(0.8) opacity(0.5)}
+  .c2-card .body{flex:1;min-width:0}
+  .c2-card .nm{font-size:14px;font-weight:700;color:var(--earth);line-height:1.2}
+  .c2-card .ds{font-size:11px;color:var(--rock);margin-top:2px;line-height:1.35}
+  .c2-card .prog-row{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .c2-card .prog-bar{flex:1;height:5px;background:var(--stone);border-radius:99px;overflow:hidden}
+  .c2-card .prog-bar > div{height:100%;background:linear-gradient(90deg,var(--trail),#16a34a);border-radius:99px}
+  .c2-card .prog-num{font-size:10px;font-weight:700;color:var(--earth);letter-spacing:0.04em}
+  .c2-card .tdots{display:flex;flex-direction:column;gap:3px;align-items:center;position:relative;padding-left:10px;border-left:1px solid var(--stone)}
+  .c2-card .tdot{width:9px;height:9px;border-radius:50%;border:1.5px solid var(--stone);position:relative}
+  .c2-card .tdot.filled{border-color:transparent}
+  .c2-card .tdot.f-s{background:#A8A8AD}
+  .c2-card .tdot.f-p{background:#6366F1}
+  .c2-card .tdot.f-e{background:#F97316}
+  .c2-card .tdot.f-l{background:#EAB308;box-shadow:0 0 10px rgba(234,179,8,0.6)}
+  .c2-card .tdot.next{border-color:#EAB308;animation:c2pulsedot 1.6s ease-in-out infinite}
+  @keyframes c2pulsedot{0%,100%{box-shadow:0 0 0 0 rgba(234,179,8,0.5)}50%{box-shadow:0 0 0 4px rgba(234,179,8,0)}}
+
+  /* ────────────────────────────────────────────────────── */
+  /* CONCEPT 3 — Honeycomb Atlas                             */
+  /* ────────────────────────────────────────────────────── */
+  .c3-summary{padding:14px 22px 8px}
+  .c3-summary-ct{font-size:32px;font-weight:800;letter-spacing:-0.8px;line-height:1}
+  .c3-summary-ct span{font-size:14px;font-weight:700;color:var(--rock)}
+  .c3-summary-sub{font-size:12px;color:var(--rock);margin-top:4px}
+
+  .c3-mapwrap{margin:8px 16px 0;position:relative;background:linear-gradient(180deg,#FBFAF5 0%,#EFEDE5 100%);border-radius:24px;height:340px;overflow:hidden;border:1px solid rgba(45,42,36,0.06)}
+  .c3-mapwrap::before{content:"";position:absolute;inset:0;background-image:
+    radial-gradient(ellipse 200px 80px at 30% 25%, transparent 49%, rgba(45,42,36,0.07) 49.5%, rgba(45,42,36,0.07) 50%, transparent 50.5%),
+    radial-gradient(ellipse 240px 90px at 60% 55%, transparent 49%, rgba(45,42,36,0.06) 49.5%, rgba(45,42,36,0.06) 50%, transparent 50.5%),
+    radial-gradient(ellipse 200px 80px at 40% 80%, transparent 49%, rgba(45,42,36,0.05) 49.5%, rgba(45,42,36,0.05) 50%, transparent 50.5%);
+    pointer-events:none}
+
+  .c3-hex{position:absolute;width:54px;height:62px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 200ms ease}
+  .c3-hex .inner{position:absolute;inset:2px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;font-weight:700}
+  .c3-hex.locked{filter:opacity(0.32) grayscale(0.6)}
+  .c3-hex.locked .inner{background:#9c9789 !important}
+  .c3-hex.featured{transform:scale(1.18);z-index:3;animation:c3glow 2.5s ease-in-out infinite}
+  @keyframes c3glow{0%,100%{filter:drop-shadow(0 0 8px rgba(234,179,8,0.4))}50%{filter:drop-shadow(0 0 18px rgba(234,179,8,0.7))}}
+  .c3-hex.near{animation:c3pulse 2s ease-in-out infinite}
+  @keyframes c3pulse{0%,100%{filter:drop-shadow(0 0 4px rgba(52,211,153,0.3))}50%{filter:drop-shadow(0 0 12px rgba(52,211,153,0.6))}}
+
+  .c3-hex.workout .inner{background:linear-gradient(160deg,var(--workout),#c2570c)}
+  .c3-hex.streak .inner{background:linear-gradient(160deg,var(--streak),#178b3e)}
+  .c3-hex.progress .inner{background:linear-gradient(160deg,var(--progress),#3b3da6)}
+  .c3-hex.volume .inner{background:linear-gradient(160deg,var(--volume),#a72424)}
+  .c3-hex.nutrition .inner{background:linear-gradient(160deg,var(--nutrition),#558807)}
+  .c3-hex.consistency .inner{background:linear-gradient(160deg,var(--consistency),#a17a06)}
+  .c3-hex.milestone .inner{background:linear-gradient(160deg,var(--milestone),#03657d)}
+  .c3-hex.recovery .inner{background:linear-gradient(160deg,var(--recovery),#0c7569)}
+  .c3-hex.social .inner{background:linear-gradient(160deg,var(--social),#6e2ba6)}
+  .c3-hex.challenge .inner{background:linear-gradient(160deg,var(--challenge),#9c1e69)}
+
+  /* Hex ring around featured */
+  .c3-featured-ring{position:absolute;width:84px;height:96px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:conic-gradient(from 0deg,#EAB308,#F59E0B,#EAB308,#F59E0B,#EAB308);animation:c1spin 8s linear infinite;z-index:2;left:170px;top:142px}
+
+  .c3-selected{margin:14px 22px 0;background:#fff;border-radius:22px;padding:16px;display:flex;gap:14px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,0.05)}
+  .c3-selected .badge{width:60px;height:60px;flex-shrink:0;position:relative}
+  .c3-selected .badge .inner{position:absolute;inset:0;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:linear-gradient(160deg,#EAB308,#a17a06);display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;font-weight:700}
+  .c3-selected .meta{flex:1;min-width:0}
+  .c3-selected .ttl{font-size:15px;font-weight:800;color:var(--earth);letter-spacing:-0.2px}
+  .c3-selected .sb{display:flex;gap:6px;margin-top:4px;flex-wrap:wrap}
+  .c3-selected .chip{font-size:9px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 7px;border-radius:99px;background:rgba(234,179,8,0.14);color:#a17a06}
+  .c3-selected .chip.cat{background:rgba(34,197,94,0.14);color:#16a34a}
+  .c3-selected .ds{font-size:11px;color:var(--rock);margin-top:6px;line-height:1.4}
+
+  .c3-filters{display:flex;gap:6px;padding:14px 22px 4px;overflow-x:auto}
+  .c3-filters::-webkit-scrollbar{display:none}
+  .c3-fchip{flex-shrink:0;padding:8px 12px;border-radius:99px;font-size:11px;font-weight:700;background:var(--stone);color:var(--earth);display:flex;align-items:center;gap:6px}
+  .c3-fchip.on{background:var(--earth);color:var(--sand)}
+  .c3-fchip .dot{width:6px;height:6px;border-radius:50%}
+
+  .c3-recents-head{padding:18px 22px 8px;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--rock)}
+  .c3-recents{padding:0 22px 16px;display:flex;flex-direction:column;gap:8px}
+  .c3-rec-row{display:flex;align-items:center;gap:10px;padding:10px;background:#fff;border-radius:14px}
+  .c3-rec-row .mini{width:36px;height:42px;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0}
+  .c3-rec-row .mini.workout{background:linear-gradient(160deg,var(--workout),#c2570c)}
+  .c3-rec-row .mini.streak{background:linear-gradient(160deg,var(--streak),#178b3e)}
+  .c3-rec-row .mini.progress{background:linear-gradient(160deg,var(--progress),#3b3da6)}
+  .c3-rec-row .body{flex:1;min-width:0}
+  .c3-rec-row .nm{font-size:13px;font-weight:700;color:var(--earth)}
+  .c3-rec-row .tm{font-size:11px;color:var(--rock);margin-top:1px}
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Achievements — Layout Concepts</h1>
+  <p>40 badges · 10 categories · 4 tiers. Each concept is a different spatial structure grounded in a proven competitor pattern, with Terrain × Magnetic treatment.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CONCEPT 1: SHOWCASE ATLAS                        -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+          </div>
+
+          <!-- HERO: latest unlock -->
+          <div class="c1-hero">
+            <span class="c1-confetti"></span>
+            <span class="c1-confetti"></span>
+            <span class="c1-confetti"></span>
+            <span class="c1-confetti"></span>
+            <div class="c1-hero-label">★ Latest unlock · 2d ago</div>
+            <div class="c1-hero-row">
+              <div class="c1-bigbadge">
+                <div class="ring"></div>
+                <div class="core" style="position:absolute;inset:3px">🔥</div>
+              </div>
+              <div class="c1-hero-meta">
+                <div class="ttl">Force of Nature</div>
+                <div class="sub">16-week workout streak. Four months without breaking your streak.</div>
+                <div class="badge">LEGENDARY · STREAK</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ALMOST THERE -->
+          <div class="c1-sec-head"><span class="ttl">Almost there</span><span class="ct">3 close</span></div>
+          <div class="c1-almost">
+            <div class="c1-card">
+              <div class="mini bd-circle"><span class="glyph">🏆</span></div>
+              <div class="nm">Iron Regular</div>
+              <div class="bar"><div style="width:96%"></div></div>
+              <div class="ct">48 / 50</div>
+            </div>
+            <div class="c1-card">
+              <div class="mini bd-shield-mile"><span class="glyph">🏅</span></div>
+              <div class="nm">100 Club</div>
+              <div class="bar"><div style="width:92%"></div></div>
+              <div class="ct">92 / 100kg</div>
+            </div>
+            <div class="c1-card">
+              <div class="mini bd-circle-nutr"><span class="glyph">🌿</span></div>
+              <div class="nm">Clean Week</div>
+              <div class="bar"><div style="width:71%"></div></div>
+              <div class="ct">5 / 7 days</div>
+            </div>
+          </div>
+
+          <!-- STATS -->
+          <div class="c1-stat">
+            <div class="c1-stat-row">
+              <span class="c1-stat-ttl">Collection</span>
+              <span class="c1-stat-num">16<span>/40</span></span>
+            </div>
+            <div class="c1-stat-bar"><div></div></div>
+          </div>
+
+          <!-- CATEGORY — Workout -->
+          <div class="c1-cat">
+            <div class="c1-cat-head">
+              <div class="c1-cat-head-l">
+                <div class="dot" style="background:var(--workout)"></div>
+                <div class="nm">Workout</div>
+              </div>
+              <span class="ct">3 / 6</span>
+            </div>
+            <div class="c1-cat-grid">
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">🎯</span></div>
+                <div class="nm">First Rep</div>
+                <span class="tier-rib" style="background:#A8A8AD22;color:#7a7a82">STARTER</span>
+              </div>
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">💪</span></div>
+                <div class="nm">Getting Serious</div>
+                <span class="tier-rib" style="background:#A8A8AD22;color:#7a7a82">STARTER</span>
+              </div>
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">💪</span></div>
+                <div class="nm">Quarter Century</div>
+                <span class="tier-rib" style="background:#6366F122;color:#6366F1">PRO</span>
+              </div>
+              <div class="c1-bd locked">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">🏆</span></div>
+                <div class="nm">Iron Regular</div>
+                <span class="tier-rib" style="background:#F9731622;color:#bd5f1d">ELITE</span>
+              </div>
+              <div class="c1-bd locked">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">👑</span></div>
+                <div class="nm">Century Club</div>
+                <span class="tier-rib" style="background:#EAB30822;color:#a17a06">LEGENDARY</span>
+              </div>
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph">⭐</span></div>
+                <div class="nm">Perfect Week</div>
+                <span class="tier-rib" style="background:#6366F122;color:#6366F1">PRO</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CATEGORY — Streak -->
+          <div class="c1-cat">
+            <div class="c1-cat-head">
+              <div class="c1-cat-head-l">
+                <div class="dot" style="background:var(--streak)"></div>
+                <div class="nm">Streaks</div>
+              </div>
+              <span class="ct">4 / 5</span>
+            </div>
+            <div class="c1-cat-grid">
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-hex" style="position:absolute;inset:0"></div><span class="glyph">🔥</span></div>
+                <div class="nm">Warming Up</div>
+              </div>
+              <div class="c1-bd">
+                <div class="icon"><div class="bd-hex" style="position:absolute;inset:0"></div><span class="glyph">🔥</span></div>
+                <div class="nm">On Fire</div>
+              </div>
+            </div>
+          </div>
+          <div style="height:80px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">01 · Showcase Atlas</span>
+      <div class="nm">Hero unlock + Almost-there carousel + Category grid</div>
+      <div class="dc">Apple Fitness "Awards" pattern. Surfaces the latest win as a stage-lit hero, then a swipeable carousel of badges 1–2 actions from unlocking, then the standard category grid for browsing the full collection.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CONCEPT 2: TIER LADDER                          -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+          </div>
+
+          <!-- TIER OVERVIEW -->
+          <div style="margin:0 22px 8px;font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--rock)">Tier Climb</div>
+          <div class="c2-overview">
+            <div class="c2-tcell t-starter">
+              <span class="num">9<span>/14</span></span>
+              <span class="lbl">Starter</span>
+              <div class="dot"></div>
+            </div>
+            <div class="c2-tcell t-pro">
+              <span class="num">5<span>/12</span></span>
+              <span class="lbl">Pro</span>
+              <div class="dot"></div>
+            </div>
+            <div class="c2-tcell t-elite">
+              <span class="num">2<span>/9</span></span>
+              <span class="lbl">Elite</span>
+              <div class="dot"></div>
+            </div>
+            <div class="c2-tcell t-legendary">
+              <span class="num">0<span>/5</span></span>
+              <span class="lbl">Legend</span>
+              <div class="dot"></div>
+            </div>
+          </div>
+
+          <!-- WORKOUT family -->
+          <div class="c2-cat-head">
+            <div class="bar" style="background:var(--workout)"></div>
+            <div class="nm">Workout</div>
+            <span class="ct">3 / 6</span>
+          </div>
+
+          <!-- earned -->
+          <div class="c2-card">
+            <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph" style="font-size:18px">💪</span></div>
+            <div class="body">
+              <div class="nm">Workout Volume</div>
+              <div class="ds">Bench, squat & deadlift sessions completed</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:48%"></div></div>
+                <span class="prog-num">48 / 100</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot filled f-p"></div>
+              <div class="tdot next"></div>
+              <div class="tdot"></div>
+            </div>
+          </div>
+
+          <!-- next-to-unlock highlight -->
+          <div class="c2-card next">
+            <div class="icon"><div class="bd-circle" style="position:absolute;inset:0;border-radius:50%"></div><span class="glyph" style="font-size:18px">🏆</span></div>
+            <div class="body">
+              <div class="nm">Iron Regular</div>
+              <div class="ds">2 more workouts to ELITE</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:96%;background:linear-gradient(90deg,#EAB308,#F59E0B)"></div></div>
+                <span class="prog-num">48 / 50</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot filled f-p"></div>
+              <div class="tdot next"></div>
+              <div class="tdot"></div>
+            </div>
+          </div>
+
+          <div class="c2-card">
+            <div class="icon locked"><span class="glyph" style="font-size:14px">⭐</span></div>
+            <div class="body">
+              <div class="nm">Perfect Week</div>
+              <div class="ds">Hit every planned workout in a week</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:71%"></div></div>
+                <span class="prog-num">5 / 7</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot"></div>
+              <div class="tdot"></div>
+              <div class="tdot"></div>
+            </div>
+          </div>
+
+          <!-- STREAK family -->
+          <div class="c2-cat-head">
+            <div class="bar" style="background:var(--streak)"></div>
+            <div class="nm">Streaks</div>
+            <span class="ct">4 / 5</span>
+          </div>
+
+          <div class="c2-card">
+            <div class="icon"><div class="bd-hex" style="position:absolute;inset:0"></div><span class="glyph" style="font-size:16px">🔥</span></div>
+            <div class="body">
+              <div class="nm">Workout Streak</div>
+              <div class="ds">Consecutive weeks of training</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:100%;background:linear-gradient(90deg,#EAB308,#F59E0B)"></div></div>
+                <span class="prog-num">16 wk</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot filled f-p"></div>
+              <div class="tdot filled f-e"></div>
+              <div class="tdot filled f-l"></div>
+            </div>
+          </div>
+
+          <div class="c2-card">
+            <div class="icon"><div class="bd-hex" style="position:absolute;inset:0"></div><span class="glyph" style="font-size:14px">📅</span></div>
+            <div class="body">
+              <div class="nm">Iron Month</div>
+              <div class="ds">Every planned day for a month</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:43%"></div></div>
+                <span class="prog-num">13 / 30</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot filled f-p"></div>
+              <div class="tdot next"></div>
+              <div class="tdot"></div>
+            </div>
+          </div>
+
+          <!-- PROGRESS family -->
+          <div class="c2-cat-head">
+            <div class="bar" style="background:var(--progress)"></div>
+            <div class="nm">Progress</div>
+            <span class="ct">2 / 6</span>
+          </div>
+
+          <div class="c2-card">
+            <div class="icon"><div class="bd-shield" style="position:absolute;inset:0"></div><span class="glyph" style="font-size:14px">📈</span></div>
+            <div class="body">
+              <div class="nm">Personal Records</div>
+              <div class="ds">Beat your previous lift bests</div>
+              <div class="prog-row">
+                <div class="prog-bar"><div style="width:28%"></div></div>
+                <span class="prog-num">6 / 20</span>
+              </div>
+            </div>
+            <div class="tdots">
+              <div class="tdot filled f-s"></div>
+              <div class="tdot filled f-p"></div>
+              <div class="tdot next"></div>
+              <div class="tdot"></div>
+            </div>
+          </div>
+
+          <div style="height:80px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">02 · Tier Climb</span>
+      <div class="nm">PlayStation-style tier ladder per achievement</div>
+      <div class="dc">Collapses 4 tiers of the same badge family into one card with a visible 4-dot ladder + live progress bar. Locked tiers are always visible as the "next prize" so progress feels continuous, not binary. Closest-to-unlock cards lift with a golden border.</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- CONCEPT 3: HONEYCOMB ATLAS                      -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+          </div>
+
+          <!-- SUMMARY -->
+          <div class="c3-summary">
+            <div class="c3-summary-ct">16<span> / 40 territory claimed</span></div>
+            <div class="c3-summary-sub">Tap a hex to inspect · Long-press to pin</div>
+          </div>
+
+          <!-- HONEYCOMB MAP -->
+          <div class="c3-mapwrap">
+            <!-- Featured ring -->
+            <div class="c3-featured-ring"></div>
+
+            <!-- Row 1 - top (workout cluster) -->
+            <div class="c3-hex workout" style="left:48px;top:36px"><div class="inner">🎯</div></div>
+            <div class="c3-hex workout" style="left:90px;top:62px"><div class="inner">💪</div></div>
+            <div class="c3-hex workout" style="left:132px;top:36px"><div class="inner">💪</div></div>
+            <div class="c3-hex workout locked" style="left:174px;top:62px"><div class="inner">🏆</div></div>
+            <div class="c3-hex workout near" style="left:216px;top:36px"><div class="inner">👑</div></div>
+            <div class="c3-hex workout" style="left:258px;top:62px"><div class="inner">⭐</div></div>
+
+            <!-- Row 2 - streak hexes -->
+            <div class="c3-hex streak" style="left:48px;top:108px"><div class="inner">🔥</div></div>
+            <div class="c3-hex streak" style="left:90px;top:134px"><div class="inner">🔥</div></div>
+            <div class="c3-hex streak" style="left:132px;top:108px"><div class="inner">🔥</div></div>
+            <div class="c3-hex streak featured" style="left:170px;top:142px"><div class="inner">🔥</div></div>
+            <div class="c3-hex streak locked" style="left:216px;top:108px"><div class="inner">📅</div></div>
+
+            <!-- Row 3 - progress shields -->
+            <div class="c3-hex progress" style="left:48px;top:180px"><div class="inner">📈</div></div>
+            <div class="c3-hex progress" style="left:90px;top:206px"><div class="inner">⚖️</div></div>
+            <div class="c3-hex progress locked" style="left:132px;top:180px"><div class="inner">📈</div></div>
+            <div class="c3-hex progress locked" style="left:174px;top:206px"><div class="inner">📈</div></div>
+            <div class="c3-hex progress near" style="left:216px;top:180px"><div class="inner">📏</div></div>
+            <div class="c3-hex progress" style="left:258px;top:206px"><div class="inner">✓</div></div>
+
+            <!-- Row 4 - mixed -->
+            <div class="c3-hex nutrition" style="left:48px;top:252px"><div class="inner">🌿</div></div>
+            <div class="c3-hex nutrition locked" style="left:90px;top:278px"><div class="inner">🌿</div></div>
+            <div class="c3-hex volume locked" style="left:132px;top:252px"><div class="inner">🏋️</div></div>
+            <div class="c3-hex consistency" style="left:174px;top:278px"><div class="inner">☀️</div></div>
+            <div class="c3-hex milestone locked" style="left:216px;top:252px"><div class="inner">🏅</div></div>
+            <div class="c3-hex challenge locked" style="left:258px;top:278px"><div class="inner">🔥</div></div>
+          </div>
+
+          <!-- Selected info -->
+          <div class="c3-selected">
+            <div class="badge"><div class="inner">🔥</div></div>
+            <div class="meta">
+              <div class="ttl">Force of Nature</div>
+              <div class="sb">
+                <span class="chip">Legendary</span>
+                <span class="chip cat">Streak</span>
+              </div>
+              <div class="ds">16-week workout streak — four months without breaking your streak.</div>
+            </div>
+          </div>
+
+          <!-- Filters -->
+          <div class="c3-filters">
+            <div class="c3-fchip on">All · 16</div>
+            <div class="c3-fchip"><div class="dot" style="background:var(--workout)"></div>Workout</div>
+            <div class="c3-fchip"><div class="dot" style="background:var(--streak)"></div>Streak</div>
+            <div class="c3-fchip"><div class="dot" style="background:var(--progress)"></div>Progress</div>
+            <div class="c3-fchip"><div class="dot" style="background:var(--volume)"></div>Volume</div>
+          </div>
+
+          <!-- Recent unlocks -->
+          <div class="c3-recents-head">Recent unlocks</div>
+          <div class="c3-recents">
+            <div class="c3-rec-row">
+              <div class="mini streak">🔥</div>
+              <div class="body">
+                <div class="nm">Force of Nature</div>
+                <div class="tm">Legendary · 2 days ago</div>
+              </div>
+            </div>
+            <div class="c3-rec-row">
+              <div class="mini progress">📈</div>
+              <div class="body">
+                <div class="nm">Record Breaker</div>
+                <div class="tm">Pro · 6 days ago</div>
+              </div>
+            </div>
+            <div class="c3-rec-row">
+              <div class="mini workout">💪</div>
+              <div class="body">
+                <div class="nm">Quarter Century</div>
+                <div class="tm">Pro · 2 weeks ago</div>
+              </div>
+            </div>
+          </div>
+
+          <div style="height:80px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">03 · Honeycomb Atlas</span>
+      <div class="nm">Hex map of your collection + selected detail</div>
+      <div class="dc">Pokémon GO medal grid meets Strava's hex achievement tiles. The whole collection is a single map you "fill in" — visible empty hexes tease unclaimed territory. The hex shape echoes the streak badge family natively, making the metaphor feel earned, not arbitrary.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

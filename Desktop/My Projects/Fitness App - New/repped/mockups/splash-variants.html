@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Revive · Splash Variants</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; padding: 0;
+      background: #16161a;
+      min-height: 100vh;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: rgba(255,255,255,0.85);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .stage {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+    }
+
+    .head {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .head h1 {
+      font-size: 22px; font-weight: 800;
+      letter-spacing: -0.3px; margin: 0 0 6px;
+    }
+    .head p {
+      font-size: 12px; color: rgba(255,255,255,0.45);
+      letter-spacing: 1.4px; text-transform: uppercase;
+      margin: 0;
+    }
+
+    .replay-all {
+      display: block;
+      margin: 14px auto 0;
+      background: rgba(255,255,255,0.10);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 10px 22px;
+      border-radius: 100px;
+      font-family: inherit; font-size: 13px; font-weight: 600;
+      cursor: pointer; letter-spacing: 0.3px;
+    }
+    .replay-all:hover { background: rgba(255,255,255,0.16); }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 28px 24px;
+      justify-items: center;
+    }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 12px; max-width: 320px; }
+    .label {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.6px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.85);
+    }
+    .desc {
+      font-size: 11px; color: rgba(255,255,255,0.45);
+      text-align: center; line-height: 1.6;
+    }
+
+    /* Phone frame shared */
+    .frame {
+      width: 280px;
+      background: #000;
+      border-radius: 38px;
+      padding: 6px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+    }
+    .screen {
+      border-radius: 32px;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 280 / 580;
+      position: relative;
+      isolation: isolate;
+    }
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 80px; height: 20px; background: #000;
+      border-bottom-left-radius: 12px; border-bottom-right-radius: 12px;
+      z-index: 60;
+    }
+
+    /* ── Shared wordmark structure ── */
+    .wordmark-stage {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -52%);
+      text-align: center; opacity: 0;
+      animation: settle 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.30s forwards;
+    }
+    @keyframes settle {
+      0%   { opacity: 0; transform: translate(-50%, -52%) scale(0.96); }
+      100% { opacity: 1; transform: translate(-50%, -52%) scale(1); }
+    }
+    .wordmark {
+      position: relative; display: inline-block;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 64px;
+      letter-spacing: 0.05em;
+      line-height: 1;
+      user-select: none;
+    }
+    .comeback-line {
+      display: block;
+      height: 1px; width: 0;
+      margin: 14px auto 0;
+      animation: line-draw 0.40s cubic-bezier(0.65, 0, 0.35, 1) 0.95s forwards;
+    }
+    @keyframes line-draw {
+      to { width: 70%; }
+    }
+    .grain {
+      position: absolute; inset: 0;
+      opacity: 0.04;
+      pointer-events: none;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      background-size: 160px 160px;
+      z-index: 5;
+    }
+
+    /* ─────────────────────────────────────
+       V1 — ONYX (the original)
+       ───────────────────────────────────── */
+    .v-onyx .screen { background: #0A0A0A; }
+    .v-onyx .wordmark-base { color: #1F1F1F; position: relative; z-index: 1; }
+    .v-onyx .wordmark-steel {
+      position: absolute; inset: 0;
+      background: linear-gradient(110deg, #6B7280 0%, #9CA3AF 28%, #F3F4F6 50%, #9CA3AF 72%, #6B7280 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      clip-path: inset(0 100% 0 0);
+      animation: sweep 0.75s cubic-bezier(0.65, 0, 0.35, 1) 0.10s forwards, drift 6s ease-in-out 0.85s infinite;
+      z-index: 2;
+    }
+    .v-onyx .comeback-line {
+      background: linear-gradient(90deg, rgba(156,163,175,0) 0%, rgba(156,163,175,0.6) 50%, rgba(156,163,175,0) 100%);
+    }
+    @keyframes sweep {
+      0%   { clip-path: inset(0 100% 0 0); }
+      100% { clip-path: inset(0 0 0 0); }
+    }
+    @keyframes drift {
+      0%, 100% { background-position: 0% 50%; }
+      50%      { background-position: 60% 50%; }
+    }
+
+    /* ─────────────────────────────────────
+       V2 — CONCRETE (cool light gray + dark steel mask sweep)
+       Same animation as Onyx but inverted lighting.
+       ───────────────────────────────────── */
+    .v-concrete .screen { background: #E8ECEF; }
+    .v-concrete .wordmark-base { color: #D2D7DD; position: relative; z-index: 1; }
+    .v-concrete .wordmark-steel {
+      position: absolute; inset: 0;
+      background: linear-gradient(110deg, #4B5563 0%, #1F2937 28%, #0F172A 50%, #1F2937 72%, #4B5563 100%);
+      background-size: 200% 100%;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      clip-path: inset(0 100% 0 0);
+      animation: sweep 0.75s cubic-bezier(0.65, 0, 0.35, 1) 0.10s forwards, drift 6s ease-in-out 0.85s infinite;
+      z-index: 2;
+    }
+    .v-concrete .comeback-line {
+      background: linear-gradient(90deg, rgba(31,41,55,0) 0%, rgba(31,41,55,0.6) 50%, rgba(31,41,55,0) 100%);
+    }
+
+    /* ─────────────────────────────────────
+       V3 — SAND (warm stone bg, charcoal wordmark, rises from below)
+       Matches the existing app palette exactly.
+       ───────────────────────────────────── */
+    .v-sand .screen { background: #EDEBE5; }
+    .v-sand .wordmark-stage-2 {
+      position: absolute; top: 50%; left: 50%;
+      text-align: center; opacity: 0;
+      animation: rise 0.70s cubic-bezier(0.22, 1, 0.36, 1) 0.20s forwards;
+    }
+    @keyframes rise {
+      0%   { opacity: 0; transform: translate(-50%, calc(-50% + 14px)); }
+      100% { opacity: 1; transform: translate(-50%, -52%); }
+    }
+    .v-sand .wordmark { color: #1A1A1A; }
+    .v-sand .comeback-line {
+      background: linear-gradient(90deg, rgba(45,42,36,0) 0%, rgba(45,42,36,0.6) 50%, rgba(45,42,36,0) 100%);
+    }
+
+    /* ─────────────────────────────────────
+       V4 — CREAM (warm editorial cream bg, ink-black wordmark, scale + fade)
+       Editorial, magazine-cover feel.
+       ───────────────────────────────────── */
+    .v-cream .screen { background: #F5EFE5; position: relative; }
+    .v-cream .screen::before {
+      content: "";
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 45%, rgba(255,235,205,0.4) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .v-cream .wordmark { color: #1A1A1A; }
+    .v-cream .comeback-line {
+      background: linear-gradient(90deg, rgba(26,26,26,0) 0%, rgba(26,26,26,0.5) 50%, rgba(26,26,26,0) 100%);
+    }
+
+    /* ─────────────────────────────────────
+       V5 — PURE WHITE (Apple minimal)
+       Pure white bg, black wordmark, scale only, no comeback line.
+       ───────────────────────────────────── */
+    .v-white .screen { background: #FFFFFF; }
+    .v-white .wordmark { color: #0A0A0A; }
+    .v-white .wordmark-stage-only {
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -52%);
+      text-align: center; opacity: 0;
+      animation: settle-tight 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.20s forwards;
+    }
+    @keyframes settle-tight {
+      0%   { opacity: 0; transform: translate(-50%, -52%) scale(0.95); }
+      100% { opacity: 1; transform: translate(-50%, -52%) scale(1); }
+    }
+
+    /* ─────────────────────────────────────
+       V6 — DAWN (warm light → cool light gradient, charcoal wordmark, sunrise feel)
+       The "comeback" emotional reading
+       ───────────────────────────────────── */
+    .v-dawn .screen {
+      background: linear-gradient(180deg, #FBF4E8 0%, #F0E8DA 65%, #E8E0D0 100%);
+      position: relative;
+    }
+    .v-dawn .screen::before {
+      content: "";
+      position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+      width: 220px; height: 90px;
+      background: radial-gradient(ellipse 60% 80% at 50% 100%, rgba(248,180,80,0.30) 0%, transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      animation: dawn-glow 1.0s ease-out 0.30s forwards;
+    }
+    @keyframes dawn-glow {
+      to { opacity: 1; }
+    }
+    .v-dawn .wordmark { color: #2D2A24; }
+    .v-dawn .comeback-line {
+      background: linear-gradient(90deg, rgba(248,180,80,0) 0%, rgba(248,180,80,0.7) 50%, rgba(248,180,80,0) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div class="stage">
+    <div class="head">
+      <h1>Revive · Splash Variants</h1>
+      <p>Same 1.4s choreography · different palettes &amp; treatments</p>
+      <button class="replay-all" onclick="replayAll()">↻ Replay all</button>
+    </div>
+
+    <div class="grid">
+
+      <!-- V1 — ONYX -->
+      <div class="col">
+        <div class="frame v-onyx">
+          <div class="screen" id="screen-onyx">
+            <div class="notch"></div>
+            <div class="wordmark-stage">
+              <div class="wordmark">
+                <span class="wordmark-base">REVIVE</span>
+                <span class="wordmark-steel" aria-hidden="true">REVIVE</span>
+              </div>
+              <span class="comeback-line"></span>
+            </div>
+            <div class="grain"></div>
+          </div>
+        </div>
+        <div class="label">A · Onyx</div>
+        <div class="desc">The original. Black plate, brushed-steel mask sweep, faint comeback line. Industrial &amp; serious.</div>
+      </div>
+
+      <!-- V2 — CONCRETE -->
+      <div class="col">
+        <div class="frame v-concrete">
+          <div class="screen" id="screen-concrete">
+            <div class="notch"></div>
+            <div class="wordmark-stage">
+              <div class="wordmark">
+                <span class="wordmark-base">REVIVE</span>
+                <span class="wordmark-steel" aria-hidden="true">REVIVE</span>
+              </div>
+              <span class="comeback-line"></span>
+            </div>
+            <div class="grain"></div>
+          </div>
+        </div>
+        <div class="label">B · Concrete</div>
+        <div class="desc">Light cool-gray plate (gym wall). Dark steel wordmark with the same mask sweep — inverted lighting, same energy.</div>
+      </div>
+
+      <!-- V3 — SAND -->
+      <div class="col">
+        <div class="frame v-sand">
+          <div class="screen" id="screen-sand">
+            <div class="notch"></div>
+            <div class="wordmark-stage-2">
+              <div class="wordmark">REVIVE</div>
+              <span class="comeback-line"></span>
+            </div>
+          </div>
+        </div>
+        <div class="label">C · Sand</div>
+        <div class="desc">Matches Revive's app palette (stone background). Wordmark rises into place from below. Calm &amp; integrated.</div>
+      </div>
+
+      <!-- V4 — CREAM -->
+      <div class="col">
+        <div class="frame v-cream">
+          <div class="screen" id="screen-cream">
+            <div class="notch"></div>
+            <div class="wordmark-stage">
+              <div class="wordmark">REVIVE</div>
+              <span class="comeback-line"></span>
+            </div>
+          </div>
+        </div>
+        <div class="label">D · Cream</div>
+        <div class="desc">Warm editorial cream with a soft warm-light bloom. Ink-black wordmark scales into place. Magazine-cover refinement.</div>
+      </div>
+
+      <!-- V5 — PURE WHITE -->
+      <div class="col">
+        <div class="frame v-white">
+          <div class="screen" id="screen-white">
+            <div class="notch"></div>
+            <div class="wordmark-stage-only">
+              <div class="wordmark">REVIVE</div>
+            </div>
+          </div>
+        </div>
+        <div class="label">E · Pure White</div>
+        <div class="desc">Apple-restraint. Pure white plate, black wordmark, single scale + fade. No comeback line. Maximum minimal.</div>
+      </div>
+
+      <!-- V6 — DAWN -->
+      <div class="col">
+        <div class="frame v-dawn">
+          <div class="screen" id="screen-dawn">
+            <div class="notch"></div>
+            <div class="wordmark-stage">
+              <div class="wordmark">REVIVE</div>
+              <span class="comeback-line"></span>
+            </div>
+          </div>
+        </div>
+        <div class="label">F · Dawn</div>
+        <div class="desc">The "comeback" reading. Warm light gradient with a soft golden bloom rising from the bottom. Optimistic &amp; emotional.</div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+  function replayAll() {
+    document.querySelectorAll(".screen").forEach((screen) => {
+      const clone = screen.cloneNode(true);
+      screen.parentNode.replaceChild(clone, screen);
+    });
+  }
+</script>
+</body>
+</html>

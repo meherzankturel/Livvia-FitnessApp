@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Card — Clean</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; padding: 30px 16px 60px; -webkit-font-smoothing: antialiased; }
+  h1 { text-align: center; color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .sub { text-align: center; color: #555; font-size: 11px; margin-bottom: 28px; }
+  .phone { width: 393px; margin: 0 auto; background: #F8F7F4; border-radius: 28px; padding: 18px 16px 24px; }
+  .spacer { height: 20px; }
+  .note { font-size: 10px; color: #888; text-align: center; margin: 16px 0 8px; font-weight: 500; letter-spacing: 0.5px; }
+</style>
+</head>
+<body>
+
+<h1>This Week — Less is More</h1>
+<p class="sub">Breathable, visual, zero confusion</p>
+
+<div class="phone">
+
+  <!-- ═══ THE CARD ═══ -->
+  <div style="background:#fff; border-radius:22px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#bbb;">Apr 21 – 27</span>
+    </div>
+
+    <!-- Completion ring centered -->
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="position:relative; width:120px; height:120px; margin:0 auto;">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#2DB877" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="314" stroke-dashoffset="126" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:28px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-1px;">3<span style="font-size:14px; color:#ccc; font-weight:400;">/5</span></div>
+          <div style="font-size:10px; color:#999; margin-top:3px;">workouts</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Two metrics below -->
+    <div style="display:flex; gap:12px;">
+      <!-- Volume -->
+      <div style="flex:1; text-align:center; padding:12px 0; border-top:0.5px solid rgba(0,0,0,0.05);">
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-0.5px;">2.1k</div>
+        <div style="font-size:9px; color:#999; margin-top:4px;">volume</div>
+        <div style="font-size:9px; color:#2DB877; font-weight:600; margin-top:2px;">&#9650; 8%</div>
+      </div>
+
+      <!-- Divider -->
+      <div style="width:0.5px; background:rgba(0,0,0,0.05); margin:12px 0;"></div>
+
+      <!-- Highlight -->
+      <div style="flex:1; text-align:center; padding:12px 0; border-top:0.5px solid rgba(0,0,0,0.05);">
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-0.5px;">80kg</div>
+        <div style="font-size:9px; color:#999; margin-top:4px;">best bench</div>
+        <div style="font-size:9px; color:#F59E0B; font-weight:600; margin-top:2px;">&#127942; new PR</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">↓ When no PR ↓</div>
+
+  <!-- ═══ NO PR VARIANT ═══ -->
+  <div style="background:#fff; border-radius:22px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.03);">
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#bbb;">Apr 21 – 27</span>
+    </div>
+
+    <div style="text-align:center; margin-bottom:20px;">
+      <div style="position:relative; width:120px; height:120px; margin:0 auto;">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#2DB877" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="314" stroke-dashoffset="126" transform="rotate(-90 60 60)"/>
+        </svg>
+        <div style="position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;">
+          <div style="font-size:28px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-1px;">3<span style="font-size:14px; color:#ccc; font-weight:400;">/5</span></div>
+          <div style="font-size:10px; color:#999; margin-top:3px;">workouts</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex; gap:12px;">
+      <div style="flex:1; text-align:center; padding:12px 0; border-top:0.5px solid rgba(0,0,0,0.05);">
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-0.5px;">2.1k</div>
+        <div style="font-size:9px; color:#999; margin-top:4px;">volume</div>
+        <div style="font-size:9px; color:#2DB877; font-weight:600; margin-top:2px;">&#9650; 8%</div>
+      </div>
+      <div style="width:0.5px; background:rgba(0,0,0,0.05); margin:12px 0;"></div>
+      <div style="flex:1; text-align:center; padding:12px 0; border-top:0.5px solid rgba(0,0,0,0.05);">
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; line-height:1; letter-spacing:-0.5px;">42m</div>
+        <div style="font-size:9px; color:#999; margin-top:4px;">avg duration</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

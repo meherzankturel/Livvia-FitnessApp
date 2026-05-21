@@ -13,7 +13,8 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
 import { openYouTube } from "../../src/lib/deeplink";
 import { TopoBackground } from "../../src/components/terrain";
-import { getDishImageUrl, getDishImageUrlAsync } from "../../src/lib/dish-images";
+import { getDishImageUrl, getDishImageUrlAsync, getDishImageSource } from "../../src/lib/dish-images";
+import type { ImageSourcePropType } from "react-native";
 
 // ── Palette ──
 const C = {
@@ -95,21 +96,21 @@ export default function Recipe() {
   const steps: string[] = params.steps ? JSON.parse(params.steps) : [];
   const mealType = (params.mealType || "Breakfast").toUpperCase();
 
-  // ── Dish image — instant lookup from static JSON mapping ──
+  // ── Dish image — local bundled AI image > Pexels CDN URL > async fallback ──
   const dishName = params.name || "";
-  const staticImage = getDishImageUrl(dishName);
-  const [dishImage, setDishImage] = useState<string | null>(staticImage);
+  const staticSource = getDishImageSource(dishName);
+  const [dishSource, setDishSource] = useState<ImageSourcePropType | null>(staticSource);
 
   useEffect(() => {
-    // If static mapping had it, we're done (most common case — 100 dishes covered)
-    if (staticImage) {
-      setDishImage(staticImage);
+    // If we already resolved either a local bundle or a remote URL, done.
+    if (staticSource) {
+      setDishSource(staticSource);
       return;
     }
-    // For unknown dishes, try async Pexels fetch
+    // Truly unknown dish — try async Pexels fetch as last resort
     (async () => {
       const url = await getDishImageUrlAsync(dishName);
-      if (url) setDishImage(url);
+      if (url) setDishSource({ uri: url });
     })();
   }, [dishName]);
 
@@ -168,10 +169,10 @@ export default function Recipe() {
       >
         {/* ── TOP: Hero Image Zone ── */}
         <View style={s.heroZone}>
-          {/* HD dish image (from cache) or gradient fallback */}
-          {dishImage ? (
+          {/* HD dish image (local bundle or cache) or gradient fallback */}
+          {dishSource ? (
             <Image
-              source={{ uri: dishImage }}
+              source={dishSource}
               style={s.heroImage}
               resizeMode="cover"
             />

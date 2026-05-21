@@ -1,7 +1,7 @@
 import { View, Text, Pressable, ActivityIndicator } from "react-native";
 import { router } from "expo-router";
 import { useState } from "react";
-import { useAuthStore, generateWorkoutPlan } from "@repped/shared";
+import { useAuthStore, generateWorkoutPlan, calcAge } from "@repped/shared";
 import type { Exercise } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import tw from "../../src/lib/tw";
@@ -67,7 +67,7 @@ export default function GeneratePlan() {
         goal: profile.goal as any,
         exerciseLibrary,
         injuries,
-        age: profile.age,
+        age: calcAge(profile.date_of_birth),
         sex: profile.sex as any,
         bodyWeightKg: profile.weight_kg,
         trainingPhase: profile.training_phase ?? (profile.training_history === "beginner" ? "stabilization" : "hypertrophy"),

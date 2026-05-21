@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Achievements — Compact Variations</title>
+<style>
+  :root{
+    --earth:#2D2A24; --sand:#F6F5F0; --stone:#EDEBE5; --rock:#8E8E7A; --trail:#34D399;
+    --board:#0f0d0a;
+    --workout:#F97316; --streak:#22C55E; --pr:#6366F1; --milestone:#06B6D4;
+    --volume:#EF4444; --nutrition:#84CC16; --recovery:#14B8A6; --body:#8b5cf6;
+    --consistency:#EAB308; --challenge:#EC4899; --engagement:#A855F7;
+    --t-starter:#A8A8AD; --t-pro:#B58563; --t-elite:#E68A6F; --t-legendary:#EAB308;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--board);color:#F6F5F0;min-height:100vh}
+
+  .header{padding:40px 24px 12px;text-align:center}
+  .header h1{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-0.4px}
+  .header p{margin:0;color:#9b958a;font-size:13px;max-width:760px;margin:0 auto;line-height:1.5}
+
+  .grid{display:flex;flex-wrap:wrap;gap:36px;padding:32px 24px;justify-content:center;align-items:flex-start}
+
+  .col{display:flex;flex-direction:column;align-items:center;gap:16px;max-width:393px}
+  .label .num{font-size:11px;font-weight:800;letter-spacing:0.18em;color:var(--trail);text-transform:uppercase;display:block;margin-bottom:6px;text-align:center}
+  .label .nm{font-size:18px;font-weight:800;letter-spacing:-0.2px;text-align:center}
+  .label .src{font-size:11px;color:var(--t-legendary);text-align:center;margin-top:3px;font-weight:600}
+  .label .dc{font-size:12px;color:#9b958a;margin-top:8px;max-width:360px;line-height:1.5;text-align:center}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+  .screen{width:100%;height:852px;background:var(--sand);border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:44px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5}
+  .scroll{position:absolute;inset:0;padding-top:44px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{display:none}
+
+  .topo{position:absolute;inset:0;opacity:0.04;pointer-events:none;background-image:
+    radial-gradient(ellipse 600px 200px at 20% 20%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 500px 180px at 80% 50%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 700px 220px at 30% 80%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%)}
+
+  .scrn-head{padding:6px 18px 4px;display:flex;align-items:center;gap:10px}
+  .back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--earth);cursor:pointer}
+  .h-title{font-size:20px;font-weight:800;letter-spacing:-0.4px;flex:1}
+  .h-count{font-size:11px;font-weight:700;color:var(--rock);background:var(--stone);padding:5px 9px;border-radius:99px}
+
+  .tier-starter{background:rgba(168,168,173,0.16);color:#7a7a82}
+  .tier-pro{background:rgba(181,133,99,0.18);color:#8a6240}
+  .tier-elite{background:rgba(230,138,111,0.22);color:#b04f30}
+  .tier-legendary{background:rgba(234,179,8,0.20);color:#a17a06}
+
+  /* ═══════════════════════════════════════════ */
+  /*  A · SHELVES                                  */
+  /* ═══════════════════════════════════════════ */
+  .a-hero{margin:10px 18px 0;background:linear-gradient(120deg,#2D2A24 0%,#3a352c 100%);border-radius:18px;padding:10px 14px;display:flex;align-items:center;gap:12px;color:#F6F5F0;position:relative;overflow:hidden}
+  .a-hero::before{content:"";position:absolute;width:140px;height:140px;background:#EAB308;border-radius:50%;filter:blur(40px);opacity:0.35;top:-40px;right:-40px;animation:apulse 4s ease-in-out infinite}
+  @keyframes apulse{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.45;transform:scale(1.15)}}
+  .a-hero img{width:54px;height:54px;object-fit:contain;flex-shrink:0;filter:drop-shadow(0 4px 12px rgba(234,179,8,0.4));position:relative;z-index:1}
+  .a-hero .text{flex:1;min-width:0;position:relative;z-index:1}
+  .a-hero .lab{font-size:9px;font-weight:800;letter-spacing:0.16em;color:#EAB308;margin-bottom:2px}
+  .a-hero .nm{font-size:15px;font-weight:800;letter-spacing:-0.2px;line-height:1.15}
+  .a-hero .sub{font-size:11px;color:#a8a394;margin-top:2px}
+
+  .a-stat{display:flex;gap:6px;margin:10px 18px 8px}
+  .a-stat .p{flex:1;text-align:center;background:var(--stone);border-radius:12px;padding:6px 4px}
+  .a-stat .p .n{font-size:14px;font-weight:800;letter-spacing:-0.3px;line-height:1}
+  .a-stat .p .l{font-size:8px;font-weight:700;letter-spacing:0.1em;color:var(--rock);margin-top:2px}
+  .a-stat .p.starter .n{color:var(--t-starter)}
+  .a-stat .p.pro .n{color:var(--t-pro)}
+  .a-stat .p.elite .n{color:var(--t-elite)}
+  .a-stat .p.legendary .n{color:var(--t-legendary)}
+
+  .a-row{margin-top:14px}
+  .a-row-head{display:flex;align-items:center;gap:6px;padding:0 18px 6px}
+  .a-row-head .dot{width:3px;height:14px;border-radius:99px}
+  .a-row-head .nm{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase}
+  .a-row-head .ct{margin-left:auto;font-size:10px;font-weight:700;color:var(--rock)}
+  .a-row-scroll{display:flex;gap:6px;padding:0 18px;overflow-x:auto;scroll-snap-type:x mandatory;position:relative}
+  .a-row-scroll::-webkit-scrollbar{display:none}
+  .a-row-scroll::after{content:"";flex:0 0 4px}
+  .a-bd{flex:0 0 78px;text-align:center;scroll-snap-align:start;position:relative}
+  .a-bd img{width:78px;height:78px;object-fit:contain;display:block}
+  .a-bd.locked img{filter:grayscale(0.85) opacity(0.4) brightness(1.05)}
+  .a-bd .lk{position:absolute;top:24px;left:50%;transform:translate(-50%,-50%);width:24px;height:24px;border-radius:50%;background:rgba(45,42,36,0.6);color:#fff;font-size:11px;display:flex;align-items:center;justify-content:center}
+  .a-bd .nm{font-size:9px;font-weight:700;line-height:1.15;margin-top:2px;padding:0 1px;color:var(--earth)}
+  .a-bd.locked .nm{color:#b4b0a4}
+
+  /* ═══════════════════════════════════════════ */
+  /*  B · FILTER FLOW                              */
+  /* ═══════════════════════════════════════════ */
+  .b-hero{display:flex;gap:6px;padding:8px 14px 4px}
+  .b-card{flex:1;border-radius:14px;padding:8px;display:flex;flex-direction:column;align-items:center;gap:2px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,0.04);position:relative;min-width:0}
+  .b-card.featured{background:linear-gradient(135deg,#2D2A24,#3a352c);color:#F6F5F0}
+  .b-card.featured::after{content:"NEW";position:absolute;top:5px;right:5px;font-size:7px;font-weight:800;letter-spacing:0.1em;padding:2px 4px;border-radius:99px;background:#EAB308;color:#000}
+  .b-card img{width:58px;height:58px;object-fit:contain}
+  .b-card.locked img{filter:grayscale(0.85) opacity(0.45) brightness(1.05)}
+  .b-card .nm{font-size:9px;font-weight:800;text-align:center;line-height:1.15;max-width:100%}
+  .b-card.featured .nm{color:#F6F5F0}
+  .b-card .ct{font-size:8px;color:var(--rock);font-weight:700;margin-top:1px}
+  .b-card.featured .ct{color:#a8a394}
+
+  .b-chips{display:flex;gap:5px;padding:8px 14px 4px;overflow-x:auto;position:sticky;top:0;background:var(--sand);z-index:2}
+  .b-chips::-webkit-scrollbar{display:none}
+  .b-chip{flex-shrink:0;padding:5px 9px;border-radius:99px;font-size:10px;font-weight:700;background:var(--stone);color:var(--earth);display:flex;align-items:center;gap:4px}
+  .b-chip.on{background:var(--earth);color:var(--sand)}
+  .b-chip .dot{width:5px;height:5px;border-radius:50%}
+  .b-chip .ct{font-size:9px;opacity:0.6;font-weight:700}
+  .b-chip.on .ct{opacity:0.8}
+
+  .b-cat-sep{display:flex;align-items:center;gap:6px;padding:10px 14px 4px}
+  .b-cat-sep .bar{flex:1;height:1px;background:var(--stone)}
+  .b-cat-sep .nm{font-size:9px;font-weight:800;letter-spacing:0.18em;color:var(--rock);text-transform:uppercase}
+
+  .b-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;padding:0 14px}
+  .b-bd{background:#fff;border-radius:12px;padding:8px 4px;text-align:center;box-shadow:0 1px 3px rgba(0,0,0,0.03);position:relative}
+  .b-bd img{width:100%;aspect-ratio:1;object-fit:contain}
+  .b-bd.locked img{filter:grayscale(0.85) opacity(0.4)}
+  .b-bd .nm{font-size:9px;font-weight:800;line-height:1.15;margin-top:3px;color:var(--earth)}
+  .b-bd.locked .nm{color:#b4b0a4}
+  .b-bd .t-dot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%}
+
+  /* ═══════════════════════════════════════════ */
+  /*  C · CINEMA WALL                              */
+  /* ═══════════════════════════════════════════ */
+  .c-ribbon{margin:8px 16px 0;background:linear-gradient(110deg,#2D2A24 0%,#3a352c 70%,#4a4036 100%);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;color:#F6F5F0;position:relative;overflow:hidden}
+  .c-ribbon::before{content:"";position:absolute;width:90px;height:90px;background:radial-gradient(circle,#EAB308,transparent 70%);top:-20px;right:-10px;opacity:0.6;animation:cglow 3s ease-in-out infinite}
+  @keyframes cglow{0%,100%{opacity:0.45;transform:scale(1)}50%{opacity:0.75;transform:scale(1.2)}}
+  .c-r-side{display:flex;align-items:center;gap:8px;position:relative;z-index:1;flex:1;min-width:0}
+  .c-r-img{width:46px;height:46px;flex-shrink:0;filter:drop-shadow(0 3px 8px rgba(234,179,8,0.4))}
+  .c-r-img img{width:100%;height:100%;object-fit:contain}
+  .c-r-text{flex:1;min-width:0}
+  .c-r-text .lab{font-size:8px;font-weight:800;letter-spacing:0.18em;color:#EAB308;margin-bottom:1px}
+  .c-r-text .nm{font-size:13px;font-weight:800;letter-spacing:-0.2px;line-height:1.1}
+  .c-r-divide{width:1px;height:30px;background:rgba(255,255,255,0.12)}
+  .c-r-next{position:relative;z-index:1;text-align:right;min-width:75px}
+  .c-r-next .lab{font-size:8px;font-weight:800;letter-spacing:0.16em;color:#a8a394}
+  .c-r-next .nm{font-size:12px;font-weight:800;color:#F6F5F0;margin-top:1px;line-height:1.1}
+  .c-r-next .bar{width:60px;height:3px;background:rgba(255,255,255,0.12);border-radius:99px;margin-left:auto;margin-top:4px;overflow:hidden}
+  .c-r-next .bar > div{height:100%;background:linear-gradient(90deg,#EAB308,#F59E0B);border-radius:99px}
+
+  .c-tier-filter{display:flex;gap:5px;padding:10px 16px 6px}
+  .c-tier-filter .t{flex:1;border-radius:10px;padding:6px 0;text-align:center;background:var(--stone);position:relative}
+  .c-tier-filter .t.on{background:var(--earth);color:var(--sand)}
+  .c-tier-filter .t .n{font-size:11px;font-weight:800;letter-spacing:-0.3px;display:block;line-height:1}
+  .c-tier-filter .t .l{font-size:7px;font-weight:800;letter-spacing:0.14em;margin-top:2px;display:block}
+  .c-tier-filter .t.starter .l{color:var(--t-starter)}
+  .c-tier-filter .t.pro .l{color:var(--t-pro)}
+  .c-tier-filter .t.elite .l{color:var(--t-elite)}
+  .c-tier-filter .t.legendary .l{color:var(--t-legendary)}
+  .c-tier-filter .t.on .l{color:#a8a394}
+
+  .c-wall-head{display:flex;align-items:center;justify-content:space-between;padding:8px 16px 6px}
+  .c-wall-head .nm{font-size:10px;font-weight:800;letter-spacing:0.16em;color:var(--rock);text-transform:uppercase}
+  .c-wall-head .seg{display:flex;background:var(--stone);border-radius:99px;padding:2px;gap:0}
+  .c-wall-head .seg .s{padding:3px 8px;font-size:9px;font-weight:700;border-radius:99px;color:var(--rock)}
+  .c-wall-head .seg .s.on{background:#fff;color:var(--earth);box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+
+  .c-wall{padding:0 14px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .c-w-bd{background:#fff;border-radius:10px;padding:5px 3px;text-align:center;position:relative;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
+  .c-w-bd img{width:100%;aspect-ratio:1;object-fit:contain}
+  .c-w-bd.locked img{filter:grayscale(0.85) opacity(0.35)}
+  .c-w-bd .nm{font-size:7.5px;font-weight:700;line-height:1.1;margin-top:1px;padding:0 1px;color:var(--earth)}
+  .c-w-bd.locked .nm{color:#b4b0a4}
+  .c-w-bd .cdot{position:absolute;top:4px;left:4px;width:5px;height:5px;border-radius:50%}
+  .c-w-bd.new::after{content:"";position:absolute;top:3px;right:3px;width:6px;height:6px;border-radius:50%;background:var(--trail);box-shadow:0 0 8px var(--trail);animation:newpulse 1.6s ease-in-out infinite}
+  @keyframes newpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.3);opacity:0.7}}
+
+  .c-section-rule{display:flex;align-items:center;gap:6px;margin:10px 16px 4px}
+  .c-section-rule .bar{flex:1;height:1px}
+  .c-section-rule .l{font-size:8px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Achievements — 3 Compact Variations</h1>
+  <p>Same 48 badges, three different spatial structures. All more compact than the previous design — badges drop to 60-100px range so density goes up dramatically. Each layout maps to a proven competitor pattern.</p>
+</div>
+
+<div class="grid">
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- A · SHELVES                                                       -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+            <div class="h-count">16 / 48</div>
+          </div>
+
+          <!-- Latest unlock ribbon -->
+          <div class="a-hero">
+            <img src="badges-transparent/streak-force_of_nature.png">
+            <div class="text">
+              <div class="lab">★ LATEST · 2D AGO</div>
+              <div class="nm">Force of Nature</div>
+              <div class="sub">Legendary · 16-week streak</div>
+            </div>
+          </div>
+
+          <!-- Tier stats -->
+          <div class="a-stat">
+            <div class="p starter"><div class="n">9</div><div class="l">STARTER</div></div>
+            <div class="p pro"><div class="n">5</div><div class="l">PRO</div></div>
+            <div class="p elite"><div class="n">2</div><div class="l">ELITE</div></div>
+            <div class="p legendary"><div class="n">0</div><div class="l">LEGEND</div></div>
+          </div>
+
+          <!-- Category shelves -->
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--workout)"></div><div class="nm">Workout</div><div class="ct">3 / 6 →</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/workout-first_rep.png"><div class="nm">First Rep</div></div>
+              <div class="a-bd"><img src="badges-transparent/workout-iron_regular.png"><div class="nm">Iron Reg.</div></div>
+              <div class="a-bd"><img src="badges-transparent/workout-perfect_week.png"><div class="nm">Perfect Wk</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/workout-century_club.png"><div class="nm">Century</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/workout-year_of_iron.png"><div class="nm">Year Iron</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/workout-iron_month.png"><div class="nm">Iron Mo.</div></div>
+            </div>
+          </div>
+
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--streak)"></div><div class="nm">Streaks</div><div class="ct">4 / 4</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/streak-warming_up.png"><div class="nm">Warm Up</div></div>
+              <div class="a-bd"><img src="badges-transparent/streak-on_fire.png"><div class="nm">On Fire</div></div>
+              <div class="a-bd"><img src="badges-transparent/streak-unstoppable.png"><div class="nm">Unstop.</div></div>
+              <div class="a-bd"><img src="badges-transparent/streak-force_of_nature.png"><div class="nm">Force</div></div>
+            </div>
+          </div>
+
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--pr)"></div><div class="nm">PRs</div><div class="ct">2 / 4</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/pr-new_heights.png"><div class="nm">New Hts.</div></div>
+              <div class="a-bd"><img src="badges-transparent/pr-record_breaker.png"><div class="nm">Record</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/pr-pr_machine.png"><div class="nm">PR Mach.</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/pr-limitless.png"><div class="nm">Limitless</div></div>
+            </div>
+          </div>
+
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--milestone)"></div><div class="nm">Strength</div><div class="ct">1 / 4</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/milestone-plate_milestone.png"><div class="nm">Plate</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/milestone-two_plates.png"><div class="nm">2 Plates</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/milestone-bw_bench.png"><div class="nm">BW Bench</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/milestone-three_plates.png"><div class="nm">3 Plates</div></div>
+            </div>
+          </div>
+
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--volume)"></div><div class="nm">Volume</div><div class="ct">1 / 4</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/volume-ton_club.png"><div class="nm">Ton Club</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/volume-heavy_week.png"><div class="nm">Heavy</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/volume-mountain_mover.png"><div class="nm">Mountain</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/volume-iron_empire.png"><div class="nm">Empire</div></div>
+            </div>
+          </div>
+
+          <div class="a-row">
+            <div class="a-row-head"><div class="dot" style="background:var(--nutrition)"></div><div class="nm">Nutrition</div><div class="ct">2 / 5</div></div>
+            <div class="a-row-scroll">
+              <div class="a-bd"><img src="badges-transparent/nutrition-first_bite.png"><div class="nm">First Bite</div></div>
+              <div class="a-bd"><img src="badges-transparent/nutrition-clean_week.png"><div class="nm">Clean Wk</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/nutrition-macro_master.png"><div class="nm">Macro</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/nutrition-clean_month.png"><div class="nm">Clean Mo</div></div>
+              <div class="a-bd locked"><img src="badges-transparent/nutrition-pristine.png"><div class="nm">Pristine</div></div>
+            </div>
+          </div>
+
+          <div style="height:60px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">A · Shelves</span>
+      <div class="nm">Netflix-style horizontal rows</div>
+      <div class="src">Source: Netflix / Spotify / Apple TV+ rows</div>
+      <div class="dc">Each category = one horizontal-scrolling row. Vertical scroll moves through categories, horizontal scroll within. Very dense vertically — all 11 categories fit on screen comfortably. Best for browse-by-category mental model.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- B · FILTER FLOW                                                   -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+            <div class="h-count">16 / 48</div>
+          </div>
+
+          <!-- 3-card hero strip: latest + 2 closest -->
+          <div class="b-hero">
+            <div class="b-card featured">
+              <img src="badges-transparent/streak-force_of_nature.png">
+              <div class="nm">Force of Nature</div>
+              <div class="ct">UNLOCKED 2d</div>
+            </div>
+            <div class="b-card locked">
+              <img src="badges-transparent/workout-iron_regular.png">
+              <div class="nm">Iron Regular</div>
+              <div class="ct">48 / 50</div>
+            </div>
+            <div class="b-card locked">
+              <img src="badges-transparent/milestone-two_plates.png">
+              <div class="nm">Two Plates</div>
+              <div class="ct">92 / 100kg</div>
+            </div>
+          </div>
+
+          <!-- Filter chips -->
+          <div class="b-chips">
+            <div class="b-chip on">All <span class="ct">48</span></div>
+            <div class="b-chip">Earned <span class="ct">16</span></div>
+            <div class="b-chip"><div class="dot" style="background:var(--workout)"></div>Workout</div>
+            <div class="b-chip"><div class="dot" style="background:var(--streak)"></div>Streak</div>
+            <div class="b-chip"><div class="dot" style="background:var(--pr)"></div>PR</div>
+            <div class="b-chip"><div class="dot" style="background:var(--volume)"></div>Volume</div>
+            <div class="b-chip"><div class="dot" style="background:var(--nutrition)"></div>Nutrition</div>
+          </div>
+
+          <!-- 3-col grid with subtle category dividers -->
+          <div class="b-cat-sep"><span class="nm">Workout · 3/6</span><div class="bar"></div></div>
+          <div class="b-grid">
+            <div class="b-bd"><img src="badges-transparent/workout-first_rep.png"><div class="nm">First Rep</div><div class="t-dot" style="background:var(--t-starter)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/workout-iron_regular.png"><div class="nm">Iron Reg.</div><div class="t-dot" style="background:var(--t-pro)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/workout-perfect_week.png"><div class="nm">Perfect Wk</div><div class="t-dot" style="background:var(--t-pro)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/workout-century_club.png"><div class="nm">Century</div><div class="t-dot" style="background:var(--t-elite)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/workout-year_of_iron.png"><div class="nm">Year Iron</div><div class="t-dot" style="background:var(--t-legendary)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/workout-iron_month.png"><div class="nm">Iron Mo.</div><div class="t-dot" style="background:var(--t-legendary)"></div></div>
+          </div>
+
+          <div class="b-cat-sep"><span class="nm">Streaks · 4/4</span><div class="bar"></div></div>
+          <div class="b-grid">
+            <div class="b-bd"><img src="badges-transparent/streak-warming_up.png"><div class="nm">Warming Up</div><div class="t-dot" style="background:var(--t-starter)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/streak-on_fire.png"><div class="nm">On Fire</div><div class="t-dot" style="background:var(--t-pro)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/streak-unstoppable.png"><div class="nm">Unstop.</div><div class="t-dot" style="background:var(--t-elite)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/streak-force_of_nature.png"><div class="nm">Force Nat.</div><div class="t-dot" style="background:var(--t-legendary)"></div></div>
+          </div>
+
+          <div class="b-cat-sep"><span class="nm">PRs · 2/4</span><div class="bar"></div></div>
+          <div class="b-grid">
+            <div class="b-bd"><img src="badges-transparent/pr-new_heights.png"><div class="nm">New Hts.</div><div class="t-dot" style="background:var(--t-starter)"></div></div>
+            <div class="b-bd"><img src="badges-transparent/pr-record_breaker.png"><div class="nm">Record</div><div class="t-dot" style="background:var(--t-pro)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/pr-pr_machine.png"><div class="nm">PR Mach.</div><div class="t-dot" style="background:var(--t-elite)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/pr-limitless.png"><div class="nm">Limitless</div><div class="t-dot" style="background:var(--t-legendary)"></div></div>
+          </div>
+
+          <div class="b-cat-sep"><span class="nm">Strength · 1/4</span><div class="bar"></div></div>
+          <div class="b-grid">
+            <div class="b-bd"><img src="badges-transparent/milestone-plate_milestone.png"><div class="nm">Plate</div><div class="t-dot" style="background:var(--t-starter)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/milestone-two_plates.png"><div class="nm">2 Plates</div><div class="t-dot" style="background:var(--t-pro)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/milestone-bw_bench.png"><div class="nm">BW Bench</div><div class="t-dot" style="background:var(--t-elite)"></div></div>
+            <div class="b-bd locked"><img src="badges-transparent/milestone-three_plates.png"><div class="nm">3 Plates</div><div class="t-dot" style="background:var(--t-legendary)"></div></div>
+          </div>
+
+          <div style="height:60px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">B · Filter Flow</span>
+      <div class="nm">Filtered single grid with hero strip</div>
+      <div class="src">Source: Steam Library / Pokémon GO medals / Apple Watch Awards</div>
+      <div class="dc">Three featured cards up top (latest + 2 closest), then filter chips, then a 3-col grid with subtle category dividers. Tier shown via color dot on the card. Most flexible for someone hunting a specific badge.</div>
+    </div>
+  </div>
+
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <!-- C · CINEMA WALL                                                   -->
+  <!-- ════════════════════════════════════════════════════════════════ -->
+  <div class="col">
+    <div class="frame">
+      <div class="screen">
+        <div class="topo"></div>
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+        <div class="scroll">
+          <div class="scrn-head">
+            <div class="back">‹</div>
+            <div class="h-title">Achievements</div>
+            <div class="h-count">16/48</div>
+          </div>
+
+          <!-- Compact dual ribbon: latest + next -->
+          <div class="c-ribbon">
+            <div class="c-r-side">
+              <div class="c-r-img"><img src="badges-transparent/streak-force_of_nature.png"></div>
+              <div class="c-r-text">
+                <div class="lab">★ LATEST · 2D</div>
+                <div class="nm">Force of Nature</div>
+              </div>
+            </div>
+            <div class="c-r-divide"></div>
+            <div class="c-r-next">
+              <div class="lab">NEXT UP</div>
+              <div class="nm">Iron Regular</div>
+              <div class="bar"><div style="width:96%"></div></div>
+            </div>
+          </div>
+
+          <!-- Tier filter -->
+          <div class="c-tier-filter">
+            <div class="t on"><span class="n">16</span><span class="l">ALL</span></div>
+            <div class="t starter"><span class="n">9</span><span class="l">STARTER</span></div>
+            <div class="t pro"><span class="n">5</span><span class="l">PRO</span></div>
+            <div class="t elite"><span class="n">2</span><span class="l">ELITE</span></div>
+            <div class="t legendary"><span class="n">0</span><span class="l">LEGEND</span></div>
+          </div>
+
+          <!-- Dense wall header -->
+          <div class="c-wall-head">
+            <div class="nm">Trophy Wall · 48</div>
+            <div class="seg">
+              <div class="s on">Grid</div>
+              <div class="s">List</div>
+            </div>
+          </div>
+
+          <!-- 4-col packed matrix -->
+          <div class="c-wall">
+            <!-- Workout -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-first_rep.png"><div class="nm">First Rep</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-iron_regular.png"><div class="nm">Iron Reg</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-perfect_week.png"><div class="nm">Perfect</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-century_club.png"><div class="nm">Century</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-year_of_iron.png"><div class="nm">Year</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--workout)"></div><img src="badges-transparent/workout-iron_month.png"><div class="nm">Iron Mo</div></div>
+            <!-- Streak -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--streak)"></div><img src="badges-transparent/streak-warming_up.png"><div class="nm">Warm Up</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--streak)"></div><img src="badges-transparent/streak-on_fire.png"><div class="nm">On Fire</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--streak)"></div><img src="badges-transparent/streak-unstoppable.png"><div class="nm">Unstop</div></div>
+            <div class="c-w-bd new"><div class="cdot" style="background:var(--streak)"></div><img src="badges-transparent/streak-force_of_nature.png"><div class="nm">Force</div></div>
+            <!-- PR -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--pr)"></div><img src="badges-transparent/pr-new_heights.png"><div class="nm">New Hts</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--pr)"></div><img src="badges-transparent/pr-record_breaker.png"><div class="nm">Record</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--pr)"></div><img src="badges-transparent/pr-pr_machine.png"><div class="nm">PR Mach</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--pr)"></div><img src="badges-transparent/pr-limitless.png"><div class="nm">Limitless</div></div>
+            <!-- Milestone -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--milestone)"></div><img src="badges-transparent/milestone-plate_milestone.png"><div class="nm">Plate</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--milestone)"></div><img src="badges-transparent/milestone-two_plates.png"><div class="nm">2 Plate</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--milestone)"></div><img src="badges-transparent/milestone-bw_bench.png"><div class="nm">BW</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--milestone)"></div><img src="badges-transparent/milestone-three_plates.png"><div class="nm">3 Plate</div></div>
+            <!-- Volume -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--volume)"></div><img src="badges-transparent/volume-ton_club.png"><div class="nm">Ton</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--volume)"></div><img src="badges-transparent/volume-heavy_week.png"><div class="nm">Heavy</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--volume)"></div><img src="badges-transparent/volume-mountain_mover.png"><div class="nm">Mountain</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--volume)"></div><img src="badges-transparent/volume-iron_empire.png"><div class="nm">Empire</div></div>
+            <!-- Nutrition -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--nutrition)"></div><img src="badges-transparent/nutrition-first_bite.png"><div class="nm">Bite</div></div>
+            <div class="c-w-bd"><div class="cdot" style="background:var(--nutrition)"></div><img src="badges-transparent/nutrition-clean_week.png"><div class="nm">Clean</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--nutrition)"></div><img src="badges-transparent/nutrition-macro_master.png"><div class="nm">Macro</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--nutrition)"></div><img src="badges-transparent/nutrition-clean_month.png"><div class="nm">Month</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--nutrition)"></div><img src="badges-transparent/nutrition-pristine.png"><div class="nm">Pristine</div></div>
+            <!-- Recovery -->
+            <div class="c-w-bd"><div class="cdot" style="background:var(--recovery)"></div><img src="badges-transparent/recovery-self_aware.png"><div class="nm">Self</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--recovery)"></div><img src="badges-transparent/recovery-mind_body.png"><div class="nm">Mind</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--recovery)"></div><img src="badges-transparent/recovery-deload_pro.png"><div class="nm">Deload</div></div>
+            <div class="c-w-bd locked"><div class="cdot" style="background:var(--recovery)"></div><img src="badges-transparent/recovery-rest_warrior.png"><div class="nm">Rest</div></div>
+          </div>
+
+          <div style="height:60px"></div>
+        </div>
+      </div>
+    </div>
+    <div class="label">
+      <span class="num">C · Cinema Wall</span>
+      <div class="nm">Dense 4-col matrix of all badges</div>
+      <div class="src">Source: PlayStation Trophies / Discord Profile / Xbox Achievements</div>
+      <div class="dc">Tightest layout — 4-column matrix with all 48 badges visible at once with minimal scrolling. Category shown via top-left colored dot on each tile. Pulsing green dot marks new unlocks. Most "trophy wall" feel — visual impact of seeing the whole collection.</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

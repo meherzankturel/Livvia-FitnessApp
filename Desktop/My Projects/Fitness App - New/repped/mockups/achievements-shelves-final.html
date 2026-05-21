@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Achievements — Shelves (Final)</title>
+<style>
+  :root{
+    --earth:#2D2A24; --sand:#F6F5F0; --stone:#EDEBE5; --rock:#8E8E7A; --trail:#34D399;
+    --board:#0f0d0a;
+    --workout:#F97316; --streak:#22C55E; --pr:#6366F1; --milestone:#06B6D4;
+    --volume:#EF4444; --nutrition:#84CC16; --recovery:#14B8A6; --body:#8b5cf6;
+    --consistency:#EAB308; --challenge:#EC4899; --engagement:#A855F7;
+    --t-starter:#A8A8AD; --t-pro:#B58563; --t-elite:#E68A6F; --t-legendary:#EAB308;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--board);color:#F6F5F0;min-height:100vh}
+
+  .stage{display:flex;justify-content:center;align-items:flex-start;padding:48px 24px;gap:48px;flex-wrap:wrap}
+  .col-meta{max-width:300px;padding-top:60px}
+  .col-meta h1{font-size:24px;font-weight:800;letter-spacing:-0.4px;margin:0 0 8px}
+  .col-meta p{font-size:13px;color:#9b958a;line-height:1.55;margin:0 0 16px}
+  .col-meta .changes{background:#252220;border-radius:12px;padding:14px;font-size:12px;color:#cfc8b8;line-height:1.55}
+  .col-meta .changes b{color:var(--sand)}
+  .col-meta .changes ul{margin:8px 0 0;padding-left:18px}
+  .col-meta .changes li{margin-bottom:4px}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+  .screen{width:100%;height:852px;background:var(--sand);border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:44px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5}
+  .scroll{position:absolute;inset:0;padding-top:44px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{display:none}
+
+  .topo{position:absolute;inset:0;opacity:0.04;pointer-events:none;background-image:
+    radial-gradient(ellipse 600px 200px at 20% 20%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 500px 180px at 80% 50%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 700px 220px at 30% 80%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%)}
+
+  .scrn-head{padding:6px 18px 8px;display:flex;align-items:center;gap:10px}
+  .back{width:32px;height:32px;border-radius:16px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:600;color:var(--earth);cursor:pointer}
+  .h-title{font-size:20px;font-weight:800;letter-spacing:-0.4px;flex:1}
+  .h-count{font-size:11px;font-weight:700;color:var(--rock);background:var(--stone);padding:5px 9px;border-radius:99px}
+
+  /* HERO – bigger, single section before shelves */
+  .hero{margin:4px 18px 18px;background:linear-gradient(120deg,#2D2A24 0%,#3a352c 60%,#453a2d 100%);border-radius:22px;padding:18px 18px 16px;display:flex;align-items:center;gap:14px;color:#F6F5F0;position:relative;overflow:hidden;min-height:128px}
+  .hero::before{content:"";position:absolute;width:200px;height:200px;background:#EAB308;border-radius:50%;filter:blur(50px);opacity:0.4;top:-60px;right:-50px;animation:hpulse 4s ease-in-out infinite}
+  .hero::after{content:"";position:absolute;width:140px;height:140px;background:#F59E0B;border-radius:50%;filter:blur(40px);opacity:0.25;bottom:-40px;left:-30px;animation:hpulse 4s ease-in-out infinite 2s}
+  @keyframes hpulse{0%,100%{opacity:0.25;transform:scale(1)}50%{opacity:0.5;transform:scale(1.18)}}
+
+  .confetti{position:absolute;width:5px;height:5px;border-radius:1px;z-index:1}
+  .confetti:nth-of-type(1){top:18%;left:30%;background:#34D399;animation:fall 4.5s linear infinite}
+  .confetti:nth-of-type(2){top:8%;left:60%;background:#EAB308;animation:fall 5s linear infinite 0.8s}
+  .confetti:nth-of-type(3){top:25%;left:80%;background:#6366F1;animation:fall 4s linear infinite 1.6s}
+  .confetti:nth-of-type(4){top:55%;left:48%;background:#EC4899;animation:fall 5.5s linear infinite 2.4s}
+  @keyframes fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(100px) rotate(360deg);opacity:0}}
+
+  .hero-img{width:96px;height:96px;flex-shrink:0;position:relative;z-index:2}
+  .hero-img img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 20px rgba(234,179,8,0.45))}
+
+  .hero-text{flex:1;min-width:0;position:relative;z-index:2}
+  .hero-label{font-size:10px;font-weight:800;letter-spacing:0.18em;color:#EAB308;margin-bottom:6px;display:flex;align-items:center;gap:6px;text-transform:uppercase}
+  .hero-label .dot{width:6px;height:6px;border-radius:50%;background:#EAB308;box-shadow:0 0 8px rgba(234,179,8,0.8);animation:dotpulse 1.6s ease-in-out infinite}
+  @keyframes dotpulse{0%,100%{opacity:1}50%{opacity:0.4}}
+  .hero-name{font-size:19px;font-weight:800;letter-spacing:-0.3px;line-height:1.15;margin-bottom:4px}
+  .hero-desc{font-size:12px;color:#a8a394;line-height:1.45;margin-bottom:10px}
+  .hero-tags{display:flex;gap:5px;flex-wrap:wrap}
+  .hero-tag{font-size:9px;font-weight:800;letter-spacing:0.1em;padding:3px 8px;border-radius:99px;background:rgba(234,179,8,0.18);color:#EAB308}
+  .hero-tag.cat{background:rgba(52,211,153,0.18);color:#34D399}
+
+  /* SHELVES */
+  .row{margin-top:18px;position:relative}
+  .row:first-of-type{margin-top:0}
+  .row::after{content:"";position:absolute;right:0;top:28px;bottom:0;width:36px;background:linear-gradient(to right,rgba(246,245,240,0) 0%,rgba(246,245,240,0.85) 60%,rgba(246,245,240,1) 100%);pointer-events:none;z-index:3}
+  .row-head{display:flex;align-items:center;gap:6px;padding:0 18px 8px}
+  .row-head .dot{width:3px;height:14px;border-radius:99px}
+  .row-head .nm{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--earth)}
+  .row-head .ct{margin-left:auto;font-size:10px;font-weight:700;color:var(--rock)}
+  .row-head .arrow{font-size:12px;color:var(--rock);margin-left:4px}
+
+  .row-scroll{display:flex;gap:6px;padding-left:18px;overflow-x:auto;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity;scroll-padding-left:18px}
+  .row-scroll::-webkit-scrollbar{display:none}
+  .row-scroll::after{content:"";flex:0 0 18px}
+
+  .bd{flex:0 0 78px;text-align:center;scroll-snap-align:start;position:relative;cursor:pointer;display:flex;flex-direction:column;align-items:center}
+  .bd .img-wrap{position:relative;width:78px;height:78px}
+  .bd img{width:78px;height:78px;object-fit:contain;display:block;transition:transform 200ms ease}
+  .bd:hover img{transform:scale(1.06)}
+  .bd.locked img{filter:grayscale(0.85) opacity(0.4) brightness(1.05)}
+  .bd .lk{position:absolute;top:4px;right:4px;width:16px;height:16px;border-radius:50%;background:rgba(45,42,36,0.78);color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;z-index:2;box-shadow:0 1px 3px rgba(0,0,0,0.2)}
+  .bd .nm{font-size:9px;font-weight:700;line-height:1.2;margin-top:3px;padding:0 1px;color:var(--earth);width:78px;text-align:center}
+  .bd.locked .nm{color:#b4b0a4}
+  .bd.new .img-wrap::after{content:"";position:absolute;top:5px;right:5px;width:8px;height:8px;border-radius:50%;background:var(--trail);box-shadow:0 0 8px var(--trail);animation:newpulse 1.6s ease-in-out infinite;z-index:2}
+  @keyframes newpulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.4);opacity:0.6}}
+
+  /* ═════════════════════════════════════════════════════ */
+  /*  ACHIEVEMENT DETAIL MODAL                              */
+  /* ═════════════════════════════════════════════════════ */
+  .modal{position:absolute;inset:0;z-index:50;pointer-events:none;opacity:0;transition:opacity 220ms ease}
+  .modal.open{opacity:1;pointer-events:auto}
+  .modal-bd{position:absolute;inset:0;background:rgba(28,25,21,0.62);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+  .modal-card{position:absolute;left:50%;top:50%;width:324px;max-width:calc(100% - 24px);background:var(--sand);border-radius:28px;padding:24px 22px 22px;text-align:center;transform:translate(-50%,-50%) scale(0.82) translateY(20px);transition:transform 460ms cubic-bezier(0.34,1.56,0.64,1);overflow:visible}
+  .modal.open .modal-card{transform:translate(-50%,-50%) scale(1) translateY(0)}
+  .modal-close{position:absolute;top:14px;right:14px;width:28px;height:28px;border-radius:50%;background:rgba(45,42,36,0.08);border:none;font-size:16px;line-height:1;color:var(--earth);cursor:pointer;z-index:5;display:flex;align-items:center;justify-content:center;font-weight:300}
+
+  /* Badge is the main element — large, centered inside the card */
+  .modal-badge-wrap{position:relative;width:228px;height:228px;margin:0 auto 14px;z-index:3}
+  .modal-badge{position:relative;width:100%;height:100%;object-fit:contain;z-index:3;filter:drop-shadow(0 16px 36px rgba(0,0,0,0.30));transform:scale(0) rotate(-15deg);opacity:0}
+  .modal.open .modal-badge{animation:badge-in 760ms 180ms cubic-bezier(0.34,1.56,0.64,1) forwards,badge-float 3s 940ms ease-in-out 1 forwards}
+  @keyframes badge-in{0%{transform:scale(0) rotate(-15deg);opacity:0}70%{transform:scale(1.10) rotate(4deg);opacity:1}100%{transform:scale(1) rotate(0);opacity:1}}
+  @keyframes badge-float{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-8px) scale(1.025)}}
+  .modal.locked .modal-badge{filter:grayscale(0.78) opacity(0.55) brightness(1.05) drop-shadow(0 10px 22px rgba(0,0,0,0.18))}
+
+  /* Soft glow behind the badge — pulses twice then fades out */
+  .modal-glow{position:absolute;inset:-30px;background:radial-gradient(circle,rgba(234,179,8,0.55) 0%,rgba(234,179,8,0.2) 35%,transparent 65%);filter:blur(28px);opacity:0;border-radius:50%;z-index:1}
+  .modal.open:not(.locked) .modal-glow{animation:glow-burst 3.6s 400ms ease-out forwards}
+  @keyframes glow-burst{0%{opacity:0;transform:scale(0.85)}20%{opacity:0.85;transform:scale(1.12)}45%{opacity:0.6;transform:scale(1)}65%{opacity:0.8;transform:scale(1.1)}100%{opacity:0;transform:scale(1)}}
+
+  /* Confetti — extends beyond card top so pieces spill out into the phone area */
+  .confetti-burst{position:absolute;left:-40px;right:-40px;top:-180px;bottom:50%;pointer-events:none;overflow:visible;z-index:2}
+  .modal.locked .confetti-burst{display:none}
+  .confetti-piece{position:absolute;opacity:0;top:-20px}
+  .modal.open .confetti-piece{animation:confetti-fall var(--dur,3s) var(--delay,0s) ease-in 1 forwards}
+  @keyframes confetti-fall{0%{transform:translateY(0) rotate(0) translateX(0);opacity:1}10%{opacity:1}100%{transform:translateY(420px) rotate(720deg) translateX(var(--drift,30px));opacity:0}}
+
+  /* Modal content */
+  .modal-label{font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;color:#EAB308;margin-bottom:8px;opacity:0;display:flex;align-items:center;justify-content:center;gap:6px}
+  .modal-label .ld{width:6px;height:6px;border-radius:50%;background:#EAB308;box-shadow:0 0 8px rgba(234,179,8,0.8);animation:newpulse 1.6s ease-in-out infinite}
+  .modal.locked .modal-label{color:var(--rock)}
+  .modal.locked .modal-label .ld{background:var(--rock);box-shadow:none;animation:none}
+  .modal-title{font-size:22px;font-weight:800;letter-spacing:-0.4px;margin:0 0 8px;color:var(--earth);opacity:0;line-height:1.15}
+  .modal-desc{font-size:13px;color:var(--rock);line-height:1.5;margin:0 0 14px;opacity:0}
+  .modal-tags{display:flex;gap:6px;justify-content:center;margin-bottom:14px;opacity:0;flex-wrap:wrap}
+  .modal-tag{font-size:9px;font-weight:800;letter-spacing:0.1em;padding:4px 10px;border-radius:99px}
+  .modal-tag.tier{background:rgba(234,179,8,0.18);color:#a17a06}
+  .modal-tag.cat{background:rgba(34,197,94,0.18);color:#16a34a}
+  .modal.locked .modal-tag.tier{background:rgba(168,168,173,0.18);color:#7a7a82}
+
+  /* Locked: progress section */
+  .modal-progress{display:none;background:var(--stone);border-radius:14px;padding:14px;margin-bottom:14px;text-align:left;opacity:0}
+  .modal.locked .modal-progress{display:block}
+  .modal-progress .lab{font-size:10px;font-weight:800;letter-spacing:0.16em;color:var(--rock);margin-bottom:6px}
+  .modal-progress .hint{font-size:12px;color:var(--earth);line-height:1.45;margin:0 0 12px}
+  .modal-progress .row{display:flex;justify-content:space-between;align-items:baseline;font-size:11px;color:var(--rock);margin-bottom:5px;font-weight:600}
+  .modal-progress .row strong{font-size:12px;font-weight:800;color:var(--earth)}
+  .modal-progress .pbar{height:5px;background:#DDD9CE;border-radius:99px;overflow:hidden}
+  .modal-progress .pbar > div{height:100%;background:linear-gradient(90deg,var(--trail),#16a34a);border-radius:99px}
+
+  .modal-actions{display:flex;gap:8px;opacity:0}
+  .modal-actions .btn{flex:1;height:44px;border-radius:14px;border:none;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:-0.1px}
+  .modal-actions .btn.primary{background:var(--earth);color:var(--sand)}
+  .modal-actions .btn.secondary{background:var(--stone);color:var(--earth)}
+
+  /* Stagger entrance */
+  .modal.open .modal-label{animation:stagger-in 380ms 320ms forwards}
+  .modal.open .modal-title{animation:stagger-in 380ms 420ms forwards}
+  .modal.open .modal-desc{animation:stagger-in 380ms 520ms forwards}
+  .modal.open .modal-tags{animation:stagger-in 380ms 600ms forwards}
+  .modal.open .modal-progress{animation:stagger-in 380ms 640ms forwards}
+  .modal.open .modal-actions{animation:stagger-in 380ms 720ms forwards}
+  @keyframes stagger-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="col-meta">
+    <h1>Achievements · Shelves (refined)</h1>
+    <p>The picked direction, polished per your feedback.</p>
+    <div class="changes">
+      <b>Changes from variation A:</b>
+      <ul>
+        <li>Tier stat pills removed</li>
+        <li>Hero card enlarged: 54px → 96px badge, taller card with description + tags</li>
+        <li>Confetti animation added to the hero for the celebratory feel</li>
+        <li>More vertical space before the first shelf so the hero gets to breathe</li>
+      </ul>
+      <br>
+      <b>Next:</b> when this layout is approved, I port it to <code>achievements.tsx</code> in React Native, copy the transparent badge assets into the mobile bundle, and update the achievement data.
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="screen">
+      <div class="topo"></div>
+      <div class="notch"></div>
+      <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+      <div class="scroll">
+        <div class="scrn-head">
+          <div class="back">‹</div>
+          <div class="h-title">Achievements</div>
+          <div class="h-count">16 / 47</div>
+        </div>
+
+        <!-- HERO (bigger) -->
+        <div class="hero">
+          <div class="confetti"></div><div class="confetti"></div><div class="confetti"></div><div class="confetti"></div>
+          <div class="hero-img"><img src="badges-transparent/streak-force_of_nature.png" alt="Force of Nature"></div>
+          <div class="hero-text">
+            <div class="hero-label"><div class="dot"></div>Latest Unlock · 2d ago</div>
+            <div class="hero-name">Force of Nature</div>
+            <div class="hero-desc">16-week workout streak. Four months without breaking your streak.</div>
+            <div class="hero-tags">
+              <span class="hero-tag">LEGENDARY</span>
+              <span class="hero-tag cat">STREAK</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Category shelves -->
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--workout)"></div><div class="nm">Workout</div><div class="ct">3 / 6</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/workout-first_rep.png"></div><div class="nm">First Rep</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/workout-iron_regular.png"></div><div class="nm">Iron Reg.</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/workout-perfect_week.png"></div><div class="nm">Perfect Wk</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/workout-century_club.png"><div class="lk">🔒</div></div><div class="nm">Century</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/workout-year_of_iron.png"><div class="lk">🔒</div></div><div class="nm">Year Iron</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/workout-iron_month.png"><div class="lk">🔒</div></div><div class="nm">Iron Mo.</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--streak)"></div><div class="nm">Streaks</div><div class="ct">4 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/streak-warming_up.png"></div><div class="nm">Warm Up</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/streak-on_fire.png"></div><div class="nm">On Fire</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/streak-unstoppable.png"></div><div class="nm">Unstop.</div></div>
+            <div class="bd new"><div class="img-wrap"><img src="badges-transparent/streak-force_of_nature.png"></div><div class="nm">Force</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--pr)"></div><div class="nm">Personal Records</div><div class="ct">2 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/pr-new_heights.png"></div><div class="nm">New Hts.</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/pr-record_breaker.png"></div><div class="nm">Record</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/pr-pr_machine.png"><div class="lk">🔒</div></div><div class="nm">PR Mach.</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/pr-limitless.png"><div class="lk">🔒</div></div><div class="nm">Limitless</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--milestone)"></div><div class="nm">Strength</div><div class="ct">1 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/milestone-plate_milestone.png"></div><div class="nm">Plate</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/milestone-two_plates.png"><div class="lk">🔒</div></div><div class="nm">2 Plates</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/milestone-bw_bench.png"><div class="lk">🔒</div></div><div class="nm">BW Bench</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/milestone-three_plates.png"><div class="lk">🔒</div></div><div class="nm">3 Plates</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--volume)"></div><div class="nm">Volume</div><div class="ct">1 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/volume-ton_club.png"></div><div class="nm">Ton Club</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/volume-heavy_week.png"><div class="lk">🔒</div></div><div class="nm">Heavy</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/volume-mountain_mover.png"><div class="lk">🔒</div></div><div class="nm">Mountain</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/volume-iron_empire.png"><div class="lk">🔒</div></div><div class="nm">Empire</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--nutrition)"></div><div class="nm">Nutrition</div><div class="ct">2 / 5</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/nutrition-first_bite.png"></div><div class="nm">First Bite</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/nutrition-clean_week.png"></div><div class="nm">Clean Wk</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/nutrition-macro_master.png"><div class="lk">🔒</div></div><div class="nm">Macro</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/nutrition-clean_month.png"><div class="lk">🔒</div></div><div class="nm">Clean Mo</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/nutrition-pristine.png"><div class="lk">🔒</div></div><div class="nm">Pristine</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--recovery)"></div><div class="nm">Recovery</div><div class="ct">1 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/recovery-self_aware.png"></div><div class="nm">Self-Aware</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/recovery-mind_body.png"><div class="lk">🔒</div></div><div class="nm">Mind</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/recovery-deload_pro.png"><div class="lk">🔒</div></div><div class="nm">Deload</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/recovery-rest_warrior.png"><div class="lk">🔒</div></div><div class="nm">Rest</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--body)"></div><div class="nm">Body Metrics</div><div class="ct">2 / 3</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/body-scale_check.png"></div><div class="nm">Scale</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/body-measure_up.png"></div><div class="nm">Measure</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/body-goal_hit.png"><div class="lk">🔒</div></div><div class="nm">Goal Hit</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--consistency)"></div><div class="nm">Consistency</div><div class="ct">2 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/consistency-early_bird.png"></div><div class="nm">Early</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/consistency-night_owl.png"></div><div class="nm">Night</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/consistency-weekend_warrior.png"><div class="lk">🔒</div></div><div class="nm">Weekend</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/consistency-road_warrior.png"><div class="lk">🔒</div></div><div class="nm">Road</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--challenge)"></div><div class="nm">Challenges</div><div class="ct">0 / 4</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/challenge-monthly_grind.png"><div class="lk">🔒</div></div><div class="nm">Monthly</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/challenge-volume_month.png"><div class="lk">🔒</div></div><div class="nm">Volume</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/challenge-thirty_day.png"><div class="lk">🔒</div></div><div class="nm">30-Day</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/challenge-goal_crusher.png"><div class="lk">🔒</div></div><div class="nm">Goal</div></div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="row-head"><div class="dot" style="background:var(--engagement)"></div><div class="nm">Engagement</div><div class="ct">3 / 5</div><div class="arrow">›</div></div>
+          <div class="row-scroll">
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/engagement-welcome_aboard.png"></div><div class="nm">Welcome</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/engagement-profile_pro.png"></div><div class="nm">Profile</div></div>
+            <div class="bd"><div class="img-wrap"><img src="badges-transparent/engagement-first_share.png"></div><div class="nm">Share</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/engagement-explorer.png"><div class="lk">🔒</div></div><div class="nm">Explorer</div></div>
+            <div class="bd locked"><div class="img-wrap"><img src="badges-transparent/engagement-course_complete.png"><div class="lk">🔒</div></div><div class="nm">Course</div></div>
+          </div>
+        </div>
+
+        <div style="height:60px"></div>
+      </div>
+
+      <!-- ────────────── Achievement detail modal ────────────── -->
+      <div class="modal" id="badge-modal">
+        <div class="modal-bd"></div>
+        <div class="modal-card">
+          <button class="modal-close" type="button">✕</button>
+          <div class="confetti-burst"></div>
+          <div class="modal-badge-wrap">
+            <div class="modal-glow"></div>
+            <img class="modal-badge" src="badges-transparent/streak-force_of_nature.png" alt="">
+          </div>
+          <div class="modal-label"><span class="ld"></span><span class="lt">UNLOCKED · 2 DAYS AGO</span></div>
+          <h2 class="modal-title">Force of Nature</h2>
+          <p class="modal-desc">16-week workout streak. Four months without breaking your streak.</p>
+          <div class="modal-tags">
+            <span class="modal-tag tier">LEGENDARY</span>
+            <span class="modal-tag cat">STREAK</span>
+          </div>
+          <div class="modal-progress">
+            <div class="lab">HOW TO UNLOCK</div>
+            <p class="hint">Maintain your workout streak for 16 consecutive weeks without breaking it.</p>
+            <div class="row"><span>Progress</span><strong>13 / 16 weeks</strong></div>
+            <div class="pbar"><div style="width:81%"></div></div>
+          </div>
+          <div class="modal-actions">
+            <button class="btn primary">Share</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const modal = document.getElementById('badge-modal');
+  const modalBadge = modal.querySelector('.modal-badge');
+  const modalTitle = modal.querySelector('.modal-title');
+  const modalDesc = modal.querySelector('.modal-desc');
+  const modalLabel = modal.querySelector('.modal-label .lt');
+  const modalTierTag = modal.querySelector('.modal-tag.tier');
+  const modalCatTag = modal.querySelector('.modal-tag.cat');
+  const modalProgressHint = modal.querySelector('.modal-progress .hint');
+  const modalProgressRow = modal.querySelector('.modal-progress .row strong');
+  const modalProgressBar = modal.querySelector('.modal-progress .pbar > div');
+  const modalActions = modal.querySelector('.modal-actions');
+
+  // Minimal badge data — extend later. Falls back to generic content.
+  const BADGES = {
+    "First Rep":   {tier:"STARTER",cat:"WORKOUT",   desc:"Completed your first workout. Every journey starts with one rep.",date:"3 months ago",hint:"Complete any workout.",progress:"1 / 1 workouts",pct:100},
+    "Iron Reg.":   {tier:"PRO",cat:"WORKOUT",       desc:"Completed 50 workouts. You're a serious athlete now.",date:"3 weeks ago",hint:"Complete 50 workouts total.",progress:"48 / 50 workouts",pct:96},
+    "Perfect Wk":  {tier:"PRO",cat:"WORKOUT",       desc:"Hit every planned workout in a single week.",date:"4 weeks ago",hint:"Complete every workout you scheduled in one week.",progress:"5 / 7 days",pct:71},
+    "Century":     {tier:"ELITE",cat:"WORKOUT",     desc:"Complete 100 workouts. Welcome to the century club.",date:"",hint:"Complete 100 workouts total.",progress:"68 / 100 workouts",pct:68},
+    "Year Iron":   {tier:"LEGENDARY",cat:"WORKOUT", desc:"A full year of training. Iron discipline.",date:"",hint:"Complete 365 workouts.",progress:"68 / 365",pct:18},
+    "Iron Mo.":    {tier:"LEGENDARY",cat:"WORKOUT", desc:"Every planned workout for 30 straight days.",date:"",hint:"Hit every scheduled workout for a full month.",progress:"12 / 30 days",pct:40},
+    "Warm Up":     {tier:"STARTER",cat:"STREAK",    desc:"A 2-week workout streak. You've built momentum.",date:"10 weeks ago",hint:"Maintain your streak for 2 weeks.",progress:"complete",pct:100},
+    "On Fire":     {tier:"PRO",cat:"STREAK",        desc:"A 4-week workout streak. Habits are forming.",date:"8 weeks ago",hint:"Maintain your streak for a full month.",progress:"complete",pct:100},
+    "Unstop.":     {tier:"ELITE",cat:"STREAK",      desc:"An 8-week streak. Two months unbroken.",date:"4 weeks ago",hint:"Maintain your streak for 8 weeks.",progress:"complete",pct:100},
+    "Force":       {tier:"LEGENDARY",cat:"STREAK",  desc:"16-week workout streak. Four months without breaking your streak.",date:"2 days ago",hint:"Maintain your streak for 16 weeks.",progress:"complete",pct:100},
+    "New Hts.":    {tier:"STARTER",cat:"PR",        desc:"Set your first personal record. The first of many.",date:"6 weeks ago",hint:"Lift more than your previous best on any exercise.",progress:"complete",pct:100},
+    "Record":      {tier:"PRO",cat:"PR",            desc:"Set 5 personal records. You're rewriting your limits.",date:"1 week ago",hint:"Set 5 PRs across any exercises.",progress:"complete",pct:100},
+    "PR Mach.":    {tier:"ELITE",cat:"PR",          desc:"20 PRs. You're a PR machine.",date:"",hint:"Set 20 personal records.",progress:"7 / 20 PRs",pct:35},
+    "Limitless":   {tier:"LEGENDARY",cat:"PR",      desc:"50 personal records. There's no ceiling.",date:"",hint:"Set 50 personal records.",progress:"7 / 50 PRs",pct:14},
+    "Plate":       {tier:"STARTER",cat:"STRENGTH",  desc:"Lifted 60kg on a compound lift.",date:"5 weeks ago",hint:"Hit 60kg on bench, squat, or deadlift.",progress:"complete",pct:100},
+    "2 Plates":    {tier:"PRO",cat:"STRENGTH",      desc:"Lifted 100kg on a compound lift.",date:"",hint:"Hit 100kg on bench, squat, or deadlift.",progress:"92 / 100 kg",pct:92},
+    "BW Bench":    {tier:"ELITE",cat:"STRENGTH",    desc:"Benched your own body weight.",date:"",hint:"Press your body weight on the bench.",progress:"82 / 95 kg",pct:86},
+    "3 Plates":    {tier:"LEGENDARY",cat:"STRENGTH",desc:"Lifted 140kg on a compound. Serious strength.",date:"",hint:"Hit 140kg on bench, squat, or deadlift.",progress:"92 / 140 kg",pct:66},
+    "Ton Club":    {tier:"STARTER",cat:"VOLUME",    desc:"Moved 1,000kg in a single session.",date:"7 weeks ago",hint:"Total 1,000kg of volume in one workout.",progress:"complete",pct:100},
+    "Heavy":       {tier:"PRO",cat:"VOLUME",        desc:"5,000kg in a single week.",date:"",hint:"Move 5,000kg of volume across one week.",progress:"3.8K / 5K kg",pct:76},
+    "Mountain":    {tier:"ELITE",cat:"VOLUME",      desc:"25,000kg in a single month.",date:"",hint:"Move 25,000kg in 30 days.",progress:"14K / 25K kg",pct:56},
+    "Empire":      {tier:"LEGENDARY",cat:"VOLUME",  desc:"100,000kg lifetime volume. Iron empire.",date:"",hint:"Move 100,000kg across all your training.",progress:"32K / 100K kg",pct:32},
+    "First Bite":  {tier:"STARTER",cat:"NUTRITION", desc:"Logged your first meal.",date:"2 months ago",hint:"Log any meal in the app.",progress:"complete",pct:100},
+    "Clean Wk":    {tier:"PRO",cat:"NUTRITION",     desc:"7 days of on-plan nutrition.",date:"3 weeks ago",hint:"Stick to your meal plan for 7 days.",progress:"complete",pct:100},
+    "Macro":       {tier:"PRO",cat:"NUTRITION",     desc:"Hit macro targets for 7 days.",date:"",hint:"Hit your macros for a week straight.",progress:"5 / 7 days",pct:71},
+    "Clean Mo":    {tier:"ELITE",cat:"NUTRITION",   desc:"30 days of on-plan nutrition.",date:"",hint:"Stick to your meal plan for 30 days.",progress:"12 / 30 days",pct:40},
+    "Pristine":    {tier:"LEGENDARY",cat:"NUTRITION",desc:"90 days of clean eating. Mastery.",date:"",hint:"Stay on plan for 90 straight days.",progress:"12 / 90 days",pct:13},
+    "Self-Aware":  {tier:"STARTER",cat:"RECOVERY",  desc:"Completed your first weekly check-in.",date:"6 weeks ago",hint:"Do a weekly check-in from Settings.",progress:"complete",pct:100},
+    "Mind":        {tier:"PRO",cat:"RECOVERY",      desc:"Logged wellness 7 days straight.",date:"",hint:"Log a wellness check daily for a week.",progress:"3 / 7 days",pct:43},
+    "Deload":      {tier:"PRO",cat:"RECOVERY",      desc:"Completed a full deload week.",date:"",hint:"Complete a planned deload week.",progress:"not started",pct:0},
+    "Rest":        {tier:"ELITE",cat:"RECOVERY",    desc:"Honored every planned rest day for 30 days.",date:"",hint:"Take every rest day for a month.",progress:"8 / 30 days",pct:27},
+    "Scale":       {tier:"STARTER",cat:"BODY",      desc:"Logged your weight for the first time.",date:"6 weeks ago",hint:"Log your body weight.",progress:"complete",pct:100},
+    "Measure":     {tier:"STARTER",cat:"BODY",      desc:"Logged body measurements.",date:"5 weeks ago",hint:"Track your body measurements.",progress:"complete",pct:100},
+    "Goal Hit":    {tier:"ELITE",cat:"BODY",        desc:"Reached a body-weight goal you set.",date:"",hint:"Hit your target weight goal.",progress:"on track",pct:60},
+    "Early":       {tier:"STARTER",cat:"CONSISTENCY",desc:"Worked out before 8 AM.",date:"3 weeks ago",hint:"Start a workout before 8 AM.",progress:"complete",pct:100},
+    "Night":       {tier:"STARTER",cat:"CONSISTENCY",desc:"Worked out after 8 PM.",date:"2 weeks ago",hint:"Start a workout after 8 PM.",progress:"complete",pct:100},
+    "Weekend":     {tier:"PRO",cat:"CONSISTENCY",   desc:"Worked out on 4 consecutive weekends.",date:"",hint:"Don't skip 4 weekends in a row.",progress:"2 / 4 weekends",pct:50},
+    "Road":        {tier:"PRO",cat:"CONSISTENCY",   desc:"Worked out in 3 different time slots.",date:"",hint:"Train in AM, midday, and PM.",progress:"2 / 3 slots",pct:67},
+    "Monthly":     {tier:"PRO",cat:"CHALLENGE",     desc:"Complete 15 workouts in a calendar month.",date:"",hint:"Finish 15 workouts within the current month.",progress:"6 / 15 workouts",pct:40},
+    "Volume":      {tier:"ELITE",cat:"CHALLENGE",   desc:"10,000kg of volume in one calendar month.",date:"",hint:"Move 10,000kg this month.",progress:"3.4K / 10K kg",pct:34},
+    "30-Day":      {tier:"LEGENDARY",cat:"CHALLENGE",desc:"Work out every day for 30 straight days.",date:"",hint:"No rest days for 30 days.",progress:"0 / 30 days",pct:0},
+    "Goal":        {tier:"PRO",cat:"CHALLENGE",     desc:"Hit weekly target 4 weeks in a row.",date:"",hint:"Hit your weekly goal 4 weeks straight.",progress:"1 / 4 weeks",pct:25},
+    "Welcome":     {tier:"STARTER",cat:"ENGAGEMENT",desc:"Completed onboarding. Welcome to Revive.",date:"3 months ago",hint:"Finish onboarding.",progress:"complete",pct:100},
+    "Profile":     {tier:"STARTER",cat:"ENGAGEMENT",desc:"Filled in all profile fields.",date:"2 months ago",hint:"Complete your profile.",progress:"complete",pct:100},
+    "Share":       {tier:"STARTER",cat:"ENGAGEMENT",desc:"Shared a workout for the first time.",date:"5 weeks ago",hint:"Share any completed workout.",progress:"complete",pct:100},
+    "Explorer":    {tier:"PRO",cat:"ENGAGEMENT",    desc:"Tried 3 different workout types.",date:"",hint:"Try 3 different workout types.",progress:"2 / 3 types",pct:67},
+    "Course":      {tier:"PRO",cat:"ENGAGEMENT",    desc:"Completed your first training block.",date:"",hint:"Finish a training block.",progress:"4 / 6 weeks",pct:67}
+  };
+
+  // Confetti generator
+  const colors = ['#EAB308','#34D399','#6366F1','#EF4444','#EC4899','#F97316','#A855F7','#06B6D4'];
+  const burst = modal.querySelector('.confetti-burst');
+  for (let i = 0; i < 32; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = `${Math.random() * 100}%`;
+    p.style.background = colors[i % colors.length];
+    p.style.setProperty('--dur', `${2.4 + Math.random() * 2.6}s`);
+    p.style.setProperty('--delay', `${Math.random() * 2.5}s`);
+    p.style.setProperty('--drift', `${(Math.random() - 0.5) * 80}px`);
+    const size = 5 + Math.random() * 6;
+    p.style.width = `${size}px`;
+    p.style.height = `${size * (0.5 + Math.random() * 0.8)}px`;
+    p.style.borderRadius = Math.random() > 0.6 ? '50%' : '1px';
+    burst.appendChild(p);
+  }
+
+  function openBadge(bd) {
+    const isLocked = bd.classList.contains('locked');
+    const name = bd.querySelector('.nm').textContent.trim();
+    const imgSrc = bd.querySelector('img').src;
+    const data = BADGES[name] || {tier:'STARTER',cat:'GENERAL',desc:'Earn this by training consistently.',date:'recently',hint:'Keep training.',progress:'in progress',pct:50};
+
+    modal.classList.toggle('locked', isLocked);
+    modalBadge.src = imgSrc;
+    modalTitle.textContent = name;
+    modalDesc.textContent = data.desc;
+    modalLabel.textContent = isLocked ? 'LOCKED' : (data.date ? `UNLOCKED · ${data.date.toUpperCase()}` : 'UNLOCKED');
+    modalTierTag.textContent = data.tier;
+    modalCatTag.textContent = data.cat;
+    modalProgressHint.textContent = data.hint;
+    modalProgressRow.textContent = data.progress;
+    modalProgressBar.style.width = `${data.pct}%`;
+    modalActions.innerHTML = isLocked
+      ? '<button class="btn primary">View tips</button>'
+      : '<button class="btn primary">Share</button>';
+
+    modal.classList.remove('open');
+    void modal.offsetWidth;
+    modal.classList.add('open');
+  }
+
+  function closeModal(){modal.classList.remove('open')}
+
+  document.querySelectorAll('.bd').forEach(bd => bd.addEventListener('click', () => openBadge(bd)));
+  modal.querySelector('.modal-bd').addEventListener('click', closeModal);
+  modal.querySelector('.modal-close').addEventListener('click', closeModal);
+</script>
+
+</body>
+</html>

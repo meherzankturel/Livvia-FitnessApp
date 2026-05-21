@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Revive · All 48 Achievement Badges</title>
+<style>
+  :root{
+    --bg:#0f0d0a; --card:#1a1714; --text:#f5f1e8; --muted:#9b958a;
+    --workout:#F97316; --streak:#22C55E; --pr:#6366F1; --milestone:#06B6D4;
+    --volume:#EF4444; --nutrition:#84CC16; --recovery:#14B8A6; --body:#8b5cf6;
+    --consistency:#EAB308; --challenge:#EC4899; --engagement:#A855F7;
+    --t-starter:#A8A8AD; --t-pro:#B58563; --t-elite:#E68A6F; --t-legendary:#EAB308;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,sans-serif;padding:40px 32px}
+  header{max-width:1600px;margin:0 auto 32px}
+  h1{font-size:28px;font-weight:800;letter-spacing:-0.5px;margin:0 0 8px}
+  .lead{color:var(--muted);font-size:14px;max-width:760px;line-height:1.55;margin:0}
+  .stats{display:flex;gap:24px;margin-top:16px;flex-wrap:wrap}
+  .stat{background:var(--card);border-radius:12px;padding:10px 16px}
+  .stat .n{font-size:20px;font-weight:800;letter-spacing:-0.4px}
+  .stat .l{font-size:11px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase}
+
+  main{max-width:1600px;margin:0 auto}
+  .cat{margin-top:48px}
+  .cat-head{display:flex;align-items:center;gap:12px;margin-bottom:20px}
+  .cat-head .dot{width:6px;height:24px;border-radius:3px}
+  .cat-head .nm{font-size:18px;font-weight:800;letter-spacing:-0.2px}
+  .cat-head .ct{margin-left:auto;font-size:12px;color:var(--muted);font-weight:600}
+
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:18px}
+  @media (max-width:1200px){.grid{grid-template-columns:repeat(4,1fr)}}
+  @media (max-width:800px){.grid{grid-template-columns:repeat(2,1fr)}}
+
+  .card{background:var(--card);border-radius:14px;padding:14px;display:flex;flex-direction:column;gap:8px}
+  .card img{width:100%;aspect-ratio:1/1;object-fit:contain;background:#000;border-radius:8px}
+  .card .tier{font-size:9px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase}
+  .card.starter .tier{color:var(--t-starter)}
+  .card.pro .tier{color:var(--t-pro)}
+  .card.elite .tier{color:var(--t-elite)}
+  .card.legendary .tier{color:var(--t-legendary)}
+  .card .nm{font-size:13px;font-weight:700;letter-spacing:-0.1px;line-height:1.25}
+  .card .ds{font-size:11px;color:var(--muted);line-height:1.4}
+
+  .footer{margin:64px auto 0;max-width:1000px;background:var(--card);border-radius:14px;padding:20px}
+  .footer h2{font-size:16px;font-weight:700;margin:0 0 12px}
+  .footer p{margin:0 0 8px;color:#cfc8b8;font-size:14px;line-height:1.55}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>All 48 Achievement Badges</h1>
+  <p class="lead">Full set generated via Gemini 2.5 Flash Image using the master shield as a style reference. Grouped by category. Tier color: silver (Starter) → bronze (Pro) → rose-gold (Elite) → gold (Legendary).</p>
+
+  <div class="stats">
+    <div class="stat"><div class="n">48</div><div class="l">Total badges</div></div>
+    <div class="stat"><div class="n">11</div><div class="l">Categories</div></div>
+    <div class="stat"><div class="n">4</div><div class="l">Tiers</div></div>
+    <div class="stat"><div class="n">~64 MB</div><div class="l">Raw PNG (pre-resize)</div></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--workout)"></div><div class="nm">Workout</div><div class="ct">6 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/master-shield-legendary.png"><div class="tier">★ MASTER / LEGENDARY</div><div class="nm">First Rep</div><div class="ds">Your original generation, gold</div></div>
+      <div class="card pro"><img src="badges/workout-iron_regular.png"><div class="tier">PRO</div><div class="nm">Iron Regular</div><div class="ds">50 workouts</div></div>
+      <div class="card elite"><img src="badges/workout-century_club.png"><div class="tier">ELITE</div><div class="nm">Century Club</div><div class="ds">100 workouts</div></div>
+      <div class="card legendary"><img src="badges/workout-year_of_iron.png"><div class="tier">LEGENDARY</div><div class="nm">Year of Iron</div><div class="ds">365 workouts</div></div>
+      <div class="card pro"><img src="badges/workout-perfect_week.png"><div class="tier">PRO</div><div class="nm">Perfect Week</div><div class="ds">Every planned workout</div></div>
+      <div class="card legendary"><img src="badges/workout-iron_month.png"><div class="tier">LEGENDARY</div><div class="nm">Iron Month</div><div class="ds">Every planned day, 30 days</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--streak)"></div><div class="nm">Streaks</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/streak-warming_up.png"><div class="tier">STARTER</div><div class="nm">Warming Up</div><div class="ds">2-week streak</div></div>
+      <div class="card pro"><img src="badges/streak-on_fire.png"><div class="tier">PRO</div><div class="nm">On Fire</div><div class="ds">4-week streak</div></div>
+      <div class="card elite"><img src="badges/streak-unstoppable.png"><div class="tier">ELITE</div><div class="nm">Unstoppable</div><div class="ds">8-week streak</div></div>
+      <div class="card legendary"><img src="badges/streak-force_of_nature.png"><div class="tier">LEGENDARY</div><div class="nm">Force of Nature</div><div class="ds">16-week streak</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--pr)"></div><div class="nm">Personal Records</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/pr-new_heights.png"><div class="tier">STARTER</div><div class="nm">New Heights</div><div class="ds">First PR</div></div>
+      <div class="card pro"><img src="badges/pr-record_breaker.png"><div class="tier">PRO</div><div class="nm">Record Breaker</div><div class="ds">5 PRs</div></div>
+      <div class="card elite"><img src="badges/pr-pr_machine.png"><div class="tier">ELITE</div><div class="nm">PR Machine</div><div class="ds">20 PRs</div></div>
+      <div class="card legendary"><img src="badges/pr-limitless.png"><div class="tier">LEGENDARY</div><div class="nm">Limitless</div><div class="ds">50 PRs</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--milestone)"></div><div class="nm">Strength Milestones</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/milestone-plate_milestone.png"><div class="tier">STARTER</div><div class="nm">Plate Milestone</div><div class="ds">60kg compound</div></div>
+      <div class="card pro"><img src="badges/milestone-two_plates.png"><div class="tier">PRO</div><div class="nm">Two Plates</div><div class="ds">100kg compound</div></div>
+      <div class="card elite"><img src="badges/milestone-bw_bench.png"><div class="tier">ELITE</div><div class="nm">Bodyweight Bench</div><div class="ds">Bench your bodyweight</div></div>
+      <div class="card legendary"><img src="badges/milestone-three_plates.png"><div class="tier">LEGENDARY</div><div class="nm">Three Plates</div><div class="ds">140kg compound</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--volume)"></div><div class="nm">Volume</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/volume-ton_club.png"><div class="tier">STARTER</div><div class="nm">Ton Club</div><div class="ds">1,000kg session</div></div>
+      <div class="card pro"><img src="badges/volume-heavy_week.png"><div class="tier">PRO</div><div class="nm">Heavy Week</div><div class="ds">5,000kg week</div></div>
+      <div class="card elite"><img src="badges/volume-mountain_mover.png"><div class="tier">ELITE</div><div class="nm">Mountain Mover</div><div class="ds">25,000kg month</div></div>
+      <div class="card legendary"><img src="badges/volume-iron_empire.png"><div class="tier">LEGENDARY</div><div class="nm">Iron Empire</div><div class="ds">100,000kg lifetime</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--nutrition)"></div><div class="nm">Nutrition</div><div class="ct">5 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/nutrition-first_bite.png"><div class="tier">STARTER</div><div class="nm">First Bite</div><div class="ds">First meal logged</div></div>
+      <div class="card pro"><img src="badges/nutrition-clean_week.png"><div class="tier">PRO</div><div class="nm">Clean Week</div><div class="ds">7 days on plan</div></div>
+      <div class="card pro"><img src="badges/nutrition-macro_master.png"><div class="tier">PRO</div><div class="nm">Macro Master</div><div class="ds">Macros hit 7 days</div></div>
+      <div class="card elite"><img src="badges/nutrition-clean_month.png"><div class="tier">ELITE</div><div class="nm">Clean Month</div><div class="ds">30 days on plan</div></div>
+      <div class="card legendary"><img src="badges/nutrition-pristine.png"><div class="tier">LEGENDARY</div><div class="nm">Pristine</div><div class="ds">90 days on plan</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--recovery)"></div><div class="nm">Recovery & Wellness</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/recovery-self_aware.png"><div class="tier">STARTER</div><div class="nm">Self-Aware</div><div class="ds">First check-in</div></div>
+      <div class="card pro"><img src="badges/recovery-mind_body.png"><div class="tier">PRO</div><div class="nm">Mind & Body</div><div class="ds">Wellness 7 days</div></div>
+      <div class="card pro"><img src="badges/recovery-deload_pro.png"><div class="tier">PRO</div><div class="nm">Deload Pro</div><div class="ds">Full deload week</div></div>
+      <div class="card elite"><img src="badges/recovery-rest_warrior.png"><div class="tier">ELITE</div><div class="nm">Rest Day Warrior</div><div class="ds">30 days, all rest days</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--body)"></div><div class="nm">Body Metrics</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/body-scale_check.png"><div class="tier">STARTER</div><div class="nm">Scale Check</div><div class="ds">First weigh-in</div></div>
+      <div class="card starter"><img src="badges/body-measure_up.png"><div class="tier">STARTER</div><div class="nm">Measure Up</div><div class="ds">Body measurements</div></div>
+      <div class="card starter"><img src="badges/body-mirror_mirror.png"><div class="tier">STARTER</div><div class="nm">Mirror Mirror</div><div class="ds">Progress photo</div></div>
+      <div class="card elite"><img src="badges/body-goal_hit.png"><div class="tier">ELITE</div><div class="nm">Goal Hit</div><div class="ds">Reach weight goal</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--consistency)"></div><div class="nm">Consistency</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/consistency-early_bird.png"><div class="tier">STARTER</div><div class="nm">Early Bird</div><div class="ds">Workout before 8 AM</div></div>
+      <div class="card starter"><img src="badges/consistency-night_owl.png"><div class="tier">STARTER</div><div class="nm">Night Owl</div><div class="ds">Workout after 8 PM</div></div>
+      <div class="card pro"><img src="badges/consistency-weekend_warrior.png"><div class="tier">PRO</div><div class="nm">Weekend Warrior</div><div class="ds">4 weekends in a row</div></div>
+      <div class="card pro"><img src="badges/consistency-road_warrior.png"><div class="tier">PRO</div><div class="nm">Road Warrior</div><div class="ds">3 different time slots</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--challenge)"></div><div class="nm">Monthly Challenges</div><div class="ct">4 badges</div></div>
+    <div class="grid">
+      <div class="card pro"><img src="badges/challenge-monthly_grind.png"><div class="tier">PRO</div><div class="nm">Monthly Grind</div><div class="ds">15 workouts / month</div></div>
+      <div class="card elite"><img src="badges/challenge-volume_month.png"><div class="tier">ELITE</div><div class="nm">Volume Month</div><div class="ds">10,000kg / month</div></div>
+      <div class="card legendary"><img src="badges/challenge-thirty_day.png"><div class="tier">LEGENDARY</div><div class="nm">30-Day Streak</div><div class="ds">Daily for 30 days</div></div>
+      <div class="card pro"><img src="badges/challenge-goal_crusher.png"><div class="tier">PRO</div><div class="nm">Goal Crusher</div><div class="ds">Weekly target × 4</div></div>
+    </div>
+  </section>
+
+  <section class="cat">
+    <div class="cat-head"><div class="dot" style="background:var(--engagement)"></div><div class="nm">Engagement</div><div class="ct">5 badges</div></div>
+    <div class="grid">
+      <div class="card starter"><img src="badges/engagement-welcome_aboard.png"><div class="tier">STARTER</div><div class="nm">Welcome Aboard</div><div class="ds">Onboarding complete</div></div>
+      <div class="card starter"><img src="badges/engagement-profile_pro.png"><div class="tier">STARTER</div><div class="nm">Profile Pro</div><div class="ds">All fields filled</div></div>
+      <div class="card starter"><img src="badges/engagement-first_share.png"><div class="tier">STARTER</div><div class="nm">First Share</div><div class="ds">Share a workout</div></div>
+      <div class="card pro"><img src="badges/engagement-explorer.png"><div class="tier">PRO</div><div class="nm">Explorer</div><div class="ds">3 workout types tried</div></div>
+      <div class="card pro"><img src="badges/engagement-course_complete.png"><div class="tier">PRO</div><div class="nm">Course Complete</div><div class="ds">First training block done</div></div>
+    </div>
+  </section>
+
+</main>
+
+<div class="footer">
+  <h2>Next steps</h2>
+  <p><b>1. Review.</b> Scroll the whole set. Flag any badges where the text is garbled, the tier color is wrong, or the icon doesn't match the achievement. I'll regenerate individual ones with <code>--only KEY</code>.</p>
+  <p><b>2. Background removal.</b> When you're happy, I'll strip the dark navy backgrounds to transparent PNG using <code>rembg</code> (runs locally, no API). Takes 2 minutes.</p>
+  <p><b>3. Resize.</b> Output 256/512/1024 variants per badge for app use. Another minute.</p>
+  <p>Reply <b>"go bg"</b> when ready, or list any badges to regenerate first.</p>
+</div>
+
+</body>
+</html>

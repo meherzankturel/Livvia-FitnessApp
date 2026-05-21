@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Revive · Nutrition History</title>
+  <style>
+    :root {
+      --earth:#2D2A24;
+      --sand: #F6F5F0;
+      --stone:#EDEBE5;
+      --rock: #8E8E7A;
+      --trail:#34D399;
+      --amber:#F59E0B;
+      --red:#EF4444;
+      --board:#1a1815;
+      --green-text:#0E8757;
+      --amber-text:#B45309;
+      --red-text:#B91C1C;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      background: var(--board); color: var(--sand);
+      min-height: 100vh;
+    }
+    .stage {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 24px 16px;
+    }
+    .frame {
+      width: min(420px, 100%);
+      background: #000; border-radius: 44px; padding: 8px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .screen {
+      background: var(--sand); color: var(--earth);
+      border-radius: 36px; overflow: hidden;
+      width: 100%; aspect-ratio: 390 / 844;
+      display: flex; flex-direction: column; position: relative;
+    }
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 110px; height: 24px; background: #000;
+      border-bottom-left-radius: 16px; border-bottom-right-radius: 16px;
+      z-index: 30;
+    }
+    .statusbar {
+      padding: 14px 28px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 12px; font-weight: 700; color: var(--earth);
+    }
+
+    /* ─── Header ─── */
+    .header {
+      padding: 12px 24px 14px;
+      background: var(--sand);
+      position: relative; z-index: 5;
+    }
+    .header-top {
+      display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+    }
+    .back-btn {
+      width: 36px; height: 36px; border-radius: 18px;
+      background: var(--stone);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700; color: var(--earth);
+      cursor: pointer; border: none; font-family: inherit;
+    }
+    .header-eyebrow {
+      font-size: 11px; font-weight: 700; color: var(--rock); letter-spacing: 1.2px;
+    }
+    .header-title {
+      font-size: 22px; font-weight: 800; color: var(--earth); margin-top: 2px; line-height: 1.1;
+    }
+
+    /* ─── Segmented control ─── */
+    .segment {
+      display: flex;
+      background: var(--stone);
+      border-radius: 100px;
+      padding: 4px;
+      gap: 0;
+      margin-bottom: 12px;
+    }
+    .segment-btn {
+      flex: 1;
+      padding: 8px 14px;
+      border-radius: 100px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--rock);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: background 200ms, color 200ms, box-shadow 200ms;
+      font-family: inherit;
+    }
+    .segment-btn.active {
+      background: #FFFFFF;
+      color: var(--earth);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    }
+
+    /* Stats strip */
+    .stats-row {
+      display: flex; align-items: center; gap: 12px;
+      font-size: 12px; color: var(--rock);
+    }
+    .stats-row .stat strong {
+      color: var(--earth); font-weight: 700;
+    }
+    .stats-row .sep {
+      width: 3px; height: 3px; border-radius: 50%; background: var(--rock); opacity: 0.5;
+    }
+
+    /* ─── List ─── */
+    .list {
+      flex: 1; overflow-y: auto; position: relative;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 32px;
+    }
+    .list::-webkit-scrollbar { display: none; }
+
+    /* Sticky month header */
+    .month-header {
+      position: sticky; top: 0;
+      background: var(--sand);
+      padding: 14px 24px 8px;
+      z-index: 4;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 0.5px solid rgba(45,42,36,0.08);
+    }
+    .month-header .label {
+      font-size: 11px; font-weight: 700; color: var(--earth);
+      letter-spacing: 1.2px; text-transform: uppercase;
+    }
+    .month-header .summary {
+      font-size: 11px; color: var(--rock); font-weight: 500;
+    }
+    .month-header .summary strong { color: var(--earth); font-weight: 700; }
+
+    /* Day card */
+    .day-card {
+      margin: 12px 24px 0;
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    .day-row {
+      padding: 16px;
+      cursor: pointer;
+    }
+    .day-top {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 8px;
+    }
+    .day-label {
+      font-size: 14px; font-weight: 700; color: var(--earth);
+    }
+    .status-pill {
+      padding: 4px 10px; border-radius: 100px;
+      font-size: 11px; font-weight: 700;
+    }
+    .status-on-track { background: rgba(52,211,153,0.12); color: var(--green-text); }
+    .status-under    { background: rgba(245,158,11,0.12); color: var(--amber-text); }
+    .status-over     { background: rgba(239,68,68,0.12);  color: var(--red-text); }
+
+    .day-cal {
+      display: flex; align-items: baseline; gap: 6px;
+      margin-bottom: 6px;
+    }
+    .day-cal-num { font-size: 22px; font-weight: 800; color: var(--earth); }
+    .day-cal-target { font-size: 12px; font-weight: 600; color: var(--rock); }
+
+    .day-macros { display: flex; gap: 14px; align-items: center; }
+    .macro { font-size: 12px; color: var(--rock); }
+    .macro .v-p { font-weight: 700; color: var(--red); }
+    .macro .v-c { font-weight: 700; color: var(--amber); }
+    .macro .v-f { font-weight: 700; color: #6366F1; }
+    .meal-count { font-size: 11px; color: var(--rock); margin-left: auto; }
+    .chev { display: inline-block; transition: transform 200ms; }
+    .day-card.expanded .chev { transform: rotate(180deg); }
+
+    .day-meals {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding: 12px 16px 4px;
+      display: none;
+    }
+    .day-card.expanded .day-meals { display: block; }
+    .meal-item { margin-bottom: 10px; }
+    .meal-top {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: 2px;
+    }
+    .meal-type {
+      font-size: 11px; font-weight: 700; color: var(--rock);
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .meal-cal { font-size: 12px; font-weight: 700; color: var(--earth); }
+    .meal-name { font-size: 13px; color: var(--earth); margin-bottom: 2px; }
+    .meal-macros { font-size: 11px; color: var(--rock); }
+
+    /* Floating scroll-to-top button */
+    .scroll-top {
+      position: absolute;
+      bottom: 24px;
+      right: 24px;
+      width: 44px; height: 44px;
+      border-radius: 22px;
+      background: var(--earth);
+      color: var(--sand);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 700;
+      border: none; cursor: pointer; font-family: inherit;
+      opacity: 0; pointer-events: none;
+      transition: opacity 200ms, transform 200ms;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 20;
+    }
+    .scroll-top.visible { opacity: 1; pointer-events: auto; }
+    .scroll-top:active { transform: scale(0.92); }
+
+    /* Footer */
+    .footer-note {
+      text-align: center; color: var(--rock); font-size: 12px;
+      padding: 20px 24px 8px;
+    }
+
+    /* Dev banner */
+    .dev-banner {
+      position: fixed; top: 12px; left: 12px;
+      background: rgba(0,0,0,0.7); color: rgba(255,255,255,0.7);
+      font-size: 11px; padding: 6px 10px; border-radius: 8px;
+      z-index: 100; pointer-events: none;
+    }
+    .dev-banner b { color: var(--trail); }
+  </style>
+</head>
+<body>
+  <div class="dev-banner">Scroll the list · month headers stick · <b>↑</b> appears after scroll</div>
+  <div class="stage">
+    <div class="frame">
+      <div class="screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span style="font-size:11px;">●●●  📶 📵</span></div>
+        <div class="header">
+          <div class="header-top">
+            <button class="back-btn">‹</button>
+            <div class="header-title">Nutrition History</div>
+          </div>
+        </div>
+
+        <div class="list" id="list"></div>
+
+        <button class="scroll-top" id="scrollTopBtn" aria-label="Scroll to top">↑</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const TARGET = 2200;
+const TODAY = new Date("2026-05-15");
+
+// 28 days of sample data spanning two months
+function makeMeals(slots) {
+  return slots.map(([type, name, kcal, p, c, f]) => ({ type, name, kcal, p, c, f }));
+}
+
+const MEAL_SAMPLES = {
+  full: [
+    ["breakfast", "Greek Yogurt with Berries & Honey", 320, 24, 38, 8],
+    ["lunch",     "Grilled Chicken Bowl with Quinoa", 580, 48, 52, 16],
+    ["dinner",    "Baked Salmon with Sweet Potato",   620, 42, 48, 22],
+    ["snack",     "Apple & Peanut Butter",            280, 8,  32, 14],
+  ],
+  light: [
+    ["breakfast", "Oatmeal with Banana",              290, 10, 48, 7],
+    ["lunch",     "Chicken Caesar Wrap",              520, 35, 42, 22],
+    ["snack",     "Hard Boiled Eggs (2)",             155, 13, 1, 11],
+  ],
+  heavy: [
+    ["breakfast", "Pancakes with Maple Syrup",        580, 12, 92, 18],
+    ["lunch",     "Chicken Quesadilla",               680, 38, 52, 32],
+    ["dinner",    "Steak with Roasted Vegetables",    720, 52, 28, 42],
+    ["snack",     "Protein Bar",                      240, 20, 22, 8],
+    ["snack",     "Rice Cake & Almond Butter",        220, 6,  24, 12],
+  ],
+  indian: [
+    ["breakfast", "Masala Omelette with Multigrain Toast", 380, 24, 32, 18],
+    ["lunch",     "Paneer Bhurji with Roti",                540, 28, 56, 22],
+    ["dinner",    "Chicken Curry + Brown Rice",             620, 42, 68, 18],
+    ["snack",     "Roasted Chana",                          240, 12, 30, 6],
+  ],
+  veggie: [
+    ["breakfast", "Avocado Toast with Eggs",          480, 22, 35, 28],
+    ["lunch",     "Mediterranean Plate",              580, 32, 48, 26],
+    ["dinner",    "Vegetable Curry with Rice",        500, 16, 78, 14],
+  ],
+};
+
+function buildDays() {
+  const days = [];
+  const pattern = ["full","indian","heavy","veggie","light","full","indian","veggie","heavy","light","full","indian","veggie","full","heavy","light","full","indian","veggie","full","light","indian","heavy","veggie","full","indian","light","heavy"];
+  for (let i = 0; i < 28; i++) {
+    const d = new Date(TODAY);
+    d.setDate(d.getDate() - i);
+    const isoDate = d.toISOString().split("T")[0];
+    const meals = makeMeals(MEAL_SAMPLES[pattern[i]] || MEAL_SAMPLES.full);
+    days.push({ date: isoDate, dateObj: d, meals });
+  }
+  return days;
+}
+
+function totals(meals) {
+  return meals.reduce((a, m) => ({ kcal: a.kcal + m.kcal, p: a.p + m.p, c: a.c + m.c, f: a.f + m.f }), { kcal: 0, p: 0, c: 0, f: 0 });
+}
+function statusFor(kcal) {
+  const pct = kcal / TARGET;
+  if (pct < 0.9) return "under";
+  if (pct > 1.1) return "over";
+  return "on_track";
+}
+function statusPill(s) {
+  if (s === "on_track") return { cls: "status-on-track", label: "✓ On track" };
+  if (s === "under")    return { cls: "status-under",    label: "⚠ Under" };
+  return { cls: "status-over", label: "⚠ Over" };
+}
+function mealTypeLabel(t) { return t.charAt(0).toUpperCase() + t.slice(1); }
+
+function formatDayLabel(d) {
+  const today = new Date(TODAY); today.setHours(0,0,0,0);
+  const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+  if (d.toDateString() === today.toDateString()) return "Today";
+  if (d.toDateString() === yesterday.toDateString()) return "Yesterday";
+  return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+}
+
+function monthLabel(d) {
+  return d.toLocaleDateString("en-US", { month: "long", year: "numeric" }).toUpperCase();
+}
+
+const ALL_DAYS = buildDays();
+
+function renderList() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+  const days = ALL_DAYS;
+
+  // Group by month
+  let lastMonth = null;
+  days.forEach((day, idx) => {
+    const m = monthLabel(day.dateObj);
+    if (m !== lastMonth) {
+      lastMonth = m;
+      // Compute month summary
+      const monthDays = days.filter(d => monthLabel(d.dateObj) === m);
+      const monthOn = monthDays.filter(d => statusFor(totals(d.meals).kcal) === "on_track").length;
+      const header = document.createElement("div");
+      header.className = "month-header";
+      header.innerHTML = `
+        <div class="label">${m}</div>
+        <div class="summary"><strong>${monthOn}</strong> on track of ${monthDays.length} days</div>
+      `;
+      list.appendChild(header);
+    }
+
+    const t = totals(day.meals);
+    const status = statusFor(t.kcal);
+    const pill = statusPill(status);
+    const card = document.createElement("div");
+    card.className = "day-card" + (idx === 0 ? " expanded" : "");
+    card.innerHTML = `
+      <div class="day-row">
+        <div class="day-top">
+          <div class="day-label">${formatDayLabel(day.dateObj)}</div>
+          <div class="status-pill ${pill.cls}">${pill.label}</div>
+        </div>
+        <div class="day-cal">
+          <div class="day-cal-num">${t.kcal.toLocaleString()}</div>
+          <div class="day-cal-target">/ ${TARGET.toLocaleString()} cal</div>
+        </div>
+        <div class="day-macros">
+          <div class="macro"><span class="v-p">${t.p}g</span> P</div>
+          <div class="macro"><span class="v-c">${t.c}g</span> C</div>
+          <div class="macro"><span class="v-f">${t.f}g</span> F</div>
+          <div class="meal-count">${day.meals.length} meal${day.meals.length === 1 ? "" : "s"} <span class="chev">▾</span></div>
+        </div>
+      </div>
+      <div class="day-meals">
+        ${day.meals.map(m => `
+          <div class="meal-item">
+            <div class="meal-top">
+              <div class="meal-type">${mealTypeLabel(m.type)}</div>
+              <div class="meal-cal">${m.kcal} cal</div>
+            </div>
+            <div class="meal-name">${m.name}</div>
+            <div class="meal-macros">${m.p}P · ${m.c}C · ${m.f}F</div>
+          </div>
+        `).join("")}
+      </div>
+    `;
+    card.querySelector(".day-row").addEventListener("click", () => {
+      card.classList.toggle("expanded");
+    });
+    list.appendChild(card);
+  });
+
+  const note = document.createElement("div");
+  note.className = "footer-note";
+  note.textContent = "That's all the history we have for you.";
+  list.appendChild(note);
+}
+
+// Scroll-to-top button — visible after some scroll
+const list = document.getElementById("list");
+const scrollTopBtn = document.getElementById("scrollTopBtn");
+list.addEventListener("scroll", () => {
+  scrollTopBtn.classList.toggle("visible", list.scrollTop > 240);
+});
+scrollTopBtn.addEventListener("click", () => {
+  list.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+renderList();
+</script>
+</body>
+</html>

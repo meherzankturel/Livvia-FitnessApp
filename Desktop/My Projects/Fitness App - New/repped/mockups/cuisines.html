@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+  <title>Revive · Cuisine UI Variations (simplified to 6)</title>
+  <style>
+    :root {
+      --earth:#2D2A24;
+      --sand: #F6F5F0;
+      --stone:#EDEBE5;
+      --rock: #8E8E7A;
+      --trail:#34D399;
+      --board:#1a1815;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+      background: var(--board); color: var(--sand);
+      min-height: 100vh;
+    }
+    header.top {
+      padding: 18px 24px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+    }
+    header.top h1 { font-size: 18px; margin: 0; font-weight: 700; letter-spacing: -0.01em; }
+    header.top h1 span { color: var(--trail); }
+    header.top .sub { font-size: 12px; color: rgba(255,255,255,0.55); }
+
+    .summary {
+      max-width: 1100px; margin: 0 auto;
+      padding: 22px 24px 0;
+    }
+    .pill-row { display:flex; flex-wrap:wrap; gap: 8px; margin-top: 12px; }
+    .pill-row .p {
+      background: rgba(255,255,255,0.04);
+      padding: 8px 14px; border-radius: 100px;
+      font-size: 11px; color: rgba(255,255,255,0.85); font-weight: 600;
+    }
+    .pill-row .p.gone {
+      color: rgba(239,68,68,0.85); text-decoration: line-through;
+      background: rgba(239,68,68,0.08);
+    }
+    .arrow { color: rgba(255,255,255,0.4); margin: 0 8px; font-weight: 800; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 32px;
+      padding: 32px 24px 64px;
+      max-width: 1600px; margin: 0 auto;
+    }
+    .variant {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .variant-label {
+      color: var(--trail); font-size: 11px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase;
+    }
+    .variant-title {
+      color: rgba(255,255,255,0.95); font-size: 18px; font-weight: 700; margin-top: -2px;
+    }
+    .variant-desc {
+      color: rgba(255,255,255,0.55); font-size: 12px; line-height: 1.5; margin-bottom: 10px;
+    }
+
+    .frame {
+      background: #000; border-radius: 36px; padding: 8px;
+      box-shadow: 0 14px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06);
+      width: 360px; align-self: flex-start;
+    }
+    .screen {
+      background: var(--sand); color: var(--earth);
+      border-radius: 28px; overflow: hidden;
+      position: relative;
+    }
+    .screen-pad { padding: 18px 20px 24px; }
+
+    .ctx-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 16px 20px 6px;
+      font-size: 11px; color: var(--rock); letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700;
+    }
+    .ctx-divider { height: 1px; background: rgba(45,42,36,0.06); margin: 0 20px; }
+
+    .cuisine-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 12px;
+    }
+    .cuisine-title { font-size: 14px; font-weight: 800; color: var(--earth); }
+    .allergy-pill {
+      background: rgba(239,68,68,0.08); color: #EF4444;
+      padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 600;
+    }
+
+    /* ───── Variation A · 2-col compact grid ───── */
+    .va-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    }
+    .va-tile {
+      background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 14px;
+      padding: 12px; display: flex; align-items: center; gap: 10px;
+      cursor: pointer; position: relative; transition: background 150ms;
+    }
+    .va-tile .va-emoji { font-size: 22px; line-height: 1; }
+    .va-tile .va-name { font-size: 12px; font-weight: 600; color: var(--earth); }
+    .va-tile.active { background: var(--earth); border-color: var(--earth); }
+    .va-tile.active .va-name { color: var(--sand); }
+    .va-tile.active .va-check {
+      position: absolute; top: -5px; right: -5px;
+      width: 18px; height: 18px; border-radius: 9px;
+      background: var(--trail); color: #062f1d;
+      font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--sand);
+    }
+
+    /* ───── Variation B · Horizontal scroll tiles ───── */
+    .vb-scroll {
+      display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;
+      scrollbar-width: none;
+      margin: 0 -20px; padding-left: 20px; padding-right: 20px;
+    }
+    .vb-scroll::-webkit-scrollbar { display: none; }
+    .vb-tile {
+      flex: 0 0 100px; height: 84px;
+      background: #fff; border: 1px solid rgba(0,0,0,0.06); border-radius: 18px;
+      padding: 10px 8px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 6px; position: relative; cursor: pointer;
+    }
+    .vb-tile.active { background: var(--earth); border-color: var(--earth); }
+    .vb-tile .vb-emoji { font-size: 26px; }
+    .vb-tile .vb-name { font-size: 10px; font-weight: 700; color: var(--earth); text-align: center; line-height: 1.2; }
+    .vb-tile.active .vb-name { color: var(--sand); }
+    .vb-tile.active .vb-check {
+      position: absolute; top: -5px; right: -5px;
+      width: 18px; height: 18px; border-radius: 9px;
+      background: var(--trail); color: #062f1d; border: 2px solid var(--sand);
+      font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center;
+    }
+    .vb-hint {
+      font-size: 10px; color: var(--rock); margin-top: 6px;
+      text-align: center; opacity: 0.6;
+    }
+
+    /* ───── Variation C · Text chips wrapped ───── */
+    .vc-row {
+      display: flex; flex-wrap: wrap; gap: 8px;
+    }
+    .vc-chip {
+      background: var(--stone); color: var(--earth);
+      padding: 10px 16px; border-radius: 100px;
+      font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: background 150ms, color 150ms;
+      display: inline-flex; align-items: center; gap: 6px;
+      border: 1.5px solid transparent;
+    }
+    .vc-chip.active { background: var(--earth); color: var(--sand); }
+    .vc-chip .vc-emoji { font-size: 14px; }
+
+    footer {
+      padding: 28px; text-align: center; color: rgba(255,255,255,0.5); font-size: 12px;
+      border-top: 1px solid rgba(255,255,255,0.06); margin-top: 32px;
+    }
+  </style>
+</head>
+<body>
+  <header class="top">
+    <h1>Revive · <span>Cuisine UI — 6 options</span></h1>
+    <div class="sub">Indian regions collapsed into a single "Indian" · tap to toggle</div>
+  </header>
+
+  <div class="summary">
+    <div style="font-size: 12px; line-height: 1.6; color: rgba(255,255,255,0.65);">
+      <strong style="color: rgba(255,255,255,0.9);">Old (9 cuisines):</strong>
+      <div class="pill-row">
+        <div class="p gone">🇮🇳 North Indian</div>
+        <div class="p gone">🇮🇳 South Indian</div>
+        <div class="p gone">🇮🇳 West Indian</div>
+        <div class="p gone">🇮🇳 East Indian</div>
+        <div class="p">🫒 Mediterranean</div>
+        <div class="p">🥢 East Asian</div>
+        <div class="p">🌮 Mexican</div>
+        <div class="p">🥗 American</div>
+        <div class="p">🧆 Middle Eastern</div>
+      </div>
+      <strong style="color: rgba(255,255,255,0.9); margin-top: 16px; display: block;">New (6 cuisines):</strong>
+      <div class="pill-row">
+        <div class="p">🇮🇳 Indian</div>
+        <div class="p">🫒 Mediterranean</div>
+        <div class="p">🥢 East Asian</div>
+        <div class="p">🌮 Mexican</div>
+        <div class="p">🥗 American</div>
+        <div class="p">🧆 Middle Eastern</div>
+      </div>
+    </div>
+  </div>
+
+  <main class="grid">
+
+    <!-- ─────────── Variation A · 2-col grid ─────────── -->
+    <div class="variant">
+      <div class="variant-label">Variation A</div>
+      <div class="variant-title">2-column compact grid</div>
+      <div class="variant-desc">All 6 cuisines visible in a static 3×2 grid. No scrolling needed. Row-style tiles (emoji + label inline). Active state: dark fill with green check badge.</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="ctx-header"><span>Today's targets</span><span>2,150 kcal</span></div>
+          <div class="ctx-divider"></div>
+          <div class="screen-pad">
+            <div class="cuisine-header">
+              <div class="cuisine-title">Cuisine</div>
+              <div class="allergy-pill">Allergies</div>
+            </div>
+            <div class="va-grid" id="va-grid"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Variation B · Horizontal scroll (current style, just simpler) ─────────── -->
+    <div class="variant">
+      <div class="variant-label">Variation B</div>
+      <div class="variant-title">Horizontal scroll (current style)</div>
+      <div class="variant-desc">Same pattern as today's production UI — 6 larger square-ish tiles in a horizontal scroll. With only 6 items, most phones show all 6 without needing to scroll. Minimal change from what's already shipped.</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="ctx-header"><span>Today's targets</span><span>2,150 kcal</span></div>
+          <div class="ctx-divider"></div>
+          <div class="screen-pad">
+            <div class="cuisine-header">
+              <div class="cuisine-title">Cuisine</div>
+              <div class="allergy-pill">Allergies</div>
+            </div>
+            <div class="vb-scroll" id="vb-scroll"></div>
+            <div class="vb-hint">Swipe to see all →</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ─────────── Variation C · Wrapped chips ─────────── -->
+    <div class="variant">
+      <div class="variant-label">Variation C</div>
+      <div class="variant-title">Wrapped chips</div>
+      <div class="variant-desc">Minimal pill-style chips with small emoji + name. All 6 fit in roughly 2 rows. Most compact vertical footprint — leaves more room for the meal cards below. Consistent visual language with onboarding allergies.</div>
+      <div class="frame">
+        <div class="screen">
+          <div class="ctx-header"><span>Today's targets</span><span>2,150 kcal</span></div>
+          <div class="ctx-divider"></div>
+          <div class="screen-pad">
+            <div class="cuisine-header">
+              <div class="cuisine-title">Cuisine</div>
+              <div class="allergy-pill">Allergies</div>
+            </div>
+            <div class="vc-row" id="vc-row"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    Underlying values: <code style="color: rgba(255,255,255,0.75);">indian, mediterranean, east_asian, mexican, american, middle_eastern</code>
+  </footer>
+
+<script>
+const CUISINES = [
+  { k: "indian",         t: "Indian",             e: "🇮🇳" },
+  { k: "mediterranean",  t: "Mediterranean",      e: "🫒" },
+  { k: "east_asian",     t: "East Asian",         e: "🥢" },
+  { k: "mexican",        t: "Mexican / Latin",    e: "🌮" },
+  { k: "american",       t: "American / Western", e: "🥗" },
+  { k: "middle_eastern", t: "Middle Eastern",     e: "🧆" },
+];
+
+// Independent selection state per variation
+const selected = {
+  A: new Set(["indian", "mediterranean"]),
+  B: new Set(["indian"]),
+  C: new Set(["indian", "american"]),
+};
+
+function renderA() {
+  const root = document.getElementById("va-grid");
+  root.innerHTML = "";
+  CUISINES.forEach(c => {
+    const active = selected.A.has(c.k);
+    const tile = document.createElement("div");
+    tile.className = "va-tile" + (active ? " active" : "");
+    tile.onclick = () => { selected.A.has(c.k) ? selected.A.delete(c.k) : selected.A.add(c.k); renderA(); };
+    tile.innerHTML = `
+      <span class="va-emoji">${c.e}</span>
+      <span class="va-name">${c.t}</span>
+      ${active ? `<span class="va-check">✓</span>` : ""}
+    `;
+    root.appendChild(tile);
+  });
+}
+
+function renderB() {
+  const root = document.getElementById("vb-scroll");
+  root.innerHTML = "";
+  CUISINES.forEach(c => {
+    const active = selected.B.has(c.k);
+    const tile = document.createElement("div");
+    tile.className = "vb-tile" + (active ? " active" : "");
+    tile.onclick = () => { selected.B.has(c.k) ? selected.B.delete(c.k) : selected.B.add(c.k); renderB(); };
+    tile.innerHTML = `
+      <span class="vb-emoji">${c.e}</span>
+      <span class="vb-name">${c.t}</span>
+      ${active ? `<span class="vb-check">✓</span>` : ""}
+    `;
+    root.appendChild(tile);
+  });
+}
+
+function renderC() {
+  const root = document.getElementById("vc-row");
+  root.innerHTML = "";
+  CUISINES.forEach(c => {
+    const active = selected.C.has(c.k);
+    const chip = document.createElement("div");
+    chip.className = "vc-chip" + (active ? " active" : "");
+    chip.onclick = () => { selected.C.has(c.k) ? selected.C.delete(c.k) : selected.C.add(c.k); renderC(); };
+    chip.innerHTML = `<span class="vc-emoji">${c.e}</span>${c.t}`;
+    root.appendChild(chip);
+  });
+}
+
+renderA(); renderB(); renderC();
+</script>
+</body>
+</html>

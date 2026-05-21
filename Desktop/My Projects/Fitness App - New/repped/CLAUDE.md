@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Livvia** is an AI-powered fitness app built as a Turborepo monorepo with a React Native (Expo) mobile app, a Next.js web app, and shared packages for business logic, types, and database access.
+**Revive** is an AI-powered fitness app built as a Turborepo monorepo with a React Native (Expo) mobile app, a Next.js web app, and shared packages for business logic, types, and database access.
 
 ## Commands
 

@@ -3,6 +3,7 @@ import { View, Text, TextInput, Image } from "react-native";
 import { router } from "expo-router";
 import { useOnboardingStore } from "@repped/shared";
 import { OnboardingLayout } from "../../src/components/onboarding/OnboardingLayout";
+import { ReviveWordmark } from "../../src/components/ReviveWordmark";
 
 const C = {
   earth: "#2D2A24",
@@ -73,14 +74,10 @@ export default function Step1Welcome() {
         Step 1 of 9
       </Text>
 
-      {/* Title */}
-      <Text style={{ fontSize: 42, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
-        L
-        <Text style={{ color: C.trail }}>i</Text>
-        vv
-        <Text style={{ color: C.trail }}>i</Text>
-        a
-      </Text>
+      {/* Title — brand wordmark */}
+      <View style={{ alignSelf: "flex-start", marginBottom: 6 }}>
+        <ReviveWordmark size={42} />
+      </View>
 
       {/* Tagline */}
       <Text style={{ fontSize: 15, color: C.rock, marginBottom: 28 }}>

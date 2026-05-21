@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Achievements — Final</title>
+<style>
+  :root{
+    --earth:#2D2A24; --sand:#F6F5F0; --stone:#EDEBE5; --rock:#8E8E7A; --trail:#34D399;
+    --board:#1a1815;
+    --workout:#F97316; --streak:#22C55E; --pr:#6366F1; --milestone:#06B6D4;
+    --volume:#EF4444; --nutrition:#84CC16; --recovery:#14B8A6; --body:#8b5cf6;
+    --consistency:#EAB308; --challenge:#EC4899; --engagement:#A855F7;
+    --t-starter:#A8A8AD; --t-pro:#B58563; --t-elite:#E68A6F; --t-legendary:#EAB308;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--board);color:var(--sand);min-height:100vh}
+  .stage{display:flex;justify-content:center;align-items:flex-start;padding:48px 24px;gap:32px;flex-wrap:wrap}
+  .col-meta{max-width:280px;padding-top:80px}
+  .col-meta h1{font-size:22px;font-weight:800;letter-spacing:-0.4px;margin:0 0 8px}
+  .col-meta p{font-size:13px;color:#9b958a;line-height:1.55;margin:0 0 16px}
+  .col-meta .note{background:#252220;border-radius:12px;padding:14px;font-size:12px;color:#cfc8b8;line-height:1.55}
+  .col-meta .note b{color:var(--sand)}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 24px 60px rgba(0,0,0,0.55),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+  .screen{width:100%;height:852px;background:var(--sand);border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:50px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5}
+  .scroll{position:absolute;inset:0;padding-top:50px;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{display:none}
+
+  .topo{position:absolute;inset:0;opacity:0.04;pointer-events:none;background-image:
+    radial-gradient(ellipse 600px 200px at 20% 20%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 500px 180px at 80% 50%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%),
+    radial-gradient(ellipse 700px 220px at 30% 80%, transparent 49%, var(--earth) 49.5%, var(--earth) 50%, transparent 50.5%)}
+
+  .scrn-head{padding:8px 22px 4px;display:flex;align-items:center;gap:12px}
+  .back{width:36px;height:36px;border-radius:18px;background:var(--stone);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:600;color:var(--earth);cursor:pointer}
+  .h-title{font-size:22px;font-weight:800;letter-spacing:-0.5px}
+
+  /* HERO – latest unlock */
+  .hero{margin:14px 18px 0;border-radius:24px;padding:0;position:relative;overflow:hidden;color:#F6F5F0;background:radial-gradient(circle at 30% 30%, #4a4133 0%, #2D2A24 55%, #1a1815 100%);min-height:268px}
+  .hero::before,.hero::after{content:"";position:absolute;border-radius:50%;filter:blur(50px);pointer-events:none}
+  .hero::before{width:200px;height:200px;background:#EAB308;top:-50px;right:-50px;opacity:0.45;animation:pulse1 4s ease-in-out infinite}
+  .hero::after{width:160px;height:160px;background:#F59E0B;bottom:-40px;left:-40px;opacity:0.3;animation:pulse1 4s ease-in-out infinite 2s}
+  @keyframes pulse1{0%,100%{opacity:0.3;transform:scale(1)}50%{opacity:0.5;transform:scale(1.15)}}
+
+  .confetti{position:absolute;width:6px;height:6px;border-radius:1px}
+  .confetti:nth-of-type(1){top:20%;left:25%;background:#34D399;animation:fall 4.5s linear infinite}
+  .confetti:nth-of-type(2){top:10%;left:60%;background:#EAB308;animation:fall 5s linear infinite 0.8s}
+  .confetti:nth-of-type(3){top:25%;left:80%;background:#6366F1;animation:fall 4s linear infinite 1.6s}
+  .confetti:nth-of-type(4){top:50%;left:50%;background:#EC4899;animation:fall 5.5s linear infinite 2.4s}
+  @keyframes fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(120px) rotate(360deg);opacity:0}}
+
+  .hero-inner{padding:18px 20px 20px;position:relative;z-index:1}
+  .hero-label{font-size:10px;font-weight:700;letter-spacing:0.18em;text-transform:uppercase;color:#EAB308;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+  .hero-label .dot{width:6px;height:6px;border-radius:50%;background:#EAB308;box-shadow:0 0 8px rgba(234,179,8,0.8);animation:dotpulse 1.6s ease-in-out infinite}
+  @keyframes dotpulse{0%,100%{opacity:1}50%{opacity:0.4}}
+
+  .hero-row{display:flex;align-items:center;gap:14px}
+  .hero-img{width:160px;height:160px;flex-shrink:0;position:relative}
+  .hero-img img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 8px 30px rgba(234,179,8,0.35))}
+  .hero-meta{flex:1;min-width:0}
+  .hero-meta .ttl{font-size:20px;font-weight:800;letter-spacing:-0.3px;margin-bottom:4px;line-height:1.1}
+  .hero-meta .sub{font-size:12px;color:#a8a394;line-height:1.45}
+  .hero-meta .tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .hero-meta .tag{font-size:9px;font-weight:700;letter-spacing:0.1em;padding:3px 8px;border-radius:99px;background:rgba(234,179,8,0.18);color:#EAB308}
+
+  /* SECTION HEADS */
+  .sec-head{display:flex;justify-content:space-between;align-items:center;margin:24px 22px 12px}
+  .sec-head .ttl{font-size:11px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--rock)}
+  .sec-head .ct{font-size:12px;font-weight:700;color:var(--earth)}
+
+  /* ALMOST THERE */
+  .almost{display:flex;gap:10px;padding:0 22px 4px;overflow-x:auto;scroll-snap-type:x mandatory}
+  .almost::-webkit-scrollbar{display:none}
+  .a-card{flex:0 0 138px;background:#fff;border-radius:18px;padding:12px;scroll-snap-align:start;box-shadow:0 2px 8px rgba(0,0,0,0.04);position:relative}
+  .a-card .img-wrap{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;margin-bottom:6px;position:relative}
+  .a-card .img-wrap img{width:100%;height:100%;object-fit:contain;filter:opacity(0.45) grayscale(0.55)}
+  .a-card .img-wrap::after{content:"";position:absolute;inset:30% 30%;border:2px solid rgba(45,42,36,0.15);border-radius:50%;background:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%238E8E7A"><path d="M12 1a5 5 0 015 5v3h1a3 3 0 013 3v9a3 3 0 01-3 3H6a3 3 0 01-3-3v-9a3 3 0 013-3h1V6a5 5 0 015-5zm0 2a3 3 0 00-3 3v3h6V6a3 3 0 00-3-3z"/></svg>') center/50% no-repeat,rgba(246,245,240,0.92);border-radius:50%}
+  .a-card .nm{font-size:11px;font-weight:700;text-align:center;line-height:1.25;margin-bottom:6px;color:var(--earth);min-height:28px}
+  .a-card .bar{height:5px;background:var(--stone);border-radius:99px;overflow:hidden;margin-bottom:4px}
+  .a-card .bar > div{height:100%;background:linear-gradient(90deg,#EAB308,#F59E0B);border-radius:99px}
+  .a-card .ct{font-size:10px;text-align:center;color:var(--rock);font-weight:600}
+
+  /* COLLECTION */
+  .col-card{margin:18px 22px 0;background:var(--stone);border-radius:20px;padding:16px 18px}
+  .col-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+  .col-ttl{font-size:14px;font-weight:700}
+  .col-num{font-size:24px;font-weight:800;letter-spacing:-0.5px}
+  .col-num span{font-size:13px;font-weight:600;color:var(--rock)}
+  .col-bar{height:6px;background:#DDD9CE;border-radius:99px;overflow:hidden}
+  .col-bar > div{height:100%;width:33%;background:linear-gradient(90deg,var(--trail),var(--earth));border-radius:99px}
+  .col-tiers{display:flex;gap:10px;margin-top:14px}
+  .col-tiers .t{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+  .col-tiers .t .n{font-size:14px;font-weight:800;letter-spacing:-0.3px}
+  .col-tiers .t .l{font-size:9px;font-weight:700;letter-spacing:0.1em;color:var(--rock)}
+  .col-tiers .t .b{width:24px;height:3px;border-radius:99px;margin-top:2px}
+
+  /* CATEGORY */
+  .cat{margin:24px 22px 0}
+  .cat-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+  .cat-head-l{display:flex;align-items:center;gap:8px}
+  .cat-head-l .dot{width:4px;height:18px;border-radius:2px}
+  .cat-head-l .nm{font-size:16px;font-weight:700;letter-spacing:-0.2px}
+  .cat-head .ct{font-size:11px;font-weight:700;color:var(--rock)}
+  .cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
+  .bd{background:#fff;border-radius:18px;padding:12px 10px 14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,0.04);position:relative;cursor:pointer;transition:transform 200ms ease}
+  .bd:hover{transform:translateY(-2px)}
+  .bd .img{width:100%;aspect-ratio:1/1;display:flex;align-items:center;justify-content:center}
+  .bd .img img{width:100%;height:100%;object-fit:contain}
+  .bd.locked .img img{filter:grayscale(0.85) opacity(0.4) brightness(1.05)}
+  .bd .nm{font-size:11px;font-weight:700;line-height:1.25;color:var(--earth);margin-top:6px;min-height:28px;display:flex;align-items:center;justify-content:center}
+  .bd.locked .nm{color:#bdbdb3}
+  .bd .tier-rib{display:inline-block;margin-top:4px;font-size:8px;font-weight:800;padding:2px 6px;border-radius:99px;letter-spacing:0.1em}
+  .bd.locked .tier-rib{opacity:0.4}
+  .bd.new::before{content:"NEW";position:absolute;top:8px;right:8px;font-size:8px;font-weight:800;letter-spacing:0.1em;padding:2px 5px;border-radius:99px;background:var(--trail);color:#fff;z-index:2}
+
+  .tier-starter{background:rgba(168,168,173,0.16);color:#7a7a82}
+  .tier-pro{background:rgba(181,133,99,0.18);color:#8a6240}
+  .tier-elite{background:rgba(230,138,111,0.20);color:#b04f30}
+  .tier-legendary{background:rgba(234,179,8,0.18);color:#a17a06}
+
+  /* Helpers */
+  .badge-img-path{}
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <div class="col-meta">
+    <h1>Achievements</h1>
+    <p>Real badge images placed in the Showcase Atlas layout. Hero card showcases the latest unlock, the "Almost there" carousel surfaces 3 near-unlocks, and the rest browses by category in a 2-column grid.</p>
+    <div class="note">
+      <b>Sample state:</b><br>
+      Earned 16 / 48 badges. Latest unlock 2d ago: Force of Nature (Legendary streak). 3 currently within 1-2 actions of unlocking.
+      <br><br>
+      <b>To change:</b> hover any badge to see its name. Scroll to view all 11 categories. Locked badges are grayscaled with a small lock overlay (visible in "Almost there").
+    </div>
+  </div>
+
+  <div class="frame">
+    <div class="screen">
+      <div class="topo"></div>
+      <div class="notch"></div>
+      <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+      <div class="scroll">
+        <div class="scrn-head">
+          <div class="back">‹</div>
+          <div class="h-title">Achievements</div>
+        </div>
+
+        <!-- HERO: latest unlock -->
+        <div class="hero">
+          <div class="confetti"></div><div class="confetti"></div><div class="confetti"></div><div class="confetti"></div>
+          <div class="hero-inner">
+            <div class="hero-label"><div class="dot"></div>Latest unlock · 2 days ago</div>
+            <div class="hero-row">
+              <div class="hero-img"><img src="badges-transparent/streak-force_of_nature.png" alt="Force of Nature"></div>
+              <div class="hero-meta">
+                <div class="ttl">Force of Nature</div>
+                <div class="sub">16-week workout streak. Four months without breaking your streak.</div>
+                <div class="tags">
+                  <span class="tag">LEGENDARY</span>
+                  <span class="tag" style="background:rgba(52,211,153,0.18);color:#34D399">STREAK</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ALMOST THERE -->
+        <div class="sec-head"><span class="ttl">Almost there</span><span class="ct">3 close</span></div>
+        <div class="almost">
+          <div class="a-card">
+            <div class="img-wrap"><img src="badges-transparent/workout-iron_regular.png" alt=""></div>
+            <div class="nm">Iron Regular</div>
+            <div class="bar"><div style="width:96%"></div></div>
+            <div class="ct">48 / 50</div>
+          </div>
+          <div class="a-card">
+            <div class="img-wrap"><img src="badges-transparent/milestone-two_plates.png" alt=""></div>
+            <div class="nm">Two Plates</div>
+            <div class="bar"><div style="width:92%"></div></div>
+            <div class="ct">92 / 100 kg</div>
+          </div>
+          <div class="a-card">
+            <div class="img-wrap"><img src="badges-transparent/nutrition-clean_week.png" alt=""></div>
+            <div class="nm">Clean Week</div>
+            <div class="bar"><div style="width:71%"></div></div>
+            <div class="ct">5 / 7 days</div>
+          </div>
+        </div>
+
+        <!-- COLLECTION -->
+        <div class="col-card">
+          <div class="col-row">
+            <span class="col-ttl">Collection</span>
+            <span class="col-num">16<span>/48</span></span>
+          </div>
+          <div class="col-bar"><div></div></div>
+          <div class="col-tiers">
+            <div class="t">
+              <div class="n">9</div><div class="l">STARTER</div><div class="b" style="background:var(--t-starter)"></div>
+            </div>
+            <div class="t">
+              <div class="n">5</div><div class="l">PRO</div><div class="b" style="background:var(--t-pro)"></div>
+            </div>
+            <div class="t">
+              <div class="n">2</div><div class="l">ELITE</div><div class="b" style="background:var(--t-elite)"></div>
+            </div>
+            <div class="t">
+              <div class="n">0</div><div class="l">LEGEND</div><div class="b" style="background:var(--t-legendary)"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- WORKOUT -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--workout)"></div><div class="nm">Workout</div></div>
+            <span class="ct">3 / 6</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/workout-first_rep.png"></div><div class="nm">First Rep</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/workout-iron_regular.png"></div><div class="nm">Iron Regular</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/workout-perfect_week.png"></div><div class="nm">Perfect Week</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/workout-century_club.png"></div><div class="nm">Century Club</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/workout-year_of_iron.png"></div><div class="nm">Year of Iron</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/workout-iron_month.png"></div><div class="nm">Iron Month</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- STREAK -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--streak)"></div><div class="nm">Streaks</div></div>
+            <span class="ct">4 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/streak-warming_up.png"></div><div class="nm">Warming Up</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/streak-on_fire.png"></div><div class="nm">On Fire</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/streak-unstoppable.png"></div><div class="nm">Unstoppable</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd new"><div class="img"><img src="badges-transparent/streak-force_of_nature.png"></div><div class="nm">Force of Nature</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- PR -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--pr)"></div><div class="nm">Personal Records</div></div>
+            <span class="ct">2 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/pr-new_heights.png"></div><div class="nm">New Heights</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/pr-record_breaker.png"></div><div class="nm">Record Breaker</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/pr-pr_machine.png"></div><div class="nm">PR Machine</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/pr-limitless.png"></div><div class="nm">Limitless</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- MILESTONE -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--milestone)"></div><div class="nm">Strength Milestones</div></div>
+            <span class="ct">1 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/milestone-plate_milestone.png"></div><div class="nm">Plate Milestone</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/milestone-two_plates.png"></div><div class="nm">Two Plates</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/milestone-bw_bench.png"></div><div class="nm">BW Bench</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/milestone-three_plates.png"></div><div class="nm">Three Plates</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- VOLUME -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--volume)"></div><div class="nm">Volume</div></div>
+            <span class="ct">1 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/volume-ton_club.png"></div><div class="nm">Ton Club</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/volume-heavy_week.png"></div><div class="nm">Heavy Week</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/volume-mountain_mover.png"></div><div class="nm">Mountain Mover</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/volume-iron_empire.png"></div><div class="nm">Iron Empire</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- NUTRITION -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--nutrition)"></div><div class="nm">Nutrition</div></div>
+            <span class="ct">2 / 5</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/nutrition-first_bite.png"></div><div class="nm">First Bite</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/nutrition-clean_week.png"></div><div class="nm">Clean Week</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/nutrition-macro_master.png"></div><div class="nm">Macro Master</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/nutrition-clean_month.png"></div><div class="nm">Clean Month</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/nutrition-pristine.png"></div><div class="nm">Pristine</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+          </div>
+        </div>
+
+        <!-- RECOVERY -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--recovery)"></div><div class="nm">Recovery & Wellness</div></div>
+            <span class="ct">1 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/recovery-self_aware.png"></div><div class="nm">Self-Aware</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/recovery-mind_body.png"></div><div class="nm">Mind & Body</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/recovery-deload_pro.png"></div><div class="nm">Deload Pro</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/recovery-rest_warrior.png"></div><div class="nm">Rest Day Warrior</div><span class="tier-rib tier-elite">ELITE</span></div>
+          </div>
+        </div>
+
+        <!-- BODY METRICS -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--body)"></div><div class="nm">Body Metrics</div></div>
+            <span class="ct">2 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/body-scale_check.png"></div><div class="nm">Scale Check</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/body-measure_up.png"></div><div class="nm">Measure Up</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/body-mirror_mirror.png"></div><div class="nm">Mirror Mirror</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/body-goal_hit.png"></div><div class="nm">Goal Hit</div><span class="tier-rib tier-elite">ELITE</span></div>
+          </div>
+        </div>
+
+        <!-- CONSISTENCY -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--consistency)"></div><div class="nm">Consistency</div></div>
+            <span class="ct">2 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/consistency-early_bird.png"></div><div class="nm">Early Bird</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/consistency-night_owl.png"></div><div class="nm">Night Owl</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/consistency-weekend_warrior.png"></div><div class="nm">Weekend Warrior</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/consistency-road_warrior.png"></div><div class="nm">Road Warrior</div><span class="tier-rib tier-pro">PRO</span></div>
+          </div>
+        </div>
+
+        <!-- CHALLENGE -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--challenge)"></div><div class="nm">Monthly Challenges</div></div>
+            <span class="ct">0 / 4</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd locked"><div class="img"><img src="badges-transparent/challenge-monthly_grind.png"></div><div class="nm">Monthly Grind</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/challenge-volume_month.png"></div><div class="nm">Volume Month</div><span class="tier-rib tier-elite">ELITE</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/challenge-thirty_day.png"></div><div class="nm">30-Day Streak</div><span class="tier-rib tier-legendary">LEGENDARY</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/challenge-goal_crusher.png"></div><div class="nm">Goal Crusher</div><span class="tier-rib tier-pro">PRO</span></div>
+          </div>
+        </div>
+
+        <!-- ENGAGEMENT -->
+        <div class="cat">
+          <div class="cat-head">
+            <div class="cat-head-l"><div class="dot" style="background:var(--engagement)"></div><div class="nm">Engagement</div></div>
+            <span class="ct">3 / 5</span>
+          </div>
+          <div class="cat-grid">
+            <div class="bd"><div class="img"><img src="badges-transparent/engagement-welcome_aboard.png"></div><div class="nm">Welcome Aboard</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/engagement-profile_pro.png"></div><div class="nm">Profile Pro</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd"><div class="img"><img src="badges-transparent/engagement-first_share.png"></div><div class="nm">First Share</div><span class="tier-rib tier-starter">STARTER</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/engagement-explorer.png"></div><div class="nm">Explorer</div><span class="tier-rib tier-pro">PRO</span></div>
+            <div class="bd locked"><div class="img"><img src="badges-transparent/engagement-course_complete.png"></div><div class="nm">Course Complete</div><span class="tier-rib tier-pro">PRO</span></div>
+          </div>
+        </div>
+
+        <div style="height:120px"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

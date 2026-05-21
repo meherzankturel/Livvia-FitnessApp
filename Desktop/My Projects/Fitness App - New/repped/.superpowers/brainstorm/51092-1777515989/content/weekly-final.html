@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Card — Final</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; padding: 30px 16px 60px; -webkit-font-smoothing: antialiased; }
+  h1 { text-align: center; color: #fff; font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .sub { text-align: center; color: #555; font-size: 11px; margin-bottom: 28px; }
+
+  .phone {
+    width: 393px; height: auto; margin: 0 auto; background: #F8F7F4;
+    border-radius: 28px; padding: 18px 16px 24px; position: relative;
+  }
+</style>
+</head>
+<body>
+
+<h1>This Week — Final Design</h1>
+<p class="sub">3-metric "less is more" approach. Scroll down to see it in context.</p>
+
+<div class="phone">
+
+  <!-- This Week Card -->
+  <div style="background:#fff; border-radius:22px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:relative; overflow:hidden;">
+
+    <!-- Subtle top accent -->
+    <div style="position:absolute; top:0; left:0; right:0; height:2.5px; background:linear-gradient(90deg, #2DB877, #34D399, #6EE7B7);"></div>
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; margin-top:2px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#aaa;">Apr 21 – 27</span>
+    </div>
+
+    <!-- 1. HERO: Completion — segmented progress -->
+    <div style="margin-bottom:18px;">
+      <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:8px;">
+        <span style="font-size:32px; font-weight:800; color:#1a1a1a; line-height:0.9; letter-spacing:-1.5px;">3</span>
+        <span style="font-size:13px; color:#bbb; font-weight:400;">of 5 workouts</span>
+      </div>
+      <!-- 5 segments -->
+      <div style="display:flex; gap:4px;">
+        <div style="flex:1; height:5px; border-radius:3px; background:linear-gradient(90deg, #2DB877, #30C882);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:linear-gradient(90deg, #30C882, #34D399);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:#34D399;"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height:0.5px; background:rgba(0,0,0,0.05); margin-bottom:14px;"></div>
+
+    <!-- 2 + 3: Volume trend + Week highlight side by side -->
+    <div style="display:flex; gap:10px;">
+      <!-- Volume trend -->
+      <div style="flex:1; background:#F8F7F4; border-radius:14px; padding:12px;">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; margin-bottom:6px;">Total Volume</div>
+        <div style="display:flex; align-items:baseline; gap:4px;">
+          <span style="font-size:22px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px; line-height:1;">2.1k</span>
+          <span style="font-size:10px; color:#bbb;">kg</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:3px; margin-top:4px;">
+          <div style="width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:6px solid #2DB877;"></div>
+          <span style="font-size:10px; color:#2DB877; font-weight:600;">+8% vs last week</span>
+        </div>
+      </div>
+
+      <!-- Week highlight -->
+      <div style="flex:1; background:#F8F7F4; border-radius:14px; padding:12px;">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; margin-bottom:6px;">Week Highlight</div>
+        <div style="display:flex; align-items:center; gap:6px;">
+          <div style="font-size:18px;">&#127942;</div>
+          <div>
+            <div style="font-size:12px; font-weight:600; color:#1a1a1a; line-height:1.2;">New PR</div>
+            <div style="font-size:11px; color:#888; margin-top:1px;">Bench Press</div>
+          </div>
+        </div>
+        <div style="font-size:16px; font-weight:700; color:#1a1a1a; margin-top:4px;">80kg <span style="font-size:10px; color:#bbb; font-weight:400;">× 8 reps</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:12px;"></div>
+
+  <!-- VARIANT: No PR week (show best set instead) -->
+  <div style="font-size:10px; color:#888; text-align:center; margin-bottom:8px; font-weight:500; letter-spacing:0.5px;">↓ ALTERNATE: When no PR this week ↓</div>
+
+  <div style="background:#fff; border-radius:22px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:relative; overflow:hidden;">
+    <div style="position:absolute; top:0; left:0; right:0; height:2.5px; background:linear-gradient(90deg, #2DB877, #34D399, #6EE7B7);"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; margin-top:2px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#aaa;">Apr 21 – 27</span>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:8px;">
+        <span style="font-size:32px; font-weight:800; color:#1a1a1a; line-height:0.9; letter-spacing:-1.5px;">3</span>
+        <span style="font-size:13px; color:#bbb; font-weight:400;">of 5 workouts</span>
+      </div>
+      <div style="display:flex; gap:4px;">
+        <div style="flex:1; height:5px; border-radius:3px; background:linear-gradient(90deg, #2DB877, #30C882);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:linear-gradient(90deg, #30C882, #34D399);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:#34D399;"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+      </div>
+    </div>
+
+    <div style="height:0.5px; background:rgba(0,0,0,0.05); margin-bottom:14px;"></div>
+
+    <div style="display:flex; gap:10px;">
+      <div style="flex:1; background:#F8F7F4; border-radius:14px; padding:12px;">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; margin-bottom:6px;">Total Volume</div>
+        <div style="display:flex; align-items:baseline; gap:4px;">
+          <span style="font-size:22px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px; line-height:1;">2.1k</span>
+          <span style="font-size:10px; color:#bbb;">kg</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:3px; margin-top:4px;">
+          <div style="width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent; border-bottom:6px solid #2DB877;"></div>
+          <span style="font-size:10px; color:#2DB877; font-weight:600;">+8% vs last week</span>
+        </div>
+      </div>
+
+      <!-- Best set (no PR) -->
+      <div style="flex:1; background:#F8F7F4; border-radius:14px; padding:12px;">
+        <div style="font-size:9px; color:#999; text-transform:uppercase; letter-spacing:0.4px; font-weight:500; margin-bottom:6px;">Top Set</div>
+        <div style="font-size:12px; font-weight:600; color:#1a1a1a; line-height:1.2; margin-bottom:4px;">Squat</div>
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px;">70kg</div>
+        <div style="font-size:10px; color:#888; margin-top:1px;">× 10 reps</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height:12px;"></div>
+
+  <!-- VARIANT: Empty week -->
+  <div style="font-size:10px; color:#888; text-align:center; margin-bottom:8px; font-weight:500; letter-spacing:0.5px;">↓ ALTERNATE: Empty week (no workouts yet) ↓</div>
+
+  <div style="background:#fff; border-radius:22px; padding:18px; box-shadow:0 2px 10px rgba(0,0,0,0.04); position:relative; overflow:hidden;">
+    <div style="position:absolute; top:0; left:0; right:0; height:2.5px; background:linear-gradient(90deg, rgba(45,184,119,0.3), rgba(52,211,153,0.3));"></div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; margin-top:2px;">
+      <span style="font-size:13px; font-weight:500; color:#888;">This Week</span>
+      <span style="font-size:10px; color:#aaa;">Apr 21 – 27</span>
+    </div>
+
+    <div style="margin-bottom:18px;">
+      <div style="display:flex; align-items:baseline; gap:6px; margin-bottom:8px;">
+        <span style="font-size:32px; font-weight:800; color:#ddd; line-height:0.9; letter-spacing:-1.5px;">0</span>
+        <span style="font-size:13px; color:#ccc; font-weight:400;">of 5 workouts</span>
+      </div>
+      <div style="display:flex; gap:4px;">
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+        <div style="flex:1; height:5px; border-radius:3px; background:rgba(0,0,0,0.04);"></div>
+      </div>
+    </div>
+
+    <div style="text-align:center; padding:8px 0;">
+      <div style="font-size:24px; margin-bottom:6px;">&#128170;</div>
+      <div style="font-size:13px; font-weight:600; color:#1a1a1a;">Start your week strong</div>
+      <div style="font-size:11px; color:#999; margin-top:2px;">Your first workout is waiting</div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

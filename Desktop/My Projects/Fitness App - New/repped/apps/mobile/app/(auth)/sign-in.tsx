@@ -1,15 +1,21 @@
 import { View, Text, Pressable, TextInput, ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { useState } from "react";
+import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../src/lib/supabase";
+import { ReviveWordmark } from "../../src/components/ReviveWordmark";
 
 const C = {
-  earth: "#2D2A24",
-  bg: "#F6F5F0",
-  stone: "#EDEBE5",
-  rock: "#8E8E7A",
-  trail: "#34D399",
+  bg: "#F6F5F0",            // cream background
+  bgWarm: "#FAF2E5",        // warmer top tint
+  white: "#FFFFFF",
+  earth: "#2D2A24",         // dark text
+  rock: "#8E8E7A",          // gray text
+  primary: "#5C8B6E",       // sage green — buttons, accents
+  primaryDark: "#4A7A5D",   // darker for icon bg
   border: "rgba(45,42,36,0.08)",
+  inputShadow: "rgba(45,42,36,0.04)",
+  error: "#EF4444",
 };
 
 function validateEmail(email: string): { valid: boolean; error: string | null } {
@@ -17,21 +23,11 @@ function validateEmail(email: string): { valid: boolean; error: string | null } 
   if (trimmed.length === 0) return { valid: false, error: null };
   if (!trimmed.includes("@")) return { valid: false, error: "Missing @ symbol" };
   const [local, domain] = trimmed.split("@");
-  if (!local || local.length === 0) return { valid: false, error: "Missing email name before @" };
-  if (!domain || domain.length === 0) return { valid: false, error: "Missing domain after @" };
+  if (!local) return { valid: false, error: "Missing email name before @" };
+  if (!domain) return { valid: false, error: "Missing domain after @" };
   if (!domain.includes(".")) return { valid: false, error: "Invalid domain — missing dot (e.g. gmail.com)" };
   const parts = domain.split(".");
   if (parts[parts.length - 1].length < 2) return { valid: false, error: "Invalid domain extension" };
-  const domainLower = domain.toLowerCase();
-  const typos: Record<string, string> = {
-    "gmial.com": "gmail.com", "gmal.com": "gmail.com", "gmali.com": "gmail.com",
-    "gmaill.com": "gmail.com", "gamil.com": "gmail.com", "gmail.co": "gmail.com",
-    "yahooo.com": "yahoo.com", "yaho.com": "yahoo.com",
-    "outllook.com": "outlook.com", "outlok.com": "outlook.com",
-    "hotmal.com": "hotmail.com", "hotmial.com": "hotmail.com",
-    "icoud.com": "icloud.com", "iclould.com": "icloud.com",
-  };
-  if (typos[domainLower]) return { valid: false, error: `Did you mean ${local}@${typos[domainLower]}?` };
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(trimmed)) return { valid: false, error: "Invalid email format" };
   return { valid: true, error: null };
 }
@@ -40,6 +36,7 @@ export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [emailTouched, setEmailTouched] = useState(false);
@@ -57,165 +54,200 @@ export default function SignIn() {
     setEmailTouched(true);
     setPasswordTouched(true);
     if (!canSubmit) return;
-
     setLoading(true);
     setError(null);
-
     const { error: authError } = await supabase.auth.signInWithPassword({
       email: email.trim(),
       password,
     });
-
     setLoading(false);
-
-    if (authError) {
-      setError(authError.message);
-    }
+    if (authError) setError(authError.message);
   };
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1, backgroundColor: C.bg }}
+      style={{ flex: 1, backgroundColor: C.bgWarm }}
       behavior={Platform.OS === "ios" ? "padding" : "height"}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 28 }}
+        contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingTop: 60, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Logo */}
-        <Text style={{ fontSize: 32, fontWeight: "800", color: C.earth, letterSpacing: -1, marginBottom: 4 }}>
-          L<Text style={{ color: C.trail }}>i</Text>vv<Text style={{ color: C.trail }}>i</Text>a
-        </Text>
-        <Text style={{ fontSize: 14, color: C.rock, marginBottom: 40 }}>
-          Fitness that adapts to you.
-        </Text>
+        {/* Back button */}
+        <Pressable
+          onPress={() => router.canGoBack() ? router.back() : null}
+          style={{
+            width: 40, height: 40, borderRadius: 20, backgroundColor: C.white,
+            alignItems: "center", justifyContent: "center",
+            shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4,
+            elevation: 2, marginBottom: 32,
+          }}
+        >
+          <Ionicons name="arrow-back" size={20} color={C.earth} />
+        </Pressable>
 
-        {/* Title */}
-        <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, marginBottom: 4 }}>
+        {/* Wordmark */}
+        <View style={{ alignItems: "center", marginBottom: 24 }}>
+          <ReviveWordmark size={48} />
+        </View>
+
+        {/* Title + subtitle */}
+        <Text style={{ fontSize: 30, fontWeight: "800", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 8 }}>
           Welcome Back
         </Text>
-        <Text style={{ fontSize: 14, color: C.rock, marginBottom: 32 }}>
-          Sign in to continue your journey.
+        <Text style={{ fontSize: 14, color: C.rock, textAlign: "center", lineHeight: 20, marginBottom: 36, paddingHorizontal: 16 }}>
+          Sign in to keep your training, meals, and progress in sync.
         </Text>
 
         {/* Email */}
-        <TextInput
-          style={{
-            backgroundColor: C.stone, color: C.earth, fontSize: 16, fontWeight: "500",
-            borderRadius: 14, paddingHorizontal: 18, paddingVertical: 16,
-            borderWidth: 1.5,
-            borderColor: emailTouched && emailValidation.error ? "#EF4444" : C.border,
-            marginBottom: 4,
-          }}
-          placeholder="Email"
-          placeholderTextColor="rgba(142,142,122,0.5)"
-          autoCapitalize="none"
-          keyboardType="email-address"
-          textContentType="emailAddress"
-          autoCorrect={false}
-          value={email}
-          onChangeText={(t) => { setEmail(t); setEmailTouched(true); }}
-          onBlur={() => setEmailTouched(true)}
-        />
-        {emailTouched && emailValidation.error ? (
-          <Text style={{ fontSize: 12, color: "#EF4444", paddingLeft: 4, marginBottom: 10 }}>
+        <View style={{
+          flexDirection: "row", alignItems: "center", gap: 12,
+          backgroundColor: C.white, borderRadius: 14, paddingHorizontal: 16, height: 56,
+          borderWidth: 1.5, borderColor: emailTouched && emailValidation.error ? C.error : C.border,
+          marginBottom: emailTouched && emailValidation.error ? 4 : 12,
+          shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3,
+        }}>
+          <Ionicons name="mail-outline" size={20} color={C.rock} />
+          <TextInput
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            placeholder="Enter your email"
+            placeholderTextColor={C.rock}
+            autoCapitalize="none"
+            keyboardType="email-address"
+            textContentType="emailAddress"
+            autoCorrect={false}
+            value={email}
+            onChangeText={(t) => { setEmail(t); setEmailTouched(true); }}
+            onBlur={() => setEmailTouched(true)}
+          />
+        </View>
+        {emailTouched && emailValidation.error && (
+          <Text style={{ fontSize: 12, color: C.error, paddingLeft: 4, marginBottom: 8 }}>
             {emailValidation.error}
           </Text>
-        ) : (
-          <View style={{ height: 10 }} />
         )}
 
         {/* Password */}
-        <View style={{ position: "relative", marginBottom: 4 }}>
+        <View style={{
+          flexDirection: "row", alignItems: "center", gap: 12,
+          backgroundColor: C.white, borderRadius: 14, paddingHorizontal: 16, height: 56,
+          borderWidth: 1.5, borderColor: passwordError ? C.error : C.border,
+          marginBottom: passwordError ? 4 : 16,
+          shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.03, shadowRadius: 3,
+        }}>
+          <Ionicons name="lock-closed-outline" size={20} color={C.rock} />
           <TextInput
-            style={{
-              backgroundColor: C.stone, color: C.earth, fontSize: 16, fontWeight: "500",
-              borderRadius: 14, paddingHorizontal: 18, paddingVertical: 16, paddingRight: 56,
-              borderWidth: 1.5, borderColor: passwordError ? "#EF4444" : C.border,
-            }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
             placeholder="Password"
-            placeholderTextColor="rgba(142,142,122,0.5)"
+            placeholderTextColor={C.rock}
             secureTextEntry={!showPassword}
             textContentType="password"
             value={password}
             onChangeText={(t) => { setPassword(t); setPasswordTouched(true); }}
             onBlur={() => setPasswordTouched(true)}
           />
-          <Pressable
-            onPress={() => setShowPassword(!showPassword)}
-            style={{ position: "absolute", right: 16, top: 0, bottom: 0, justifyContent: "center" }}
-          >
-            <Text style={{ fontSize: 13, fontWeight: "600", color: C.rock }}>{showPassword ? "Hide" : "Show"}</Text>
+          <Pressable onPress={() => setShowPassword(!showPassword)} hitSlop={8}>
+            <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color={C.rock} />
           </Pressable>
         </View>
-        {passwordError ? (
-          <Text style={{ fontSize: 12, color: "#EF4444", paddingLeft: 4, marginBottom: 16 }}>
+        {passwordError && (
+          <Text style={{ fontSize: 12, color: C.error, paddingLeft: 4, marginBottom: 8 }}>
             {passwordError}
           </Text>
-        ) : (
-          <View style={{ height: 20 }} />
         )}
 
-        {/* Error */}
+        {/* Remember me + Forgot password */}
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <Pressable
+            onPress={() => setRememberMe(!rememberMe)}
+            style={{ flexDirection: "row", alignItems: "center", gap: 8 }}
+          >
+            <View style={{
+              width: 20, height: 20, borderRadius: 6,
+              backgroundColor: rememberMe ? C.primary : "transparent",
+              borderWidth: 1.5, borderColor: rememberMe ? C.primary : C.rock,
+              alignItems: "center", justifyContent: "center",
+            }}>
+              {rememberMe && <Ionicons name="checkmark" size={14} color={C.white} />}
+            </View>
+            <Text style={{ fontSize: 13, color: C.earth, fontWeight: "500" }}>Remember me</Text>
+          </Pressable>
+          <Link href="/forgot-password" asChild>
+            <Pressable>
+              <Text style={{ fontSize: 13, color: C.primary, fontWeight: "600" }}>Forget Password</Text>
+            </Pressable>
+          </Link>
+        </View>
+
+        {/* Auth error */}
         {error && (
-          <Text style={{ color: "#EF4444", textAlign: "center", marginBottom: 16, fontSize: 14 }}>{error}</Text>
+          <Text style={{ color: C.error, textAlign: "center", marginBottom: 12, fontSize: 13 }}>{error}</Text>
         )}
 
-        {/* CTA */}
+        {/* Login button */}
         <Pressable
           onPress={handleSignIn}
           disabled={!canSubmit || loading}
-          style={{
-            backgroundColor: canSubmit && !loading ? C.earth : C.stone,
-            borderRadius: 14, paddingVertical: 16, alignItems: "center", marginBottom: 14,
-          }}
+          style={({ pressed }) => ({
+            backgroundColor: canSubmit && !loading ? C.primary : "rgba(92,139,110,0.45)",
+            borderRadius: 16, height: 56, alignItems: "center", justifyContent: "center", marginBottom: 24,
+            opacity: pressed ? 0.92 : 1,
+          })}
         >
           {loading ? (
-            <ActivityIndicator color={C.trail} />
+            <ActivityIndicator color={C.white} />
           ) : (
-            <Text style={{ fontSize: 16, fontWeight: "700", color: canSubmit ? C.bg : C.rock }}>
-              Sign In
-            </Text>
+            <Text style={{ fontSize: 16, fontWeight: "700", color: C.white, letterSpacing: -0.1 }}>Login</Text>
           )}
         </Pressable>
 
-        {/* Forgot password */}
-        <Link href="/forgot-password" asChild>
-          <Pressable style={{ alignItems: "center", paddingVertical: 8, marginBottom: 4 }}>
-            <Text style={{ color: C.rock, fontSize: 13 }}>Forgot password?</Text>
-          </Pressable>
-        </Link>
-
-        {/* Divider */}
-        <View style={{ flexDirection: "row", alignItems: "center", gap: 12, marginVertical: 20 }}>
+        {/* OR divider */}
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 20 }}>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
-          <Text style={{ fontSize: 12, fontWeight: "600", color: C.rock }}>OR</Text>
+          <Text style={{ fontSize: 13, color: C.rock, fontWeight: "500" }}>or</Text>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
         </View>
 
-        {/* Social buttons */}
-        <View style={{ flexDirection: "row", gap: 12, marginBottom: 20 }}>
-          <Pressable style={{
-            flex: 1, paddingVertical: 14, borderRadius: 14, alignItems: "center",
-            backgroundColor: C.stone, borderWidth: 1, borderColor: C.border,
+        {/* Google */}
+        <Pressable
+          onPress={() => { /* TODO: wire Google OAuth */ }}
+          style={({ pressed }) => ({
+            flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
+            backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 12,
+            shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3,
+            opacity: pressed ? 0.9 : 1,
+          })}
+        >
+          <View style={{
+            width: 22, height: 22, borderRadius: 11,
+            alignItems: "center", justifyContent: "center",
           }}>
-            <Text style={{ fontSize: 20 }}>🍎</Text>
-          </Pressable>
-          <Pressable style={{
-            flex: 1, paddingVertical: 14, borderRadius: 14, alignItems: "center",
-            backgroundColor: C.stone, borderWidth: 1, borderColor: C.border,
-          }}>
-            <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth }}>G</Text>
-          </Pressable>
-        </View>
+            <Text style={{ fontSize: 16, fontWeight: "800", color: "#4285F4" }}>G</Text>
+          </View>
+          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Google</Text>
+        </Pressable>
 
-        {/* Sign Up link */}
+        {/* Apple */}
+        <Pressable
+          onPress={() => { /* TODO: wire Apple OAuth */ }}
+          style={({ pressed }) => ({
+            flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
+            backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 28,
+            shadowColor: "#000", shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 3,
+            opacity: pressed ? 0.9 : 1,
+          })}
+        >
+          <Ionicons name="logo-apple" size={20} color={C.earth} />
+          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Apple</Text>
+        </Pressable>
+
+        {/* Footer */}
         <Link href="/sign-up" asChild>
-          <Pressable style={{ alignItems: "center", paddingVertical: 12 }}>
-            <Text style={{ color: C.rock, fontSize: 14 }}>
+          <Pressable style={{ alignItems: "center", paddingVertical: 8 }}>
+            <Text style={{ fontSize: 14, color: C.rock }}>
               Don't have an account?{" "}
-              <Text style={{ color: C.trail, fontWeight: "600" }}>Sign Up</Text>
+              <Text style={{ color: C.primary, fontWeight: "700" }}>Sign up</Text>
             </Text>
           </Pressable>
         </Link>

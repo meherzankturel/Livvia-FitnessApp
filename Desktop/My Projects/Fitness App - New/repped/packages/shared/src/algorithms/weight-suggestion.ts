@@ -14,6 +14,17 @@ interface WeightSuggestionInput {
   sessionCount?: number;
   /** Equipment type — affects rounding (barbell = 2.5kg, dumbbell = 1kg) */
   equipmentType?: EquipmentType;
+  /**
+   * Mesocycle weight scaling factor from getPeriodization().intensityMultiplier.
+   * Applied ONLY when lastLoggedWeight is present — first-time body-weight-ratio
+   * estimates ignore this since there's no baseline to scale.
+   *   - intro (week 1):  0.9  (~10% lighter — ramp-up)
+   *   - build (week 2):  1.0
+   *   - peak  (week 3):  1.1  (~10% heavier — Stone et al., NSCA Essentials 4th ed.)
+   *   - deload(week 4):  0.75 (~25% lighter — Bompa Periodization 6th ed.)
+   * Defaults to 1.0 (no scaling).
+   */
+  intensityMultiplier?: number;
 }
 
 interface WeightSuggestion {
@@ -90,6 +101,7 @@ export function suggestWeight(input: WeightSuggestionInput): WeightSuggestion {
     lastLoggedWeight,
     sessionCount,
     equipmentType,
+    intensityMultiplier = 1.0,
   } = input;
 
   const confidence = determineConfidence(lastLoggedWeight, sessionCount);
@@ -100,9 +112,27 @@ export function suggestWeight(input: WeightSuggestionInput): WeightSuggestion {
       sessionCount !== undefined && sessionCount >= 3
         ? `Based on ${sessionCount} logged sessions.`
         : "Based on your last workout.";
+
+    // Apply mesocycle weight scaling — only here, never in the body-weight-ratio
+    // fallback below (which is for users with no logged history yet).
+    const scaled = lastLoggedWeight * intensityMultiplier;
+    const increment = roundingIncrement(equipmentType);
+    const suggestedKg = Math.max(0, Math.round(scaled / increment) * increment);
+
+    let phaseNote = "";
+    if (intensityMultiplier < 0.95) {
+      const reductionPct = Math.round((1 - intensityMultiplier) * 100);
+      phaseNote = ` Deload week — lifting ${reductionPct}% lighter so your body recovers.`;
+    } else if (intensityMultiplier > 1.05) {
+      const increasePct = Math.round((intensityMultiplier - 1) * 100);
+      phaseNote = ` Peak week — pushing ${increasePct}% heavier than last time.`;
+    } else if (intensityMultiplier < 1.0) {
+      phaseNote = " Intro week — easing back in.";
+    }
+
     return {
-      suggestedKg: lastLoggedWeight,
-      reasoning: `${sessionDetail} The app will auto-adjust as you progress.`,
+      suggestedKg,
+      reasoning: `${sessionDetail}${phaseNote} The app will auto-adjust as you progress.`,
       confidence,
     };
   }

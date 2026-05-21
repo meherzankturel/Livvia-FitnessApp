@@ -61,7 +61,7 @@ export function WeekInReview({
         ? `\u2696\uFE0F ${weightStart} \u2192 ${weightEnd} kg (${weightDelta > 0 ? "+" : ""}${weightDelta.toFixed(1)})`
         : null,
       "",
-      "Tracked with Livvia \uD83D\uDCAA",
+      "Tracked with Revive \uD83D\uDCAA",
     ];
 
     try {

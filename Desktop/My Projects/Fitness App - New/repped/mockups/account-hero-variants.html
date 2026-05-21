@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Account Hero · 4 variants</title>
+  <style>
+    :root {
+      --earth:#2D2A24;
+      --sand: #F6F5F0;
+      --stone:#EDEBE5;
+      --rock: #8E8E7A;
+      --trail:#34D399;
+      --board:#1a1815;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0; padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      background: var(--board); color: var(--sand);
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+    .stage {
+      padding: 36px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+      gap: 28px;
+      max-width: 1500px;
+      margin: 0 auto;
+    }
+    .col { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .label {
+      font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.85);
+      letter-spacing: 0.5px;
+    }
+    .desc {
+      font-size: 11px; color: rgba(255,255,255,0.5);
+      text-align: center; line-height: 1.5; max-width: 280px;
+      margin-top: -8px;
+    }
+    .frame {
+      background: #000; border-radius: 40px; padding: 7px;
+      box-shadow: 0 12px 36px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.06);
+    }
+    .screen-wrap {
+      background: var(--sand); color: var(--earth);
+      border-radius: 32px; overflow: hidden;
+      width: 320px; height: 600px;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+    .notch {
+      position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+      width: 90px; height: 20px; background: #000;
+      border-bottom-left-radius: 14px; border-bottom-right-radius: 14px; z-index: 50;
+    }
+    .statusbar {
+      padding: 12px 22px 0;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; font-weight: 700; color: var(--earth);
+    }
+    .main-title {
+      padding: 12px 20px 8px;
+      font-size: 24px; font-weight: 800; color: var(--earth); letter-spacing: -0.02em;
+    }
+    .scroll { flex: 1; overflow: hidden; }
+
+    /* Section rows context (so heroes don't sit in isolation) */
+    .section { margin: 0 18px 16px; }
+    .section-label {
+      font-size: 10px; font-weight: 700; color: var(--rock);
+      letter-spacing: 1.2px; text-transform: uppercase;
+      margin: 0 6px 8px;
+    }
+    .section-card {
+      background: #FFFFFF;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .row {
+      padding: 13px 14px;
+      display: flex; align-items: center; gap: 12px;
+      border-top: 0.5px solid rgba(0,0,0,0.05);
+    }
+    .row:first-child { border-top: 0; }
+    .row-icon {
+      width: 28px; height: 28px; border-radius: 8px;
+      background: rgba(0,0,0,0.05);
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
+    }
+    .row-text { flex: 1; }
+    .row-label { font-size: 13px; font-weight: 600; color: var(--earth); }
+    .row-sub { font-size: 11px; color: var(--rock); margin-top: 1px; }
+    .row-chev { color: var(--rock); font-size: 17px; font-weight: 400; }
+
+    /* ============================================================
+       Variant A — Inline left (Apple/Strava DNA, refined)
+       ============================================================ */
+    .heroA {
+      display: flex; align-items: center; gap: 14px;
+      padding: 8px 22px 22px;
+    }
+    .heroA-avatar {
+      width: 56px; height: 56px; border-radius: 28px;
+      background: #E5DFD2;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 21px; font-weight: 600; color: var(--earth);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .heroA-text { flex: 1; min-width: 0; }
+    .heroA-name { font-size: 17px; font-weight: 700; color: var(--earth); letter-spacing: -0.01em; }
+    .heroA-meta { font-size: 12px; color: var(--rock); margin-top: 2px; font-weight: 500; }
+    .heroA-chev {
+      font-size: 18px; color: var(--rock); padding: 8px;
+      font-weight: 400;
+    }
+
+    /* ============================================================
+       Variant B — Editorial serif center
+       ============================================================ */
+    .heroB {
+      padding: 16px 24px 28px;
+      text-align: center;
+      border-bottom: 0.5px solid rgba(0,0,0,0.08);
+      margin-bottom: 16px;
+    }
+    .heroB-avatar {
+      width: 78px; height: 78px; border-radius: 39px;
+      background: #E5DFD2;
+      display: flex; align-items: center; justify-content: center;
+      font-family: "New York", "Times New Roman", Georgia, serif;
+      font-size: 30px; font-weight: 500; color: var(--earth);
+      margin: 0 auto 16px;
+    }
+    .heroB-name {
+      font-family: "New York", "Times New Roman", Georgia, serif;
+      font-size: 26px; font-weight: 500; color: var(--earth);
+      letter-spacing: 0.01em;
+    }
+    .heroB-meta {
+      font-size: 10px; color: var(--rock);
+      letter-spacing: 2.5px; text-transform: uppercase;
+      margin-top: 6px; font-weight: 600;
+    }
+
+    /* ============================================================
+       Variant C — Stone identity card (contained, premium)
+       ============================================================ */
+    .heroC {
+      margin: 4px 18px 18px;
+      padding: 18px;
+      background: #FFFFFF;
+      border-radius: 18px;
+      border: 1px solid rgba(0,0,0,0.05);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .heroC-avatar {
+      width: 52px; height: 52px; border-radius: 26px;
+      background: var(--earth); color: var(--sand);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 19px; font-weight: 700;
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+    }
+    .heroC-text { flex: 1; }
+    .heroC-name { font-size: 16px; font-weight: 700; color: var(--earth); }
+    .heroC-tag {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 10px; font-weight: 700; color: var(--rock);
+      letter-spacing: 1.2px; text-transform: uppercase;
+    }
+    .heroC-edit {
+      font-size: 11px; font-weight: 600; color: var(--rock);
+      padding: 6px 10px;
+      border: 1px solid rgba(0,0,0,0.1);
+      border-radius: 100px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ============================================================
+       Variant D — Dark band (luxury hotel header)
+       ============================================================ */
+    .heroD {
+      background: var(--earth); color: var(--sand);
+      padding: 22px 22px 26px;
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 16px;
+      position: relative; overflow: hidden;
+    }
+    .heroD::after {
+      content: "";
+      position: absolute; right: -40px; top: 50%;
+      transform: translateY(-50%);
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.04), transparent 70%);
+    }
+    .heroD-avatar {
+      width: 54px; height: 54px; border-radius: 27px;
+      background: rgba(255,255,255,0.08);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; font-weight: 600; color: var(--sand);
+      letter-spacing: -0.02em;
+      flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    .heroD-text { flex: 1; position: relative; z-index: 1; }
+    .heroD-eyebrow {
+      font-size: 9px; font-weight: 700; color: rgba(246,245,240,0.5);
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .heroD-name { font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+    .heroD-meta { font-size: 11px; color: rgba(246,245,240,0.55); margin-top: 2px; font-weight: 500; }
+  </style>
+</head>
+<body>
+
+  <div class="stage">
+
+    <!-- ━━━━ Variant A ━━━━ -->
+    <div class="col">
+      <div class="label">A · Inline minimal</div>
+      <div class="desc">Apple Settings DNA. Avatar + name on one row, tappable to edit. Maximum restraint.</div>
+      <div class="frame"><div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● 📶</span></div>
+        <div class="main-title">Account</div>
+        <div class="scroll">
+          <div class="heroA">
+            <div class="heroA-avatar">A</div>
+            <div class="heroA-text">
+              <div class="heroA-name">Alex</div>
+              <div class="heroA-meta">Build Muscle</div>
+            </div>
+            <div class="heroA-chev">›</div>
+          </div>
+          <div class="section">
+            <div class="section-label">You</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">👤</div><div class="row-text"><div class="row-label">Profile</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🎯</div><div class="row-text"><div class="row-label">Your Goal</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-label">Your Plan</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">💪</div><div class="row-text"><div class="row-label">Training</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🍴</div><div class="row-text"><div class="row-label">Nutrition</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ━━━━ Variant B ━━━━ -->
+    <div class="col">
+      <div class="label">B · Editorial serif</div>
+      <div class="desc">Magazine-cover energy. Centered, serif name, lots of whitespace. Distinctive but restrained.</div>
+      <div class="frame"><div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● 📶</span></div>
+        <div class="main-title">Account</div>
+        <div class="scroll">
+          <div class="heroB">
+            <div class="heroB-avatar">A</div>
+            <div class="heroB-name">Alex</div>
+            <div class="heroB-meta">Build Muscle</div>
+          </div>
+          <div class="section">
+            <div class="section-label">You</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">👤</div><div class="row-text"><div class="row-label">Profile</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🎯</div><div class="row-text"><div class="row-label">Your Goal</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-label">Your Plan</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">💪</div><div class="row-text"><div class="row-label">Training</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🍴</div><div class="row-text"><div class="row-label">Nutrition</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ━━━━ Variant C ━━━━ -->
+    <div class="col">
+      <div class="label">C · Identity card</div>
+      <div class="desc">White card with dark avatar — like a premium membership card. Self-contained, structured.</div>
+      <div class="frame"><div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● 📶</span></div>
+        <div class="main-title">Account</div>
+        <div class="scroll">
+          <div class="heroC">
+            <div class="heroC-avatar">A</div>
+            <div class="heroC-text">
+              <div class="heroC-name">Alex</div>
+              <div class="heroC-tag">Build Muscle</div>
+            </div>
+            <div class="heroC-edit">Edit</div>
+          </div>
+          <div class="section">
+            <div class="section-label">You</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">👤</div><div class="row-text"><div class="row-label">Profile</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🎯</div><div class="row-text"><div class="row-label">Your Goal</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-label">Your Plan</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">💪</div><div class="row-text"><div class="row-label">Training</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🍴</div><div class="row-text"><div class="row-label">Nutrition</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ━━━━ Variant D ━━━━ -->
+    <div class="col">
+      <div class="label">D · Dark band</div>
+      <div class="desc">Full-width dark earth band. Hotel-lobby premium. Strong typographic anchor at the top.</div>
+      <div class="frame"><div class="screen-wrap">
+        <div class="notch"></div>
+        <div class="statusbar"><span>9:41</span><span>● 📶</span></div>
+        <div class="main-title" style="padding-bottom:4px">Account</div>
+        <div class="scroll">
+          <div class="heroD">
+            <div class="heroD-avatar">A</div>
+            <div class="heroD-text">
+              <div class="heroD-eyebrow">Profile</div>
+              <div class="heroD-name">Alex</div>
+              <div class="heroD-meta">Build Muscle</div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-label">You</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">👤</div><div class="row-text"><div class="row-label">Profile</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🎯</div><div class="row-text"><div class="row-label">Your Goal</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="section-label">Your Plan</div>
+            <div class="section-card">
+              <div class="row"><div class="row-icon">💪</div><div class="row-text"><div class="row-label">Training</div></div><span class="row-chev">›</span></div>
+              <div class="row"><div class="row-icon">🍴</div><div class="row-text"><div class="row-label">Nutrition</div></div><span class="row-chev">›</span></div>
+            </div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+
+</body>
+</html>

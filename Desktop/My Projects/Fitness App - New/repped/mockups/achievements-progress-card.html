@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Revive · Achievements Card on Progress Screen</title>
+<style>
+  :root{
+    --earth:#2D2A24; --sand:#F6F5F0; --stone:#EDEBE5; --rock:#8E8E7A; --trail:#34D399;
+    --board:#0f0d0a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;background:var(--board);color:#F6F5F0;min-height:100vh}
+
+  .page-header{padding:40px 24px 0;text-align:center}
+  .page-header h1{margin:0 0 6px;font-size:22px;font-weight:800;letter-spacing:-0.4px}
+  .page-header p{margin:0;color:#9b958a;font-size:13px;max-width:720px;margin:0 auto;line-height:1.5}
+  .page-header .crumbs{display:inline-flex;gap:6px;align-items:center;margin-top:12px;background:#252220;border-radius:99px;padding:6px 14px;font-size:11px;color:#cfc8b8;letter-spacing:0.08em;text-transform:uppercase;font-weight:700}
+  .page-header .crumbs .here{color:var(--trail)}
+
+  .stage{display:flex;justify-content:center;align-items:flex-start;padding:40px 24px;gap:40px;flex-wrap:wrap}
+
+  .frame{width:393px;background:#000;border-radius:48px;padding:6px;box-shadow:0 24px 60px rgba(0,0,0,0.6),0 0 0 1px rgba(255,255,255,0.05);flex-shrink:0}
+  .screen{width:100%;height:852px;background:var(--sand);border-radius:42px;overflow:hidden;position:relative;color:var(--earth)}
+  .notch{position:absolute;top:8px;left:50%;transform:translateX(-50%);width:120px;height:28px;background:#000;border-radius:20px;z-index:10}
+  .statusbar{position:absolute;top:0;left:0;right:0;height:44px;padding:14px 32px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:700;z-index:5}
+  .scroll{position:absolute;inset:0;padding-top:44px;overflow-y:auto;overflow-x:hidden}
+  .scroll::-webkit-scrollbar{display:none}
+
+  /* Progress screen header */
+  .scrn-head{padding:8px 18px 12px}
+  .scrn-head .crumb{font-size:11px;font-weight:700;letter-spacing:0.16em;color:var(--rock);text-transform:uppercase;margin-bottom:2px}
+  .scrn-head .ti{font-size:28px;font-weight:800;letter-spacing:-0.6px;color:var(--earth)}
+
+  /* Day strip */
+  .daystrip{display:flex;gap:6px;padding:0 18px 14px}
+  .daystrip .d{flex:1;aspect-ratio:0.85/1;border-radius:14px;background:var(--stone);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:var(--rock);font-weight:700}
+  .daystrip .d.on{background:var(--earth);color:var(--sand)}
+  .daystrip .d .lt{font-size:10px;letter-spacing:0.1em;margin-bottom:2px}
+  .daystrip .d .dn{font-size:15px;font-weight:800;letter-spacing:-0.3px}
+
+  /* Overview bento (3 cards) */
+  .overview{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px 12px}
+  .ovc{background:#fff;border-radius:18px;padding:12px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+  .ovc.full{grid-column:span 2}
+  .ovc .lab{font-size:10px;font-weight:700;color:var(--rock);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px}
+  .ovc .n{font-size:22px;font-weight:800;color:var(--earth);letter-spacing:-0.4px;line-height:24px}
+  .ovc .n .s{font-size:11px;font-weight:600;color:var(--rock);margin-left:4px}
+  .ovc .sub{font-size:11px;color:var(--rock);margin-top:2px}
+
+  /* Nutrition card */
+  .nutri{margin:0 16px 12px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+  .nutri-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+  .nutri-head .ttl{font-size:14px;font-weight:700;color:var(--earth)}
+  .nutri-head .arr{font-size:18px;color:#bbb;font-weight:300;line-height:18px}
+  .nutri-ring-row{display:flex;align-items:center;gap:14px}
+  .nutri-ring{width:64px;height:64px;border-radius:50%;background:conic-gradient(#6366F1 0deg 240deg,#EDEBE5 240deg 360deg);position:relative;flex-shrink:0}
+  .nutri-ring::before{content:"";position:absolute;inset:6px;background:#fff;border-radius:50%}
+  .nutri-ring .cn{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .nutri-ring .cn .v{font-size:14px;font-weight:800;color:var(--earth)}
+  .nutri-ring .cn .vl{font-size:8px;color:var(--rock);font-weight:600}
+  .macros{flex:1;display:flex;flex-direction:column;gap:6px}
+  .macro-row{display:flex;justify-content:space-between;font-size:11px}
+  .macro-row .ml{color:var(--rock);font-weight:600}
+  .macro-row .mv{color:var(--earth);font-weight:700}
+
+  /* THE ROW — streak + achievements (highlighted) */
+  .row-wrap{position:relative;padding:0 16px 12px;margin:0 0 12px}
+  .row-wrap.highlighted::before{content:"";position:absolute;inset:8px 12px;border:2px solid var(--trail);border-radius:24px;pointer-events:none;animation:highlight-pulse 2.4s ease-in-out infinite}
+  .row-wrap.highlighted::after{content:"YOU ARE HERE";position:absolute;top:-22px;right:24px;font-size:9px;font-weight:800;letter-spacing:0.18em;color:var(--trail);background:#252220;padding:4px 8px;border-radius:99px;z-index:2}
+  @keyframes highlight-pulse{0%,100%{opacity:0.6}50%{opacity:1}}
+  .row{display:flex;gap:8px}
+  .card{flex:1;background:#fff;border-radius:20px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+
+  /* Streak card (unchanged) */
+  .streak-card{align-items:center;display:flex;flex-direction:column}
+  .streak-card .ctitle{font-size:13px;font-weight:500;color:#888;align-self:flex-start;margin-bottom:8px}
+  .streak-center{align-items:center;display:flex;flex-direction:column;margin-bottom:12px}
+  .fire{width:48px;height:48px;display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:2px}
+  .streak-num{font-size:20px;font-weight:700;color:#1a1a1a;line-height:24px}
+  .streak-lab{font-size:11px;color:#888;margin-top:1px}
+  .days{display:flex;gap:4px;justify-content:center}
+  .day{display:flex;flex-direction:column;align-items:center;gap:3px}
+  .day .c{width:15px;height:15px;border-radius:7.5px;background:#E8E8E8;display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;font-weight:700}
+  .day.done .c{background:#F59E0B}
+  .day .l{font-size:8px;color:#999}
+
+  /* Achievement card (THE NEW ONE) */
+  .ach-card{display:flex;flex-direction:column}
+  .ach-head{display:flex;align-items:center;justify-content:space-between}
+  .ach-head .ctitle{font-size:13px;font-weight:500;color:#888}
+  .ach-arrow{font-size:18px;color:#bbb;line-height:18px;font-weight:300}
+
+  /* Single centered badge */
+  .single-badge{flex:1;display:flex;align-items:center;justify-content:center;min-height:90px;margin:4px 0}
+  .single-badge img{width:90px;height:90px;object-fit:contain;filter:drop-shadow(0 3px 8px rgba(0,0,0,0.22))}
+  .single-badge.empty img{opacity:0.22}
+
+  .ach-stat{align-items:center;display:flex;flex-direction:column;margin-top:2px}
+  .ach-count{font-size:24px;font-weight:800;color:#1a1a1a;letter-spacing:-0.5px;line-height:26px}
+  .ach-slash{font-size:14px;font-weight:600;color:#9b958a;letter-spacing:0}
+  .ach-cap{font-size:9px;font-weight:700;color:#9b958a;letter-spacing:1.2px;margin-top:2px}
+
+  /* Weekly summary card */
+  .weekly{margin:0 16px 12px;background:#fff;border-radius:18px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.03)}
+  .weekly-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+  .weekly-head .ttl{font-size:14px;font-weight:700;color:var(--earth)}
+  .weekly-head .rg{font-size:11px;font-weight:600;color:var(--rock)}
+  .weekly-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-top:1px solid var(--stone)}
+  .weekly-row:first-of-type{border-top:none}
+  .weekly-row .key{font-size:12px;color:var(--rock);font-weight:600}
+  .weekly-row .val{font-size:13px;font-weight:700;color:var(--earth)}
+
+  /* Right-side annotation */
+  .anno-col{max-width:280px;padding-top:60px;display:flex;flex-direction:column;gap:14px}
+  .anno-col h2{font-size:16px;font-weight:700;margin:0;color:#F6F5F0}
+  .anno-col p{font-size:13px;color:#cfc8b8;line-height:1.55;margin:0}
+  .anno-card{background:#252220;border-radius:14px;padding:16px}
+  .anno-card h3{font-size:13px;font-weight:700;color:#F6F5F0;margin:0 0 6px}
+  .anno-card ul{margin:0;padding-left:18px;font-size:12px;color:#cfc8b8;line-height:1.55}
+  .anno-card li{margin-bottom:3px}
+  .changed{background:rgba(52,211,153,0.12);border:1px solid rgba(52,211,153,0.3)}
+  .changed h3{color:var(--trail)}
+  .untouched{background:rgba(155,149,138,0.08);border:1px solid rgba(155,149,138,0.2)}
+  .untouched h3{color:#cfc8b8}
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Achievements Card · Progress Screen</h1>
+  <p>The new card is the right half of the existing "Streak + Achievements" row on the Progress screen. Everything else on the screen is untouched.</p>
+  <div class="crumbs">
+    <span>Mobile App</span><span>›</span><span>Tabs</span><span>›</span><span class="here">Progress Screen</span><span>›</span><span class="here">Achievements Card</span>
+  </div>
+</div>
+
+<div class="stage">
+
+  <!-- Full progress screen with achievement card highlighted -->
+  <div class="frame">
+    <div class="screen">
+      <div class="notch"></div>
+      <div class="statusbar"><span>9:41</span><span>●●● ◗</span></div>
+
+      <div class="scroll">
+        <!-- 1. Page header -->
+        <div class="scrn-head">
+          <div class="crumb">FRIDAY · MAY 20</div>
+          <div class="ti">Progress</div>
+        </div>
+
+        <!-- 2. Day strip -->
+        <div class="daystrip">
+          <div class="d"><div class="lt">M</div><div class="dn">12</div></div>
+          <div class="d on"><div class="lt">T</div><div class="dn">13</div></div>
+          <div class="d"><div class="lt">W</div><div class="dn">14</div></div>
+          <div class="d on"><div class="lt">T</div><div class="dn">15</div></div>
+          <div class="d on"><div class="lt">F</div><div class="dn">16</div></div>
+          <div class="d"><div class="lt">S</div><div class="dn">17</div></div>
+          <div class="d"><div class="lt">S</div><div class="dn">18</div></div>
+        </div>
+
+        <!-- 3. Overview bento -->
+        <div class="overview">
+          <div class="ovc">
+            <div class="lab">STEPS</div>
+            <div class="n">8,420<span class="s">/10K</span></div>
+            <div class="sub">84% of goal</div>
+          </div>
+          <div class="ovc">
+            <div class="lab">ACTIVE KCAL</div>
+            <div class="n">486</div>
+            <div class="sub">42 min</div>
+          </div>
+          <div class="ovc full">
+            <div class="lab">HEART RATE</div>
+            <div class="n">72<span class="s">avg bpm</span></div>
+          </div>
+        </div>
+
+        <!-- 4. Nutrition card -->
+        <div class="nutri">
+          <div class="nutri-head"><div class="ttl">Nutrition</div><div class="arr">›</div></div>
+          <div class="nutri-ring-row">
+            <div class="nutri-ring">
+              <div class="cn"><div class="v">1,640</div><div class="vl">/ 2,400</div></div>
+            </div>
+            <div class="macros">
+              <div class="macro-row"><div class="ml">Protein</div><div class="mv">112 / 180g</div></div>
+              <div class="macro-row"><div class="ml">Carbs</div><div class="mv">186 / 250g</div></div>
+              <div class="macro-row"><div class="ml">Fat</div><div class="mv">52 / 70g</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. THE ROW — streak + achievements (HIGHLIGHTED) -->
+        <div class="row-wrap highlighted">
+          <div class="row">
+            <!-- Streak (unchanged) -->
+            <div class="card streak-card">
+              <div class="ctitle">Daily Streak</div>
+              <div class="streak-center">
+                <div class="fire">🔥</div>
+                <div class="streak-num">13</div>
+                <div class="streak-lab">Days</div>
+              </div>
+              <div class="days">
+                <div class="day done"><div class="c">✓</div><div class="l">M</div></div>
+                <div class="day done"><div class="c">✓</div><div class="l">T</div></div>
+                <div class="day"><div class="c"></div><div class="l">W</div></div>
+                <div class="day done"><div class="c">✓</div><div class="l">T</div></div>
+                <div class="day done"><div class="c">✓</div><div class="l">F</div></div>
+                <div class="day"><div class="c"></div><div class="l">S</div></div>
+                <div class="day"><div class="c"></div><div class="l">S</div></div>
+              </div>
+            </div>
+
+            <!-- Achievement card (THE ONE I CHANGED — single centered badge) -->
+            <div class="card ach-card">
+              <div class="ach-head">
+                <div class="ctitle">Achievements</div>
+                <div class="ach-arrow">›</div>
+              </div>
+              <div class="single-badge">
+                <img src="badges-transparent/streak-force_of_nature@256.png" alt="Force of Nature">
+              </div>
+              <div class="ach-stat">
+                <div class="ach-count">16<span class="ach-slash">/47</span></div>
+                <div class="ach-cap">EARNED</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. Weekly summary -->
+        <div class="weekly">
+          <div class="weekly-head"><div class="ttl">Weekly Summary</div><div class="rg">May 12 – 18</div></div>
+          <div class="weekly-row"><div class="key">Workouts</div><div class="val">3 / 4</div></div>
+          <div class="weekly-row"><div class="key">Volume</div><div class="val">14,250 kg</div></div>
+          <div class="weekly-row"><div class="key">Best lift</div><div class="val">Squat · 110kg</div></div>
+        </div>
+
+        <div style="height:80px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Annotations -->
+  <div class="anno-col">
+    <h2>Where the change lives</h2>
+    <p>The Progress screen has 6 sections stacked vertically. Only one tile within one row gets a new look — the achievements card on the right of the Streak + Achievements row.</p>
+
+    <div class="anno-card changed">
+      <h3>✓ Achievements card (changed)</h3>
+      <ul>
+        <li>Latest unlocked badge — real 3D image</li>
+        <li>"16 / 47 EARNED" count beneath</li>
+        <li>Empty state shows faded silhouette + "Start your collection"</li>
+        <li>Whole card tappable → opens full Achievements screen</li>
+      </ul>
+    </div>
+
+    <div class="anno-card untouched">
+      <h3>Untouched on Progress</h3>
+      <ul>
+        <li>Page header + day strip</li>
+        <li>Overview bento (steps / kcal / heart rate)</li>
+        <li>Nutrition card</li>
+        <li>Daily Streak card (left half of the row)</li>
+        <li>Weekly Summary card</li>
+      </ul>
+    </div>
+
+    <p style="font-size:12px;color:#9b958a;margin-top:4px"><b>Note:</b> my actual code edits were limited to <code>StreakAchievementsRow.tsx</code> (the right-half visual) and a small additional query in <code>progress.tsx</code> to fetch the latest badge. No account/settings file was touched.</p>
+  </div>
+
+</div>
+
+</body>
+</html>

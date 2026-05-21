@@ -12,13 +12,15 @@ const C = {
   trail: "#34D399",
 };
 
-const dayOptions = [2, 3, 4, 5, 6];
+const dayOptions = [2, 3, 4, 5, 6, 7];
 
+// 5 levels match ACSM 2018 Mifflin-St Jeor activity multipliers (1.2 → 1.9)
 const activityOptions: { value: ActivityLevel; label: string; desc: string }[] = [
   { value: "sedentary", label: "Sedentary", desc: "Desk job, minimal movement" },
   { value: "lightly_active", label: "Lightly Active", desc: "Walking, light daily activity" },
   { value: "moderately_active", label: "Moderately Active", desc: "On your feet most of the day" },
   { value: "very_active", label: "Very Active", desc: "Physical job or active lifestyle" },
+  { value: "extremely_active", label: "Extremely Active", desc: "Manual labor or twice-daily training" },
 ];
 
 export default function StepSchedule() {

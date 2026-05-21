@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Livvia — Progress v3</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0e0e0e; font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    display: flex; justify-content: center; padding: 30px 16px 60px;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+  }
+
+  .phone {
+    width: 393px; height: 852px; border-radius: 48px; overflow: hidden;
+    background: #F8F7F4; position: relative;
+    box-shadow: 0 30px 100px rgba(0,0,0,0.6);
+  }
+  .scr { width: 100%; height: 100%; overflow-y: auto; -ms-overflow-style: none; scrollbar-width: none; }
+  .scr::-webkit-scrollbar { display: none; }
+  .island { width: 126px; height: 36px; background: #000; border-radius: 20px; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 20; }
+
+  /* Status */
+  .status { display: flex; justify-content: space-between; align-items: center; padding: 16px 28px 0; font-size: 14px; font-weight: 600; color: #3a3a3a; height: 54px; letter-spacing: -0.1px; }
+
+  /* Header */
+  .hdr { padding: 6px 24px 12px; text-align: center; }
+  .hdr-title { font-size: 17px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.3px; }
+  .divider { height: 0.5px; background: rgba(0,0,0,0.08); }
+
+  /* Date */
+  .date-row { display: flex; justify-content: space-between; align-items: center; padding: 16px 22px 12px; }
+  .date-text { font-size: 16px; font-weight: 500; color: #1a1a1a; letter-spacing: -0.2px; }
+  .date-today { color: #2DB877; font-weight: 600; }
+  .date-chevron { font-size: 16px; color: #aaa; }
+
+  /* Day Strip */
+  .day-strip { display: flex; gap: 6px; padding: 0 16px 18px; }
+  .day-pill {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    padding: 9px 0 13px; border-radius: 16px;
+    background: #fff; border: 1.5px solid transparent;
+  }
+  .day-pill.active { background: #1a1a1a; border-color: #1a1a1a; }
+  .day-pill.done { border-color: #2DB877; }
+  .day-pill .dn { font-size: 10px; font-weight: 600; color: #aaa; letter-spacing: 0.5px; margin-bottom: 5px; }
+  .day-pill.active .dn { color: rgba(255,255,255,0.45); }
+  .day-pill .dd { font-size: 18px; font-weight: 700; color: #1a1a1a; line-height: 1; letter-spacing: -0.5px; }
+  .day-pill.active .dd { color: #fff; }
+  .day-pill.future { opacity: 0.45; }
+
+  .pad { padding: 0 16px; }
+
+  /* ── Ring Card ── */
+  .ring-card {
+    background: #fff; border-radius: 20px; padding: 18px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+  }
+  .ring-wrap { position: relative; width: 100px; height: 100px; flex-shrink: 0; }
+  .ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .ring-pct { font-size: 22px; font-weight: 700; color: #1a1a1a; line-height: 1; letter-spacing: -0.5px; }
+  .ring-lbl { font-size: 9px; color: #999; font-weight: 500; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 1px; }
+  .ring-stats { flex: 1; }
+  .ring-stat { display: flex; align-items: center; gap: 8px; padding: 6px 0; }
+  .ring-stat:not(:last-child) { border-bottom: 0.5px solid rgba(0,0,0,0.04); }
+  .ring-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .rs-name { font-size: 11px; color: #999; font-weight: 400; }
+  .rs-val { font-size: 15px; font-weight: 700; color: #1a1a1a; letter-spacing: -0.3px; }
+  .rs-sub { font-size: 11px; color: #999; font-weight: 400; margin-left: 2px; }
+  .rs-change { font-size: 10px; font-weight: 600; margin-left: 4px; }
+
+  /* ── Section heads ── */
+  .sec-head { display: flex; justify-content: space-between; align-items: center; margin: 16px 2px 8px; }
+  .sec-title { font-size: 13px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.1px; }
+  .sec-link { font-size: 11px; color: #2DB877; font-weight: 500; display: flex; align-items: center; gap: 3px; }
+
+  /* ── Health Grid ── */
+  .health-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+  .hc {
+    background: #fff; border-radius: 18px; padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); position: relative; overflow: hidden;
+  }
+  .hc::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px; }
+  .hc.steps::before { background: #2DB877; }
+  .hc.cals::before { background: #E8664A; }
+  .hc.heart::before { background: #D94B4B; }
+  .hc.sleep::before { background: #6366F1; }
+  .hc-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .hc-icon { font-size: 14px; opacity: 0.8; }
+  .hc-badge { font-size: 7px; font-weight: 700; color: #fff; padding: 2px 5px; border-radius: 4px; letter-spacing: 0.4px; text-transform: uppercase; }
+  .hc-badge.watch { background: #D94B4B; }
+  .hc-badge.iphone { background: #999; }
+  .hc-label { font-size: 10px; color: #999; font-weight: 500; letter-spacing: 0.2px; margin-bottom: 2px; }
+  .hc-val { font-size: 22px; font-weight: 700; color: #1a1a1a; line-height: 1.1; letter-spacing: -0.5px; }
+  .hc-unit { font-size: 10px; color: #bbb; font-weight: 400; margin-top: 1px; }
+  .hc-sub { font-size: 9px; margin-top: 3px; font-weight: 500; }
+  .hc-sparkline { display: flex; align-items: flex-end; gap: 2px; height: 22px; margin-top: 8px; }
+  .hc-spark { flex: 1; border-radius: 1.5px; min-height: 2px; }
+  .green { color: #2DB877; }
+  .red { color: #D94B4B; }
+  .purple { color: #6366F1; }
+  .amber { color: #D4930D; }
+  .muted { color: #999; }
+
+  /* ── Recovery ── */
+  .recovery {
+    background: #F0F8F4; border-radius: 18px; padding: 14px;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+    border: 0.5px solid rgba(45,184,119,0.12);
+  }
+  .recovery-ring { width: 48px; height: 48px; border-radius: 50%; border: 3px solid rgba(45,184,119,0.12); display: flex; align-items: center; justify-content: center; position: relative; flex-shrink: 0; }
+  .recovery-ring::before { content: ''; position: absolute; inset: -3px; border-radius: 50%; border: 3px solid transparent; border-top-color: #2DB877; border-right-color: #2DB877; border-bottom-color: #2DB877; transform: rotate(-30deg); }
+  .recovery-score { font-size: 16px; font-weight: 700; color: #1a1a1a; letter-spacing: -0.3px; }
+  .recovery-info { flex: 1; }
+  .recovery-title { font-size: 12px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.1px; }
+  .recovery-desc { font-size: 10px; color: #5A9B73; font-weight: 400; margin-top: 1px; }
+  .recovery-tags { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; }
+  .recovery-tag { font-size: 8px; color: #5A9B73; background: rgba(45,184,119,0.1); padding: 2px 7px; border-radius: 4px; font-weight: 500; }
+
+  /* ── Heatmap ── */
+  .heatmap-card {
+    background: #fff; border-radius: 18px; padding: 14px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); margin-bottom: 10px;
+  }
+  .hm-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+  .hm-title { font-size: 12px; font-weight: 600; color: #1a1a1a; }
+  .hm-meta { font-size: 10px; color: #bbb; font-weight: 400; }
+  .hm-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 2.5px; }
+  .hm-cell { aspect-ratio: 1; border-radius: 2.5px; }
+  .c0 { background: rgba(0,0,0,0.03); }
+  .c1 { background: rgba(0,0,0,0.08); }
+  .c2 { background: rgba(0,0,0,0.18); }
+  .c3 { background: #1a1a1a; }
+  .ct { background: #2DB877; }
+  .hm-legend { display: flex; align-items: center; justify-content: flex-end; gap: 3px; margin-top: 6px; }
+  .hm-legend span { font-size: 8px; color: #bbb; font-weight: 400; }
+  .lg-box { width: 9px; height: 9px; border-radius: 2px; }
+
+  /* ── Summary Cards ── */
+  .summary-card {
+    background: #fff; border-radius: 18px; padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); margin-bottom: 10px;
+  }
+  .summary-card.dark { background: #1a1a1a; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+  .sc-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .sc-title { font-size: 13px; font-weight: 600; color: #1a1a1a; letter-spacing: -0.1px; }
+  .sc-title.light { color: #eee; }
+  .sc-badge { font-size: 10px; font-weight: 500; padding: 3px 9px; border-radius: 6px; }
+  .sc-badge.g { background: rgba(45,184,119,0.08); color: #2DB877; }
+  .sc-badge.gd { background: rgba(45,184,119,0.12); color: #2DB877; }
+  .sc-stats { display: flex; gap: 14px; }
+  .sc-val { font-size: 20px; font-weight: 700; color: #1a1a1a; line-height: 1; letter-spacing: -0.5px; }
+  .sc-val.light { color: #eee; }
+  .sc-label { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: 0.3px; margin-top: 3px; font-weight: 500; }
+  .sc-change { font-size: 9px; font-weight: 600; margin-top: 2px; }
+  .sc-bar { height: 4px; background: rgba(0,0,0,0.04); border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .sc-bar.dk { background: rgba(255,255,255,0.06); }
+  .sc-bar-fill { height: 100%; border-radius: 2px; background: #2DB877; }
+
+  /* ── Nutrition ── */
+  .nutr-card {
+    background: #fff; border-radius: 18px; padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.03); margin-bottom: 10px;
+  }
+  .nutr-title { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; letter-spacing: -0.1px; }
+  .nutr-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ni-label { font-size: 9px; color: #bbb; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 500; }
+  .ni-val { font-size: 18px; font-weight: 700; color: #1a1a1a; line-height: 1.2; letter-spacing: -0.3px; }
+  .ni-sub { font-size: 9px; color: #bbb; margin-top: 1px; font-weight: 400; }
+  .ni-bar { height: 3px; background: rgba(0,0,0,0.04); border-radius: 1.5px; margin-top: 5px; overflow: hidden; }
+  .ni-bar-fill { height: 100%; border-radius: 1.5px; }
+
+  /* ── Achievements ── */
+  .ach-scroll { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 4px; -ms-overflow-style: none; scrollbar-width: none; margin-bottom: 14px; }
+  .ach-scroll::-webkit-scrollbar { display: none; }
+  .ach-item {
+    min-width: 86px; background: #fff; border-radius: 16px; padding: 12px 6px;
+    text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+    position: relative;
+  }
+  .ach-item.earned { border: 1px solid rgba(45,184,119,0.2); }
+  .ach-item.locked { opacity: 0.25; }
+  .ach-new { position: absolute; top: 6px; right: 6px; width: 6px; height: 6px; border-radius: 50%; background: #2DB877; }
+  .ach-emoji { font-size: 24px; margin-bottom: 4px; }
+  .ach-name { font-size: 9px; font-weight: 500; color: #555; line-height: 1.2; }
+  .ach-tier { display: flex; gap: 2px; justify-content: center; margin-top: 5px; }
+  .ach-dot { width: 4px; height: 4px; border-radius: 50%; }
+
+  /* ── Tab bar ── */
+  .tab-bar {
+    position: absolute; bottom: 0; left: 0; right: 0; height: 86px;
+    background: rgba(248,247,244,0.92); backdrop-filter: blur(24px);
+    display: flex; justify-content: space-around; align-items: flex-start;
+    padding-top: 10px; border-top: 0.5px solid rgba(0,0,0,0.06); z-index: 15;
+  }
+  .tab { text-align: center; font-size: 10px; font-weight: 400; color: #bbb; }
+  .tab.active { color: #1a1a1a; font-weight: 500; }
+  .tab .ti { font-size: 18px; margin-bottom: 2px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div class="island"></div>
+  <div class="scr">
+    <div class="status"><span>9:41</span><span style="font-size:12px;">&#9679;&#9679;&#9679; &#128267;</span></div>
+
+    <div class="hdr"><div class="hdr-title">Dashboard</div></div>
+    <div class="divider"></div>
+
+    <div class="date-row">
+      <div class="date-text"><span class="date-today">Today</span>, 23 Apr 2026</div>
+      <div class="date-chevron">&#8964;</div>
+    </div>
+
+    <div class="day-strip">
+      <div class="day-pill done"><div class="dn">MON</div><div class="dd">21</div></div>
+      <div class="day-pill done"><div class="dn">TUE</div><div class="dd">22</div></div>
+      <div class="day-pill active"><div class="dn">WED</div><div class="dd">23</div></div>
+      <div class="day-pill"><div class="dn">THU</div><div class="dd">24</div></div>
+      <div class="day-pill"><div class="dn">FRI</div><div class="dd">25</div></div>
+      <div class="day-pill future"><div class="dn">SAT</div><div class="dd">26</div></div>
+      <div class="day-pill future"><div class="dn">SUN</div><div class="dd">27</div></div>
+    </div>
+
+    <div class="pad">
+
+      <!-- Ring Card -->
+      <div class="ring-card">
+        <div class="ring-wrap">
+          <svg viewBox="0 0 100 100" width="100" height="100">
+            <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="7"/>
+            <circle cx="50" cy="50" r="44" fill="none" stroke="#2DB877" stroke-width="7" stroke-linecap="round"
+              stroke-dasharray="276" stroke-dashoffset="110" transform="rotate(-90 50 50)"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="rgba(0,0,0,0.04)" stroke-width="6"/>
+            <circle cx="50" cy="50" r="34" fill="none" stroke="#D4930D" stroke-width="6" stroke-linecap="round"
+              stroke-dasharray="213" stroke-dashoffset="64" transform="rotate(-90 50 50)"/>
+          </svg>
+          <div class="ring-center">
+            <div class="ring-pct">60%</div>
+            <div class="ring-lbl">complete</div>
+          </div>
+        </div>
+        <div class="ring-stats">
+          <div class="ring-stat">
+            <div class="ring-dot" style="background:#2DB877;"></div>
+            <div>
+              <div class="rs-name">Workouts</div>
+              <div><span class="rs-val">3</span><span class="rs-sub">/ 5</span></div>
+            </div>
+          </div>
+          <div class="ring-stat">
+            <div class="ring-dot" style="background:#D4930D;"></div>
+            <div>
+              <div class="rs-name">Volume</div>
+              <div><span class="rs-val">2.1k</span><span class="rs-change green">+8%</span></div>
+            </div>
+          </div>
+          <div class="ring-stat">
+            <div class="ring-dot" style="background:#1a1a1a;"></div>
+            <div>
+              <div class="rs-name">Streak</div>
+              <div><span class="rs-val">5 days</span><span style="font-size:11px;margin-left:3px;">&#128293;</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health -->
+      <div class="sec-head">
+        <div class="sec-title">Health &amp; Fitness</div>
+        <div class="sec-link"><span style="font-size:11px;">&#10084;&#65039;</span> Apple Health</div>
+      </div>
+      <div class="health-grid">
+        <div class="hc steps">
+          <div class="hc-top"><div class="hc-icon">&#128694;</div><div class="hc-badge watch">WATCH</div></div>
+          <div class="hc-label">Steps</div>
+          <div class="hc-val">8,432</div>
+          <div class="hc-sub green">Goal: 10,000</div>
+          <div class="hc-sparkline">
+            <div class="hc-spark" style="height:35%;background:rgba(45,184,119,0.12);"></div>
+            <div class="hc-spark" style="height:55%;background:rgba(45,184,119,0.18);"></div>
+            <div class="hc-spark" style="height:75%;background:rgba(45,184,119,0.25);"></div>
+            <div class="hc-spark" style="height:50%;background:rgba(45,184,119,0.18);"></div>
+            <div class="hc-spark" style="height:85%;background:rgba(45,184,119,0.3);"></div>
+            <div class="hc-spark" style="height:60%;background:rgba(45,184,119,0.2);"></div>
+            <div class="hc-spark" style="height:100%;background:#2DB877;"></div>
+          </div>
+        </div>
+        <div class="hc cals">
+          <div class="hc-top"><div class="hc-icon">&#128293;</div><div class="hc-badge watch">WATCH</div></div>
+          <div class="hc-label">Active Cal</div>
+          <div class="hc-val">420</div>
+          <div class="hc-unit">kcal burned</div>
+          <div class="hc-sub green">Goal: 500</div>
+        </div>
+        <div class="hc heart">
+          <div class="hc-top"><div class="hc-icon">&#10084;&#65039;</div><div class="hc-badge watch">WATCH</div></div>
+          <div class="hc-label">Heart Rate</div>
+          <div class="hc-val">68</div>
+          <div class="hc-unit">bpm resting</div>
+          <div class="hc-sparkline">
+            <div class="hc-spark" style="height:55%;background:rgba(217,75,75,0.08);"></div>
+            <div class="hc-spark" style="height:70%;background:rgba(217,75,75,0.12);"></div>
+            <div class="hc-spark" style="height:45%;background:rgba(217,75,75,0.08);"></div>
+            <div class="hc-spark" style="height:80%;background:rgba(217,75,75,0.15);"></div>
+            <div class="hc-spark" style="height:50%;background:rgba(217,75,75,0.08);"></div>
+            <div class="hc-spark" style="height:60%;background:rgba(217,75,75,0.1);"></div>
+            <div class="hc-spark" style="height:65%;background:#D94B4B;"></div>
+          </div>
+        </div>
+        <div class="hc sleep">
+          <div class="hc-top"><div class="hc-icon">&#128164;</div><div class="hc-badge watch">WATCH</div></div>
+          <div class="hc-label">Sleep</div>
+          <div class="hc-val">7h 24m</div>
+          <div class="hc-sub purple">Deep: 1h 45m</div>
+          <div style="font-size:9px;color:#bbb;margin-top:1px;font-weight:400;">REM: 2h 10m</div>
+        </div>
+      </div>
+
+      <!-- Recovery -->
+      <div class="recovery">
+        <div class="recovery-ring"><div class="recovery-score">82</div></div>
+        <div class="recovery-info">
+          <div class="recovery-title">Recovery Score</div>
+          <div class="recovery-desc">Good to train — body is well rested</div>
+          <div class="recovery-tags">
+            <div class="recovery-tag">HRV 48ms</div>
+            <div class="recovery-tag">Sleep 7.4h</div>
+            <div class="recovery-tag">RHR 68</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="heatmap-card">
+        <div class="hm-head">
+          <div class="hm-title">Activity</div>
+          <div class="hm-meta">Last 12 weeks</div>
+        </div>
+        <div class="hm-grid">
+          <div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c2"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell ct"></div>
+          <div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div>
+          <div class="hm-cell c0"></div><div class="hm-cell c2"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c2"></div><div class="hm-cell c0"></div>
+          <div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div><div class="hm-cell c2"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div>
+          <div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c2"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div><div class="hm-cell c1"></div><div class="hm-cell c0"></div><div class="hm-cell c0"></div><div class="hm-cell c3"></div><div class="hm-cell c0"></div>
+        </div>
+        <div class="hm-legend">
+          <span>Less</span>
+          <div class="lg-box c0"></div><div class="lg-box c1"></div><div class="lg-box c2"></div><div class="lg-box c3"></div>
+          <span>More</span>
+        </div>
+      </div>
+
+      <!-- Weekly -->
+      <div class="summary-card">
+        <div class="sc-head">
+          <div class="sc-title">This Week</div>
+          <div class="sc-badge g">Apr 21 – 27</div>
+        </div>
+        <div class="sc-stats">
+          <div class="sc-stat"><div class="sc-val">3<span style="font-size:12px;color:#bbb;font-weight:400;">/5</span></div><div class="sc-label">Workouts</div></div>
+          <div class="sc-stat"><div class="sc-val">2.1k</div><div class="sc-label">Volume</div><div class="sc-change green">+8%</div></div>
+          <div class="sc-stat"><div class="sc-val">5</div><div class="sc-label">Streak</div></div>
+          <div class="sc-stat"><div class="sc-val">42m</div><div class="sc-label">Avg Time</div></div>
+        </div>
+        <div class="sc-bar"><div class="sc-bar-fill" style="width:60%;"></div></div>
+      </div>
+
+      <!-- Monthly -->
+      <div class="summary-card dark">
+        <div class="sc-head">
+          <div class="sc-title light">April Summary</div>
+          <div class="sc-badge gd">72% complete</div>
+        </div>
+        <div class="sc-stats">
+          <div class="sc-stat"><div class="sc-val light">12</div><div class="sc-label">Workouts</div><div class="sc-change green">+3</div></div>
+          <div class="sc-stat"><div class="sc-val light">4.2k</div><div class="sc-label">Volume</div><div class="sc-change green">+12%</div></div>
+          <div class="sc-stat"><div class="sc-val light">45m</div><div class="sc-label">Avg Time</div></div>
+          <div class="sc-stat"><div class="sc-val light">3</div><div class="sc-label">PRs</div></div>
+        </div>
+        <div class="sc-bar dk"><div class="sc-bar-fill" style="width:72%;"></div></div>
+      </div>
+
+      <!-- Nutrition -->
+      <div class="nutr-card">
+        <div class="nutr-title">Nutrition &times; Training</div>
+        <div class="nutr-grid">
+          <div>
+            <div class="ni-label">Meal Adherence</div>
+            <div class="ni-val">60%</div>
+            <div class="ni-bar"><div class="ni-bar-fill" style="width:60%;background:#2DB877;"></div></div>
+          </div>
+          <div>
+            <div class="ni-label">Avg Protein</div>
+            <div class="ni-val">142g</div>
+            <div class="ni-sub">target: 150g</div>
+            <div class="ni-bar"><div class="ni-bar-fill" style="width:94%;background:#D4930D;"></div></div>
+          </div>
+          <div>
+            <div class="ni-label">Avg Calories</div>
+            <div class="ni-val">2,340</div>
+            <div class="ni-sub">18 days logged</div>
+          </div>
+          <div>
+            <div class="ni-label">PRs on Meal Days</div>
+            <div class="ni-val green">80%</div>
+            <div class="ni-sub">4 of 5 PRs</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Achievements -->
+      <div class="sec-head">
+        <div class="sec-title">Achievements</div>
+        <div class="sec-link">3 of 20 &#8250;</div>
+      </div>
+      <div class="ach-scroll">
+        <div class="ach-item earned"><div class="ach-new"></div><div class="ach-emoji">&#127942;</div><div class="ach-name">First PR</div><div class="ach-tier"><div class="ach-dot" style="background:#2DB877;"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div></div></div>
+        <div class="ach-item earned"><div class="ach-emoji">&#128293;</div><div class="ach-name">3-Day Streak</div><div class="ach-tier"><div class="ach-dot" style="background:#D4930D;"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div></div></div>
+        <div class="ach-item earned"><div class="ach-emoji">&#128170;</div><div class="ach-name">10 Workouts</div><div class="ach-tier"><div class="ach-dot" style="background:#6366F1;"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div></div></div>
+        <div class="ach-item locked"><div class="ach-emoji">&#127775;</div><div class="ach-name">7-Day Streak</div><div class="ach-tier"><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div></div></div>
+        <div class="ach-item locked"><div class="ach-emoji">&#127941;</div><div class="ach-name">50 Workouts</div><div class="ach-tier"><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div><div class="ach-dot" style="background:rgba(0,0,0,0.05);"></div></div></div>
+      </div>
+
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab"><div class="ti">&#9901;</div>Today</div>
+      <div class="tab"><div class="ti">&#127860;</div>Nutrition</div>
+      <div class="tab active"><div class="ti">&#9650;</div>Progress</div>
+      <div class="tab"><div class="ti">&#9881;</div>Account</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

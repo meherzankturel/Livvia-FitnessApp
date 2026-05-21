@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weekly Card — Mix</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0a0a0a; font-family: 'Inter', system-ui, sans-serif; padding: 30px 16px 60px; -webkit-font-smoothing: antialiased; }
+  .phone { width: 393px; margin: 0 auto; background: #F8F7F4; border-radius: 28px; padding: 18px 16px 24px; }
+</style>
+</head>
+<body>
+
+<div class="phone">
+  <div style="background:#fff; border-radius:22px; padding:16px 16px 14px; box-shadow:0 4px 20px rgba(0,0,0,0.04);">
+
+    <!-- Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <div style="display:flex; align-items:center; gap:5px;"><img src="data:image/png;base64,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" style="width:16px; height:16px; object-fit:contain;"><span style="font-size:13px; font-weight:500; color:#888;">This Week</span></div>
+      <span style="font-size:10px; color:#bbb;">Apr 21 – 27</span>
+    </div>
+
+    <!-- Hero number + Day bars side by side -->
+    <div style="display:flex; align-items:flex-end; gap:14px; margin-bottom:14px;">
+      <!-- Big number left -->
+      <div style="min-width:80px;">
+        <div style="display:flex; align-items:baseline; gap:2px; margin-bottom:3px;">
+          <span style="font-size:36px; font-weight:800; color:#2DB877; line-height:0.85; letter-spacing:-2px;">3</span>
+          <span style="font-size:15px; font-weight:300; color:#ccc;">/</span>
+          <span style="font-size:17px; font-weight:600; color:#ccc; letter-spacing:-0.5px;">5</span>
+        </div>
+        <div style="font-size:10px; color:#999; font-weight:500;">workouts</div>
+      </div>
+
+      <!-- Day volume bars right -->
+      <div style="flex:1; display:flex; align-items:flex-end; justify-content:space-between; height:48px; padding-bottom:12px; position:relative;">
+        <div style="position:absolute; bottom:0; left:0; right:0; display:flex; justify-content:space-between;">
+          <span style="font-size:7px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">M</span>
+          <span style="font-size:7px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">T</span>
+          <span style="font-size:7px; color:#1a1a1a; font-weight:500; width:14%; text-align:center;">W</span>
+          <span style="font-size:7px; color:#ccc; font-weight:500; width:14%; text-align:center;">T</span>
+          <span style="font-size:7px; color:#ccc; font-weight:500; width:14%; text-align:center;">F</span>
+          <span style="font-size:7px; color:#ccc; font-weight:500; width:14%; text-align:center;">S</span>
+          <span style="font-size:7px; color:#ccc; font-weight:500; width:14%; text-align:center;">S</span>
+        </div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:26px; border-radius:3.5px; background:linear-gradient(180deg, #2DB877, #34D399);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:20px; border-radius:3.5px; background:linear-gradient(180deg, #34D399, #6EE7B7);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:34px; border-radius:3.5px; background:linear-gradient(180deg, #2DB877, #22A56A);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:4px; border-radius:3.5px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:4px; border-radius:3.5px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:4px; border-radius:3.5px; background:rgba(0,0,0,0.04);"></div></div>
+        <div style="width:14%; display:flex; justify-content:center;"><div style="width:7px; height:4px; border-radius:3.5px; background:rgba(0,0,0,0.04);"></div></div>
+      </div>
+    </div>
+
+    <!-- Thin divider -->
+    <div style="height:0.5px; background:rgba(0,0,0,0.05); margin-bottom:12px;"></div>
+
+    <!-- Two metrics -->
+    <div style="display:flex;">
+      <div style="flex:1; padding-right:16px; border-right:0.5px solid rgba(0,0,0,0.05);">
+        <div style="font-size:8px; color:#999; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:4px;">Total Volume</div>
+        <div style="font-size:20px; font-weight:700; color:#1a1a1a; letter-spacing:-0.5px; line-height:1;">2.1k</div>
+        <div style="display:flex; align-items:center; gap:3px; margin-top:3px;">
+          <div style="width:12px; height:2px; border-radius:1px; background:#2DB877;"></div>
+          <span style="font-size:9px; color:#2DB877; font-weight:600;">+8%</span>
+        </div>
+      </div>
+      <div style="flex:1; padding-left:16px;">
+        <div style="font-size:8px; color:#999; text-transform:uppercase; letter-spacing:0.4px; margin-bottom:4px;">Highlight</div>
+        <div style="display:flex; align-items:center; gap:5px;">
+          <span style="font-size:14px;">&#127942;</span>
+          <div>
+            <div style="font-size:13px; font-weight:700; color:#1a1a1a; line-height:1;">80kg</div>
+            <div style="font-size:10px; color:#888;">Bench · PR</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

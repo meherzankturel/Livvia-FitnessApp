@@ -1,301 +1,169 @@
-import { View, Text, Pressable, Alert, ScrollView, RefreshControl, Animated, StyleSheet } from "react-native";
+import { View, Text, Pressable, ScrollView, RefreshControl, Alert } from "react-native";
 import { router } from "expo-router";
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useState } from "react";
 import { useAuthStore } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
-import { TopoBackground } from "../../src/components/terrain";
-import { Avatar } from "../../src/components/Avatar";
+import { useProfile } from "../../src/hooks/useProfile";
+import { AccountHero } from "../../src/components/account/AccountHero";
+import { SettingsRow } from "../../src/components/account/SettingsRow";
+import { SectionHeading } from "../../src/components/account/SectionHeading";
 import { AvatarPicker } from "../../src/components/AvatarPicker";
-import { calculateMacros } from "@repped/shared";
+import { ConfirmModal } from "../../src/components/account/ConfirmModal";
+import {
+  ProfileIcon, GoalIcon, TrainingIcon, NutritionIcon,
+  PreferencesIcon, HelpIcon,
+} from "../../src/components/account/icons";
 
-// ——— Animated Avatar Ring ———
-function AvatarRing() {
-  const scale = useRef(new Animated.Value(1)).current;
-  const opacity = useRef(new Animated.Value(0.5)).current;
-
-  useEffect(() => {
-    Animated.loop(
-      Animated.sequence([
-        Animated.parallel([
-          Animated.timing(scale, { toValue: 1.08, duration: 1200, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.15, duration: 1200, useNativeDriver: true }),
-        ]),
-        Animated.parallel([
-          Animated.timing(scale, { toValue: 1, duration: 1200, useNativeDriver: true }),
-          Animated.timing(opacity, { toValue: 0.5, duration: 1200, useNativeDriver: true }),
-        ]),
-      ])
-    ).start();
-  }, []);
-
-  return (
-    <Animated.View style={{
-      position: "absolute", top: -4, left: -4, right: -4, bottom: -4,
-      borderRadius: 999, borderWidth: 2, borderColor: "rgba(52,211,153,0.2)",
-      transform: [{ scale }], opacity,
-    }} />
-  );
-}
-
-// ——— Action Row ———
-function ActionRow({ icon, iconBg, label, onPress, isLast = false }: {
-  icon: string; iconBg: string; label: string; onPress: () => void; isLast?: boolean;
-}) {
-  const slideX = useRef(new Animated.Value(0)).current;
-
-  return (
-    <Pressable
-      onPress={onPress}
-      onPressIn={() => Animated.spring(slideX, { toValue: 3, damping: 18, stiffness: 200, mass: 0.6, useNativeDriver: true }).start()}
-      onPressOut={() => Animated.spring(slideX, { toValue: 0, damping: 18, stiffness: 200, mass: 0.6, useNativeDriver: true }).start()}
-      style={[s.arow, !isLast && s.arowBorder]}
-    >
-      <Animated.View style={{ flexDirection: "row", alignItems: "center", gap: 12, flex: 1, transform: [{ translateX: slideX }] }}>
-        <View style={[s.aIcon, { backgroundColor: iconBg }]}>
-          <Text style={{ fontSize: 14 }}>{icon}</Text>
-        </View>
-        <Text style={s.aText}>{label}</Text>
-        <Text style={s.aArrow}>›</Text>
-      </Animated.View>
-    </Pressable>
-  );
-}
-
-// ——— Main Screen ———
-export default function Settings() {
+export default function Account() {
   const session = useAuthStore((s) => s.session);
   const signOut = useAuthStore((s) => s.signOut);
-  const [profile, setProfile] = useState<any>(null);
+  const { profile, userEmail, loading, reload } = useProfile();
   const [refreshing, setRefreshing] = useState(false);
-  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [avatarPickerOpen, setAvatarPickerOpen] = useState(false);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
-  // Stagger animation
-  const cardOpacity = useRef(new Animated.Value(0)).current;
-  const cardTranslateY = useRef(new Animated.Value(12)).current;
-  const group1Opacity = useRef(new Animated.Value(0)).current;
-  const group1TranslateY = useRef(new Animated.Value(10)).current;
-  const group2Opacity = useRef(new Animated.Value(0)).current;
-  const group2TranslateY = useRef(new Animated.Value(10)).current;
-
-  const loadProfile = async () => {
-    if (session?.user?.id) {
-      const { data } = await supabase.from("profiles").select("*").eq("id", session.user.id).single();
-      setProfile(data);
-    }
-  };
-
-  const onRefresh = useCallback(async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
-    await loadProfile();
+    await reload();
     setRefreshing(false);
-  }, []);
-
-  useEffect(() => {
-    loadProfile();
-    // Stagger entrance
-    Animated.stagger(120, [
-      Animated.parallel([
-        Animated.timing(cardOpacity, { toValue: 1, duration: 400, useNativeDriver: true }),
-        Animated.timing(cardTranslateY, { toValue: 0, duration: 400, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.timing(group1Opacity, { toValue: 1, duration: 400, useNativeDriver: true }),
-        Animated.timing(group1TranslateY, { toValue: 0, duration: 400, useNativeDriver: true }),
-      ]),
-      Animated.parallel([
-        Animated.timing(group2Opacity, { toValue: 1, duration: 400, useNativeDriver: true }),
-        Animated.timing(group2TranslateY, { toValue: 0, duration: 400, useNativeDriver: true }),
-      ]),
-    ]).start();
-  }, []);
+  };
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
       { text: "Cancel", style: "cancel" },
-      { text: "Sign Out", style: "destructive", onPress: async () => { await supabase.auth.signOut(); signOut(); router.replace("/(auth)/sign-in"); } },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: async () => {
+          await supabase.auth.signOut();
+          signOut();
+          router.replace("/(auth)/sign-in");
+        },
+      },
     ]);
   };
 
-  const initial = (session?.user?.email?.[0] ?? "R").toUpperCase();
-  const equipment = profile?.equipment?.replace("_", " ") ?? "—";
-  const goal = profile?.goal?.replace("_", " ") ?? "—";
-  const calories = (profile?.tdee && profile?.goal && profile?.weight_kg)
-    ? String(calculateMacros(profile.tdee, profile.goal, profile.weight_kg).calories)
-    : profile?.tdee ? String(Math.round(profile.tdee)) : "—";
-  const daysPerWeek = String(profile?.days_per_week ?? "—");
-  const trainingHistory = profile?.training_history ?? "—";
+  const handleDelete = async () => {
+    setDeleteConfirmOpen(false);
+    // Real deletion would call a Supabase Edge Function; placeholder for now.
+    Alert.alert("Account deletion", "Contact support@revive.app to delete your account permanently.");
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F6F5F0" }}>
-      <TopoBackground />
+    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 120 }}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2D2A24" />}
+        contentContainerStyle={{ paddingTop: 56, paddingBottom: 120 }}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1A1A1A" />}
+        showsVerticalScrollIndicator={false}
       >
-        <View style={s.zone}>
-          <Text style={s.title}>Account</Text>
+        <Text
+          style={{
+            fontSize: 28,
+            fontWeight: "800",
+            color: "#1A1A1A",
+            letterSpacing: -0.4,
+            marginHorizontal: 24,
+            marginBottom: 12,
+          }}
+        >
+          Account
+        </Text>
 
-          {/* ——— Player Card ——— */}
-          <Animated.View style={[s.card, { opacity: cardOpacity, transform: [{ translateY: cardTranslateY }] }]}>
-            {/* Profile row */}
-            <View style={s.cardTop}>
-              <Pressable style={s.avatarWrap} onPress={() => setShowAvatarPicker(true)}>
-                <Avatar
-                  avatarUrl={profile?.avatar_url ?? null}
-                  fallbackLetter={initial}
-                  size={56}
-                />
-                <AvatarRing />
-              </Pressable>
-              <View style={{ flex: 1 }}>
-                <Text style={s.cardEmail} numberOfLines={1}>{profile?.display_name ?? session?.user?.email}</Text>
-                <Text style={s.cardMeta}>{goal} · {equipment}</Text>
-                <View style={s.rankBadge}>
-                  <Text style={s.rankText}>{trainingHistory}</Text>
-                </View>
-              </View>
-            </View>
+        <AccountHero
+          name={profile?.display_name ?? (userEmail?.split("@")[0] ?? "Athlete")}
+          email={userEmail}
+          avatarUrl={profile?.avatar_url}
+          onAvatarPress={() => setAvatarPickerOpen(true)}
+        />
 
-            {/* Stats pills */}
-            <View style={s.statPills}>
-              <View style={s.statPill}>
-                <Text style={s.spVal}>{calories}</Text>
-                <Text style={s.spLabel}>Cal / Day</Text>
-              </View>
-              <View style={s.statPill}>
-                <Text style={s.spVal}>{daysPerWeek}</Text>
-                <Text style={s.spLabel}>Days / Wk</Text>
-              </View>
-              <View style={s.statPill}>
-                <Text style={[s.spVal, equipment.length > 6 && { fontSize: 14 }]}>{equipment}</Text>
-                <Text style={s.spLabel}>Equipment</Text>
-              </View>
-            </View>
-          </Animated.View>
+        <SectionHeading>Settings</SectionHeading>
+        <View style={{ marginHorizontal: 20, gap: 10 }}>
+          <SettingsRow
+            icon={<ProfileIcon />}
+            label="Profile"
+            onPress={() => router.push("/(app)/account-profile" as any)}
+          />
+          <SettingsRow
+            icon={<GoalIcon />}
+            label="Your Goal"
+            onPress={() => router.push("/(app)/account-goal" as any)}
+          />
+          <SettingsRow
+            icon={<TrainingIcon />}
+            label="Training"
+            onPress={() => router.push("/(app)/account-training" as any)}
+          />
+          <SettingsRow
+            icon={<NutritionIcon />}
+            label="Nutrition"
+            onPress={() => router.push("/(app)/account-nutrition" as any)}
+          />
+          <SettingsRow
+            icon={<PreferencesIcon />}
+            label="Preferences"
+            onPress={() => router.push("/(app)/account-preferences" as any)}
+          />
+        </View>
 
-          {/* ——— Training Actions ——— */}
-          <Animated.View style={[s.agroup, { opacity: group1Opacity, transform: [{ translateY: group1TranslateY }] }]}>
-            <ActionRow icon="🔄" iconBg="rgba(52,211,153,0.08)" label="Regenerate Workout Plan"
-              onPress={() => router.push("/(app)/generate-plan" as any)} />
-            <ActionRow icon="📋" iconBg="rgba(245,158,11,0.08)" label="Weekly Check-in"
-              onPress={() => router.push("/(app)/checkin" as any)} isLast />
-          </Animated.View>
+        <SectionHeading>Support</SectionHeading>
+        <View style={{ marginHorizontal: 20, gap: 10 }}>
+          <SettingsRow
+            icon={<HelpIcon />}
+            label="Help & Legal"
+            onPress={() => router.push("/(app)/account-help" as any)}
+          />
+        </View>
 
-          {/* ——— Progress Actions ——— */}
-          <Animated.View style={[s.agroup, { opacity: group2Opacity, transform: [{ translateY: group2TranslateY }] }]}>
-            <ActionRow icon="🏆" iconBg="rgba(99,102,241,0.08)" label="Achievements"
-              onPress={() => router.push("/(app)/achievements" as any)} />
-            <ActionRow icon="📊" iconBg="#EDEBE5" label="Weekly Summary"
-              onPress={() => router.push("/(app)/weekly-summary" as any)} isLast />
-          </Animated.View>
-
-          {/* ——— Sign Out ——— */}
-          <Pressable onPress={handleSignOut} style={s.signout}>
-            <Text style={s.signoutText}>Sign Out</Text>
+        {/* Exit actions */}
+        <View style={{ marginHorizontal: 20, marginTop: 28, marginBottom: 8, alignItems: "center", gap: 4 }}>
+          <Pressable
+            onPress={handleSignOut}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 10, paddingHorizontal: 16 })}
+          >
+            <Text style={{ fontSize: 15, fontWeight: "600", color: "#1A1A1A", letterSpacing: -0.1 }}>
+              Sign Out
+            </Text>
+          </Pressable>
+          <Pressable
+            onPress={() => setDeleteConfirmOpen(true)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 6, paddingHorizontal: 16 })}
+          >
+            <Text style={{ fontSize: 13, color: "#EF4444" }}>Delete Account</Text>
           </Pressable>
         </View>
+
+        <Text
+          style={{
+            textAlign: "center",
+            fontSize: 11,
+            color: "#9A9A92",
+            opacity: 0.7,
+            marginTop: 12,
+          }}
+        >
+          Revive v1.2.4
+        </Text>
       </ScrollView>
+
       <AvatarPicker
-        visible={showAvatarPicker}
+        visible={avatarPickerOpen}
         userId={session?.user?.id ?? ""}
         currentAvatar={profile?.avatar_url ?? null}
-        displayName={profile?.display_name ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
-        onClose={() => setShowAvatarPicker(false)}
-        onAvatarChanged={(url) => setProfile((p: any) => ({ ...p, avatar_url: url || null }))}
+        displayName={profile?.display_name ?? userEmail.split("@")[0] ?? "Athlete"}
+        onClose={() => setAvatarPickerOpen(false)}
+        onAvatarChanged={() => reload()}
+      />
+
+      <ConfirmModal
+        visible={deleteConfirmOpen}
+        title="Delete account?"
+        body="This permanently removes all your workouts, meals, and progress data. You can't undo this."
+        cancelLabel="Cancel"
+        applyLabel="Delete"
+        destructive
+        onCancel={() => setDeleteConfirmOpen(false)}
+        onApply={handleDelete}
       />
     </View>
   );
 }
-
-const s = StyleSheet.create({
-  zone: { paddingHorizontal: 20, paddingTop: 56 },
-  title: { fontSize: 24, fontWeight: "800", color: "#2D2A24", marginBottom: 20 },
-
-  // Player card
-  card: {
-    backgroundColor: "#2D2A24",
-    borderRadius: 24,
-    padding: 24,
-    marginBottom: 20,
-    overflow: "hidden",
-  },
-  cardTop: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 16,
-    marginBottom: 18,
-  },
-  avatarWrap: {
-    width: 56, height: 56,
-    position: "relative",
-    flexShrink: 0,
-  },
-  avatar: {
-    width: 56, height: 56, borderRadius: 28,
-    backgroundColor: "rgba(52,211,153,0.12)",
-    alignItems: "center", justifyContent: "center",
-  },
-  avatarText: { fontSize: 24, fontWeight: "800", color: "#34D399" },
-  cardEmail: { fontSize: 14, fontWeight: "600", color: "#F6F5F0" },
-  cardMeta: { fontSize: 11, color: "#8E8E7A", marginTop: 2 },
-  rankBadge: {
-    alignSelf: "flex-start",
-    paddingHorizontal: 10, paddingVertical: 3,
-    borderRadius: 99,
-    backgroundColor: "rgba(52,211,153,0.1)",
-    marginTop: 6,
-  },
-  rankText: {
-    fontSize: 10, fontWeight: "700", color: "#34D399",
-    textTransform: "uppercase", letterSpacing: 0.5,
-  },
-
-  // Stat pills
-  statPills: { flexDirection: "row", gap: 6 },
-  statPill: {
-    flex: 1,
-    padding: 10,
-    backgroundColor: "rgba(255,255,255,0.04)",
-    borderRadius: 12,
-    borderWidth: 1, borderColor: "rgba(255,255,255,0.04)",
-    alignItems: "center",
-  },
-  spVal: { fontSize: 18, fontWeight: "800", color: "#F6F5F0", lineHeight: 22 },
-  spLabel: {
-    fontSize: 8, fontWeight: "600", color: "#8E8E7A",
-    textTransform: "uppercase", letterSpacing: 0.5, marginTop: 2,
-  },
-
-  // Action groups
-  agroup: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 18,
-    overflow: "hidden",
-    marginBottom: 10,
-    borderWidth: 1, borderColor: "rgba(0,0,0,0.04)",
-  },
-  arow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  arowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: "rgba(0,0,0,0.04)",
-  },
-  aIcon: {
-    width: 32, height: 32, borderRadius: 9,
-    alignItems: "center", justifyContent: "center",
-  },
-  aText: { flex: 1, fontSize: 14, fontWeight: "600", color: "#2D2A24" },
-  aArrow: { fontSize: 15, color: "#DEDBD4" },
-
-  // Sign out
-  signout: {
-    alignItems: "center",
-    paddingVertical: 16,
-    marginTop: 6,
-  },
-  signoutText: { fontSize: 13, fontWeight: "600", color: "#EF4444", opacity: 0.6 },
-});

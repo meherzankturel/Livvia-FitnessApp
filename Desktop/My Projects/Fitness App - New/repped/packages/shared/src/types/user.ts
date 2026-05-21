@@ -39,9 +39,20 @@ export const dietaryPreferences = [
 ] as const;
 export type DietaryPreference = (typeof dietaryPreferences)[number];
 
+export const meatOptions = [
+  "chicken",
+  "turkey",
+  "beef",
+  "lamb",
+  "pork",
+  "fish",
+  "shrimp",
+] as const;
+export type MeatPreference = (typeof meatOptions)[number];
+
 export const UserProfileSchema = z.object({
   id: z.string().uuid(),
-  age: z.number().int().min(13).max(100),
+  date_of_birth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   weight_kg: z.number().positive(),
   height_cm: z.number().positive(),
   sex: z.enum(sexOptions),
@@ -51,6 +62,7 @@ export const UserProfileSchema = z.object({
   equipment: z.enum(equipmentOptions),
   days_per_week: z.number().int().min(2).max(7),
   dietary_preference: z.enum(dietaryPreferences),
+  meat_preferences: z.array(z.enum(meatOptions)).default([]),
   tdee: z.number().positive().optional(),
   onboarding_completed: z.boolean().default(false),
   food_exclusions: z.array(z.string()).default([]),

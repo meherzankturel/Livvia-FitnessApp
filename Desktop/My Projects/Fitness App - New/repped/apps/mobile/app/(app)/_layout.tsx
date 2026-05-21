@@ -1,6 +1,19 @@
 import { Tabs } from "expo-router";
-import { View } from "react-native";
+import { View, Image } from "react-native";
 import LiquidGlassTabBar from "../../src/components/LiquidGlassTabBar";
+
+const tabTodayIcon = require("../../assets/tab-today.png");
+const tabNutritionIcon = require("../../assets/tab-nutrition.png");
+const tabProgressIcon = require("../../assets/tab-progress.png");
+const tabAccountIcon = require("../../assets/tab-account.png");
+
+const TAB_ICON_SIZE = 26;
+
+const TabIcon = ({ source, color }: { source: any; color: string }) => (
+  <View style={{ width: TAB_ICON_SIZE, height: TAB_ICON_SIZE, alignItems: "center", justifyContent: "center" }}>
+    <Image source={source} style={{ width: TAB_ICON_SIZE, height: TAB_ICON_SIZE, tintColor: color }} resizeMode="contain" />
+  </View>
+);
 
 export default function AppLayout() {
   return (
@@ -8,7 +21,6 @@ export default function AppLayout() {
       tabBar={(props) => <LiquidGlassTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        // These are needed for the custom tabBar icons to receive props
         tabBarActiveTintColor: "#0090ff",
         tabBarInactiveTintColor: "rgba(255,255,255,0.35)",
       }}
@@ -17,99 +29,28 @@ export default function AppLayout() {
         name="index"
         options={{
           title: "Today",
-          tabBarIcon: ({ color, focused }) => (
-            <View
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 12,
-                borderWidth: 2.5,
-                borderColor: color,
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              {focused && (
-                <View
-                  style={{
-                    width: 7,
-                    height: 7,
-                    borderRadius: 3.5,
-                    backgroundColor: color,
-                  }}
-                />
-              )}
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <TabIcon source={tabTodayIcon} color={color} />,
         }}
       />
       <Tabs.Screen
         name="meals"
         options={{
-          title: "Nutrition",
-          tabBarIcon: ({ color }) => (
-            <View style={{ alignItems: "center", justifyContent: "center" }}>
-              <View
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: 5,
-                  borderWidth: 2,
-                  borderColor: color,
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <View style={{ width: 9, height: 1.5, backgroundColor: color, borderRadius: 1, marginBottom: 2 }} />
-                <View style={{ width: 13, height: 1.5, backgroundColor: color, borderRadius: 1, marginBottom: 2 }} />
-                <View style={{ width: 7, height: 1.5, backgroundColor: color, borderRadius: 1 }} />
-              </View>
-            </View>
-          ),
+          title: "Meals",
+          tabBarIcon: ({ color }) => <TabIcon source={tabNutritionIcon} color={color} />,
         }}
       />
       <Tabs.Screen
         name="progress"
         options={{
           title: "Progress",
-          tabBarIcon: ({ color }) => (
-            <View style={{ flexDirection: "row", gap: 2.5, alignItems: "flex-end", height: 20 }}>
-              <View style={{ width: 4.5, height: 7, backgroundColor: color, borderRadius: 1.5 }} />
-              <View style={{ width: 4.5, height: 13, backgroundColor: color, borderRadius: 1.5 }} />
-              <View style={{ width: 4.5, height: 20, backgroundColor: color, borderRadius: 1.5 }} />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <TabIcon source={tabProgressIcon} color={color} />,
         }}
       />
       <Tabs.Screen
         name="settings"
         options={{
           title: "Account",
-          tabBarIcon: ({ color }) => (
-            <View style={{ alignItems: "center" }}>
-              <View
-                style={{
-                  width: 11,
-                  height: 11,
-                  borderRadius: 5.5,
-                  borderWidth: 2,
-                  borderColor: color,
-                  marginBottom: 1,
-                }}
-              />
-              <View
-                style={{
-                  width: 18,
-                  height: 9,
-                  borderTopLeftRadius: 9,
-                  borderTopRightRadius: 9,
-                  borderWidth: 2,
-                  borderBottomWidth: 0,
-                  borderColor: color,
-                }}
-              />
-            </View>
-          ),
+          tabBarIcon: ({ color }) => <TabIcon source={tabAccountIcon} color={color} />,
         }}
       />
       {/* Hidden screens */}
@@ -119,11 +60,21 @@ export default function AppLayout() {
       <Tabs.Screen name="injury-check" options={{ href: null }} />
       <Tabs.Screen name="warmup" options={{ href: null }} />
       <Tabs.Screen name="cooldown" options={{ href: null }} />
+      <Tabs.Screen name="conditioning-player" options={{ href: null }} />
       <Tabs.Screen name="wellness" options={{ href: null }} />
       <Tabs.Screen name="recipe" options={{ href: null }} />
       <Tabs.Screen name="grocery-list" options={{ href: null }} />
       <Tabs.Screen name="achievements" options={{ href: null }} />
       <Tabs.Screen name="weekly-summary" options={{ href: null }} />
+      <Tabs.Screen name="meal-history" options={{ href: null }} />
+      <Tabs.Screen name="account-profile" options={{ href: null }} />
+      <Tabs.Screen name="account-goal" options={{ href: null }} />
+      <Tabs.Screen name="account-training" options={{ href: null }} />
+      <Tabs.Screen name="account-nutrition" options={{ href: null }} />
+      <Tabs.Screen name="account-preferences" options={{ href: null }} />
+      <Tabs.Screen name="account-help" options={{ href: null }} />
+      <Tabs.Screen name="privacy-policy" options={{ href: null }} />
+      <Tabs.Screen name="terms-conditions" options={{ href: null }} />
 
     </Tabs>
   );

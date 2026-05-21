@@ -1,17 +1,17 @@
 import { View, Text, ScrollView, RefreshControl } from "react-native";
+import { router } from "expo-router";
 import { useEffect, useState, useCallback } from "react";
 import {
   useAuthStore,
   calculateVolumeLoad,
   calculateWorkoutStreak,
   calculateMacros,
+  ACHIEVEMENT_DEFINITIONS,
 } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
 import { ProgressSkeleton } from "../../src/components/SkeletonLoader";
 import {
-  DayStrip,
-  getTodayIndex,
   getWeekBounds,
   OverviewBento,
   NutritionCard,
@@ -20,12 +20,6 @@ import {
 } from "../../src/components/progress-v2";
 
 // ─── Date helpers ────────────────────────────────────────────────────────────
-
-/** "29 Apr 2026" */
-function formatDateLabel(): string {
-  const now = new Date();
-  return now.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
-}
 
 /** "Apr 21 – 27" */
 function formatWeekLabel(): string {
@@ -47,8 +41,13 @@ export default function Progress() {
   const [refreshing, setRefreshing] = useState(false);
 
   // ── Day strip ──────────────────────────────────────────────────────────────
-  const [selectedDay, setSelectedDay] = useState(getTodayIndex());
   const [completedDays, setCompletedDays] = useState<Set<number>>(new Set());
+
+  // ── Overview (steps / calories / heart rate) ───────────────────────────────
+  const [steps, setSteps] = useState(0);
+  const [stepsGoal, setStepsGoal] = useState(10000);
+  const [activeCalories, setActiveCalories] = useState(0);
+  const [heartRate, setHeartRate] = useState(0);
 
   // ── Nutrition ──────────────────────────────────────────────────────────────
   const [nutritionActual, setNutritionActual] = useState({ calories: 0, protein: 0, carbs: 0, fat: 0 });
@@ -59,6 +58,7 @@ export default function Progress() {
 
   // ── Achievements ───────────────────────────────────────────────────────────
   const [earnedCount, setEarnedCount] = useState(0);
+  const [recentBadgeKeys, setRecentBadgeKeys] = useState<string[]>([]);
 
   // ── Weekly ─────────────────────────────────────────────────────────────────
   const [weekWorkouts, setWeekWorkouts] = useState(0);
@@ -101,7 +101,7 @@ export default function Progress() {
     // ── Profile (single) ──
     const profileRes = await (supabase as any)
       .from("profiles")
-      .select("tdee, goal, weight_kg")
+      .select("tdee, goal, weight_kg, days_per_week")
       .eq("id", uid)
       .single();
 
@@ -116,8 +116,6 @@ export default function Progress() {
       mealLogsTodayRes,
       // Last week workout logs (for volume comparison)
       lastWeekWorkoutLogsRes,
-      // Plans (for planned count)
-      plansRes,
       // PRs this week
       weekPRsRes,
     ] = await Promise.all([
@@ -136,8 +134,9 @@ export default function Progress() {
         .order("started_at", { ascending: false }),
       (supabase as any)
         .from("user_achievements")
-        .select("id")
-        .eq("user_id", uid),
+        .select("achieved_at, achievements(key)")
+        .eq("user_id", uid)
+        .order("achieved_at", { ascending: false }),
       (supabase as any)
         .from("meal_logs")
         .select("calories, protein_g, carbs_g, fat_g")
@@ -150,11 +149,6 @@ export default function Progress() {
         .eq("skipped", false)
         .gte("started_at", lastWeekStart.toISOString())
         .lt("started_at", weekStartISO),
-      (supabase as any)
-        .from("workout_plans")
-        .select("id")
-        .eq("user_id", uid)
-        .eq("is_rest_day", false),
       (supabase as any)
         .from("personal_records")
         .select("id, exercise_id")
@@ -192,7 +186,17 @@ export default function Progress() {
     setStreak(calculateWorkoutStreak(workoutDates));
 
     // ── Achievements ──
-    setEarnedCount(((achRes.data as any[]) || []).length);
+    const achRows = ((achRes.data as any[]) || []);
+    setEarnedCount(achRows.length);
+    // Take up to 4 most recent and resolve their image keys
+    const recents: string[] = [];
+    for (const row of achRows.slice(0, 4)) {
+      const key = row.achievements?.key as string | undefined;
+      if (!key) continue;
+      const def = ACHIEVEMENT_DEFINITIONS.find((d) => d.key === key);
+      if (def) recents.push(def.imageKey);
+    }
+    setRecentBadgeKeys(recents);
 
     // ── Nutrition ──
     if (profileRes.data) {
@@ -213,7 +217,7 @@ export default function Progress() {
 
     // ── Weekly ──
     const lastWeekLogs = (lastWeekWorkoutLogsRes.data as any[]) || [];
-    const planned = ((plansRes.data as any[]) || []).length;
+    const planned = (profileRes.data as any)?.days_per_week ?? 0;
     setWeekWorkouts(thisWeekLogs.length);
     setWeekPlanned(planned);
     setWeekLabel(formatWeekLabel());
@@ -307,26 +311,18 @@ export default function Progress() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#1a1a1a" />
         }
       >
-        {/* Date row */}
-        <View style={{ paddingTop: 16, paddingBottom: 12, paddingHorizontal: 22, flexDirection: "row" }}>
-          <Text style={{ fontSize: 15, fontWeight: "600", color: "#2DB877" }}>Today, </Text>
-          <Text style={{ fontSize: 15, fontWeight: "600", color: "#1a1a1a" }}>{formatDateLabel()}</Text>
-        </View>
-
-        {/* Day strip */}
-        <DayStrip
-          completedDays={completedDays}
-          selectedDay={selectedDay}
-          onSelectDay={setSelectedDay}
-        />
+        {/* Overview header */}
+        <Text style={{ fontSize: 19, fontWeight: "700", color: "#1a1a1a", paddingHorizontal: 22, paddingTop: 24, paddingBottom: 10 }}>
+          Overview
+        </Text>
 
         {/* Content */}
-        <View style={{ paddingHorizontal: 2, gap: 14, marginTop: 14 }}>
+        <View style={{ paddingHorizontal: 2, gap: 14 }}>
           <OverviewBento
-            steps={7235}
-            stepsGoal={10000}
-            calories={325}
-            heartRate={73}
+            steps={steps}
+            stepsGoal={stepsGoal}
+            calories={activeCalories}
+            heartRate={heartRate}
           />
 
           <NutritionCard
@@ -338,12 +334,14 @@ export default function Progress() {
             carbsGoal={nutritionTargets.carbs_g}
             fat={nutritionActual.fat}
             fatGoal={nutritionTargets.fat_g}
+            onHistoryPress={() => router.push("/(app)/meal-history" as any)}
           />
 
           <StreakAchievementsRow
             streak={streak}
             completedDays={completedDays}
             earnedCount={earnedCount}
+            recentBadgeKeys={recentBadgeKeys}
           />
 
           <WeeklySummaryCard
