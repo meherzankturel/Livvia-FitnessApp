@@ -35,9 +35,10 @@ repped/
 - Tables: profiles, workout_plans, workout_plan_exercises, exercises, set_logs, workout_logs, personal_records, progress_entries, wellness_logs, body_measurements, weekly_checkins, user_achievements, meal_plans
 
 ### API Keys
-- **Gemini (paid):** `AIzaSyAcaiXT_K_1ujombea3IU7i3kvGO3-x9EQ` — supports Imagen 4.0 and Gemini 2.5 Flash Image
-- **Gemini (free/old):** `AIzaSyBp2xgd0zDMAz1xEV7i-6aDn9zMB4ltI60` — rate limited
-- **Google Places:** In `.env`
+> ⚠️ Never paste real API keys in this file (it is committed to git). Store them in
+> untracked `.env` files / the shell environment, and in Supabase function secrets.
+- **Gemini:** set `GEMINI_KEY` in your environment (scripts read `process.env.GEMINI_KEY`); server calls go through the `ext-proxy` Edge Function secret `GEMINI_API_KEY`.
+- **Google Places / Pexels:** server-side only, via the `ext-proxy` Edge Function secrets.
 
 ---
 
@@ -167,7 +168,7 @@ repped/
 `src/lib/exercise-images.ts` exports `getExerciseImage(exerciseName)` which returns a `require()` source or `null`. The `ExerciseDetailCard` component tries this first, falls back to `MuscleIcon` geometric placeholder.
 
 ### Generation Infrastructure
-- **Imagen 4.0 API:** `POST https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=AIzaSyAcaiXT_K_1ujombea3IU7i3kvGO3-x9EQ`
+- **Imagen 4.0 API:** `POST https://generativelanguage.googleapis.com/v1beta/models/imagen-4.0-generate-001:predict?key=$GEMINI_KEY`
 - **Parameters:** `{ sampleCount: 1, aspectRatio: "1:1", personGeneration: "allow_adult", safetySetting: "block_low_and_above" }`
 - **Gemini Flash fallback:** `models/gemini-2.5-flash-image:generateContent` (lower quality but more flexible with prompts)
 

@@ -1,12 +1,13 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { callProxy } from "./ai-proxy";
 
 // ─── Smart Grocery Tips ─────────────────────────────────────────────────────
 // Generates personalized shopping & nutrition tips from the grocery list
-// using Gemini AI. Cached for 24 hours so the card flip is instant.
+// using Gemini AI (via the authenticated ext-proxy Edge Function — no embedded key).
+// Cached for 24 hours so the card flip is instant.
 //
 // Tips are globally relevant — no currency, no region-specific pricing.
 
-const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY || "";
 const CACHE_KEY = "grocery_save_tips";
 const CACHE_EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 hours
 
@@ -50,7 +51,7 @@ export async function generateSaveTips(
   items: { name: string; price: number }[]
 ): Promise<SaveTip[]> {
   const fallback = pickFallbackTips();
-  if (!GEMINI_API_KEY || items.length === 0) return fallback;
+  if (items.length === 0) return fallback;
 
   // Build a fingerprint of the current list so tips refresh when meals change
   const listSummary = items
@@ -87,25 +88,11 @@ Respond ONLY in this exact JSON format, no other text:
 ]`;
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.4,
-            maxOutputTokens: 300,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) return fallback;
-
-    const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || "";
+    const result = await callProxy<{ text: string }>("gemini", {
+      prompt,
+      generationConfig: { temperature: 0.4, maxOutputTokens: 300 },
+    });
+    const text = result?.text || "";
 
     const jsonMatch = text.match(/\[[\s\S]*\]/);
     if (!jsonMatch) return fallback;

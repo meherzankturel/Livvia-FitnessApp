@@ -8,9 +8,11 @@
  * This ensures 100% uniform style.
  */
 
-const GEMINI_KEY = "AIzaSyAcaiXT_K_1ujombea3IU7i3kvGO3-x9EQ";
-const SUPABASE_URL = "https://ihsnqyjspbfgmanulejw.supabase.co";
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imloc25xeWpzcGJmZ21hbnVsZWp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODU2MTQsImV4cCI6MjA4OTM2MTYxNH0.qznaMkeH5ZuAtOT4k3n6D-C51jCm3xZK153rp5tjgD8";
+const GEMINI_KEY = process.env.GEMINI_KEY;
+if (!GEMINI_KEY) throw new Error("Set GEMINI_KEY in your environment (do not hardcode API keys).");
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.EXPO_PUBLIC_SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
+if (!SUPABASE_URL || !SUPABASE_KEY) throw new Error("Set SUPABASE_URL and SUPABASE_ANON_KEY in your environment.");
 const BUCKET = "exercise-images";
 
 // All exercises we need images for

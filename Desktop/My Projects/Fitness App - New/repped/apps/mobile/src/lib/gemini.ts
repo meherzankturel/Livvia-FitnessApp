@@ -1,5 +1,6 @@
-const GEMINI_API_KEY = process.env.EXPO_PUBLIC_GEMINI_API_KEY ?? "";
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+// Gemini is called through the authenticated `ext-proxy` Edge Function — the API key
+// lives server-side and is never shipped in the app bundle.
+import { callProxy } from "./ai-proxy";
 
 export interface DealResult {
   restaurant: string;
@@ -20,8 +21,6 @@ export async function findBestDeals(
   lng: number,
   dietaryPreference?: string
 ): Promise<DealResult[]> {
-  if (!GEMINI_API_KEY) return [];
-
   const dietNote = dietaryPreference && dietaryPreference !== "no_preference"
     ? `\n\nIMPORTANT: The user follows a ${dietaryPreference} diet. ALL suggestions must be ${dietaryPreference}-friendly. Do NOT suggest any non-${dietaryPreference} dishes. Only show restaurants and dishes that strictly match this dietary requirement.`
     : "";
@@ -53,27 +52,12 @@ Sort by estimatedTotal ascending (cheapest first).
 Return ONLY the JSON array, nothing else.`;
 
   try {
-    const response = await fetch(GEMINI_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens: 2048,
-        },
-      }),
+    const result = await callProxy<{ text: string }>("gemini", {
+      prompt,
+      generationConfig: { temperature: 0.3, maxOutputTokens: 2048 },
     });
 
-    const data = await response.json();
-
-    // Check for API errors
-    if (data?.error) {
-      console.warn("Gemini API error:", data.error.message);
-      return [];
-    }
-
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const text = result?.text ?? "";
     if (!text) return [];
 
     // Extract JSON from response (handle markdown code blocks)
@@ -113,7 +97,7 @@ export async function findGroceryDeals(
   lat: number,
   lng: number
 ): Promise<{ store: string; estimatedTotal: string; savings: string; distance: string; url: string }[]> {
-  if (!GEMINI_API_KEY || items.length === 0) return [];
+  if (items.length === 0) return [];
 
   const itemList = items.slice(0, 15).join(", ");
 
@@ -131,19 +115,12 @@ Return EXACTLY a JSON array (no markdown, no explanation) with 3-4 stores. Each 
 Sort by estimatedTotal ascending. Return ONLY the JSON array.`;
 
   try {
-    const response = await fetch(GEMINI_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
-      }),
+    const result = await callProxy<{ text: string }>("gemini", {
+      prompt,
+      generationConfig: { temperature: 0.3, maxOutputTokens: 1024 },
     });
 
-    const data = await response.json();
-    if (data?.error) { console.warn("Gemini grocery error:", data.error.message); return []; }
-
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
+    const text = result?.text ?? "";
     if (!text) return [];
 
     let jsonStr = text.trim();

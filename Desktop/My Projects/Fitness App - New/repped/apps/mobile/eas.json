@@ -1,0 +1,42 @@
+{
+  "cli": {
+    "version": ">= 12.0.0",
+    "appVersionSource": "local"
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ihsnqyjspbfgmanulejw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imloc25xeWpzcGJmZ21hbnVsZWp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODU2MTQsImV4cCI6MjA4OTM2MTYxNH0.qznaMkeH5ZuAtOT4k3n6D-C51jCm3xZK153rp5tjgD8",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "152576386013-4o3v5e1ho3fon98218ak3mm3loftiqqi.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "152576386013-reerhh5gm26nmh17f258iiuethnd1crv.apps.googleusercontent.com"
+      }
+    },
+    "production": {
+      "autoIncrement": true,
+      "ios": {
+        "simulator": false
+      },
+      "env": {
+        "EXPO_PUBLIC_SUPABASE_URL": "https://ihsnqyjspbfgmanulejw.supabase.co",
+        "EXPO_PUBLIC_SUPABASE_ANON_KEY": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imloc25xeWpzcGJmZ21hbnVsZWp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODU2MTQsImV4cCI6MjA4OTM2MTYxNH0.qznaMkeH5ZuAtOT4k3n6D-C51jCm3xZK153rp5tjgD8",
+        "EXPO_PUBLIC_GOOGLE_IOS_CLIENT_ID": "152576386013-4o3v5e1ho3fon98218ak3mm3loftiqqi.apps.googleusercontent.com",
+        "EXPO_PUBLIC_GOOGLE_WEB_CLIENT_ID": "152576386013-reerhh5gm26nmh17f258iiuethnd1crv.apps.googleusercontent.com"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}

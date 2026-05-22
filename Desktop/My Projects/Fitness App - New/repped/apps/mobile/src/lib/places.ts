@@ -1,4 +1,7 @@
-const PLACES_API_KEY = process.env.EXPO_PUBLIC_GOOGLE_PLACES_API_KEY ?? "";
+// Google Places is called through the authenticated `ext-proxy` Edge Function. The
+// API key lives server-side; the proxy also resolves each place's photo to a keyless
+// public Google CDN URL (`photoUri`) so no key is ever needed on the device.
+import { callProxy } from "./ai-proxy";
 
 export interface PlaceResult {
   name: string;
@@ -21,44 +24,19 @@ export async function findNearbyRestaurants(
   lng: number,
   dietaryPreference?: string
 ): Promise<PlaceResult[]> {
-  if (!PLACES_API_KEY) {
-    console.warn("Places API: No API key configured");
-    return [];
-  }
-
   const dietQuery = dietaryPreference && dietaryPreference !== "no_preference"
     ? ` ${dietaryPreference}` : "";
   const query = `${mealName}${dietQuery} restaurant`;
 
   try {
-    const response = await fetch(
-      "https://places.googleapis.com/v1/places:searchText",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": PLACES_API_KEY,
-          "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.currentOpeningHours,places.googleMapsUri,places.photos,places.location",
-        },
-        body: JSON.stringify({
-          textQuery: query,
-          locationBias: {
-            circle: {
-              center: { latitude: lat, longitude: lng },
-              radius: 5000.0, // 5km radius
-            },
-          },
-          maxResultCount: 6,
-        }),
-      }
-    );
-
-    const data = await response.json();
-    if (data.error) {
-      console.warn("Places API error:", data.error.message || JSON.stringify(data.error));
-      return [];
-    }
-    if (!data.places) return [];
+    const data = await callProxy<{ places: any[] }>("places-search", {
+      textQuery: query,
+      lat,
+      lng,
+      radius: 5000,
+      maxResultCount: 6,
+    });
+    if (!data?.places) return [];
 
     return data.places.filter((place: any) => {
       // Only show restaurants that are currently open
@@ -79,11 +57,8 @@ export async function findNearbyRestaurants(
         PRICE_LEVEL_VERY_EXPENSIVE: "$$$$",
       };
 
-      // Photo URL
-      let photoUrl: string | null = null;
-      if (place.photos?.[0]?.name) {
-        photoUrl = `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxHeightPx=200&maxWidthPx=300&key=${PLACES_API_KEY}`;
-      }
+      // Keyless photo URL resolved server-side by the proxy.
+      const photoUrl: string | null = place.photoUri ?? null;
 
       return {
         name: place.displayName?.text ?? "Unknown",
@@ -110,39 +85,17 @@ export async function findNearbyGroceryStores(
   lat: number,
   lng: number
 ): Promise<PlaceResult[]> {
-  if (!PLACES_API_KEY) return [];
-
   try {
-    const response = await fetch(
-      "https://places.googleapis.com/v1/places:searchText",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-Goog-Api-Key": PLACES_API_KEY,
-          "X-Goog-FieldMask": "places.displayName,places.formattedAddress,places.rating,places.priceLevel,places.currentOpeningHours,places.googleMapsUri,places.photos,places.location",
-        },
-        body: JSON.stringify({
-          textQuery: "grocery store supermarket",
-          locationBias: {
-            circle: {
-              center: { latitude: lat, longitude: lng },
-              radius: 8000.0,
-            },
-          },
-          maxResultCount: 5,
-        }),
-      }
-    );
+    const data = await callProxy<{ places: any[] }>("places-search", {
+      textQuery: "grocery store supermarket",
+      lat,
+      lng,
+      radius: 8000,
+      maxResultCount: 5,
+    });
+    if (!data?.places) return [];
 
-    const data = await response.json();
-    if (data.error) {
-      console.warn("Places API grocery error:", data.error.message || JSON.stringify(data.error));
-      return [];
-    }
-    if (!data.places) return [];
-
-    return data.places.map((place: any) => {
+    return data.places.map((place: any): PlaceResult | null => {
       // Skip places with missing location data
       if (!place.location?.latitude || !place.location?.longitude) return null;
 
@@ -155,10 +108,7 @@ export async function findNearbyGroceryStores(
         PRICE_LEVEL_EXPENSIVE: "$$$", PRICE_LEVEL_VERY_EXPENSIVE: "$$$$",
       };
 
-      let photoUrl: string | null = null;
-      if (place.photos?.[0]?.name) {
-        photoUrl = `https://places.googleapis.com/v1/${place.photos[0].name}/media?maxHeightPx=200&maxWidthPx=300&key=${PLACES_API_KEY}`;
-      }
+      const photoUrl: string | null = place.photoUri ?? null;
 
       return {
         name: place.displayName?.text ?? "Unknown",
@@ -171,7 +121,7 @@ export async function findNearbyGroceryStores(
         photoUrl,
         type: "grocery" as const,
       };
-    }).filter(Boolean).sort((a: PlaceResult, b: PlaceResult) => {
+    }).filter((p): p is PlaceResult => p !== null).sort((a: PlaceResult, b: PlaceResult) => {
       // Sort by distance (nearest first) — convert everything to meters
       const toMeters = (d: string): number => {
         const num = parseFloat(d) || 999;

@@ -9,8 +9,8 @@ import type { ImageSourcePropType } from "react-native";
 
 import DISH_IMAGE_MAP from "./dish-image-urls.json";
 import { LOCAL_MEAL_IMAGES } from "./meal-image-assets";
+import { callProxy } from "./ai-proxy";
 
-const PEXELS_API_KEY = process.env.EXPO_PUBLIC_PEXELS_API_KEY || "";
 const CACHE_PREFIX = "dish_img_v3_";
 const CACHE_EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 
@@ -71,36 +71,25 @@ export async function getDishImageUrlAsync(dishName: string): Promise<string | n
 
 // ─── Fetch from Pexels for new/unknown dishes ────────────────────────────────
 export async function fetchDishImage(dishName: string): Promise<string | null> {
-  if (!PEXELS_API_KEY) return null;
-
   try {
     const query = dishName
       .replace(/\(.*?\)/g, "")
       .replace(/\+/g, " ")
       .trim();
 
-    const response = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=1&orientation=landscape`,
-      { headers: { Authorization: PEXELS_API_KEY } }
+    // Pexels is queried server-side via ext-proxy; it returns a public CDN image URL.
+    const result = await callProxy<{ url: string | null }>("pexels", { query });
+    const imageUrl = result?.url ?? null;
+    if (!imageUrl) return null;
+
+    // Cache for future use
+    const key = CACHE_PREFIX + normalizeKey(dishName);
+    await AsyncStorage.setItem(
+      key,
+      JSON.stringify({ url: imageUrl, timestamp: Date.now() })
     );
 
-    if (!response.ok) return null;
-
-    const data = await response.json();
-    if (data.photos && data.photos.length > 0) {
-      const imageUrl = data.photos[0].src.large;
-
-      // Cache for future use
-      const key = CACHE_PREFIX + normalizeKey(dishName);
-      await AsyncStorage.setItem(
-        key,
-        JSON.stringify({ url: imageUrl, timestamp: Date.now() })
-      );
-
-      return imageUrl;
-    }
-
-    return null;
+    return imageUrl;
   } catch {
     return null;
   }

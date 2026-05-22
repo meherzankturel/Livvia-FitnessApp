@@ -6,19 +6,20 @@
     "orientation": "portrait",
     "scheme": "revive",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "splash": {
       "backgroundColor": "#F5EFE3",
       "resizeMode": "contain"
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.revive.app",
+      "bundleIdentifier": "com.getrevive.app",
       "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Revive uses your location to find nearby restaurants and grocery stores for your meal plan.",
         "NSCameraUsageDescription": "Revive uses your camera to take a profile photo.",
         "NSPhotoLibraryUsageDescription": "Revive accesses your photos to set a profile picture.",
+        "ITSAppUsesNonExemptEncryption": false,
         "LSApplicationQueriesSchemes": [
           "youtube",
           "vnd.youtube",
@@ -26,14 +27,22 @@
           "doordash",
           "comgooglemaps",
           "maps"
+        ],
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLSchemes": [
+              "com.googleusercontent.apps.152576386013-4o3v5e1ho3fon98218ak3mm3loftiqqi"
+            ]
+          }
         ]
-      }
+      },
+      "buildNumber": "3"
     },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#000000"
       },
-      "package": "com.revive.app"
+      "package": "com.getrevive.app"
     },
     "web": {
       "bundler": "metro",
@@ -47,7 +56,20 @@
         }
       ],
       "expo-web-browser",
-      "expo-apple-authentication"
-    ]
+      "expo-apple-authentication",
+      "expo-notifications",
+      "expo-secure-store",
+      "expo-font",
+      "expo-localization"
+    ],
+    "extra": {
+      "router": {
+        "root": "./app"
+      },
+      "eas": {
+        "projectId": "4ed3d798-0720-4c65-8aa7-294eff601ebe"
+      }
+    },
+    "owner": "meherzan"
   }
 }

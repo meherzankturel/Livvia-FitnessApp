@@ -1,7 +1,8 @@
 /**
  * Fix the 4 remaining incorrect exercise images with hyper-specific prompts.
  */
-const GEMINI_KEY = "AIzaSyAcaiXT_K_1ujombea3IU7i3kvGO3-x9EQ";
+const GEMINI_KEY = process.env.GEMINI_KEY;
+if (!GEMINI_KEY) throw new Error("Set GEMINI_KEY in your environment (do not hardcode API keys).");
 const fs = require("fs");
 const path = require("path");
 

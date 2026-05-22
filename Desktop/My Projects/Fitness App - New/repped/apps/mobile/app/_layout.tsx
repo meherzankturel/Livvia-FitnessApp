@@ -12,6 +12,7 @@ import {
 } from "@expo-google-fonts/quicksand";
 import { useAuthStore } from "@repped/shared";
 import { supabase } from "../src/lib/supabase";
+import { registerForPushNotifications } from "../src/lib/push-notifications";
 import { SplashAnimation } from "../src/components/SplashAnimation";
 
 // Hold the native splash open until JS has mounted and our animated splash overlay is in place.
@@ -68,6 +69,16 @@ export default function RootLayout() {
       subscription.unsubscribe();
     };
   }, []);
+
+  // Register this device for push once the user is signed in. Safe to re-run
+  // (it upserts); no-ops on simulators / Expo Go. Failures are non-fatal.
+  useEffect(() => {
+    const userId = session?.user?.id;
+    if (!userId) return;
+    registerForPushNotifications(userId).then(({ error }) => {
+      if (error) console.log("[push] registration skipped:", error.message);
+    });
+  }, [session?.user?.id]);
 
   // Routing + bootstrap completion
   useEffect(() => {
