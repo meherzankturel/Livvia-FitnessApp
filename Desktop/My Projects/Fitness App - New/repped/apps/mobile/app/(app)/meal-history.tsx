@@ -20,6 +20,7 @@ import { router } from "expo-router";
 import { useAuthStore, GOAL_CALORIE_FRACTION } from "@repped/shared";
 import type { Goal } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
+import { BackButton } from "../../src/components/BackButton";
 import { TopoBackground } from "../../src/components/terrain";
 
 const C = {
@@ -208,7 +209,7 @@ export default function MealHistory() {
           style={{ padding: 16 }}
         >
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth }}>
+            <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth }}>
               {formatDayHeader(item.date)}
             </Text>
             <View style={{ backgroundColor: vis.bg, paddingHorizontal: 10, paddingVertical: 4, borderRadius: 100 }}>
@@ -216,7 +217,7 @@ export default function MealHistory() {
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "baseline", gap: 6, marginBottom: 6 }}>
-            <Text style={{ fontSize: 22, fontWeight: "800", color: C.earth }}>
+            <Text style={{ fontSize: 22, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth }}>
               {item.totalCalories.toLocaleString()}
             </Text>
             <Text style={{ fontSize: 12, color: C.rock, fontWeight: "600" }}>
@@ -225,7 +226,7 @@ export default function MealHistory() {
           </View>
           <View style={{ flexDirection: "row", gap: 14 }}>
             <Text style={{ fontSize: 12, color: C.rock }}>
-              <Text style={{ fontWeight: "700", color: "#EF4444" }}>{item.totalProtein}g</Text> P
+              <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#EF4444" }}>{item.totalProtein}g</Text> P
             </Text>
             <Text style={{ fontSize: 12, color: C.rock }}>
               <Text style={{ fontWeight: "700", color: "#F59E0B" }}>{item.totalCarbs}g</Text> C
@@ -243,7 +244,7 @@ export default function MealHistory() {
             {item.meals.map((m, i) => (
               <View key={`${m.meal_name}-${m.logged_at}-${i}`} style={{ marginBottom: 10 }}>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "baseline", marginBottom: 2 }}>
-                  <Text style={{ fontSize: 11, fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 0.6 }}>
+                  <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 0.6 }}>
                     {mealTypeLabel(m.meal_type)}
                   </Text>
                   <Text style={{ fontSize: 12, fontWeight: "700", color: C.earth }}>{m.calories} cal</Text>
@@ -310,7 +311,7 @@ export default function MealHistory() {
         borderBottomWidth: 0.5,
         borderBottomColor: "rgba(45,42,36,0.08)",
       }}>
-        <Text style={{ fontSize: 11, fontWeight: "700", color: C.earth, letterSpacing: 1.2 }}>
+        <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, letterSpacing: 1.2 }}>
           {section.title}
         </Text>
         <Text style={{ fontSize: 11, color: C.rock, fontWeight: "500" }}>
@@ -344,13 +345,8 @@ export default function MealHistory() {
       <TopoBackground />
       {/* Header */}
       <View style={{ paddingTop: 56, paddingBottom: 8, paddingHorizontal: 24, flexDirection: "row", alignItems: "center", gap: 12 }}>
-        <Pressable
-          onPress={() => router.replace("/(app)/progress" as any)}
-          style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: C.stone, alignItems: "center", justifyContent: "center" }}
-        >
-          <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth }}>‹</Text>
-        </Pressable>
-        <Text style={{ fontSize: 22, fontWeight: "800", color: C.earth }}>Nutrition History</Text>
+        <BackButton onPress={() => router.replace("/(app)/progress" as any)} />
+        <Text style={{ fontSize: 22, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth }}>Nutrition History</Text>
       </View>
 
       {loading ? (
@@ -360,7 +356,7 @@ export default function MealHistory() {
       ) : buckets.length === 0 ? (
         <View style={{ flex: 1, alignItems: "center", justifyContent: "center", paddingHorizontal: 32 }}>
           <Text style={{ fontSize: 48, marginBottom: 12 }}>🍽️</Text>
-          <Text style={{ fontSize: 16, fontWeight: "700", color: C.earth, marginBottom: 6, textAlign: "center" }}>
+          <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 6, textAlign: "center" }}>
             No logged meals yet
           </Text>
           <Text style={{ fontSize: 13, color: C.rock, textAlign: "center", lineHeight: 18 }}>
@@ -422,7 +418,7 @@ export default function MealHistory() {
                 justifyContent: "center",
               }}
             >
-              <Text style={{ color: C.sand, fontSize: 18, fontWeight: "700" }}>↑</Text>
+              <Text style={{ color: C.sand, fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>↑</Text>
             </Pressable>
           </Animated.View>
         </>

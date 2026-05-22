@@ -231,7 +231,7 @@ export default function AwardPreviewModal({ visible, onClose, badge }: Props) {
               { backgroundColor: badge.earned ? `${tierInfo.color}20` : "#F2F2F7" },
             ]}
           >
-            <Text style={{ color: badge.earned ? tierInfo.color : "#8E8E93", fontSize: 12, fontWeight: "700", letterSpacing: 0.5 }}>
+            <Text style={{ color: badge.earned ? tierInfo.color : "#8E8E93", fontSize: 12, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 0.5 }}>
               {tierInfo.label.toUpperCase()}
             </Text>
           </View>
@@ -249,14 +249,14 @@ export default function AwardPreviewModal({ visible, onClose, badge }: Props) {
           {/* Status */}
           {badge.earned ? (
             <View style={[tw`w-full rounded-2xl p-4 items-center`, { backgroundColor: "rgba(34,197,94,0.08)" }]}>
-              <Text style={{ color: "#22C55E", fontSize: 13, fontWeight: "700", letterSpacing: 0.5 }}>EARNED</Text>
+              <Text style={{ color: "#22C55E", fontSize: 13, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 0.5 }}>EARNED</Text>
               {badge.earnedDate && (
                 <Text style={{ color: "#8E8E93", fontSize: 12, marginTop: 4 }}>{badge.earnedDate}</Text>
               )}
             </View>
           ) : (
             <View style={[tw`w-full rounded-2xl p-4`, { backgroundColor: "#F2F2F7" }]}>
-              <Text style={{ color: "#8E8E93", fontSize: 11, fontWeight: "600", letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 4 }}>
+              <Text style={{ color: "#8E8E93", fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", letterSpacing: 0.5, textTransform: "uppercase", marginBottom: 4 }}>
                 HOW TO UNLOCK
               </Text>
               <Text style={{ color: "#636366", fontSize: 14, lineHeight: 20 }}>
@@ -270,7 +270,7 @@ export default function AwardPreviewModal({ visible, onClose, badge }: Props) {
             onPress={handleClose}
             style={[tw`mt-5 w-full rounded-2xl py-3 items-center`, { backgroundColor: "#F2F2F7" }]}
           >
-            <Text style={{ color: "#1C1C1E", fontSize: 16, fontWeight: "600" }}>Close</Text>
+            <Text style={{ color: "#1C1C1E", fontSize: 16, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Close</Text>
           </Pressable>
         </Animated.View>
       </Animated.View>

@@ -168,7 +168,7 @@ const s = StyleSheet.create({
     fontSize: 9,
     color: rock,
     letterSpacing: 1.5,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     marginBottom: 2,
   },
   headerDate: {
@@ -190,7 +190,7 @@ const s = StyleSheet.create({
   },
   statValue: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: earth,
   },
   statLabel: {
@@ -207,14 +207,14 @@ const s = StyleSheet.create({
   },
   prBadge: {
     fontSize: 12,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
     marginBottom: 6,
   },
   prItem: {
     fontSize: 11,
     color: "#047857",
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     marginTop: 2,
   },
   weightRow: {
@@ -229,7 +229,7 @@ const s = StyleSheet.create({
   weightText: {
     fontSize: 12,
     color: earth,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   weightDelta: {
     fontSize: 12,
@@ -243,7 +243,7 @@ const s = StyleSheet.create({
   },
   shareBtnText: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: sand,
   },
 });

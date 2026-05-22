@@ -589,7 +589,7 @@ export default function WorkoutPlayer() {
       <View style={{ flex: 1, backgroundColor: C.bg, justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
 
-        <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, marginBottom: 8, textAlign: "center" }}>
+        <Text style={{ fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 8, textAlign: "center" }}>
           Burn?
         </Text>
         <Text style={{ fontSize: 14, color: C.rock, textAlign: "center", marginBottom: 8 }}>
@@ -612,7 +612,7 @@ export default function WorkoutPlayer() {
                 justifyContent: "space-between",
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth }}>{e.name}</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>{e.name}</Text>
               <Text style={{ fontSize: 12, color: C.rock }}>{e.duration_seconds}s</Text>
             </View>
           ))}
@@ -629,7 +629,7 @@ export default function WorkoutPlayer() {
             marginBottom: 12,
           }}
         >
-          <Text style={{ color: C.bg, fontSize: 18, fontWeight: "700" }}>Let's Go</Text>
+          <Text style={{ color: C.bg, fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Let's Go</Text>
         </Pressable>
         <Pressable
           onPress={skipFinisher}
@@ -680,7 +680,7 @@ export default function WorkoutPlayer() {
             <Text
               style={{
                 fontSize: 11,
-                fontWeight: "700",
+                fontFamily: "Quicksand_700Bold", fontWeight: "700",
                 color: fEx.type === "hiit" ? "#F59E0B" : "#6366F1",
                 textTransform: "uppercase",
                 letterSpacing: 0.8,
@@ -690,7 +690,7 @@ export default function WorkoutPlayer() {
             </Text>
           </View>
 
-          <Text style={{ fontSize: 20, fontWeight: "700", color: C.earth, marginBottom: 16, textAlign: "center" }}>
+          <Text style={{ fontSize: 20, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 16, textAlign: "center" }}>
             {fEx.name}
           </Text>
           <Text style={{ fontSize: 48, fontWeight: "800", color: C.earth, marginBottom: 16 }}>
@@ -722,7 +722,7 @@ export default function WorkoutPlayer() {
     return (
       <View style={{ flex: 1, backgroundColor: C.bg, justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
-        <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, marginBottom: 8 }}>Finisher Crushed!</Text>
+        <Text style={{ fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 8 }}>Finisher Crushed!</Text>
         <Text style={{ fontSize: 15, color: C.rock, textAlign: "center", marginBottom: 32 }}>
           That extra burn makes all the difference.
         </Text>
@@ -735,7 +735,7 @@ export default function WorkoutPlayer() {
             paddingVertical: 16,
           }}
         >
-          <Text style={{ color: C.bg, fontSize: 16, fontWeight: "600" }}>Continue</Text>
+          <Text style={{ color: C.bg, fontSize: 16, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Continue</Text>
         </Pressable>
       </View>
     );
@@ -747,14 +747,14 @@ export default function WorkoutPlayer() {
       <View style={{ flex: 1, backgroundColor: C.bg, justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
 
-        <Text style={{ fontSize: 28, fontWeight: "700", color: C.earth, marginBottom: 24 }}>
+        <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 24 }}>
           Summit Reached!
         </Text>
 
         {/* Stats bento grid 2x2 */}
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 12, width: "100%" }}>
           <BentoWidget variant="stone" style={{ flex: 1 }}>
-            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 4 }}>
+            <Text style={{ fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 4 }}>
               EXERCISES
             </Text>
             <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth }}>{exercises.length}</Text>
@@ -763,7 +763,7 @@ export default function WorkoutPlayer() {
             <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 4 }}>
               DURATION
             </Text>
-            <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth }}>{formatElapsed(elapsed)}</Text>
+            <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth }}>{formatElapsed(elapsed)}</Text>
           </BentoWidget>
         </View>
         <View style={{ flexDirection: "row", gap: 12, marginBottom: 32, width: "100%" }}>
@@ -771,7 +771,7 @@ export default function WorkoutPlayer() {
             <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 4 }}>
               VOLUME
             </Text>
-            <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth }}>
+            <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth }}>
               {loggedSets.reduce((sum, s) => sum + s.weightKg * s.reps, 0).toLocaleString()} kg
             </Text>
           </BentoWidget>
@@ -779,7 +779,7 @@ export default function WorkoutPlayer() {
             <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 4 }}>
               FOCUS
             </Text>
-            <Text style={{ fontSize: 18, fontWeight: "700", color: C.bg }}>{focus || "Full Body"}</Text>
+            <Text style={{ fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.bg }}>{focus || "Full Body"}</Text>
           </BentoWidget>
         </View>
 
@@ -796,7 +796,7 @@ export default function WorkoutPlayer() {
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 9, fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 6 }}>
+            <Text style={{ fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase", letterSpacing: 0.8, color: C.rock, marginBottom: 6 }}>
               SESSION INTENSITY
             </Text>
             <Text style={{ fontSize: 22, fontWeight: "800", color: C.earth, marginBottom: 4 }}>
@@ -820,7 +820,7 @@ export default function WorkoutPlayer() {
             alignItems: "center",
           }}
         >
-          <Text style={{ color: C.earth, fontSize: 17, fontWeight: "700" }}>Cool Down</Text>
+          <Text style={{ color: C.earth, fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Cool Down</Text>
         </Pressable>
         <Pressable
           onPress={() => router.replace("/(app)")}
@@ -867,7 +867,7 @@ export default function WorkoutPlayer() {
         {/* Elapsed time at top */}
         <View style={{ position: "absolute", top: 64, right: 24 }}>
           <View style={{ backgroundColor: C.stone, borderRadius: 100, paddingHorizontal: 12, paddingVertical: 4 }}>
-            <Text style={{ color: C.earth, fontSize: 13, fontWeight: "600" }}>{formatElapsed(elapsed)}</Text>
+            <Text style={{ color: C.earth, fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>{formatElapsed(elapsed)}</Text>
           </View>
         </View>
 
@@ -887,14 +887,14 @@ export default function WorkoutPlayer() {
               opacity: progressionOpacity,
             }}
           >
-            <Text style={{ color: C.earth, fontSize: 14, fontWeight: "600", textAlign: "center" }}>
+            <Text style={{ color: C.earth, fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textAlign: "center" }}>
               {progressionMsg}
             </Text>
           </Animated.View>
         )}
 
         <Text style={{ color: C.rock, fontSize: 16, marginBottom: 16 }}>Rest</Text>
-        <Text style={{ color: C.earth, fontSize: 48, fontWeight: "800", marginBottom: 8 }}>
+        <Text style={{ color: C.earth, fontSize: 48, fontFamily: "Quicksand_700Bold", fontWeight: "800", marginBottom: 8 }}>
           {formatDuration(restTime)}
         </Text>
 
@@ -913,7 +913,7 @@ export default function WorkoutPlayer() {
           }}
         >
           <Text style={{ fontSize: 12, color: C.rock, marginBottom: 4 }}>Next up:</Text>
-          <Text style={{ fontSize: 16, fontWeight: "600", color: C.earth }}>{nextLabel}</Text>
+          <Text style={{ fontSize: 16, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>{nextLabel}</Text>
         </View>
 
         <Pressable
@@ -963,7 +963,7 @@ export default function WorkoutPlayer() {
             borderColor: "rgba(245,158,11,0.2)",
           }}
         >
-          <Text style={{ color: C.earth, fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+          <Text style={{ color: C.earth, fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", textAlign: "center" }}>
             {prMessage}
           </Text>
         </View>
@@ -985,7 +985,7 @@ export default function WorkoutPlayer() {
             opacity: progressionOpacity,
           }}
         >
-          <Text style={{ color: C.earth, fontSize: 14, fontWeight: "600", textAlign: "center" }}>
+          <Text style={{ color: C.earth, fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textAlign: "center" }}>
             {progressionMsg}
           </Text>
         </Animated.View>
@@ -1023,7 +1023,7 @@ export default function WorkoutPlayer() {
       {/* ─── Top bar ─── */}
       <View style={{ paddingHorizontal: 24, paddingTop: 64, paddingBottom: 4 }}>
         <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-          <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth, fontVariant: ["tabular-nums"] }}>
+          <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, fontVariant: ["tabular-nums"] }}>
             {formatElapsed(elapsed)}
           </Text>
           <Text style={{ fontSize: 12, color: C.rock, marginLeft: 8 }}>
@@ -1042,7 +1042,7 @@ export default function WorkoutPlayer() {
 
       {/* ─── Exercise header ─── */}
       <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
-        <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, letterSpacing: -0.7 }}>
+        <Text style={{ fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, letterSpacing: -0.7 }}>
           {currentEx.exerciseName}
         </Text>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginTop: 5 }}>
@@ -1051,7 +1051,7 @@ export default function WorkoutPlayer() {
           </Text>
           <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.stone }} />
           <Pressable onPress={handleSwap}>
-            <Text style={{ fontSize: 11, fontWeight: "600", color: C.trail }}>Swap</Text>
+            <Text style={{ fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.trail }}>Swap</Text>
           </Pressable>
           <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.stone }} />
           <Text style={{ fontSize: 11, fontWeight: "600", color: C.rock }}>▶ Video</Text>
@@ -1098,7 +1098,7 @@ export default function WorkoutPlayer() {
                   zIndex: 1,
                 }}
               >
-                <Text style={{ fontSize: 7, fontWeight: "700", color: "#fff" }}>✓</Text>
+                <Text style={{ fontSize: 7, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#fff" }}>✓</Text>
               </View>
             </View>
             {/* Content */}
@@ -1148,7 +1148,7 @@ export default function WorkoutPlayer() {
             }}
           >
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-              <Text style={{ fontSize: 11, fontWeight: "700", color: C.trail, textTransform: "uppercase", letterSpacing: 0.5 }}>
+              <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.trail, textTransform: "uppercase", letterSpacing: 0.5 }}>
                 Set {currentSet}
               </Text>
               {prevLabel && (
@@ -1170,7 +1170,7 @@ export default function WorkoutPlayer() {
                     borderColor: "transparent",
                     textAlign: "center",
                     fontSize: 30,
-                    fontWeight: "800",
+                    fontFamily: "Quicksand_700Bold", fontWeight: "800",
                     color: C.earth,
                   }}
                   placeholder={currentEx.suggestedWeight > 0 ? String(currentEx.suggestedWeight) : "0"}
@@ -1179,7 +1179,7 @@ export default function WorkoutPlayer() {
                   value={weightInput}
                   onChangeText={setWeightInput}
                 />
-                <Text style={{ fontSize: 9, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
+                <Text style={{ fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
                   kg
                 </Text>
               </View>
@@ -1195,7 +1195,7 @@ export default function WorkoutPlayer() {
                     borderColor: "transparent",
                     textAlign: "center",
                     fontSize: 30,
-                    fontWeight: "800",
+                    fontFamily: "Quicksand_700Bold", fontWeight: "800",
                     color: C.earth,
                   }}
                   placeholder={String(currentEx.targetReps)}
@@ -1204,7 +1204,7 @@ export default function WorkoutPlayer() {
                   value={repsInput}
                   onChangeText={setRepsInput}
                 />
-                <Text style={{ fontSize: 9, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
+                <Text style={{ fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.3, marginTop: 4 }}>
                   reps
                 </Text>
               </View>
@@ -1221,7 +1221,7 @@ export default function WorkoutPlayer() {
                 marginTop: 12,
               }}
             >
-              <Text style={{ color: C.bg, fontSize: 14, fontWeight: "700" }}>
+              <Text style={{ color: C.bg, fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>
                 {currentSet < currentEx.targetSets
                   ? "Log Set"
                   : currentExIdx < exercises.length - 1
@@ -1287,7 +1287,7 @@ export default function WorkoutPlayer() {
             opacity: rpeSelectorOpacity,
           }}
         >
-          <Text style={{ fontSize: 11, fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", marginBottom: 10 }}>
+          <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 0.5, textAlign: "center", marginBottom: 10 }}>
             How did that feel?
           </Text>
           <View style={{ flexDirection: "row", gap: 8 }}>
@@ -1301,7 +1301,7 @@ export default function WorkoutPlayer() {
                 alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#059669" }}>Easy</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#059669" }}>Easy</Text>
               <Text style={{ fontSize: 10, color: "#059669", marginTop: 2 }}>RPE 6-7</Text>
             </Pressable>
             <Pressable
@@ -1314,7 +1314,7 @@ export default function WorkoutPlayer() {
                 alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth }}>Right</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth }}>Right</Text>
               <Text style={{ fontSize: 10, color: C.rock, marginTop: 2 }}>RPE 8</Text>
             </Pressable>
             <Pressable
@@ -1327,7 +1327,7 @@ export default function WorkoutPlayer() {
                 alignItems: "center",
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#D97706" }}>Hard</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#D97706" }}>Hard</Text>
               <Text style={{ fontSize: 10, color: "#D97706", marginTop: 2 }}>RPE 9-10</Text>
             </Pressable>
           </View>

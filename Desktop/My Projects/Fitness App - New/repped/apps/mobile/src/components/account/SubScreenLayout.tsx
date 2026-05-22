@@ -1,6 +1,7 @@
 import { View, Text, Pressable, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { router } from "expo-router";
 import type { ReactNode } from "react";
+import { BackButton } from "../BackButton";
 
 const C = {
   earth: "#1A1A1A",
@@ -37,25 +38,8 @@ export function SubScreenLayout({
           gap: 14,
         }}
       >
-        <Pressable
-          onPress={() => {
-            // Sub-screens are sibling tabs (href: null) inside the (app) Tabs navigator,
-            // not a real stack. router.back() can fall back to the last-active tab (Home).
-            // Always return to Settings explicitly.
-            router.replace("/(app)/settings" as any);
-          }}
-          style={({ pressed }) => ({
-            width: 36,
-            height: 36,
-            borderRadius: 18,
-            backgroundColor: pressed ? "#E2DED6" : C.stone,
-            alignItems: "center",
-            justifyContent: "center",
-          })}
-        >
-          <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth }}>‹</Text>
-        </Pressable>
-        <Text style={{ fontSize: 17, fontWeight: "800", color: C.earth }}>{title}</Text>
+        <BackButton onPress={() => router.replace("/(app)/settings" as any)} />
+        <Text style={{ fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth }}>{title}</Text>
       </View>
 
       <KeyboardAvoidingView
@@ -94,7 +78,7 @@ export function SubScreenLayout({
                 justifyContent: "center",
               })}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#FFFFFF" }}>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#FFFFFF" }}>
                 {saveLabel ?? "Save Changes"}
               </Text>
             </Pressable>
@@ -111,7 +95,7 @@ export function FormLabel({ children }: { children: string }) {
     <Text
       style={{
         fontSize: 10,
-        fontWeight: "700",
+        fontFamily: "Quicksand_700Bold", fontWeight: "700",
         color: C.rock,
         letterSpacing: 1.2,
         textTransform: "uppercase",

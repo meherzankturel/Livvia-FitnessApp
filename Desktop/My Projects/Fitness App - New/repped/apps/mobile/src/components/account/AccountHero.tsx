@@ -44,7 +44,7 @@ export function AccountHero({ name, email, avatarUrl, onAvatarPress }: AccountHe
           numberOfLines={1}
           style={{
             fontSize: 17,
-            fontWeight: "700",
+            fontFamily: "Quicksand_700Bold", fontWeight: "700",
             color: C.earth,
             letterSpacing: -0.2,
           }}

@@ -45,7 +45,7 @@ export default function Step4Experience() {
       <Text
         style={{
           fontSize: 10,
-          fontWeight: "700",
+          fontFamily: "Quicksand_700Bold", fontWeight: "700",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -57,7 +57,7 @@ export default function Step4Experience() {
       </Text>
 
       {/* Title */}
-      <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
+      <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, marginBottom: 6 }}>
         Your <Text style={{ color: C.trail }}>experience</Text>
       </Text>
 
@@ -86,7 +86,7 @@ export default function Step4Experience() {
               <Text
                 style={{
                   fontSize: 16,
-                  fontWeight: "700",
+                  fontFamily: "Quicksand_700Bold", fontWeight: "700",
                   color: selected ? C.bg : C.earth,
                   marginBottom: 4,
                 }}

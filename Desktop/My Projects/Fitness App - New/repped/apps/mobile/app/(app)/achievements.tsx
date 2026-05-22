@@ -13,6 +13,7 @@ import type { AchievementDef, BadgeTier, BadgeCategory } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { BADGE_IMAGES } from "../../src/lib/badge-assets";
 import { TopoBackground } from "../../src/components/terrain";
+import { BackButton } from "../../src/components/BackButton";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const BADGE_TILE_SIZE = 78;
@@ -94,12 +95,7 @@ export default function Achievements() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <Pressable
-              onPress={() => router.navigate("/(app)/progress")}
-              style={styles.back}
-            >
-              <Text style={styles.backArrow}>‹</Text>
-            </Pressable>
+            <BackButton onPress={() => router.navigate("/(app)/progress")} />
             <Text style={styles.headerTitle}>Achievements</Text>
             <View style={styles.headerCount}>
               <Text style={styles.headerCountText}>
@@ -618,7 +614,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  backArrow: { color: "#2D2A24", fontSize: 16, fontWeight: "600" },
+  backArrow: { color: "#2D2A24", fontSize: 16, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" },
   headerTitle: { color: "#2D2A24", fontSize: 20, fontWeight: "800", letterSpacing: -0.4, flex: 1 },
   headerCount: {
     backgroundColor: "#EDEBE5",
@@ -626,7 +622,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,
     borderRadius: 99,
   },
-  headerCountText: { color: "#8E8E7A", fontSize: 11, fontWeight: "700" },
+  headerCountText: { color: "#8E8E7A", fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
 
   // Hero
   hero: {
@@ -663,7 +659,7 @@ const styles = StyleSheet.create({
   heroLabelText: {
     color: "#EAB308",
     fontSize: 10,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     letterSpacing: 1.5,
   },
   heroName: {
@@ -678,7 +674,7 @@ const styles = StyleSheet.create({
   heroTags: { flexDirection: "row", gap: 5, flexWrap: "wrap" },
   heroTag: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 99 },
   heroTagGold: { backgroundColor: "rgba(234,179,8,0.18)" },
-  heroTagGoldText: { color: "#EAB308", fontSize: 9, fontWeight: "800", letterSpacing: 1 },
+  heroTagGoldText: { color: "#EAB308", fontSize: 9, fontFamily: "Quicksand_700Bold", fontWeight: "800", letterSpacing: 1 },
   heroTagGreen: { backgroundColor: "rgba(52,211,153,0.18)" },
   heroTagGreenText: { color: "#34D399", fontSize: 9, fontWeight: "800", letterSpacing: 1 },
 
@@ -692,7 +688,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   rowDot: { width: 3, height: 14, borderRadius: 99 },
-  rowName: { color: "#2D2A24", fontSize: 11, fontWeight: "800", letterSpacing: 0.6 },
+  rowName: { color: "#2D2A24", fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "800", letterSpacing: 0.6 },
   rowSpacer: { flex: 1 },
   rowCount: { color: "#8E8E7A", fontSize: 10, fontWeight: "700" },
   rowArrow: { color: "#8E8E7A", fontSize: 12, marginLeft: 4 },
@@ -730,7 +726,7 @@ const styles = StyleSheet.create({
   bdLockGlyph: { fontSize: 8 },
   bdName: {
     fontSize: 9,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#2D2A24",
     marginTop: 3,
     textAlign: "center",
@@ -794,7 +790,7 @@ const styles = StyleSheet.create({
   },
   modalLabelDot: { width: 6, height: 6, borderRadius: 3, backgroundColor: "#EAB308" },
   modalLabelDotMuted: { backgroundColor: "#8E8E7A" },
-  modalLabelText: { color: "#EAB308", fontSize: 10, fontWeight: "800", letterSpacing: 1.5 },
+  modalLabelText: { color: "#EAB308", fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "800", letterSpacing: 1.5 },
   modalLabelTextMuted: { color: "#8E8E7A" },
   modalTitle: {
     color: "#2D2A24",
@@ -815,7 +811,7 @@ const styles = StyleSheet.create({
   modalTags: { flexDirection: "row", gap: 6, marginBottom: 14, flexWrap: "wrap", justifyContent: "center" },
   modalTag: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 99 },
   modalTagGold: { backgroundColor: "rgba(234,179,8,0.18)" },
-  modalTagGoldText: { color: "#a17a06", fontSize: 9, fontWeight: "800", letterSpacing: 1 },
+  modalTagGoldText: { color: "#a17a06", fontSize: 9, fontFamily: "Quicksand_700Bold", fontWeight: "800", letterSpacing: 1 },
   modalTagMuted: { backgroundColor: "rgba(168,168,173,0.18)" },
   modalTagMutedText: { color: "#7a7a82", fontSize: 9, fontWeight: "800", letterSpacing: 1 },
   modalTagGreen: { backgroundColor: "rgba(34,197,94,0.18)" },
@@ -829,7 +825,7 @@ const styles = StyleSheet.create({
   },
   modalProgressLab: {
     fontSize: 10,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     letterSpacing: 1.5,
     color: "#8E8E7A",
     marginBottom: 6,
@@ -844,5 +840,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  modalBtnPrimaryText: { color: "#F6F5F0", fontSize: 14, fontWeight: "700" },
+  modalBtnPrimaryText: { color: "#F6F5F0", fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
 });

@@ -49,7 +49,7 @@ const s = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: rock,
   },
   labelActive: {

@@ -61,7 +61,7 @@ export default function ExerciseDetailCard({
           {/* Info */}
           <View style={{ flex: 1 }}>
             <Text style={{
-              color: "#1C1C1E", fontSize: 14, fontWeight: "700",
+              color: "#1C1C1E", fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700",
               letterSpacing: 0.3, textTransform: "uppercase",
               marginBottom: 10,
             }}>
@@ -70,7 +70,7 @@ export default function ExerciseDetailCard({
 
             <View style={{ flexDirection: "row", gap: 20 }}>
               <View>
-                <Text style={{ color: "#AEAEB2", fontSize: 9, fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 3 }}>Sets</Text>
+                <Text style={{ color: "#AEAEB2", fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 3 }}>Sets</Text>
                 <Text style={{ color: "#1C1C1E", fontSize: 18, fontWeight: "700" }}>{targetSets}</Text>
               </View>
               <View>
@@ -79,7 +79,7 @@ export default function ExerciseDetailCard({
               </View>
               {suggestedWeight !== undefined && suggestedWeight > 0 && (
                 <View>
-                  <Text style={{ color: "#AEAEB2", fontSize: 9, fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 3 }}>Weight</Text>
+                  <Text style={{ color: "#AEAEB2", fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", letterSpacing: 0.8, textTransform: "uppercase", marginBottom: 3 }}>Weight</Text>
                   <Text style={{ color: "#1C1C1E", fontSize: 18, fontWeight: "700" }}>{suggestedWeight}<Text style={{ fontSize: 11, color: "#AEAEB2" }}>kg</Text></Text>
                 </View>
               )}
@@ -97,7 +97,7 @@ export default function ExerciseDetailCard({
             {muscleGroup && (
               <View style={{ flexDirection: "row", marginBottom: 18 }}>
                 <View style={{ backgroundColor: mg.bg, borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 }}>
-                  <Text style={{ color: mg.fg, fontSize: 12, fontWeight: "600", textTransform: "capitalize" }}>
+                  <Text style={{ color: mg.fg, fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "capitalize" }}>
                     {muscleGroup.replace("_", " ")}
                   </Text>
                 </View>
@@ -107,7 +107,7 @@ export default function ExerciseDetailCard({
             {/* Focus cue */}
             {muscleGroup && (
               <View style={{ backgroundColor: "#EEEDFF", borderRadius: 14, padding: 16, marginBottom: 18 }}>
-                <Text style={{ color: "#6366F1", fontSize: 14, lineHeight: 22, fontWeight: "500" }}>
+                <Text style={{ color: "#6366F1", fontSize: 14, lineHeight: 22, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>
                   {getFocusCue(exerciseName, muscleGroup)}
                 </Text>
               </View>
@@ -135,7 +135,7 @@ export default function ExerciseDetailCard({
                 paddingVertical: 16, alignItems: "center",
               }}
             >
-              <Text style={{ color: "#fff", fontSize: 15, fontWeight: "600" }}>Watch Form Video</Text>
+              <Text style={{ color: "#fff", fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Watch Form Video</Text>
             </Pressable>
           </View>
         )}

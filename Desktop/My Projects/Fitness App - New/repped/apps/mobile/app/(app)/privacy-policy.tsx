@@ -18,7 +18,7 @@ export default function PrivacyPolicy() {
 
       <LongReadHeading>1. What we collect</LongReadHeading>
       <LongReadParagraph>To build your personalized training and nutrition plan, we store:</LongReadParagraph>
-      <LongReadBullet><Text style={{ fontWeight: "700" }}>Profile basics:</Text> name, date of birth, sex, height, weight.</LongReadBullet>
+      <LongReadBullet><Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Profile basics:</Text> name, date of birth, sex, height, weight.</LongReadBullet>
       <LongReadBullet><Text style={{ fontWeight: "700" }}>Training inputs:</Text> goal, experience level, equipment, days per week, current injuries.</LongReadBullet>
       <LongReadBullet><Text style={{ fontWeight: "700" }}>Nutrition inputs:</Text> dietary preference, allergies, cuisine preferences.</LongReadBullet>
       <LongReadBullet><Text style={{ fontWeight: "700" }}>Activity logs:</Text> the workouts you finish, the sets and reps you log, the meals you save.</LongReadBullet>
@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
 
       <LongReadHeading>5. Your rights</LongReadHeading>
       <LongReadBullet>
-        <Text style={{ fontWeight: "700" }}>Access:</Text> see what we hold by tapping into each Account sub-screen.
+        <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Access:</Text> see what we hold by tapping into each Account sub-screen.
       </LongReadBullet>
       <LongReadBullet>
         <Text style={{ fontWeight: "700" }}>Correct:</Text> edit anything that's wrong — Profile, Goal, Training, Nutrition.
@@ -51,7 +51,7 @@ export default function PrivacyPolicy() {
         <Text style={{ fontWeight: "700" }}>Delete:</Text> tap Delete Account at the bottom of Account, or email us to wipe your data permanently.
       </LongReadBullet>
       <LongReadBullet>
-        <Text style={{ fontWeight: "700" }}>Export:</Text> email support@revive.app and we'll send you a JSON copy of everything we have.
+        <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Export:</Text> email support@revive.app and we'll send you a JSON copy of everything we have.
       </LongReadBullet>
 
       <LongReadHeading>6. Age</LongReadHeading>

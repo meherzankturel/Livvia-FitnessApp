@@ -1149,7 +1149,7 @@ export default function Today() {
     return (
       <View style={{ flex: 1, backgroundColor: theme.colors.bg, justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <ActivityIndicator size="large" color={theme.colors.earth} style={{ marginBottom: 16 }} />
-        <Text style={{ color: theme.colors.earth, fontSize: 20, fontWeight: "700", marginBottom: 6, letterSpacing: -0.5 }}>
+        <Text style={{ color: theme.colors.earth, fontSize: 20, fontFamily: "Quicksand_700Bold", fontWeight: "700", marginBottom: 6, letterSpacing: -0.5 }}>
           Building your plan...
         </Text>
         <Text style={{ color: theme.colors.rock, fontSize: 15, textAlign: "center", lineHeight: 22 }}>
@@ -1185,7 +1185,7 @@ export default function Today() {
             <Text style={{ fontSize: 14, color: theme.colors.rock }}>
               {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
             </Text>
-            <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
+            <Text style={{ fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth }}>
               {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
             </Text>
           </View>
@@ -1209,7 +1209,7 @@ export default function Today() {
 
           {/* HERO — matches workout day pattern */}
           <View style={{ paddingHorizontal: 24 }}>
-            <Text style={{ fontSize: 11, fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, letterSpacing: 1.2, marginBottom: 10 }}>
+            <Text style={{ fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, letterSpacing: 1.2, marginBottom: 10 }}>
               {todayName} · {dateStr} · Week {weekNum}
             </Text>
             <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
@@ -1228,7 +1228,7 @@ export default function Today() {
               <View style={{ backgroundColor: "#FEF3C7", borderRadius: 22, padding: 22, marginBottom: 12, borderWidth: 1, borderColor: "rgba(245,158,11,0.2)" }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 10 }}>
                   <Text style={{ fontSize: 18 }}>⚠️</Text>
-                  <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: "#B45309" }}>
+                  <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: "#B45309" }}>
                     Injury Rest Day
                   </Text>
                 </View>
@@ -1240,7 +1240,7 @@ export default function Today() {
                 </Text>
                 {injuryAssessment.recoveryTip.length > 0 && (
                   <View style={{ marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: "rgba(245,158,11,0.15)" }}>
-                    <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, color: "#B45309", marginBottom: 6 }}>
+                    <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", textTransform: "uppercase", letterSpacing: 1, color: "#B45309", marginBottom: 6 }}>
                       Recovery Tips
                     </Text>
                     <Text style={{ fontSize: 13, color: "#92400E", lineHeight: 20, opacity: 0.8 }}>
@@ -1253,7 +1253,7 @@ export default function Today() {
 
             {/* Recovery Focus Card */}
             <View style={{ backgroundColor: theme.colors.stone, borderRadius: 22, padding: 22, marginBottom: 12 }}>
-              <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: theme.colors.trail, marginBottom: 12 }}>
+              <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.5, color: theme.colors.trail, marginBottom: 12 }}>
                 Recovery Focus
               </Text>
               <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth, marginBottom: 8, lineHeight: 23 }}>
@@ -1267,7 +1267,7 @@ export default function Today() {
             {/* Daily Tip Card */}
             <View style={{ backgroundColor: theme.colors.stone, borderRadius: 22, padding: 22, marginBottom: 12 }}>
               <View style={{ backgroundColor: "rgba(52,211,153,0.08)", alignSelf: "flex-start", paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, marginBottom: 14 }}>
-                <Text style={{ fontSize: 10, fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, color: theme.colors.trail }}>
+                <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", textTransform: "uppercase", letterSpacing: 1.2, color: theme.colors.trail }}>
                   Daily Tip
                 </Text>
               </View>
@@ -1285,7 +1285,7 @@ export default function Today() {
                 onPress={() => router.push("/(app)/wellness" as any)}
                 style={{ backgroundColor: theme.colors.earth, borderRadius: 16, paddingVertical: 17, alignItems: "center", width: "100%" }}
               >
-                <Text style={{ color: theme.colors.bg, fontSize: 15, fontWeight: "600" }}>Log Wellness Check</Text>
+                <Text style={{ color: theme.colors.bg, fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Log Wellness Check</Text>
               </Pressable>
             )}
           </View>
@@ -1311,7 +1311,7 @@ export default function Today() {
           <Text style={{ fontSize: 14, color: theme.colors.rock }}>
             {(() => { const h = new Date().getHours(); return h < 12 ? "Good Morning" : h < 17 ? "Good Afternoon" : "Good Evening"; })()}
           </Text>
-          <Text style={{ fontSize: 17, fontWeight: "700", color: theme.colors.earth }}>
+          <Text style={{ fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth }}>
             {displayName ?? session?.user?.email?.split("@")[0] ?? "Athlete"}
           </Text>
         </View>
@@ -1351,7 +1351,7 @@ export default function Today() {
               borderColor: "rgba(52,211,153,0.25)",
             }}
           >
-            <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.trail, letterSpacing: 1.2, marginBottom: 6 }}>
+            <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.trail, letterSpacing: 1.2, marginBottom: 6 }}>
               {phaseAdvanceBanner.phasesSkipped > 1 ? "PHASES ADVANCED" : "NEW PHASE UNLOCKED"}
             </Text>
             <Text style={{ fontSize: 15, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
@@ -1379,7 +1379,7 @@ export default function Today() {
               borderColor: mesocyclePhase === "deload" ? "rgba(99,102,241,0.18)" : "rgba(245,158,11,0.18)",
             }}
           >
-            <Text style={{ fontSize: 11, fontWeight: "700", letterSpacing: 1.2, marginBottom: 4, color: mesocyclePhase === "deload" ? "#4338CA" : "#B45309" }}>
+            <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 1.2, marginBottom: 4, color: mesocyclePhase === "deload" ? "#4338CA" : "#B45309" }}>
               {mesocyclePhase === "deload" ? "DELOAD WEEK" : "PEAK WEEK"}
             </Text>
             <Text style={{ fontSize: 13, color: theme.colors.earth, lineHeight: 19 }}>
@@ -1392,7 +1392,7 @@ export default function Today() {
 
         {/* 2. PERSONAL HERO */}
         <View style={{ paddingHorizontal: 24 }}>
-          <Text style={{ fontSize: 11, fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, letterSpacing: 1.2, marginBottom: 10 }}>
+          <Text style={{ fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, letterSpacing: 1.2, marginBottom: 10 }}>
             {todayName} · {todayWorkout.focus} · Week {weekNum}
           </Text>
           {todayWorkout.kind === "conditioning" && conditioningTemplate ? (
@@ -1401,7 +1401,7 @@ export default function Today() {
               <Text style={{ color: theme.colors.trail }}>Let's burn.</Text>
             </Text>
           ) : (
-            <Text style={{ fontSize: 26, fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
+            <Text style={{ fontSize: 26, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth, letterSpacing: -0.8, lineHeight: 34 }}>
               {exerciseData.length} exercises today.{" "}
               <Text style={{ color: theme.colors.trail }}>Let's climb.</Text>
             </Text>
@@ -1453,7 +1453,7 @@ export default function Today() {
           }}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 4 }}>
               <Text style={{ fontSize: 14 }}>⚠️</Text>
-              <Text style={{ fontSize: 11, fontWeight: "700", color: "#B45309" }}>
+              <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#B45309" }}>
                 Workout Modified — {injuryAssessment.triggeringInjuries.map(i => i.label).join(", ")}
               </Text>
             </View>
@@ -1472,7 +1472,7 @@ export default function Today() {
         {todayWorkout.kind === "conditioning" && conditioningTemplate && (
           <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>Today's Circuit</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth }}>Today's Circuit</Text>
               <Text style={{ fontSize: 11, color: theme.colors.rock }}>
                 {conditioningTemplate.exercises.length} stations · {conditioningTemplate.totalDurationMinutes} min
               </Text>
@@ -1484,7 +1484,7 @@ export default function Today() {
               {conditioningTemplate.exercises.map((ex, i) => (
                 <View key={i} style={{ flexDirection: "row", gap: 12, paddingVertical: 10, borderTopWidth: i === 0 ? 0 : 1, borderTopColor: "rgba(0,0,0,0.05)" }}>
                   <View style={{ width: 22, height: 22, borderRadius: 11, backgroundColor: theme.colors.earth, alignItems: "center", justifyContent: "center" }}>
-                    <Text style={{ fontSize: 11, fontWeight: "700", color: theme.colors.bg }}>{i + 1}</Text>
+                    <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.bg }}>{i + 1}</Text>
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>{ex.name}</Text>
@@ -1502,7 +1502,7 @@ export default function Today() {
         {todayWorkout.kind !== "conditioning" && (
         <View style={{ paddingHorizontal: 24, paddingTop: 20 }}>
           <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <Text style={{ fontSize: 14, fontWeight: "700", color: theme.colors.earth }}>Today's Route</Text>
+            <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth }}>Today's Route</Text>
             {/* Adapt button hidden — handlers + modal kept for future re-enablement.
                 See openAdaptModal / handleEquipmentSwitch / handleFocusSwap / handleExpressMode. */}
             <Text style={{ fontSize: 11, color: theme.colors.rock }}>
@@ -1534,7 +1534,7 @@ export default function Today() {
                       <Text
                         style={{
                           fontSize: 9,
-                          fontWeight: "700",
+                          fontFamily: "Quicksand_700Bold", fontWeight: "700",
                           color: isFirst ? theme.colors.trail : theme.colors.rock,
                         }}
                       >
@@ -1566,7 +1566,7 @@ export default function Today() {
                 <Text style={{ fontSize: 16 }}>{"\u{1F3C1}"}</Text>
               </View>
               <View style={{ flex: 1, justifyContent: "center" }}>
-                <Text style={{ fontSize: 12, fontWeight: "600", color: theme.colors.rock }}>
+                <Text style={{ fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.rock }}>
                   Summit — complete all {exerciseData.length}
                 </Text>
               </View>
@@ -1582,21 +1582,21 @@ export default function Today() {
               onPress={() => router.push("/(app)/wellness" as any)}
               style={{ flex: 1, backgroundColor: theme.colors.stone, borderRadius: 18, paddingVertical: 16, alignItems: "center" }}
             >
-              <Text style={{ color: theme.colors.rock, fontSize: 14, fontWeight: "500" }}>Wellness Check</Text>
+              <Text style={{ color: theme.colors.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Wellness Check</Text>
             </Pressable>
           )}
           <Pressable
             onPress={handleLifeHappens}
             style={{ flex: 1, backgroundColor: theme.colors.stone, borderRadius: 18, paddingVertical: 16, alignItems: "center" }}
           >
-            <Text style={{ color: theme.colors.rock, fontSize: 14, fontWeight: "500" }}>Skip Today</Text>
+            <Text style={{ color: theme.colors.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Skip Today</Text>
           </Pressable>
         </View>
 
         {/* 7. MISSED DAY */}
         {missedDay && missedDayOptions.length > 0 && (
           <View style={{ marginHorizontal: 24, marginTop: 16, backgroundColor: theme.colors.stone, borderRadius: 18, padding: 16 }}>
-            <Text style={{ color: "#F59E0B", fontSize: 13, fontWeight: "600", marginBottom: 10 }}>
+            <Text style={{ color: "#F59E0B", fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", marginBottom: 10 }}>
               Missed {missedDay.focus} yesterday
             </Text>
             <View style={{ flexDirection: "row", gap: 8 }}>
@@ -1606,7 +1606,7 @@ export default function Today() {
                   onPress={() => handleMissedDayChoice(option.strategy)}
                   style={{ flex: 1, backgroundColor: theme.colors.bg, borderRadius: 12, paddingVertical: 10, alignItems: "center" }}
                 >
-                  <Text style={{ color: theme.colors.earth, fontSize: 12, fontWeight: "600" }}>{option.label}</Text>
+                  <Text style={{ color: theme.colors.earth, fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>{option.label}</Text>
                 </Pressable>
               ))}
             </View>
@@ -1639,7 +1639,7 @@ export default function Today() {
               elevation: 8,
             }}
           >
-            <Text style={{ color: theme.colors.bg, fontSize: 16, fontWeight: "700" }}>
+            <Text style={{ color: theme.colors.bg, fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>
               Begin Workout ↗
             </Text>
           </Pressable>
@@ -1682,7 +1682,7 @@ export default function Today() {
               {/* ─── MAIN MENU ─── */}
               {adaptSection === "main" && (
                 <View>
-                  <Text style={{ fontSize: 18, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
                     Adapt Workout
                   </Text>
                   <Text style={{ fontSize: 12, color: theme.colors.rock, marginBottom: 20 }}>
@@ -1701,7 +1701,7 @@ export default function Today() {
                     }}
                   >
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.earth }}>Change Equipment</Text>
+                      <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth }}>Change Equipment</Text>
                       <Text style={{ fontSize: 11, color: theme.colors.rock, marginTop: 2 }}>Traveling, home gym, outdoors</Text>
                     </View>
                     <Text style={{ fontSize: 14, color: theme.colors.rock }}>›</Text>
@@ -1719,7 +1719,7 @@ export default function Today() {
                     }}
                   >
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.earth }}>Swap Focus</Text>
+                      <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth }}>Swap Focus</Text>
                       <Text style={{ fontSize: 11, color: theme.colors.rock, marginTop: 2 }}>Train a different muscle group today</Text>
                     </View>
                     <Text style={{ fontSize: 14, color: theme.colors.rock }}>›</Text>
@@ -1736,7 +1736,7 @@ export default function Today() {
                     }}
                   >
                     <View style={{ flex: 1 }}>
-                      <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.earth }}>Express Mode</Text>
+                      <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth }}>Express Mode</Text>
                       <Text style={{ fontSize: 11, color: theme.colors.rock, marginTop: 2 }}>Short on time? Trim to essentials</Text>
                     </View>
                     <Text style={{ fontSize: 14, color: theme.colors.rock }}>›</Text>
@@ -1750,7 +1750,7 @@ export default function Today() {
                   <Pressable onPress={() => setAdaptSection("main")} style={{ marginBottom: 16 }}>
                     <Text style={{ fontSize: 12, color: theme.colors.rock }}>‹ Back</Text>
                   </Pressable>
-                  <Text style={{ fontSize: 16, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
                     What equipment do you have?
                   </Text>
                   <Text style={{ fontSize: 12, color: theme.colors.rock, marginBottom: 16 }}>
@@ -1774,7 +1774,7 @@ export default function Today() {
                       <View style={{ flex: 1 }}>
                         <Text style={{
                           fontSize: 14,
-                          fontWeight: "600",
+                          fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
                           color: activeEquipment === preset.id ? theme.colors.bg : theme.colors.earth,
                         }}>
                           {preset.label}
@@ -1789,7 +1789,7 @@ export default function Today() {
                       </View>
                       {activeEquipment === preset.id && (
                         <View style={{ width: 20, height: 20, borderRadius: 10, backgroundColor: theme.colors.trail, alignItems: "center", justifyContent: "center" }}>
-                          <Text style={{ fontSize: 10, color: "#fff", fontWeight: "700" }}>✓</Text>
+                          <Text style={{ fontSize: 10, color: "#fff", fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>✓</Text>
                         </View>
                       )}
                     </Pressable>
@@ -1803,7 +1803,7 @@ export default function Today() {
                   <Pressable onPress={() => setAdaptSection("main")} style={{ marginBottom: 16 }}>
                     <Text style={{ fontSize: 12, color: theme.colors.rock }}>‹ Back</Text>
                   </Pressable>
-                  <Text style={{ fontSize: 16, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
                     What do you want to train?
                   </Text>
                   <Text style={{ fontSize: 12, color: theme.colors.rock, marginBottom: 16 }}>
@@ -1823,7 +1823,7 @@ export default function Today() {
                           backgroundColor: theme.colors.stone,
                         }}
                       >
-                        <Text style={{ fontSize: 13, fontWeight: "600", color: theme.colors.earth }}>{focus}</Text>
+                        <Text style={{ fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth }}>{focus}</Text>
                       </Pressable>
                     ))}
                   </View>
@@ -1831,7 +1831,7 @@ export default function Today() {
                   {/* Week overview */}
                   {weekPlan.length > 0 && (
                     <View style={{ marginTop: 20 }}>
-                      <Text style={{ fontSize: 10, fontWeight: "600", color: theme.colors.rock, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8 }}>
+                      <Text style={{ fontSize: 10, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.rock, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 8 }}>
                         This week's plan
                       </Text>
                       {weekPlan.map((p) => {
@@ -1868,7 +1868,7 @@ export default function Today() {
                   <Pressable onPress={() => setAdaptSection("main")} style={{ marginBottom: 16 }}>
                     <Text style={{ fontSize: 12, color: theme.colors.rock }}>‹ Back</Text>
                   </Pressable>
-                  <Text style={{ fontSize: 16, fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
+                  <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: theme.colors.earth, marginBottom: 4 }}>
                     How much time do you have?
                   </Text>
                   <Text style={{ fontSize: 12, color: theme.colors.rock, marginBottom: 16 }}>
@@ -1890,7 +1890,7 @@ export default function Today() {
                       }}
                     >
                       <View>
-                        <Text style={{ fontSize: 14, fontWeight: "600", color: theme.colors.earth }}>{dur.label}</Text>
+                        <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth }}>{dur.label}</Text>
                         <Text style={{ fontSize: 11, color: theme.colors.rock, marginTop: 2 }}>{dur.desc}</Text>
                       </View>
                       <Text style={{ fontSize: 20, fontWeight: "800", color: theme.colors.earth }}>{dur.minutes}</Text>

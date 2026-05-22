@@ -52,7 +52,7 @@ export default function ProgressRing({
             transform: [{ rotate: "-45deg" }],
           }}
         />
-        <Text style={{ color: "#2D2A24", fontWeight: "700", fontSize: size * 0.22 }}>
+        <Text style={{ color: "#2D2A24", fontFamily: "Quicksand_700Bold", fontWeight: "700", fontSize: size * 0.22 }}>
           {Math.round(clampedProgress)}%
         </Text>
       </View>

@@ -94,7 +94,7 @@ export default function StepNutrition() {
       ctaDisabled={!canContinue}
       onCta={() => router.push("/(onboarding)/step9-injuries")}
     >
-      <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
+      <Text style={{ color: C.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
         Step 8 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
@@ -105,7 +105,7 @@ export default function StepNutrition() {
       </Text>
 
       {/* Section 1: Dietary Preference */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 12 }}>
+      <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 12 }}>
         Dietary Preference
       </Text>
       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
@@ -125,7 +125,7 @@ export default function StepNutrition() {
               <Text
                 style={{
                   fontSize: 14,
-                  fontWeight: "500",
+                  fontFamily: "Quicksand_500Medium", fontWeight: "500",
                   color: isSelected ? C.bg : C.earth,
                 }}
               >
@@ -139,7 +139,7 @@ export default function StepNutrition() {
       {/* Section 1b: Meat preset dropdown — only when Non-Veg is selected */}
       {isNonVeg && (
         <View style={{ marginTop: 16 }}>
-          <Text style={{ fontSize: 11, fontWeight: "700", color: C.rock, letterSpacing: 0.6, textTransform: "uppercase", marginBottom: 8 }}>
+          <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.rock, letterSpacing: 0.6, textTransform: "uppercase", marginBottom: 8 }}>
             Meat preference
           </Text>
           <Pressable
@@ -156,7 +156,7 @@ export default function StepNutrition() {
               borderColor: presetOpen ? C.earth : "transparent",
             }}
           >
-            <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth }}>
+            <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>
               {currentPreset.label}
             </Text>
             <Text style={{ fontSize: 14, fontWeight: "700", color: C.rock, transform: [{ rotate: presetOpen ? "180deg" : "0deg" }] }}>
@@ -194,7 +194,7 @@ export default function StepNutrition() {
       <View style={{ height: 1, backgroundColor: "rgba(45,42,36,0.06)", marginTop: 24, marginBottom: 24 }} />
 
       {/* Section 2: Allergies */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 4 }}>
+      <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 4 }}>
         Any food allergies?
       </Text>
       <Text style={{ fontSize: 13, color: C.rock, marginBottom: 12 }}>
@@ -219,7 +219,7 @@ export default function StepNutrition() {
               <Text
                 style={{
                   fontSize: 14,
-                  fontWeight: "500",
+                  fontFamily: "Quicksand_500Medium", fontWeight: "500",
                   color: isSelected ? "#F59E0B" : C.earth,
                 }}
               >

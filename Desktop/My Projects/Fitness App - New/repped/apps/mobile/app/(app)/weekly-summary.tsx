@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from "react";
 import { useAuthStore, generateWeeklySummary } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
+import { BackButton } from "../../src/components/BackButton";
 
 // ── Palette ──────────────────────────────────────────────────────────
 const C = {
@@ -382,12 +383,7 @@ export default function WeeklySummaryScreen() {
         <View style={styles.content}>
           {/* ── 1. Header ─────────────────────────────────────── */}
           <View style={styles.header}>
-            <Pressable
-              onPress={() => router.navigate("/(app)/progress")}
-              style={styles.backBtn}
-            >
-              <Text style={styles.backArrow}>←</Text>
-            </Pressable>
+            <BackButton onPress={() => router.navigate("/(app)/progress")} style={styles.backBtn} />
             <Text style={styles.headerTitle}>WEEKLY SUMMARY</Text>
           </View>
 
@@ -525,7 +521,7 @@ export default function WeeklySummaryScreen() {
                         !day.isWorkout &&
                           !day.isToday && {
                             color: C.rock,
-                            fontWeight: "500",
+                            fontFamily: "Quicksand_500Medium", fontWeight: "500",
                           },
                       ]}
                     >
@@ -637,17 +633,7 @@ const styles = StyleSheet.create({
     height: 36,
   },
   backBtn: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: "rgba(45,42,36,0.04)",
-    justifyContent: "center",
-    alignItems: "center",
     zIndex: 1,
-  },
-  backArrow: {
-    fontSize: 18,
-    color: C.earth,
   },
   headerTitle: {
     position: "absolute",
@@ -671,7 +657,7 @@ const styles = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
     textAlign: "center",
     marginBottom: 20,
@@ -734,7 +720,7 @@ const styles = StyleSheet.create({
   },
   ringPct: {
     fontSize: 32,
-    fontWeight: "900",
+    fontFamily: "Quicksand_700Bold", fontWeight: "900",
     color: C.earth,
   },
   ringLabel: {
@@ -750,7 +736,7 @@ const styles = StyleSheet.create({
   },
   motivationText: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     marginBottom: 12,
   },
   statRow: {
@@ -766,14 +752,14 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 15,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.earth,
   },
 
   // Timeline
   sectionTitle: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
     marginBottom: 14,
   },
@@ -827,7 +813,7 @@ const styles = StyleSheet.create({
   },
   timelineDayName: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   timelineFocus: {
@@ -869,7 +855,7 @@ const styles = StyleSheet.create({
   },
   weightLabel: {
     fontSize: 15,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: C.earth,
   },
   weightValue: {
@@ -908,7 +894,7 @@ const styles = StyleSheet.create({
   },
   wellnessValue: {
     fontSize: 20,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     marginBottom: 4,
   },
   wellnessTileLabel: {

@@ -298,7 +298,7 @@ export default function Progress() {
 
       {/* Fixed header */}
       <View style={{ paddingTop: 60, paddingBottom: 12, paddingHorizontal: 24, backgroundColor: "#F8F7F4", zIndex: 10 }}>
-        <Text style={{ fontSize: 17, fontWeight: "600", color: "#1a1a1a", textAlign: "center" }}>
+        <Text style={{ fontSize: 17, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#1a1a1a", textAlign: "center" }}>
           Dashboard
         </Text>
       </View>
@@ -312,7 +312,7 @@ export default function Progress() {
         }
       >
         {/* Overview header */}
-        <Text style={{ fontSize: 19, fontWeight: "700", color: "#1a1a1a", paddingHorizontal: 22, paddingTop: 24, paddingBottom: 10 }}>
+        <Text style={{ fontSize: 19, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#1a1a1a", paddingHorizontal: 22, paddingTop: 24, paddingBottom: 10 }}>
           Overview
         </Text>
 

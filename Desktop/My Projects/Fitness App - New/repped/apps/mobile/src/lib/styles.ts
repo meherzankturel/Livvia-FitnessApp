@@ -69,7 +69,7 @@ export const anim = {
 export const type = {
   hero: {
     fontSize: 26,
-    fontWeight: "700" as const,
+    fontFamily: "Quicksand_700Bold", fontWeight: "700" as const,
     color: theme.colors.earth,
   } as TextStyle,
 
@@ -81,7 +81,7 @@ export const type = {
 
   widgetNum: {
     fontSize: 32,
-    fontWeight: "800" as const,
+    fontFamily: "Quicksand_700Bold", fontWeight: "800" as const,
     color: theme.colors.earth,
   } as TextStyle,
 
@@ -95,7 +95,7 @@ export const type = {
 
   body: {
     fontSize: 14,
-    fontWeight: "400" as const,
+    fontFamily: "Quicksand_400Regular", fontWeight: "400" as const,
     color: theme.colors.earth,
   } as TextStyle,
 
@@ -166,7 +166,7 @@ export const pillInactive: ViewStyle = {
 export const sectionHeader: TextStyle = {
   color: theme.colors.earth,
   fontSize: 20,
-  fontWeight: "700",
+  fontFamily: "Quicksand_700Bold", fontWeight: "700",
   letterSpacing: -0.5,
 };
 

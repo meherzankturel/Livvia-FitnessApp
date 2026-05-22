@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: "#888",
     alignSelf: "flex-start",
     marginBottom: 8,
@@ -126,14 +126,14 @@ const styles = StyleSheet.create({
   // ── Streak (unchanged) ──
   streakCenter: { alignItems: "center", marginBottom: 12 },
   fireIcon: { width: 56, height: 56, marginBottom: 4 },
-  streakNumber: { fontSize: 20, fontWeight: "700", color: "#1a1a1a", lineHeight: 24 },
+  streakNumber: { fontSize: 20, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#1a1a1a", lineHeight: 24 },
   streakLabel: { fontSize: 11, color: "#888", marginTop: 1 },
   daysRow: { flexDirection: "row", gap: 4, justifyContent: "center" },
   dayCol: { alignItems: "center", gap: 3 },
   dayCircle: { width: 15, height: 15, borderRadius: 7.5, alignItems: "center", justifyContent: "center" },
   dayDone: { backgroundColor: "#F59E0B" },
   dayEmpty: { backgroundColor: "#E8E8E8" },
-  checkmark: { fontSize: 8, color: "#fff", fontWeight: "700", lineHeight: 10 },
+  checkmark: { fontSize: 8, color: "#fff", fontFamily: "Quicksand_700Bold", fontWeight: "700", lineHeight: 10 },
   dayLabel: { fontSize: 8, color: "#999" },
 
   // ── Achievements card ──
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   achieveArrow: {
     fontSize: 18,
     color: "#bbb",
-    fontWeight: "300",
+    fontFamily: "Quicksand_400Regular", fontWeight: "300",
     lineHeight: 18,
     marginTop: -2,
   },
@@ -168,14 +168,14 @@ const styles = StyleSheet.create({
   },
   achieveCount: {
     fontSize: 22,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: "#1a1a1a",
     letterSpacing: -0.4,
     lineHeight: 24,
   },
   achieveCountSlash: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#9b958a",
     letterSpacing: 0,
   },

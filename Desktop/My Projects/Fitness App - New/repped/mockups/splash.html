@@ -6,22 +6,20 @@
   <title>Revive · Splash</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
-      --plate: #0A0A0A;
-      --base: #1F1F1F;
-      --steel-1: #9CA3AF;
-      --steel-2: #E5E7EB;
+      --plate-1: #F5EFE3;
+      --plate-2: #EFE7D6;
     }
 
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     html, body {
       margin: 0; padding: 0;
-      background: #18181b;
+      background: #16161a;
       min-height: 100vh;
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: rgba(255,255,255,0.7);
+      color: rgba(255,255,255,0.85);
       -webkit-font-smoothing: antialiased;
     }
 
@@ -31,37 +29,28 @@
       padding: 32px 16px;
       gap: 22px;
     }
-
     .stage-caption {
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.5);
-      text-align: center;
-      max-width: 460px;
-      line-height: 1.7;
+      font-size: 10px; font-weight: 600;
+      letter-spacing: 2px; text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      text-align: center; max-width: 460px; line-height: 1.7;
     }
-    .stage-caption b { color: rgba(255,255,255,0.95); font-weight: 700; }
+    .stage-caption b { color: #fff; font-weight: 700; }
 
-    /* Phone frame */
     .frame {
       width: min(380px, 100%);
       background: #000;
       border-radius: 44px;
       padding: 8px;
-      box-shadow:
-        0 30px 80px rgba(0,0,0,0.75),
-        0 0 0 1px rgba(255,255,255,0.04);
+      box-shadow: 0 30px 80px rgba(0,0,0,0.75), 0 0 0 1px rgba(255,255,255,0.04);
     }
     .screen {
-      background: var(--plate);
+      background: radial-gradient(ellipse 80% 60% at 50% 45%, var(--plate-1) 0%, var(--plate-2) 100%);
       border-radius: 36px;
       overflow: hidden;
       width: 100%;
       aspect-ratio: 390 / 844;
       position: relative;
-      isolation: isolate;
     }
     .notch {
       position: absolute; top: 0; left: 50%; transform: translateX(-50%);
@@ -70,169 +59,75 @@
       z-index: 60;
     }
 
-    /* ──────────────────────────────────────────────────────────
-       Wordmark — typeset in CSS, two stacked layers:
-         · Base layer: dark charcoal (#1F1F1F) — always visible
-         · Top layer: brushed-steel gradient clip-text — revealed by left→right mask sweep
-       Plus a parallax drift on the gradient so the steel keeps "alive"
-       ────────────────────────────────────────────────────────── */
-
+    /* Wordmark stage — explicit width AND height, no animation dependency for visibility */
     .wordmark-stage {
       position: absolute;
       top: 50%; left: 50%;
-      transform: translate(-50%, -52%);
+      width: 240px;
+      transform: translate(-50%, -50%);
       text-align: center;
-      opacity: 0;
-      animation: settle 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.30s forwards;
+      animation: settle 0.70s cubic-bezier(0.22, 1, 0.36, 1) 0.20s both;
     }
     @keyframes settle {
-      0%   { opacity: 0; transform: translate(-50%, -52%) scale(0.96); }
-      100% { opacity: 1; transform: translate(-50%, -52%) scale(1); }
+      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.94); }
+      100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
     }
 
-    .wordmark {
-      position: relative;
-      display: inline-block;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(64px, 22vw, 110px);
-      letter-spacing: 0.05em;
-      line-height: 1;
-      user-select: none;
+    /* SVG explicit width + height so it never collapses to 0 */
+    .wordmark-svg {
+      display: block;
+      width: 240px;
+      height: 62px;
+      overflow: visible;
     }
 
-    /* Base layer — dark charcoal, always visible underneath the sweep */
-    .wordmark-base {
-      color: var(--base);
-      position: relative;
-      z-index: 1;
-    }
-
-    /* Steel layer — gradient clip-text, revealed left→right by the mask */
-    .wordmark-steel {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(
-        110deg,
-        #6B7280 0%,
-        #9CA3AF 28%,
-        #F3F4F6 50%,
-        #9CA3AF 72%,
-        #6B7280 100%
-      );
-      background-size: 200% 100%;
-      background-position: 0% 50%;
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      color: transparent;
-
-      /* Reveal mask: starts fully clipped from the right, sweeps open */
-      clip-path: inset(0 100% 0 0);
-      animation:
-        sweep 0.75s cubic-bezier(0.65, 0, 0.35, 1) 0.10s forwards,
-        drift 6s ease-in-out 0.85s infinite;
-      z-index: 2;
-    }
-    @keyframes sweep {
-      0%   { clip-path: inset(0 100% 0 0); }
-      100% { clip-path: inset(0 0 0 0); }
-    }
-    @keyframes drift {
-      0%, 100% { background-position: 0% 50%; }
-      50%      { background-position: 60% 50%; }
-    }
-
-    /* Soft ambient glow behind the wordmark — bloom from the steel */
-    .ambient {
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(
-        ellipse 50% 30% at 50% 50%,
-        rgba(180, 200, 220, 0.10) 0%,
-        transparent 70%
-      );
-      pointer-events: none;
-      opacity: 0;
-      animation: glow-in 0.6s ease-out 0.55s forwards;
-    }
-    @keyframes glow-in {
-      to { opacity: 1; }
-    }
-
-    /* The "comeback line" — single accent rule beneath the wordmark, draws left-to-right */
+    /* Comeback line beneath */
     .comeback-line {
       display: block;
-      height: 1px;
+      height: 1.4px;
       width: 0;
-      margin: 18px auto 0;
-      background: linear-gradient(
-        90deg,
-        rgba(156, 163, 175, 0) 0%,
-        rgba(156, 163, 175, 0.6) 50%,
-        rgba(156, 163, 175, 0) 100%
-      );
-      animation: line-draw 0.40s cubic-bezier(0.65, 0, 0.35, 1) 0.95s forwards;
+      margin: 22px auto 0;
+      background: linear-gradient(90deg,
+        rgba(31, 28, 24, 0)   0%,
+        rgba(30, 58, 138, 0.7) 50%,
+        rgba(31, 28, 24, 0) 100%);
+      animation: line-draw 0.50s cubic-bezier(0.65, 0, 0.35, 1) 0.85s forwards;
     }
-    @keyframes line-draw {
-      0%   { width: 0; }
-      100% { width: 70%; }
-    }
+    @keyframes line-draw { to { width: 75%; } }
 
-    /* Faint static film-grain for material texture */
     .grain {
       position: absolute; inset: 0;
-      opacity: 0.04;
+      opacity: 0.06;
       pointer-events: none;
-      mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.6 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
       background-size: 160px 160px;
       z-index: 5;
     }
 
-    /* Replay control */
-    .controls {
-      display: flex; gap: 10px; align-items: center;
-      margin-top: 4px;
-    }
+    .controls { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
     .ctrl-btn {
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.12);
-      padding: 9px 16px;
-      border-radius: 100px;
-      font-family: inherit;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      cursor: pointer;
-      transition: background 150ms, border-color 150ms;
+      background: rgba(255,255,255,0.10);
+      color: rgba(255,255,255,0.90);
+      border: 1px solid rgba(255,255,255,0.14);
+      padding: 9px 16px; border-radius: 100px;
+      font-family: inherit; font-size: 12px; font-weight: 600;
+      letter-spacing: 0.4px; cursor: pointer;
     }
-    .ctrl-btn:hover { background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.20); }
-    .ctrl-btn:active { transform: scale(0.97); }
+    .ctrl-btn:hover { background: rgba(255,255,255,0.16); }
     .loop-toggle {
       display: inline-flex; align-items: center; gap: 8px;
       color: rgba(255,255,255,0.55);
-      font-size: 11px;
-      cursor: pointer;
-      user-select: none;
-      padding: 6px 10px;
-      border-radius: 100px;
+      font-size: 11px; cursor: pointer; user-select: none;
     }
-    .loop-toggle input { accent-color: rgba(255,255,255,0.7); }
     .ctrl-meta {
-      font-size: 11px;
-      color: rgba(255,255,255,0.4);
-      letter-spacing: 0.4px;
-      font-variant-numeric: tabular-nums;
+      font-size: 11px; color: rgba(255,255,255,0.40);
+      letter-spacing: 0.4px; font-variant-numeric: tabular-nums;
     }
     .reference {
-      font-size: 10px;
-      color: rgba(255,255,255,0.35);
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      text-align: center;
-      max-width: 460px;
-      line-height: 1.7;
+      font-size: 10px; color: rgba(255,255,255,0.35);
+      letter-spacing: 1.2px; text-transform: uppercase;
+      text-align: center; max-width: 460px; line-height: 1.7;
     }
   </style>
 </head>
@@ -240,20 +135,63 @@
   <div class="stage">
     <div class="stage-caption">
       <b>Revive · Splash</b><br />
-      Brushed-steel wordmark · left→right mask reveal · comeback line · 1.4s
+      Brand wordmark on warm cream plate · per-letter brand gradient · 1.4s
     </div>
 
     <div class="frame">
       <div class="screen" id="screen">
         <div class="notch"></div>
 
-        <div class="ambient"></div>
-
         <div class="wordmark-stage">
-          <div class="wordmark">
-            <span class="wordmark-base">REVIVE</span>
-            <span class="wordmark-steel" aria-hidden="true">REVIVE</span>
-          </div>
+          <!-- Revive brand wordmark — replica of ReviveWordmark.tsx using SVG <line> elements.
+               Per-letter colors interpolated from the brand gradient (#1F1C18 → #1E3A8A),
+               same approach the React Native component uses (lerpColor per letter).
+               No SVG gradient URL: just solid stroke colors. -->
+          <svg class="wordmark-svg" viewBox="-6 -6 422 108"
+               fill="none" stroke-width="7" stroke-linecap="round"
+               xmlns="http://www.w3.org/2000/svg">
+
+            <!-- R — color stop 0/5: #1F1C18 (charcoal) -->
+            <g transform="translate(0,0)" stroke="#1F1C18">
+              <line x1="3.5" y1="0"    x2="3.5"  y2="96"/>
+              <line x1="3.5" y1="3.5"  x2="56.5" y2="3.5"/>
+              <line x1="56.5" y1="3.5" x2="56.5" y2="48"/>
+              <line x1="3.5" y1="48"   x2="56.5" y2="48"/>
+              <line x1="7"   y1="48"   x2="56.5" y2="92.5"/>
+            </g>
+
+            <!-- E — stop 1/5: #1F222F -->
+            <g transform="translate(77,0)" stroke="#1F222F">
+              <line x1="0" y1="3.5"  x2="53" y2="3.5"/>
+              <line x1="0" y1="48"   x2="37" y2="48"/>
+              <line x1="0" y1="92.5" x2="53" y2="92.5"/>
+            </g>
+
+            <!-- V — stop 2/5: #1F2846 -->
+            <g transform="translate(147,0)" stroke="#1F2846">
+              <line x1="3.5"  y1="0" x2="30" y2="92.5"/>
+              <line x1="56.5" y1="0" x2="30" y2="92.5"/>
+            </g>
+
+            <!-- / — stop 3/5: #1E2E5C -->
+            <g transform="translate(224,0)" stroke="#1E2E5C">
+              <line x1="3.5" y1="92.5" x2="29.5" y2="3.5"/>
+            </g>
+
+            <!-- V — stop 4/5: #1E3473 -->
+            <g transform="translate(274,0)" stroke="#1E3473">
+              <line x1="3.5"  y1="0" x2="30" y2="92.5"/>
+              <line x1="56.5" y1="0" x2="30" y2="92.5"/>
+            </g>
+
+            <!-- E — stop 5/5: #1E3A8A (deep navy) -->
+            <g transform="translate(351,0)" stroke="#1E3A8A">
+              <line x1="0" y1="3.5"  x2="53" y2="3.5"/>
+              <line x1="0" y1="48"   x2="37" y2="48"/>
+              <line x1="0" y1="92.5" x2="53" y2="92.5"/>
+            </g>
+          </svg>
+
           <span class="comeback-line"></span>
         </div>
 
@@ -267,11 +205,11 @@
         <input type="checkbox" id="loop-chk" onchange="toggleLoop()" />
         <span>Auto-loop</span>
       </label>
-      <span class="ctrl-meta">1.4s · cubic-bezier(.65,0,.35,1)</span>
+      <span class="ctrl-meta">1.4s · cubic-bezier(.22,1,.36,1)</span>
     </div>
 
     <div class="reference">
-      0.10s mask sweep starts · 0.30s wordmark settles in · 0.95s comeback line draws · 1.40s handoff
+      0.20s wordmark fades in + scales 0.94→1.00 · 0.85s comeback line draws · 1.40s handoff
     </div>
   </div>
 

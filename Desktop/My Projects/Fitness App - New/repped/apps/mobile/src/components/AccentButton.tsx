@@ -25,7 +25,7 @@ export default function AccentButton({
     return (
       <Pressable onPress={onPress} disabled={disabled}
         style={[base, { backgroundColor: disabled ? "rgba(45,42,36,0.3)" : "#2D2A24" }]}>
-        <Text style={{ color: "#F6F5F0", fontWeight: "700", fontSize }}>{label}</Text>
+        <Text style={{ color: "#F6F5F0", fontFamily: "Quicksand_700Bold", fontWeight: "700", fontSize }}>{label}</Text>
       </Pressable>
     );
   }
@@ -34,7 +34,7 @@ export default function AccentButton({
     return (
       <Pressable onPress={onPress} disabled={disabled}
         style={[base, { borderWidth: 1.5, borderColor: "#DDD9CE" }]}>
-        <Text style={{ color: "#2D2A24", fontWeight: "600", fontSize }}>{label}</Text>
+        <Text style={{ color: "#2D2A24", fontFamily: "Quicksand_600SemiBold", fontWeight: "600", fontSize }}>{label}</Text>
       </Pressable>
     );
   }

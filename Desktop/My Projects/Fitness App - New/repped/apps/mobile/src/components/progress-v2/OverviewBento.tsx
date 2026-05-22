@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: "#888",
   },
   stepsHeader: {
@@ -181,7 +181,7 @@ const styles = StyleSheet.create({
   },
   stepsNumber: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
     letterSpacing: -0.5,
   },
@@ -198,7 +198,7 @@ const styles = StyleSheet.create({
   },
   bigNumber: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
   },
   unit: {

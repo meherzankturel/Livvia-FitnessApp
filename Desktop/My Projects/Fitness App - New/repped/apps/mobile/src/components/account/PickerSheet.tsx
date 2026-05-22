@@ -82,7 +82,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
             }}
           >
             <Pressable onPress={onCancel} hitSlop={12}>
-              <Text style={{ fontSize: 14, color: C.rock, fontWeight: "600", minWidth: 60 }}>
+              <Text style={{ fontSize: 14, color: C.rock, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", minWidth: 60 }}>
                 Cancel
               </Text>
             </Pressable>
@@ -91,7 +91,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
             </Text>
             {multi ? (
               <Pressable onPress={() => onMultiSelect?.(currentArr as T[])} hitSlop={12}>
-                <Text style={{ fontSize: 14, color: C.earth, fontWeight: "800", minWidth: 60, textAlign: "right" }}>
+                <Text style={{ fontSize: 14, color: C.earth, fontFamily: "Quicksand_700Bold", fontWeight: "800", minWidth: 60, textAlign: "right" }}>
                   Done
                 </Text>
               </Pressable>
@@ -132,7 +132,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
                     <Text
                       style={{
                         fontSize: 14,
-                        fontWeight: "500",
+                        fontFamily: "Quicksand_500Medium", fontWeight: "500",
                         color: selected ? "#FFFFFF" : C.earth,
                         textAlign: "center",
                       }}
@@ -151,7 +151,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={{ fontSize: 9, color: C.earth, fontWeight: "800" }}>✓</Text>
+                        <Text style={{ fontSize: 9, color: C.earth, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>✓</Text>
                       </View>
                     )}
                   </Pressable>
@@ -179,7 +179,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
                     <Text
                       style={{
                         fontSize: 15,
-                        fontWeight: "500",
+                        fontFamily: "Quicksand_500Medium", fontWeight: "500",
                         color: selected ? "#FFFFFF" : C.earth,
                         flex: 1,
                         paddingRight: 12,
@@ -197,7 +197,7 @@ export function PickerSheet<T extends string | number>(props: PickerSheetProps<T
                           justifyContent: "center",
                         }}
                       >
-                        <Text style={{ fontSize: 10, color: C.earth, fontWeight: "800" }}>✓</Text>
+                        <Text style={{ fontSize: 10, color: C.earth, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>✓</Text>
                       </View>
                     )}
                   </Pressable>

@@ -37,7 +37,7 @@ export function SettingsRow({ icon, label, onPress, showChev = true }: SettingsR
         style={{
           flex: 1,
           fontSize: 15,
-          fontWeight: "500",
+          fontFamily: "Quicksand_500Medium", fontWeight: "500",
           color: C.earth,
           letterSpacing: -0.1,
         }}
@@ -45,7 +45,7 @@ export function SettingsRow({ icon, label, onPress, showChev = true }: SettingsR
         {label}
       </Text>
       {showChev && (
-        <Text style={{ fontSize: 17, color: C.chev, fontWeight: "400" }}>›</Text>
+        <Text style={{ fontSize: 17, color: C.chev, fontFamily: "Quicksand_400Regular", fontWeight: "400" }}>›</Text>
       )}
     </Pressable>
   );

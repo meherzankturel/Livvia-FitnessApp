@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   dayLabel: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#888",
     letterSpacing: 0.5,
   },
@@ -139,7 +139,7 @@ const styles = StyleSheet.create({
   },
   dateNumber: {
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
     letterSpacing: -0.3,
   },

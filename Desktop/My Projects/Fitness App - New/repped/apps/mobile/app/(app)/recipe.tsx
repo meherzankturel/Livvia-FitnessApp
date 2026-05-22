@@ -13,6 +13,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useRef, useEffect, useState } from "react";
 import { openYouTube } from "../../src/lib/deeplink";
 import { TopoBackground } from "../../src/components/terrain";
+import { BackButton } from "../../src/components/BackButton";
 import { getDishImageUrl, getDishImageUrlAsync, getDishImageSource } from "../../src/lib/dish-images";
 import type { ImageSourcePropType } from "react-native";
 
@@ -211,13 +212,7 @@ export default function Recipe() {
           />
 
           {/* Back button */}
-          <Pressable
-            onPress={() => router.navigate("/(app)/meals")}
-            style={s.backBtn}
-            hitSlop={12}
-          >
-            <Text style={s.backIcon}>‹</Text>
-          </Pressable>
+          <BackButton onPress={() => router.navigate("/(app)/meals")} style={s.backBtn} />
 
           {/* Video button - top right */}
           <Pressable
@@ -411,19 +406,7 @@ const s = StyleSheet.create({
     position: "absolute",
     top: 58,
     left: 20,
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: C.stone,
-    alignItems: "center",
-    justifyContent: "center",
     zIndex: 10,
-  },
-  backIcon: {
-    color: C.earth,
-    fontSize: 20,
-    fontWeight: "600",
-    marginTop: -1,
   },
 
   // Video button
@@ -483,7 +466,7 @@ const s = StyleSheet.create({
   },
   mealBadgeText: {
     fontSize: 9,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 2.5,
     color: C.rock,
@@ -493,7 +476,7 @@ const s = StyleSheet.create({
   // Recipe name
   recipeName: {
     fontSize: 24,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.earth,
     textAlign: "center",
     letterSpacing: -0.3,
@@ -537,7 +520,7 @@ const s = StyleSheet.create({
   },
   macroValue: {
     fontSize: 13,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.earth,
   },
   macroLabel: {
@@ -561,7 +544,7 @@ const s = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 11,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     textTransform: "uppercase",
     letterSpacing: 2.5,
     color: C.earth,
@@ -577,7 +560,7 @@ const s = StyleSheet.create({
   sectionCount: {
     fontSize: 10,
     color: C.rock,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
 
   // Ingredient rows
@@ -588,7 +571,7 @@ const s = StyleSheet.create({
   },
   ingName: {
     fontSize: 14,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: C.earth,
   },
   ingDots: {
@@ -601,7 +584,7 @@ const s = StyleSheet.create({
   },
   ingAmount: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
     minWidth: 50,
     textAlign: "right",
@@ -620,7 +603,7 @@ const s = StyleSheet.create({
   },
   stepNum: {
     fontSize: 32,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: "rgba(142,142,122,0.5)",
     letterSpacing: -1,
     lineHeight: 36,
@@ -631,7 +614,7 @@ const s = StyleSheet.create({
   },
   stepText: {
     fontSize: 15,
-    fontWeight: "400",
+    fontFamily: "Quicksand_400Regular", fontWeight: "400",
     color: C.earth,
     lineHeight: 15 * 1.7,
   },
@@ -645,7 +628,7 @@ const s = StyleSheet.create({
   },
   timePillText: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
   },
 });

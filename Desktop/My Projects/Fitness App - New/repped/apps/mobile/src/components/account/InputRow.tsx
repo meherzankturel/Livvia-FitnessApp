@@ -68,14 +68,14 @@ export function InputRow(props: InputRowProps) {
     flex: 1,
     fontSize: 13,
     color: C.earth,
-    fontWeight: "500" as const,
+    fontFamily: "Quicksand_500Medium", fontWeight: "500" as const,
   };
 
   if (props.variant === "readonly") {
     return (
       <View style={rowStyle}>
         <Text style={labelStyle}>{props.label}</Text>
-        <Text style={{ fontSize: 14, fontWeight: "400", color: C.rock, paddingVertical: 6 }}>
+        <Text style={{ fontSize: 14, fontFamily: "Quicksand_400Regular", fontWeight: "400", color: C.rock, paddingVertical: 6 }}>
           {props.value}
         </Text>
       </View>
@@ -92,7 +92,7 @@ export function InputRow(props: InputRowProps) {
         ]}
       >
         <Text style={labelStyle}>{props.label}</Text>
-        <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth }}>{props.value}</Text>
+        <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>{props.value}</Text>
         <Text style={{ fontSize: 16, color: C.rock }}>›</Text>
       </Pressable>
     );
@@ -113,7 +113,7 @@ export function InputRow(props: InputRowProps) {
             paddingVertical: 8,
             borderRadius: 10,
             fontSize: 14,
-            fontWeight: "600",
+            fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
             color: C.earth,
             textAlign: "right",
             width: props.width ?? 140,
@@ -141,7 +141,7 @@ export function InputRow(props: InputRowProps) {
             paddingVertical: 8,
             borderRadius: 10,
             fontSize: 14,
-            fontWeight: "600",
+            fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
             color: C.earth,
             textAlign: "right",
             width: props.width ?? 100,

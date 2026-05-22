@@ -112,7 +112,7 @@ export default function BadgeIcon({ name, size, color }: Props) {
 
     case "check":
       return (
-        <Text style={{ fontSize: s * 0.6, color, fontWeight: "900", textAlign: "center", lineHeight: s, includeFontPadding: false }}>✓</Text>
+        <Text style={{ fontSize: s * 0.6, color, fontFamily: "Quicksand_700Bold", fontWeight: "900", textAlign: "center", lineHeight: s, includeFontPadding: false }}>✓</Text>
       );
 
     case "lightning":
@@ -253,7 +253,7 @@ export default function BadgeIcon({ name, size, color }: Props) {
 
     default:
       return (
-        <Text style={{ fontSize: s * 0.5, color, fontWeight: "800", textAlign: "center", lineHeight: s }}>
+        <Text style={{ fontSize: s * 0.5, color, fontFamily: "Quicksand_700Bold", fontWeight: "800", textAlign: "center", lineHeight: s }}>
           {ICON_MAP[name] || "●"}
         </Text>
       );

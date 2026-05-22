@@ -131,7 +131,7 @@ const s = StyleSheet.create({
   },
   cardValue: {
     fontSize: 26,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: earth,
     lineHeight: 30,
   },
@@ -143,7 +143,7 @@ const s = StyleSheet.create({
   },
   arrow: {
     fontSize: 12,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   cardSub: {
     fontSize: 10,

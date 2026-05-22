@@ -47,7 +47,7 @@ export default function LayoutB({
     <View>
       {/* ─── Weekly Momentum ─── */}
       <Text style={{
-        color: "#AEAEB2", fontSize: 10, fontWeight: "700",
+        color: "#AEAEB2", fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700",
         letterSpacing: 2, textTransform: "uppercase", marginBottom: 6,
       }}>
         Weekly Momentum
@@ -56,7 +56,7 @@ export default function LayoutB({
         <Text style={{ color: "#1C1C1E", fontSize: 26, fontWeight: "800", letterSpacing: -0.5 }}>
           {monthName} Week {weekNum}
         </Text>
-        <Text style={{ color: "#6366F1", fontSize: 22, fontWeight: "800" }}>{Math.round(completionPct)}%</Text>
+        <Text style={{ color: "#6366F1", fontSize: 22, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>{Math.round(completionPct)}%</Text>
       </View>
 
       {/* ─── Week Row with Dates ─── */}
@@ -67,7 +67,7 @@ export default function LayoutB({
           const future = i > dayOfWeek - 1;
           return (
             <View key={i} style={{ alignItems: "center" }}>
-              <Text style={{ color: "#AEAEB2", fontSize: 11, fontWeight: "500", marginBottom: 6 }}>{day}</Text>
+              <Text style={{ color: "#AEAEB2", fontSize: 11, fontFamily: "Quicksand_500Medium", fontWeight: "500", marginBottom: 6 }}>{day}</Text>
               <View style={{
                 width: 40, height: 40, borderRadius: 12,
                 alignItems: "center", justifyContent: "center",
@@ -76,7 +76,7 @@ export default function LayoutB({
                 borderColor: done ? "#6366F1" : "transparent",
               }}>
                 {done ? (
-                  <Text style={{ color: "#6366F1", fontSize: 14, fontWeight: "700" }}>✓</Text>
+                  <Text style={{ color: "#6366F1", fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>✓</Text>
                 ) : (
                   <Text style={{
                     color: today ? "#fff" : future ? "#C7C7CC" : "#1C1C1E",
@@ -98,7 +98,7 @@ export default function LayoutB({
           <Text style={{
             color: "#1C1C1E",
             fontSize: 36,
-            fontWeight: "900",
+            fontFamily: "Quicksand_700Bold", fontWeight: "900",
             letterSpacing: -1,
             textTransform: "uppercase",
             lineHeight: 40,
@@ -121,7 +121,7 @@ export default function LayoutB({
               borderRadius: 12, paddingVertical: 14, alignItems: "center",
             }}
           >
-            <Text style={{ color: "#8E8E93", fontSize: 14, fontWeight: "500" }}>Wellness Check</Text>
+            <Text style={{ color: "#8E8E93", fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Wellness Check</Text>
           </Pressable>
         )}
         <Pressable
@@ -131,7 +131,7 @@ export default function LayoutB({
             borderRadius: 12, paddingVertical: 14, alignItems: "center",
           }}
         >
-          <Text style={{ color: "#AEAEB2", fontSize: 14, fontWeight: "500" }}>Skip Today</Text>
+          <Text style={{ color: "#AEAEB2", fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Skip Today</Text>
         </Pressable>
       </View>
     </View>

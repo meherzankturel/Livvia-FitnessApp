@@ -78,7 +78,7 @@ export default function Step3Health() {
       <Text
         style={{
           fontSize: 10,
-          fontWeight: "700",
+          fontFamily: "Quicksand_700Bold", fontWeight: "700",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -90,7 +90,7 @@ export default function Step3Health() {
       </Text>
 
       {/* Title */}
-      <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
+      <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, marginBottom: 6 }}>
         Quick <Text style={{ color: C.trail }}>health</Text> check
       </Text>
 
@@ -115,7 +115,7 @@ export default function Step3Health() {
                 padding: 16,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth, lineHeight: 20, marginBottom: 12 }}>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, lineHeight: 20, marginBottom: 12 }}>
                 {q.question}
               </Text>
               <View style={{ flexDirection: "row", gap: 10 }}>
@@ -131,7 +131,7 @@ export default function Step3Health() {
                     borderColor: isYes ? "#EF4444" : "transparent",
                   }}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "700", color: isYes ? "#FFF" : C.rock }}>
+                  <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: isYes ? "#FFF" : C.rock }}>
                     Yes
                   </Text>
                 </Pressable>
@@ -147,7 +147,7 @@ export default function Step3Health() {
                     borderColor: isNo ? C.trail : "transparent",
                   }}
                 >
-                  <Text style={{ fontSize: 14, fontWeight: "700", color: isNo ? "#FFF" : C.rock }}>
+                  <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: isNo ? "#FFF" : C.rock }}>
                     No
                   </Text>
                 </Pressable>

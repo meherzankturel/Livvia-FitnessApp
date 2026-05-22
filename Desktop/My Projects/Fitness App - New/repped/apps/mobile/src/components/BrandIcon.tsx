@@ -21,7 +21,7 @@ export function BrandIcon({ size = 80 }: { size?: number }) {
       <Text
         style={{
           fontSize: size * 0.48,
-          fontWeight: "900",
+          fontFamily: "Quicksand_700Bold", fontWeight: "900",
           color: "#FFFFFF",
           letterSpacing: -1,
           marginTop: -2,

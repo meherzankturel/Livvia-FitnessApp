@@ -476,7 +476,7 @@ const s = StyleSheet.create({
   },
   headerLabel: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
     letterSpacing: 1,
     textTransform: "uppercase",
@@ -525,7 +525,7 @@ const s = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 24,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.sand,
   },
   heroSub: {
@@ -535,7 +535,7 @@ const s = StyleSheet.create({
   },
   heroDuration: {
     fontSize: 32,
-    fontWeight: "900",
+    fontFamily: "Quicksand_700Bold", fontWeight: "900",
     color: C.sand,
   },
   heroDurationLabel: {
@@ -569,7 +569,7 @@ const s = StyleSheet.create({
   },
   timelineTitle: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   timelineCount: {
@@ -633,7 +633,7 @@ const s = StyleSheet.create({
   },
   timelineExName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.earth,
     flex: 1,
   },
@@ -660,7 +660,7 @@ const s = StyleSheet.create({
   },
   typePillText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   demoLink: {
     fontSize: 11,
@@ -687,7 +687,7 @@ const s = StyleSheet.create({
   summitText: {
     fontSize: 11,
     color: C.trail,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
 
   // ── Bottom Buttons ──
@@ -707,7 +707,7 @@ const s = StyleSheet.create({
   primaryBtnText: {
     color: C.sand,
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   secondaryBtn: {
     flex: 0.5,
@@ -719,7 +719,7 @@ const s = StyleSheet.create({
   secondaryBtnText: {
     color: C.earth,
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
 
   // ── Timer Active (View 2) ──
@@ -751,7 +751,7 @@ const s = StyleSheet.create({
   timerExName: {
     color: C.earth,
     fontSize: 24,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     marginBottom: 8,
     textAlign: "center",
     letterSpacing: -0.5,
@@ -764,7 +764,7 @@ const s = StyleSheet.create({
   },
   timerBadgeText: {
     fontSize: 12,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   timerRing: {
     width: 160,
@@ -797,7 +797,7 @@ const s = StyleSheet.create({
   timerDisplay: {
     color: C.earth,
     fontSize: 48,
-    fontWeight: "900" as const,
+    fontFamily: "Quicksand_700Bold", fontWeight: "900" as const,
     letterSpacing: -2,
     lineHeight: 48,
   },
@@ -806,7 +806,7 @@ const s = StyleSheet.create({
     color: C.rock,
     textTransform: "uppercase" as const,
     letterSpacing: 0.5,
-    fontWeight: "600" as const,
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600" as const,
     marginTop: 2,
   },
   timerInstructions: {
@@ -828,7 +828,7 @@ const s = StyleSheet.create({
   timerDemoText: {
     color: C.trail,
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   skipExBtn: {
     backgroundColor: C.stone,
@@ -840,7 +840,7 @@ const s = StyleSheet.create({
   skipExText: {
     color: C.earth,
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   skipWarmupBtn: {
     backgroundColor: "transparent",
@@ -864,7 +864,7 @@ const s = StyleSheet.create({
   completionCheck: {
     fontSize: 48,
     color: C.trail,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     marginBottom: 16,
   },
   completionTitle: {
@@ -891,7 +891,7 @@ const s = StyleSheet.create({
   completionPrimaryText: {
     color: C.sand,
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   completionSecondary: {
     backgroundColor: C.stone,
@@ -904,6 +904,6 @@ const s = StyleSheet.create({
   completionSecondaryText: {
     color: C.earth,
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
 });

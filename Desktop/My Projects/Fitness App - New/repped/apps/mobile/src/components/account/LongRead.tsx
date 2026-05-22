@@ -6,7 +6,7 @@ const C = { earth: "#1A1A1A", rock: "#5B5B53", body: "#3A3A35" };
 export function LongReadTitle({ children, updated }: { children: string; updated?: string }) {
   return (
     <View style={{ marginHorizontal: 20, marginBottom: 24 }}>
-      <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, letterSpacing: -0.4, marginBottom: 6 }}>
+      <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, letterSpacing: -0.4, marginBottom: 6 }}>
         {children}
       </Text>
       {updated && (
@@ -23,7 +23,7 @@ export function LongReadHeading({ children }: { children: string }) {
     <Text
       style={{
         fontSize: 16,
-        fontWeight: "700",
+        fontFamily: "Quicksand_700Bold", fontWeight: "700",
         color: C.earth,
         marginHorizontal: 20,
         marginTop: 20,
@@ -55,7 +55,7 @@ export function LongReadParagraph({ children }: { children: ReactNode }) {
 export function LongReadBullet({ children }: { children: ReactNode }) {
   return (
     <View style={{ flexDirection: "row", marginHorizontal: 20, marginBottom: 8 }}>
-      <Text style={{ color: C.rock, marginRight: 8, fontWeight: "700" }}>•</Text>
+      <Text style={{ color: C.rock, marginRight: 8, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>•</Text>
       <Text style={{ flex: 1, fontSize: 14, color: C.body, lineHeight: 22 }}>{children}</Text>
     </View>
   );

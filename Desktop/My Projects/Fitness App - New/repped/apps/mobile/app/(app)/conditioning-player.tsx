@@ -20,6 +20,7 @@ import {
 } from "@repped/shared";
 import { supabase } from "../../src/lib/supabase";
 import { TopoBackground } from "../../src/components/terrain";
+import { BackButton } from "../../src/components/BackButton";
 
 const C = {
   earth: "#2D2A24",
@@ -157,9 +158,7 @@ export default function ConditioningPlayer() {
       <View style={s.container}>
         <TopoBackground />
         <ScrollView contentContainerStyle={s.scroll}>
-          <Pressable onPress={handleQuit} style={s.back}>
-            <Text style={{ color: C.earth, fontSize: 18, fontWeight: "600" }}>‹</Text>
-          </Pressable>
+          <BackButton onPress={handleQuit} style={s.back} />
           <Text style={s.eyebrow}>CONDITIONING · {totalMinutes} MIN</Text>
           <Text style={s.title}>{template.name}</Text>
           <Text style={s.subtitle}>{template.description}</Text>
@@ -212,7 +211,7 @@ export default function ConditioningPlayer() {
       <TopoBackground />
       <View style={s.activeTop}>
         <Pressable onPress={handleQuit}>
-          <Text style={{ color: C.earth, fontSize: 18, fontWeight: "600" }}>‹ Quit</Text>
+          <Text style={{ color: C.earth, fontSize: 18, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>‹ Quit</Text>
         </Pressable>
         <Text style={s.activeCount}>{exerciseIdx + 1} / {total}</Text>
       </View>
@@ -260,13 +259,10 @@ const s = StyleSheet.create({
   container: { flex: 1, backgroundColor: C.sand },
   scroll: { padding: 24, paddingTop: 60, paddingBottom: 140 },
   back: {
-    width: 36, height: 36, borderRadius: 18,
-    backgroundColor: C.stone,
-    alignItems: "center", justifyContent: "center",
     marginBottom: 16,
   },
   eyebrow: {
-    fontSize: 11, fontWeight: "700", letterSpacing: 1.4,
+    fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 1.4,
     color: C.trail, marginBottom: 8,
   },
   title: { fontSize: 28, fontWeight: "800", color: C.earth, lineHeight: 34 },
@@ -281,7 +277,7 @@ const s = StyleSheet.create({
     backgroundColor: C.earth,
     alignItems: "center", justifyContent: "center",
   },
-  exerciseNumText: { color: C.sand, fontSize: 13, fontWeight: "700" },
+  exerciseNumText: { color: C.sand, fontSize: 13, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
   exerciseName: { fontSize: 16, fontWeight: "700", color: C.earth },
   exerciseDuration: { fontSize: 12, color: C.trail, fontWeight: "600", marginTop: 2 },
   exerciseInstructions: { fontSize: 13, color: C.rock, marginTop: 6, lineHeight: 18 },
@@ -297,14 +293,14 @@ const s = StyleSheet.create({
     paddingVertical: 18, borderRadius: 18,
     alignItems: "center",
   },
-  startBtnText: { color: C.sand, fontSize: 16, fontWeight: "700" },
+  startBtnText: { color: C.sand, fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
 
   // Active stage
   activeTop: {
     flexDirection: "row", justifyContent: "space-between", alignItems: "center",
     paddingHorizontal: 24, paddingTop: 60, paddingBottom: 20,
   },
-  activeCount: { fontSize: 14, color: C.rock, fontWeight: "600" },
+  activeCount: { fontSize: 14, color: C.rock, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" },
   activeBody: {
     flex: 1, paddingHorizontal: 24, justifyContent: "center", alignItems: "center",
   },
@@ -318,7 +314,7 @@ const s = StyleSheet.create({
     paddingHorizontal: 12,
   },
   timer: {
-    fontSize: 88, fontWeight: "300", color: C.earth,
+    fontSize: 88, fontFamily: "Quicksand_400Regular", fontWeight: "300", color: C.earth,
     fontVariant: ["tabular-nums"], marginTop: 32,
     letterSpacing: -2,
   },
@@ -337,12 +333,12 @@ const s = StyleSheet.create({
     flex: 1, paddingVertical: 16, borderRadius: 16,
     alignItems: "center",
   },
-  controlBtnText: { fontSize: 15, fontWeight: "700" },
+  controlBtnText: { fontSize: 15, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
 
   // Generic button
   btn: {
     backgroundColor: C.earth, paddingVertical: 14, paddingHorizontal: 24,
     borderRadius: 16,
   },
-  btnText: { color: C.sand, fontSize: 15, fontWeight: "700" },
+  btnText: { color: C.sand, fontSize: 15, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
 });

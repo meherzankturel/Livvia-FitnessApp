@@ -59,7 +59,7 @@ export default function Account() {
         <Text
           style={{
             fontSize: 28,
-            fontWeight: "800",
+            fontFamily: "Quicksand_700Bold", fontWeight: "800",
             color: "#1A1A1A",
             letterSpacing: -0.4,
             marginHorizontal: 24,
@@ -120,7 +120,7 @@ export default function Account() {
             onPress={handleSignOut}
             style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, paddingVertical: 10, paddingHorizontal: 16 })}
           >
-            <Text style={{ fontSize: 15, fontWeight: "600", color: "#1A1A1A", letterSpacing: -0.1 }}>
+            <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#1A1A1A", letterSpacing: -0.1 }}>
               Sign Out
             </Text>
           </Pressable>

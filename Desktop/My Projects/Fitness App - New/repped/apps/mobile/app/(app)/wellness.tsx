@@ -152,7 +152,7 @@ export default function Wellness() {
       <View style={{ flex: 1, backgroundColor: "#F6F5F0", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
         <Text style={{ fontSize: 48, marginBottom: 16 }}>✓</Text>
-        <Text style={{ color: "#2D2A24", fontSize: 24, fontWeight: "700", marginBottom: 8 }}>Logged!</Text>
+        <Text style={{ color: "#2D2A24", fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", marginBottom: 8 }}>Logged!</Text>
         <Text style={{ color: "#8E8E7A", textAlign: "center", fontSize: 14 }}>
           Tracking wellness helps us optimize your training.
         </Text>
@@ -165,7 +165,7 @@ export default function Wellness() {
       <TopoBackground />
       <View style={s.zone}>
         <Pressable onPress={() => router.navigate("/(app)")} style={s.back}>
-          <Text style={{ color: "#2D2A24", fontSize: 16, fontWeight: "600" }}>‹</Text>
+          <Text style={{ color: "#2D2A24", fontSize: 16, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>‹</Text>
         </Pressable>
 
         <Text style={s.title}>Wellness Check</Text>
@@ -215,7 +215,7 @@ const s = StyleSheet.create({
     alignItems: "center", justifyContent: "center",
     marginBottom: 20,
   },
-  title: { fontSize: 26, fontWeight: "800", color: "#2D2A24", marginBottom: 4 },
+  title: { fontSize: 26, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: "#2D2A24", marginBottom: 4 },
   subtitle: { fontSize: 14, color: "#8E8E7A", marginBottom: 32 },
 
   // Metric
@@ -224,7 +224,7 @@ const s = StyleSheet.create({
     flexDirection: "row", alignItems: "flex-end",
     justifyContent: "space-between", marginBottom: 18,
   },
-  mLabel: { fontSize: 15, fontWeight: "700", color: "#2D2A24" },
+  mLabel: { fontSize: 15, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24" },
   mVal: { fontSize: 20, fontWeight: "900", color: "#2D2A24" },
 
   // Track
@@ -257,7 +257,7 @@ const s = StyleSheet.create({
     backgroundColor: "rgba(52,211,153,0.25)",
     width: 6, height: 6, borderRadius: 3,
   },
-  nNum: { fontSize: 12, fontWeight: "800", color: "#F6F5F0" },
+  nNum: { fontSize: 12, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: "#F6F5F0" },
 
   labels: {
     flexDirection: "row", justifyContent: "space-between",
@@ -282,7 +282,7 @@ const s = StyleSheet.create({
     shadowColor: "#2D2A24", shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15, shadowRadius: 10, elevation: 3,
   },
-  nutText: { fontSize: 13, fontWeight: "700" },
+  nutText: { fontSize: 13, fontFamily: "Quicksand_700Bold", fontWeight: "700" },
   nutTextOff: { color: "#8E8E7A" },
   nutTextOn: { color: "#F6F5F0" },
 
@@ -293,5 +293,5 @@ const s = StyleSheet.create({
     backgroundColor: "#2D2A24",
   },
   saveBtnOff: { backgroundColor: "#EDEBE5" },
-  saveBtnText: { fontSize: 16, fontWeight: "700", color: "#F6F5F0" },
+  saveBtnText: { fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#F6F5F0" },
 });

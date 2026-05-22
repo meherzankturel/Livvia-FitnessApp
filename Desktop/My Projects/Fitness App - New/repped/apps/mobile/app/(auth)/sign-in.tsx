@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../src/lib/supabase";
 import { ReviveWordmark } from "../../src/components/ReviveWordmark";
+import { signInWithApple, useGoogleSignIn, APPLE_AUTH_AVAILABLE } from "../../src/lib/auth-oauth";
 
 const C = {
   bg: "#F6F5F0",            // cream background
@@ -64,6 +65,24 @@ export default function SignIn() {
     if (authError) setError(authError.message);
   };
 
+  // OAuth: Google (via expo-auth-session) and Apple (native, iOS only)
+  const google = useGoogleSignIn();
+
+  const handleGoogle = async () => {
+    setError(null);
+    try {
+      await google.promptAsync();
+    } catch (e: any) {
+      setError(e?.message ?? "Couldn't sign in with Google.");
+    }
+  };
+
+  const handleApple = async () => {
+    setError(null);
+    const { error: authError } = await signInWithApple();
+    if (authError) setError(authError.message);
+  };
+
   return (
     <KeyboardAvoidingView
       style={{ flex: 1, backgroundColor: C.bgWarm }}
@@ -74,26 +93,13 @@ export default function SignIn() {
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
       >
-        {/* Back button */}
-        <Pressable
-          onPress={() => router.canGoBack() ? router.back() : null}
-          style={{
-            width: 40, height: 40, borderRadius: 20, backgroundColor: C.white,
-            alignItems: "center", justifyContent: "center",
-            shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4,
-            elevation: 2, marginBottom: 32,
-          }}
-        >
-          <Ionicons name="arrow-back" size={20} color={C.earth} />
-        </Pressable>
-
         {/* Wordmark */}
-        <View style={{ alignItems: "center", marginBottom: 24 }}>
+        <View style={{ alignItems: "center", marginBottom: 24, marginTop: 32 }}>
           <ReviveWordmark size={48} />
         </View>
 
         {/* Title + subtitle */}
-        <Text style={{ fontSize: 30, fontWeight: "800", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 8 }}>
+        <Text style={{ fontSize: 30, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 8 }}>
           Welcome Back
         </Text>
         <Text style={{ fontSize: 14, color: C.rock, textAlign: "center", lineHeight: 20, marginBottom: 36, paddingHorizontal: 16 }}>
@@ -110,7 +116,7 @@ export default function SignIn() {
         }}>
           <Ionicons name="mail-outline" size={20} color={C.rock} />
           <TextInput
-            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}
             placeholder="Enter your email"
             placeholderTextColor={C.rock}
             autoCapitalize="none"
@@ -138,7 +144,7 @@ export default function SignIn() {
         }}>
           <Ionicons name="lock-closed-outline" size={20} color={C.rock} />
           <TextInput
-            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}
             placeholder="Password"
             placeholderTextColor={C.rock}
             secureTextEntry={!showPassword}
@@ -171,11 +177,11 @@ export default function SignIn() {
             }}>
               {rememberMe && <Ionicons name="checkmark" size={14} color={C.white} />}
             </View>
-            <Text style={{ fontSize: 13, color: C.earth, fontWeight: "500" }}>Remember me</Text>
+            <Text style={{ fontSize: 13, color: C.earth, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Remember me</Text>
           </Pressable>
           <Link href="/forgot-password" asChild>
             <Pressable>
-              <Text style={{ fontSize: 13, color: C.primary, fontWeight: "600" }}>Forget Password</Text>
+              <Text style={{ fontSize: 13, color: C.primary, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Forget Password</Text>
             </Pressable>
           </Link>
         </View>
@@ -190,28 +196,29 @@ export default function SignIn() {
           onPress={handleSignIn}
           disabled={!canSubmit || loading}
           style={({ pressed }) => ({
-            backgroundColor: canSubmit && !loading ? C.primary : "rgba(92,139,110,0.45)",
+            backgroundColor: C.primary,
             borderRadius: 16, height: 56, alignItems: "center", justifyContent: "center", marginBottom: 24,
-            opacity: pressed ? 0.92 : 1,
+            opacity: (email.length === 0 && password.length === 0) ? 0.55 : loading ? 0.7 : pressed ? 0.92 : 1,
           })}
         >
           {loading ? (
             <ActivityIndicator color={C.white} />
           ) : (
-            <Text style={{ fontSize: 16, fontWeight: "700", color: C.white, letterSpacing: -0.1 }}>Login</Text>
+            <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.white, letterSpacing: -0.1 }}>Login</Text>
           )}
         </Pressable>
 
         {/* OR divider */}
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 20 }}>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
-          <Text style={{ fontSize: 13, color: C.rock, fontWeight: "500" }}>or</Text>
+          <Text style={{ fontSize: 13, color: C.rock, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>or</Text>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
         </View>
 
         {/* Google */}
         <Pressable
-          onPress={() => { /* TODO: wire Google OAuth */ }}
+          onPress={handleGoogle}
+          disabled={!google.ready}
           style={({ pressed }) => ({
             flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
             backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 12,
@@ -223,14 +230,15 @@ export default function SignIn() {
             width: 22, height: 22, borderRadius: 11,
             alignItems: "center", justifyContent: "center",
           }}>
-            <Text style={{ fontSize: 16, fontWeight: "800", color: "#4285F4" }}>G</Text>
+            <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#4285F4" }}>G</Text>
           </View>
-          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Google</Text>
+          <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Log in with Google</Text>
         </Pressable>
 
-        {/* Apple */}
+        {/* Apple — iOS only */}
+        {APPLE_AUTH_AVAILABLE && (
         <Pressable
-          onPress={() => { /* TODO: wire Apple OAuth */ }}
+          onPress={handleApple}
           style={({ pressed }) => ({
             flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
             backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 28,
@@ -239,15 +247,16 @@ export default function SignIn() {
           })}
         >
           <Ionicons name="logo-apple" size={20} color={C.earth} />
-          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Apple</Text>
+          <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Log in with Apple</Text>
         </Pressable>
+        )}
 
         {/* Footer */}
         <Link href="/sign-up" asChild>
           <Pressable style={{ alignItems: "center", paddingVertical: 8 }}>
             <Text style={{ fontSize: 14, color: C.rock }}>
               Don't have an account?{" "}
-              <Text style={{ color: C.primary, fontWeight: "700" }}>Sign up</Text>
+              <Text style={{ color: C.primary, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Sign up</Text>
             </Text>
           </Pressable>
         </Link>

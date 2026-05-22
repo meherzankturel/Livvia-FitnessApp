@@ -68,7 +68,7 @@ export default function Checkin() {
       <View style={{ flex: 1, backgroundColor: "#F6F5F0", justifyContent: "center", alignItems: "center", paddingHorizontal: 24 }}>
         <TopoBackground />
         <Text style={{ fontSize: 40, marginBottom: 16 }}>✅</Text>
-        <Text style={{ color: "#2D2A24", fontSize: 24, fontWeight: "700", marginBottom: 16, textAlign: "center" }}>Check-in Logged</Text>
+        <Text style={{ color: "#2D2A24", fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", marginBottom: 16, textAlign: "center" }}>Check-in Logged</Text>
         <View style={{ backgroundColor: "#EDEBE5", borderRadius: 16, padding: 20, width: "100%", marginBottom: 32 }}>
           <Text style={{ color: "#2D2A24", fontSize: 16, textAlign: "center" }}>{result}</Text>
         </View>
@@ -76,7 +76,7 @@ export default function Checkin() {
           onPress={() => router.replace("/(app)")}
           style={{ backgroundColor: "#2D2A24", borderRadius: 16, paddingHorizontal: 32, paddingVertical: 16 }}
         >
-          <Text style={{ color: "#F6F5F0", fontSize: 18, fontWeight: "600" }}>Back to Today</Text>
+          <Text style={{ color: "#F6F5F0", fontSize: 18, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Back to Today</Text>
         </Pressable>
       </View>
     );
@@ -86,7 +86,7 @@ export default function Checkin() {
     <View style={{ flex: 1, backgroundColor: "#F6F5F0", paddingHorizontal: 24, paddingTop: 80 }}>
       <TopoBackground />
       <Text style={{ color: "#8E8E7A", fontSize: 16, marginBottom: 8 }}>Weekly Check-in</Text>
-      <Text style={{ color: "#2D2A24", fontSize: 30, fontWeight: "700", marginBottom: 8 }}>How was this week?</Text>
+      <Text style={{ color: "#2D2A24", fontSize: 30, fontFamily: "Quicksand_700Bold", fontWeight: "700", marginBottom: 8 }}>How was this week?</Text>
       <Text style={{ color: "#8E8E7A", fontSize: 16, marginBottom: 32 }}>Be honest — this helps us adjust your plan.</Text>
 
       <View style={{ gap: 16, marginBottom: 40 }}>
@@ -101,7 +101,7 @@ export default function Checkin() {
           >
             <Text style={{ fontSize: 30, marginRight: 16 }}>{option.emoji}</Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 18, fontWeight: "600", color: selected === option.value ? "#F6F5F0" : "#2D2A24" }}>
+              <Text style={{ fontSize: 18, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: selected === option.value ? "#F6F5F0" : "#2D2A24" }}>
                 {option.label}
               </Text>
               <Text style={{ fontSize: 14, color: selected === option.value ? "#AEAEB2" : "#8E8E7A" }}>
@@ -123,7 +123,7 @@ export default function Checkin() {
         {loading ? (
           <ActivityIndicator color="#F6F5F0" />
         ) : (
-          <Text style={{ fontSize: 18, fontWeight: "600", color: selected ? "#F6F5F0" : "#8E8E7A" }}>
+          <Text style={{ fontSize: 18, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: selected ? "#F6F5F0" : "#8E8E7A" }}>
             Submit Check-in
           </Text>
         )}

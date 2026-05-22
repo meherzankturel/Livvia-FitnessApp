@@ -31,7 +31,7 @@ function Segmented({
               alignItems: "center",
             }}
           >
-            <Text style={{ fontSize: 12, fontWeight: "600", color: active ? "#FFFFFF" : "#9A9A92" }}>
+            <Text style={{ fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: active ? "#FFFFFF" : "#9A9A92" }}>
               {opt.label}
             </Text>
           </Pressable>

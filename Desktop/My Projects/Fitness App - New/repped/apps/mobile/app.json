@@ -7,9 +7,14 @@
     "scheme": "revive",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
+    "splash": {
+      "backgroundColor": "#F5EFE3",
+      "resizeMode": "contain"
+    },
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.revive.app",
+      "usesAppleSignIn": true,
       "infoPlist": {
         "NSLocationWhenInUseUsageDescription": "Revive uses your location to find nearby restaurants and grocery stores for your meal plan.",
         "NSCameraUsageDescription": "Revive uses your camera to take a profile photo.",
@@ -35,7 +40,14 @@
       "output": "static"
     },
     "plugins": [
-      ["expo-router", { "root": "./app" }]
+      [
+        "expo-router",
+        {
+          "root": "./app"
+        }
+      ],
+      "expo-web-browser",
+      "expo-apple-authentication"
     ]
   }
 }

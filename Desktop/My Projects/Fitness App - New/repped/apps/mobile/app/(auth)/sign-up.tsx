@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { supabase } from "../../src/lib/supabase";
 import { ReviveWordmark } from "../../src/components/ReviveWordmark";
+import { BackButton } from "../../src/components/BackButton";
+import { signInWithApple, useGoogleSignIn, APPLE_AUTH_AVAILABLE } from "../../src/lib/auth-oauth";
 
 const C = {
   bg: "#F6F5F0",
@@ -81,23 +83,41 @@ export default function SignUp() {
     if (data?.user && !data.session) setVerificationSent(true);
   };
 
+  // OAuth: Google (via expo-auth-session) and Apple (native, iOS only)
+  const google = useGoogleSignIn();
+
+  const handleGoogle = async () => {
+    setError(null);
+    try {
+      await google.promptAsync();
+    } catch (e: any) {
+      setError(e?.message ?? "Couldn't sign in with Google.");
+    }
+  };
+
+  const handleApple = async () => {
+    setError(null);
+    const { error: authError } = await signInWithApple();
+    if (authError) setError(authError.message);
+  };
+
   if (verificationSent) {
     return (
       <View style={{ flex: 1, backgroundColor: C.bgWarm, justifyContent: "center", paddingHorizontal: 28 }}>
         <View style={{ alignItems: "center", marginBottom: 24 }}>
           <ReviveWordmark size={44} />
         </View>
-        <Text style={{ color: C.earth, fontSize: 24, fontWeight: "800", textAlign: "center", marginBottom: 8 }}>
+        <Text style={{ color: C.earth, fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", textAlign: "center", marginBottom: 8 }}>
           Verify your email
         </Text>
         <Text style={{ color: C.rock, fontSize: 14, textAlign: "center", lineHeight: 21, marginBottom: 32 }}>
           We sent a verification link to{"\n"}
-          <Text style={{ color: C.primary, fontWeight: "600" }}>{email}</Text>
+          <Text style={{ color: C.primary, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>{email}</Text>
           {"\n\n"}Open the link to activate your account, then come back here to sign in.
         </Text>
         <Link href="/sign-in" asChild>
           <Pressable style={{ backgroundColor: C.primary, borderRadius: 16, height: 56, alignItems: "center", justifyContent: "center" }}>
-            <Text style={{ color: C.white, fontSize: 16, fontWeight: "700" }}>Go to Sign In</Text>
+            <Text style={{ color: C.white, fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Go to Sign In</Text>
           </Pressable>
         </Link>
       </View>
@@ -115,17 +135,10 @@ export default function SignUp() {
         showsVerticalScrollIndicator={false}
       >
         {/* Back */}
-        <Pressable
+        <BackButton
           onPress={() => router.canGoBack() ? router.back() : router.replace("/sign-in")}
-          style={{
-            width: 40, height: 40, borderRadius: 20, backgroundColor: C.white,
-            alignItems: "center", justifyContent: "center",
-            shadowColor: "#000", shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 4,
-            elevation: 2, marginBottom: 24,
-          }}
-        >
-          <Ionicons name="arrow-back" size={20} color={C.earth} />
-        </Pressable>
+          style={{ marginBottom: 24 }}
+        />
 
         {/* Icon */}
         <View style={{ alignItems: "center", marginBottom: 20 }}>
@@ -133,7 +146,7 @@ export default function SignUp() {
         </View>
 
         {/* Title + subtitle */}
-        <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 8 }}>
+        <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 8 }}>
           Build your stronger self
         </Text>
         <Text style={{ fontSize: 14, color: C.rock, textAlign: "center", lineHeight: 20, marginBottom: 32, paddingHorizontal: 8 }}>
@@ -150,7 +163,7 @@ export default function SignUp() {
         }}>
           <Ionicons name="mail-outline" size={20} color={C.rock} />
           <TextInput
-            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}
             placeholder="Enter your email"
             placeholderTextColor={C.rock}
             autoCapitalize="none"
@@ -179,7 +192,7 @@ export default function SignUp() {
         }}>
           <Ionicons name="lock-closed-outline" size={20} color={C.rock} />
           <TextInput
-            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}
             placeholder="Password"
             placeholderTextColor={C.rock}
             secureTextEntry={!showPassword}
@@ -208,7 +221,7 @@ export default function SignUp() {
         }}>
           <Ionicons name="lock-closed-outline" size={20} color={C.rock} />
           <TextInput
-            style={{ flex: 1, color: C.earth, fontSize: 15, fontWeight: "500" }}
+            style={{ flex: 1, color: C.earth, fontSize: 15, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}
             placeholder="Confirm Password"
             placeholderTextColor={C.rock}
             secureTextEntry={!showConfirmPassword}
@@ -237,28 +250,29 @@ export default function SignUp() {
           onPress={handleSignUp}
           disabled={!canSubmit || loading}
           style={({ pressed }) => ({
-            backgroundColor: canSubmit && !loading ? C.primary : "rgba(92,139,110,0.45)",
+            backgroundColor: C.primary,
             borderRadius: 16, height: 56, alignItems: "center", justifyContent: "center", marginBottom: 24,
-            opacity: pressed ? 0.92 : 1,
+            opacity: (email.length === 0 && password.length === 0 && confirmPassword.length === 0) ? 0.55 : loading ? 0.7 : pressed ? 0.92 : 1,
           })}
         >
           {loading ? (
             <ActivityIndicator color={C.white} />
           ) : (
-            <Text style={{ fontSize: 16, fontWeight: "700", color: C.white, letterSpacing: -0.1 }}>Sign Up</Text>
+            <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.white, letterSpacing: -0.1 }}>Sign Up</Text>
           )}
         </Pressable>
 
         {/* OR */}
         <View style={{ flexDirection: "row", alignItems: "center", gap: 14, marginBottom: 20 }}>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
-          <Text style={{ fontSize: 13, color: C.rock, fontWeight: "500" }}>or</Text>
+          <Text style={{ fontSize: 13, color: C.rock, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>or</Text>
           <View style={{ flex: 1, height: 1, backgroundColor: C.border }} />
         </View>
 
         {/* Google */}
         <Pressable
-          onPress={() => { }}
+          onPress={handleGoogle}
+          disabled={!google.ready}
           style={({ pressed }) => ({
             flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
             backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 12,
@@ -266,13 +280,14 @@ export default function SignUp() {
             opacity: pressed ? 0.9 : 1,
           })}
         >
-          <Text style={{ fontSize: 16, fontWeight: "800", color: "#4285F4" }}>G</Text>
-          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Google</Text>
+          <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#4285F4" }}>G</Text>
+          <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Log in with Google</Text>
         </Pressable>
 
-        {/* Apple */}
+        {/* Apple — iOS only */}
+        {APPLE_AUTH_AVAILABLE && (
         <Pressable
-          onPress={() => { }}
+          onPress={handleApple}
           style={({ pressed }) => ({
             flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 12,
             backgroundColor: C.white, borderRadius: 14, height: 54, marginBottom: 24,
@@ -281,15 +296,16 @@ export default function SignUp() {
           })}
         >
           <Ionicons name="logo-apple" size={20} color={C.earth} />
-          <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Log in with Apple</Text>
+          <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Sign up with Apple</Text>
         </Pressable>
+        )}
 
         {/* Footer */}
         <Link href="/sign-in" asChild>
           <Pressable style={{ alignItems: "center", paddingVertical: 8 }}>
             <Text style={{ fontSize: 14, color: C.rock }}>
               Already have an account?{" "}
-              <Text style={{ color: C.primary, fontWeight: "700" }}>Login</Text>
+              <Text style={{ color: C.primary, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Login</Text>
             </Text>
           </Pressable>
         </Link>

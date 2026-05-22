@@ -159,7 +159,7 @@ const s = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
   },
   insightRow: {
@@ -181,14 +181,14 @@ const s = StyleSheet.create({
   },
   insightText: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: earth,
     marginBottom: 2,
   },
   insightHighlight: {
     fontSize: 11,
     color: "#047857",
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   emptyIcon: {
     fontSize: 32,
@@ -197,7 +197,7 @@ const s = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 15,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
     textAlign: "center",
     marginBottom: 6,

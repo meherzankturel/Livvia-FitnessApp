@@ -64,7 +64,7 @@ export default function LayoutC({
       <View style={tw`items-center mb-2`}>
         <View style={tw`flex-row items-end`}>
           <AnimatedNumber value={completionPct} />
-          <Text style={{ color: "#C7C7CC", fontSize: 32, fontWeight: "300", marginBottom: 12, marginLeft: 2 }}>%</Text>
+          <Text style={{ color: "#C7C7CC", fontSize: 32, fontFamily: "Quicksand_400Regular", fontWeight: "300", marginBottom: 12, marginLeft: 2 }}>%</Text>
         </View>
         <Text style={{ color: "#8E8E93", fontSize: 15, letterSpacing: 2, textTransform: "uppercase", fontWeight: "500" }}>
           of today complete
@@ -82,14 +82,14 @@ export default function LayoutC({
       {/* Workout — ultra clean */}
       <Animated.View style={[{ opacity: fadeAnim, transform: [{ translateY: cardSlide }] }]}>
         <View style={tw`mb-8`}>
-          <Text style={{ color: "#C7C7CC", fontSize: 11, fontWeight: "600", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Workout</Text>
+          <Text style={{ color: "#C7C7CC", fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>Workout</Text>
           <Text style={{ color: "#1C1C1E", fontSize: 34, fontWeight: "800", letterSpacing: -1, marginBottom: 4 }}>{focus}</Text>
           <Text style={{ color: "#8E8E93", fontSize: 15 }}>{exerciseCount} exercises</Text>
         </View>
 
         {/* Start button — full width, bold */}
         <Pressable onPress={onStartWorkout} style={[tw`rounded-2xl py-5 items-center mb-4`, { backgroundColor: "#1C1C1E" }]}>
-          <Text style={{ color: "#fff", fontSize: 17, fontWeight: "700", letterSpacing: 0.5 }}>Begin</Text>
+          <Text style={{ color: "#fff", fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 0.5 }}>Begin</Text>
         </Pressable>
 
         {/* Minimal stats — single line */}
@@ -100,7 +100,7 @@ export default function LayoutC({
           </View>
           <View style={{ width: 1, backgroundColor: "#E5E5EA" }} />
           <View style={tw`items-center`}>
-            <Text style={{ color: "#1C1C1E", fontSize: 20, fontWeight: "700" }}>Day {dayOfWeek}</Text>
+            <Text style={{ color: "#1C1C1E", fontSize: 20, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>Day {dayOfWeek}</Text>
             <Text style={{ color: "#C7C7CC", fontSize: 11, marginTop: 2 }}>this week</Text>
           </View>
           <View style={{ width: 1, backgroundColor: "#E5E5EA" }} />
@@ -113,7 +113,7 @@ export default function LayoutC({
         {/* Wellness + Skip — almost invisible */}
         {!hasWellnessLog && (
           <Pressable onPress={onWellnessCheck} style={tw`py-3 items-center mb-2`}>
-            <Text style={{ color: "#6366F1", fontSize: 14, fontWeight: "500" }}>Wellness Check</Text>
+            <Text style={{ color: "#6366F1", fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500" }}>Wellness Check</Text>
           </Pressable>
         )}
 
@@ -140,7 +140,7 @@ function AnimatedNumber({ value }: { value: number }) {
   // We can't directly interpolate to text in RN Animated,
   // so use a workaround with multiple digits
   return (
-    <Text style={{ color: "#1C1C1E", fontSize: 96, fontWeight: "800", letterSpacing: -4, lineHeight: 96 }}>
+    <Text style={{ color: "#1C1C1E", fontSize: 96, fontFamily: "Quicksand_700Bold", fontWeight: "800", letterSpacing: -4, lineHeight: 96 }}>
       {Math.round(value)}
     </Text>
   );

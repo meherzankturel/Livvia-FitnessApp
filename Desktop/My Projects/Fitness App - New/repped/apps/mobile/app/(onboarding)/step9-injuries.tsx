@@ -125,7 +125,7 @@ export default function StepInjuries() {
       skipLabel="Skip — no injuries"
       onSkip={handleComplete}
     >
-      <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
+      <Text style={{ color: C.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
         Step 9 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
@@ -168,7 +168,7 @@ export default function StepInjuries() {
       {/* Per-injury severity picker — only shown for selected injuries */}
       {data.current_injuries.length > 0 && (
         <View style={{ marginTop: 28 }}>
-          <Text style={{ fontSize: 13, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
+          <Text style={{ fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.8, marginBottom: 12 }}>
             How severe?
           </Text>
           <View style={{ gap: 12 }}>
@@ -177,7 +177,7 @@ export default function StepInjuries() {
               if (!def) return null;
               return (
                 <View key={injury.key} style={{ backgroundColor: C.stone, borderRadius: 14, padding: 14 }}>
-                  <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth, marginBottom: 10 }}>
+                  <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 10 }}>
                     {def.icon} {def.label}
                   </Text>
                   <View style={{ flexDirection: "row", gap: 8 }}>
@@ -195,7 +195,7 @@ export default function StepInjuries() {
                             backgroundColor: active ? C.earth : C.bg,
                           }}
                         >
-                          <Text style={{ fontSize: 13, fontWeight: "600", color: active ? C.bg : C.rock }}>
+                          <Text style={{ fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: active ? C.bg : C.rock }}>
                             {s.label}
                           </Text>
                         </Pressable>

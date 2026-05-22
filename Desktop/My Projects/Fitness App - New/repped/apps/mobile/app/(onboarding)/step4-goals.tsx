@@ -96,7 +96,7 @@ export default function Step4Goals() {
       ctaDisabled={!canContinue}
       onCta={handleContinue}
     >
-      <Text style={{ fontSize: 10, fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 1, marginTop: 16, marginBottom: 8 }}>
+      <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.rock, textTransform: "uppercase", letterSpacing: 1, marginTop: 16, marginBottom: 8 }}>
         Step 4 of 9
       </Text>
       <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
@@ -122,7 +122,7 @@ export default function Step4Goals() {
                 paddingHorizontal: 20,
               }}
             >
-              <Text style={{ fontSize: 16, fontWeight: "700", color: selected ? C.bg : C.earth, marginBottom: 4 }}>
+              <Text style={{ fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: selected ? C.bg : C.earth, marginBottom: 4 }}>
                 {opt.label}
               </Text>
               <Text style={{ fontSize: 13, color: selected ? "rgba(246,245,240,0.7)" : C.rock, lineHeight: 18 }}>
@@ -136,7 +136,7 @@ export default function Step4Goals() {
       {/* Target weight — appears for Lose Fat and Build Muscle */}
       {needsTarget && (
         <View style={{ marginTop: 24 }}>
-          <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth, marginBottom: 10 }}>
+          <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 10 }}>
             Target weight
           </Text>
           <RulerPicker

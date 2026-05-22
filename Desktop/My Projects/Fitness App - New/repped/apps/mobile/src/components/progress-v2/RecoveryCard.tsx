@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
   },
   scoreText: {
     fontSize: 13,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: "#2DB877",
   },
   scoreLabel: {
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
   },
   message: {
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   tagLabel: {
     fontSize: 10,
     color: "#2DB877",
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   tagValue: {
     fontSize: 10,

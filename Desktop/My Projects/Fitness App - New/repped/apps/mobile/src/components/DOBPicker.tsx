@@ -186,7 +186,7 @@ export function DOBPicker({ visible, value, onCancel, onConfirm }: DOBPickerProp
             }}
           >
             <Pressable onPress={onCancel} hitSlop={12}>
-              <Text style={{ fontSize: 15, color: C.rock, fontWeight: "600" }}>Cancel</Text>
+              <Text style={{ fontSize: 15, color: C.rock, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Cancel</Text>
             </Pressable>
             <Text style={{ fontSize: 16, fontWeight: "800", color: C.earth }}>
               Date of Birth

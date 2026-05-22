@@ -64,7 +64,7 @@ export function Avatar({ avatarUrl, fallbackLetter, size }: AvatarProps) {
       backgroundColor: "rgba(52,211,153,0.12)",
       alignItems: "center", justifyContent: "center",
     }}>
-      <Text style={{ fontSize: size * 0.4, fontWeight: "800", color: C.trail }}>
+      <Text style={{ fontSize: size * 0.4, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.trail }}>
         {(fallbackLetter || "L").toUpperCase()}
       </Text>
     </View>

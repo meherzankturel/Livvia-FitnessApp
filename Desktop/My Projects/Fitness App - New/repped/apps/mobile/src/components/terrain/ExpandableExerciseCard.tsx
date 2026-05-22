@@ -171,7 +171,7 @@ export function ExpandableExerciseCard({
                 {lastSession && (
                   <View style={s.lastCard}>
                     <Text style={s.lastTxt}>
-                      📊 Last session: <Text style={{ fontWeight: "700" }}>{lastSession.weight}kg × {lastSession.reps} reps</Text>
+                      📊 Last session: <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>{lastSession.weight}kg × {lastSession.reps} reps</Text>
                       {weightDiff != null ? ` · Today: ${weightDiff >= 0 ? "+" : ""}${weightDiff}kg` : ""}
                     </Text>
                   </View>
@@ -206,7 +206,7 @@ const s = StyleSheet.create({
   collapsed: { flexDirection: "row", alignItems: "center", padding: 10, height: 76 },
   thumb: { width: 56, height: 56, borderRadius: 16, alignItems: "center", justifyContent: "center", overflow: "hidden", marginRight: 12 },
   thumbImg: { width: 56, height: 56 },
-  collName: { fontSize: 14, fontWeight: "600", color: theme.colors.earth, marginBottom: 3 },
+  collName: { fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: theme.colors.earth, marginBottom: 3 },
   collMeta: { fontSize: 11, color: theme.colors.rock },
   collWeight: { fontSize: 18, fontWeight: "800", color: theme.colors.earth },
   collUnit: { fontSize: 9, color: theme.colors.rock },
@@ -218,14 +218,14 @@ const s = StyleSheet.create({
   closeTxt: { fontSize: 16, color: theme.colors.earth, lineHeight: 18 },
   // Tags
   pill: { borderRadius: 8, paddingHorizontal: 10, paddingVertical: 4 },
-  pillTxt: { fontSize: 10, fontWeight: "600", textTransform: "uppercase" },
+  pillTxt: { fontSize: 10, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase" },
   // Name
   exName: { fontSize: 20, fontWeight: "700", color: theme.colors.earth, marginBottom: 14 },
   // Stats
   statsRow: { flexDirection: "row", gap: 8, marginBottom: 12 },
   statCell: { flex: 1, backgroundColor: theme.colors.stone, borderRadius: 14, padding: 12, alignItems: "center" },
   statVal: { fontSize: 20, fontWeight: "800", color: theme.colors.earth },
-  statLabel: { fontSize: 9, fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, marginTop: 2 },
+  statLabel: { fontSize: 9, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", textTransform: "uppercase", color: theme.colors.rock, marginTop: 2 },
   // Pips
   pipsRow: { flexDirection: "row", gap: 6, marginBottom: 14 },
   pip: { flex: 1, height: 6, borderRadius: 3, backgroundColor: theme.colors.stone },
@@ -238,5 +238,5 @@ const s = StyleSheet.create({
   lastTxt: { fontSize: 13, color: theme.colors.earth, lineHeight: 19 },
   // Video button
   videoBtn: { backgroundColor: theme.colors.earth, borderRadius: 14, paddingVertical: 16, alignItems: "center" },
-  videoBtnTxt: { color: "#F6F5F0", fontSize: 15, fontWeight: "600" },
+  videoBtnTxt: { color: "#F6F5F0", fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" },
 });

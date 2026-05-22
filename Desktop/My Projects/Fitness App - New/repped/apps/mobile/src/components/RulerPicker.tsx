@@ -101,7 +101,7 @@ export function RulerPicker({
     <View style={{ marginBottom: 16 }}>
       {/* Header: label + unit toggle */}
       <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <Text style={{ fontSize: 12, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.8 }}>
+        <Text style={{ fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.8 }}>
           {label}
         </Text>
         {altUnit && (
@@ -110,7 +110,7 @@ export function RulerPicker({
               <Text style={{ fontSize: 10, fontWeight: "700", color: useAlt ? C.bg : C.rock }}>{altUnit}</Text>
             </Pressable>
             <Pressable onPress={() => toggleUnit(false)} style={{ paddingHorizontal: 10, paddingVertical: 3, borderRadius: 100, backgroundColor: !useAlt ? C.earth : "transparent" }}>
-              <Text style={{ fontSize: 10, fontWeight: "700", color: !useAlt ? C.bg : C.rock }}>{unit}</Text>
+              <Text style={{ fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: !useAlt ? C.bg : C.rock }}>{unit}</Text>
             </Pressable>
           </View>
         )}
@@ -119,7 +119,7 @@ export function RulerPicker({
       {/* Ruler card */}
       <View style={{ backgroundColor: C.stone, borderRadius: 14, paddingVertical: 10, overflow: "hidden" }}>
         {/* Big value display */}
-        <Text style={{ textAlign: "center", fontSize: 26, fontWeight: "800", color: C.earth, letterSpacing: -0.5 }}>
+        <Text style={{ textAlign: "center", fontSize: 26, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, letterSpacing: -0.5 }}>
           {value}<Text style={{ fontSize: 12, fontWeight: "600", color: C.rock }}> {activeUnit}</Text>
         </Text>
 
@@ -156,7 +156,7 @@ export function RulerPicker({
                   borderRadius: 1,
                 }} />
                 {(tick.type === "major" || tick.type === "half") && (
-                  <Text style={{ fontSize: 7, fontWeight: "600", color: C.rock, marginTop: 1 }}>
+                  <Text style={{ fontSize: 7, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock, marginTop: 1 }}>
                     {tick.value}
                   </Text>
                 )}

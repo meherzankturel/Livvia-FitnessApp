@@ -184,7 +184,7 @@ const s = StyleSheet.create({
     fontSize: 9,
     color: rock,
     letterSpacing: 1.5,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     marginBottom: 2,
   },
   headerMonth: {
@@ -201,7 +201,7 @@ const s = StyleSheet.create({
   },
   gradeText: {
     fontSize: 18,
-    fontWeight: "900",
+    fontFamily: "Quicksand_700Bold", fontWeight: "900",
     color: "#FFFFFF",
   },
   completionSection: {
@@ -215,7 +215,7 @@ const s = StyleSheet.create({
   completionLabel: {
     fontSize: 11,
     color: rock,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   completionPct: {
     fontSize: 11,
@@ -247,14 +247,14 @@ const s = StyleSheet.create({
     flex: 1,
     fontSize: 13,
     color: earth,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   rowRight: {
     alignItems: "flex-end",
   },
   rowValue: {
     fontSize: 15,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: earth,
   },
   rowSub: {
@@ -273,7 +273,7 @@ const s = StyleSheet.create({
   improvedLabel: {
     fontSize: 10,
     color: rock,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     letterSpacing: 0.5,
     marginBottom: 4,
   },
@@ -286,6 +286,6 @@ const s = StyleSheet.create({
   improvedGain: {
     fontSize: 12,
     color: "#047857",
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
 });

@@ -9,7 +9,7 @@ export function SectionHeading({ children }: SectionHeadingProps) {
     <Text
       style={{
         fontSize: 22,
-        fontWeight: "800",
+        fontFamily: "Quicksand_700Bold", fontWeight: "800",
         color: "#1A1A1A",
         letterSpacing: -0.3,
         marginHorizontal: 26,

@@ -1148,7 +1148,7 @@ export default function Meals() {
               {swapPickerIdx !== null && slots[swapPickerIdx] && (
                 <>
                   <Text style={s.modalHint}>
-                    Replacing <Text style={{ fontWeight: "700", color: C.earth }}>{slots[swapPickerIdx].selected.name}</Text>. Tap any option below to swap.
+                    Replacing <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth }}>{slots[swapPickerIdx].selected.name}</Text>. Tap any option below to swap.
                   </Text>
                   <ScrollView style={{ maxHeight: 380 }} showsVerticalScrollIndicator={false}>
                     {slots[swapPickerIdx].alternatives.length === 0 ? (
@@ -1252,7 +1252,7 @@ const s = StyleSheet.create({
   emptyTitle: {
     color: C.earth,
     fontSize: 24,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     marginBottom: 8,
   },
   emptySubtitle: {
@@ -1268,7 +1268,7 @@ const s = StyleSheet.create({
   },
   contextText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1,
     color: C.rock,
@@ -1313,7 +1313,7 @@ const s = StyleSheet.create({
   },
   heroLabel: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 1,
     color: "rgba(246,245,240,0.4)",
@@ -1321,7 +1321,7 @@ const s = StyleSheet.create({
   },
   heroCalorie: {
     fontSize: 44,
-    fontWeight: "900",
+    fontFamily: "Quicksand_700Bold", fontWeight: "900",
     color: "#F6F5F0",
   },
   heroCalorieTarget: {
@@ -1352,7 +1352,7 @@ const s = StyleSheet.create({
   },
   macroBarValue: {
     fontSize: 14,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: "#F6F5F0",
   },
   macroBarLabel: {
@@ -1378,7 +1378,7 @@ const s = StyleSheet.create({
   },
   groceryLinkTitle: {
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.earth,
   },
   groceryLinkMeta: {
@@ -1388,7 +1388,7 @@ const s = StyleSheet.create({
   },
   groceryLinkArrow: {
     fontSize: 18,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
   },
 
@@ -1403,7 +1403,7 @@ const s = StyleSheet.create({
   },
   cuisineTitle: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   allergyPill: {
@@ -1414,7 +1414,7 @@ const s = StyleSheet.create({
   },
   allergyPillText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#EF4444",
   },
   // Cuisine chip row — compact horizontal scroll, emoji + name inline
@@ -1443,7 +1443,7 @@ const s = StyleSheet.create({
   },
   cuisineChipName: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.earth,
   },
   cuisineChipNameActive: {
@@ -1496,7 +1496,7 @@ const s = StyleSheet.create({
   },
   loggedBadgeText: {
     fontSize: 12,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.bg,
   },
   mealCardTopRow: {
@@ -1506,7 +1506,7 @@ const s = StyleSheet.create({
   },
   mealTimeLabel: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
     color: C.rock,
@@ -1516,7 +1516,7 @@ const s = StyleSheet.create({
   },
   mealName: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   mealNameDark: {
@@ -1527,7 +1527,7 @@ const s = StyleSheet.create({
   },
   mealCalNum: {
     fontSize: 30,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.earth,
   },
   mealCalNumDark: {
@@ -1535,7 +1535,7 @@ const s = StyleSheet.create({
   },
   mealCalUnit: {
     fontSize: 13,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
     marginLeft: 2,
   },
@@ -1544,7 +1544,7 @@ const s = StyleSheet.create({
   },
   mealMacroShort: {
     fontSize: 11,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: C.rock,
     marginTop: 2,
   },
@@ -1600,7 +1600,7 @@ const s = StyleSheet.create({
   },
   actionSheetName: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   actionSheetDesc: {
@@ -1626,7 +1626,7 @@ const s = StyleSheet.create({
   },
   actionIconLabel: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
     marginTop: 6,
   },
@@ -1649,7 +1649,7 @@ const s = StyleSheet.create({
   restaurantsSectionLabel: {
     color: C.rock,
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
     marginBottom: 6,
@@ -1683,7 +1683,7 @@ const s = StyleSheet.create({
   restaurantName: {
     color: C.earth,
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   restaurantAddr: {
     color: C.rock,
@@ -1693,7 +1693,7 @@ const s = StyleSheet.create({
   restaurantPrice: {
     color: C.earth,
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   openBadge: {
     paddingHorizontal: 8,
@@ -1703,7 +1703,7 @@ const s = StyleSheet.create({
   },
   openBadgeText: {
     fontSize: 10,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   restaurantMetaRow: {
     flexDirection: "row",
@@ -1717,7 +1717,7 @@ const s = StyleSheet.create({
   bestMatch: {
     color: C.trail,
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     marginTop: 6,
   },
   orderRow: {
@@ -1735,7 +1735,7 @@ const s = StyleSheet.create({
   orderBtnText: {
     color: C.bg,
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   noDeals: {
     backgroundColor: C.stone,
@@ -1750,7 +1750,7 @@ const s = StyleSheet.create({
   noDealsTextAction: {
     color: C.earth,
     fontSize: 11,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
 
   // 9. Allergy Modal
@@ -1776,7 +1776,7 @@ const s = StyleSheet.create({
   modalTitle: {
     color: C.earth,
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   modalCancel: {
     color: C.rock,
@@ -1801,14 +1801,14 @@ const s = StyleSheet.create({
   },
   swapOptionName: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
     marginBottom: 4,
   },
   swapOptionMacros: {
     fontSize: 11,
     color: C.rock,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   swapOptionArrow: {
     fontSize: 18,
@@ -1826,7 +1826,7 @@ const s = StyleSheet.create({
   swapMoreBtnText: {
     color: C.earth,
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   pillRow: {
     flexDirection: "row",
@@ -1847,7 +1847,7 @@ const s = StyleSheet.create({
   },
   pillText: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   pillTextActive: {
     color: "#F6F5F0",
@@ -1864,6 +1864,6 @@ const s = StyleSheet.create({
   confirmBtnText: {
     color: "#F6F5F0",
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
 });

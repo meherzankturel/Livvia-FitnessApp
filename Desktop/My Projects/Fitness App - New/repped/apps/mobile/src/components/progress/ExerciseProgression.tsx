@@ -381,7 +381,7 @@ const s = StyleSheet.create({
   },
   pickerText: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
     flex: 1,
   },
@@ -414,7 +414,7 @@ const s = StyleSheet.create({
     color: earth,
   },
   dropdownTextActive: {
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#047857",
   },
 
@@ -435,7 +435,7 @@ const s = StyleSheet.create({
   },
   modeTabText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: rock,
   },
   modeTabTextActive: {
@@ -502,7 +502,7 @@ const s = StyleSheet.create({
   dotLabel: {
     position: "absolute",
     fontSize: 9,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: earth,
   },
   barDate: {
@@ -520,7 +520,7 @@ const s = StyleSheet.create({
   },
   trendArrow: {
     fontSize: 13,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
   },
   trendText: {
     fontSize: 11,
@@ -549,7 +549,7 @@ const s = StyleSheet.create({
   },
   historyTitle: {
     fontSize: 11,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
     marginBottom: 10,
     textTransform: "uppercase",
@@ -565,7 +565,7 @@ const s = StyleSheet.create({
   historyDate: {
     fontSize: 11,
     color: rock,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     width: 52,
     marginTop: 1,
   },
@@ -578,7 +578,7 @@ const s = StyleSheet.create({
   historySet: {
     fontSize: 11,
     color: earth,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     backgroundColor: "rgba(45,42,36,0.04)",
     paddingHorizontal: 8,
     paddingVertical: 3,

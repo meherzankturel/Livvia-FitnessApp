@@ -184,7 +184,7 @@ export default function InjuryCheck() {
           {hasSelections && (
             <View style={s.summary}>
               <Text style={s.summaryText}>
-                <Text style={{ fontWeight: "800", color: "#065F46" }}>{selectedInjuries.size} area{selectedInjuries.size > 1 ? "s" : ""}</Text>
+                <Text style={{ fontFamily: "Quicksand_700Bold", fontWeight: "800", color: "#065F46" }}>{selectedInjuries.size} area{selectedInjuries.size > 1 ? "s" : ""}</Text>
                 {" "}flagged — workout will be modified
               </Text>
             </View>
@@ -208,7 +208,7 @@ export default function InjuryCheck() {
 
 const s = StyleSheet.create({
   zone: { paddingHorizontal: 20, paddingTop: 56 },
-  title: { fontSize: 24, fontWeight: "800", color: "#2D2A24", marginBottom: 3 },
+  title: { fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: "#2D2A24", marginBottom: 3 },
   subtitle: { fontSize: 13, color: "#8E8E7A", marginBottom: 20 },
 
   groupLabel: {
@@ -235,7 +235,7 @@ const s = StyleSheet.create({
   statusDot: {
     width: 6, height: 6, borderRadius: 3,
   },
-  rowName: { fontSize: 14, fontWeight: "600", color: "#2D2A24" },
+  rowName: { fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#2D2A24" },
 
   pillRow: { flexDirection: "row", gap: 4 },
   pill: {
@@ -243,7 +243,7 @@ const s = StyleSheet.create({
     borderRadius: 99, borderWidth: 1.5,
   },
   pillText: {
-    fontSize: 10, fontWeight: "700",
+    fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700",
     textTransform: "uppercase", letterSpacing: 0.3,
   },
 
@@ -253,7 +253,7 @@ const s = StyleSheet.create({
     borderRadius: 14, padding: 12, paddingHorizontal: 16,
     marginBottom: 16,
   },
-  summaryText: { fontSize: 12, fontWeight: "600", color: "#065F46" },
+  summaryText: { fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#065F46" },
 
   cta: {
     paddingVertical: 18, borderRadius: 18,
@@ -262,7 +262,7 @@ const s = StyleSheet.create({
   ctaGo: {
     backgroundColor: "#2D2A24",
   },
-  ctaGoText: { fontSize: 16, fontWeight: "700", color: "#F6F5F0" },
+  ctaGoText: { fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#F6F5F0" },
   ctaModified: { backgroundColor: "#2D2A24" },
   ctaModifiedText: { fontSize: 16, fontWeight: "700", color: "#F6F5F0" },
 

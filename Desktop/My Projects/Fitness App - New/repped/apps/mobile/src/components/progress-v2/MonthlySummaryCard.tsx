@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 15,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#fff",
   },
   completeBadge: {
@@ -141,7 +141,7 @@ const styles = StyleSheet.create({
   },
   completeBadgeText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#2DB877",
   },
   statsRow: {
@@ -157,7 +157,7 @@ const styles = StyleSheet.create({
   },
   statValue: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#fff",
   },
   statSub: {
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 11,
     color: "rgba(255,255,255,0.45)",
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   progressPercent: {
     fontSize: 11,

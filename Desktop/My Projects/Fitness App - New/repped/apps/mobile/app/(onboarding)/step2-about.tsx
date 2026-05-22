@@ -53,7 +53,7 @@ export default function Step2About() {
       <Text
         style={{
           fontSize: 10,
-          fontWeight: "700",
+          fontFamily: "Quicksand_700Bold", fontWeight: "700",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -65,7 +65,7 @@ export default function Step2About() {
       </Text>
 
       {/* Title */}
-      <Text style={{ fontSize: 28, fontWeight: "800", color: C.earth, marginBottom: 6 }}>
+      <Text style={{ fontSize: 28, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, marginBottom: 6 }}>
         About <Text style={{ color: C.trail }}>You</Text>
       </Text>
 
@@ -78,7 +78,7 @@ export default function Step2About() {
       <Text
         style={{
           fontSize: 12,
-          fontWeight: "600",
+          fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 0.8,
@@ -103,7 +103,7 @@ export default function Step2About() {
         <Text
           style={{
             fontSize: 16,
-            fontWeight: "600",
+            fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
             color: dob ? C.earth : C.rock,
           }}
         >
@@ -116,7 +116,7 @@ export default function Step2About() {
       <Text
         style={{
           fontSize: 12,
-          fontWeight: "600",
+          fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 0.8,
@@ -144,7 +144,7 @@ export default function Step2About() {
               <Text
                 style={{
                   fontSize: 14,
-                  fontWeight: "600",
+                  fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
                   color: selected ? C.bg : C.rock,
                 }}
               >

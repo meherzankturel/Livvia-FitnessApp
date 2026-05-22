@@ -63,7 +63,7 @@ export default function Step1Welcome() {
       <Text
         style={{
           fontSize: 10,
-          fontWeight: "700",
+          fontFamily: "Quicksand_700Bold", fontWeight: "700",
           color: C.rock,
           textTransform: "uppercase",
           letterSpacing: 1,
@@ -88,7 +88,7 @@ export default function Step1Welcome() {
       <Text
         style={{
           fontSize: 15,
-          fontWeight: "500",
+          fontFamily: "Quicksand_500Medium", fontWeight: "500",
           color: C.earth,
           marginBottom: 16,
           lineHeight: 22,
@@ -111,7 +111,7 @@ export default function Step1Welcome() {
           height: 50,
           paddingHorizontal: 16,
           fontSize: 16,
-          fontWeight: "500",
+          fontFamily: "Quicksand_500Medium", fontWeight: "500",
           color: C.earth,
         }}
       />

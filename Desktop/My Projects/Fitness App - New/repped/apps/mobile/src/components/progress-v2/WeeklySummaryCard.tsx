@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: "#888",
   },
   weekRange: {
@@ -194,7 +194,7 @@ const styles = StyleSheet.create({
   },
   countBig: {
     fontSize: 36,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: "#2DB877",
     lineHeight: 40,
   },
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
   },
   countTotal: {
     fontSize: 17,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#ccc",
   },
   countLabel: {
@@ -237,7 +237,7 @@ const styles = StyleSheet.create({
   barLabel: {
     fontSize: 10,
     color: "#999",
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
   },
   // Divider
   divider: {
@@ -255,14 +255,14 @@ const styles = StyleSheet.create({
   },
   bottomLabel: {
     fontSize: 8,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#999",
     letterSpacing: 0.5,
     marginBottom: 2,
   },
   bottomValue: {
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
   },
   bottomValueUnit: {
@@ -283,7 +283,7 @@ const styles = StyleSheet.create({
   },
   changeIndicator: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   verticalDivider: {
     width: 0.5,

@@ -36,7 +36,7 @@ export default function StepSchedule() {
       ctaDisabled={!canContinue}
       onCta={() => router.push("/(onboarding)/step8-nutrition")}
     >
-      <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
+      <Text style={{ color: C.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
         Step 7 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
@@ -47,7 +47,7 @@ export default function StepSchedule() {
       </Text>
 
       {/* Days per week */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 12 }}>
+      <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 12 }}>
         Days per week you can train
       </Text>
       <View style={{ flexDirection: "row", gap: 10, marginBottom: 28 }}>
@@ -69,7 +69,7 @@ export default function StepSchedule() {
               <Text
                 style={{
                   fontSize: 16,
-                  fontWeight: "600",
+                  fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
                   color: isSelected ? C.bg : C.earth,
                 }}
               >
@@ -81,7 +81,7 @@ export default function StepSchedule() {
       </View>
 
       {/* Activity level */}
-      <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth, marginBottom: 12 }}>
+      <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth, marginBottom: 12 }}>
         Activity outside the gym
       </Text>
       <View style={{ gap: 12 }}>
@@ -102,7 +102,7 @@ export default function StepSchedule() {
               <Text
                 style={{
                   fontSize: 16,
-                  fontWeight: "600",
+                  fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
                   marginBottom: 3,
                   color: isSelected ? C.bg : C.earth,
                 }}

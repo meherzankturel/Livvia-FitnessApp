@@ -138,7 +138,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
               </View>
             ) : section === "options" ? (
               <View style={{ paddingHorizontal: 24 }}>
-                <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth, marginBottom: 20 }}>
+                <Text style={{ fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginBottom: 20 }}>
                   Profile Picture
                 </Text>
 
@@ -167,7 +167,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                 >
                   <Text style={{ fontSize: 22 }}>📷</Text>
                   <View>
-                    <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Take Photo</Text>
+                    <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Take Photo</Text>
                     <Text style={{ fontSize: 12, color: C.rock }}>Use your camera</Text>
                   </View>
                 </Pressable>
@@ -182,7 +182,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                 >
                   <Text style={{ fontSize: 22 }}>🖼️</Text>
                   <View>
-                    <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Choose from Gallery</Text>
+                    <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Choose from Gallery</Text>
                     <Text style={{ fontSize: 12, color: C.rock }}>Pick from your photos</Text>
                   </View>
                 </Pressable>
@@ -197,7 +197,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                 >
                   <Text style={{ fontSize: 22 }}>😊</Text>
                   <View>
-                    <Text style={{ fontSize: 15, fontWeight: "600", color: C.earth }}>Choose an Avatar</Text>
+                    <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Choose an Avatar</Text>
                     <Text style={{ fontSize: 12, color: C.rock }}>Pick from our illustrations</Text>
                   </View>
                 </Pressable>
@@ -205,7 +205,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                 {/* Remove Photo */}
                 {currentAvatar && (
                   <Pressable onPress={handleRemove} style={{ alignItems: "center", padding: 14, marginTop: 4 }}>
-                    <Text style={{ fontSize: 14, fontWeight: "600", color: "#EF4444" }}>Remove Photo</Text>
+                    <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#EF4444" }}>Remove Photo</Text>
                   </Pressable>
                 )}
               </View>
@@ -215,7 +215,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                   <Pressable onPress={() => setSection("options")}>
                     <Text style={{ fontSize: 20, color: C.rock }}>←</Text>
                   </Pressable>
-                  <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth }}>Choose an Avatar</Text>
+                  <Text style={{ fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth }}>Choose an Avatar</Text>
                 </View>
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12, paddingBottom: 20 }}>
@@ -263,7 +263,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
               fallbackLetter={displayName?.[0] ?? "L"}
               size={180}
             />
-            <Text style={{ fontSize: 18, fontWeight: "700", color: C.earth, marginTop: 16 }}>
+            <Text style={{ fontSize: 18, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, marginTop: 16 }}>
               {displayName}
             </Text>
             <Text style={{ fontSize: 13, color: C.rock, marginTop: 4 }}>Profile Picture</Text>
@@ -275,7 +275,7 @@ export function AvatarPicker({ visible, userId, currentAvatar, displayName, onCl
                 paddingVertical: 10, paddingHorizontal: 24,
               }}
             >
-              <Text style={{ fontSize: 14, fontWeight: "600", color: C.earth }}>Close</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.earth }}>Close</Text>
             </Pressable>
           </Pressable>
         </Pressable>

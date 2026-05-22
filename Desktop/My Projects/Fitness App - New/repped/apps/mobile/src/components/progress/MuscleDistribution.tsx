@@ -97,7 +97,7 @@ const s = StyleSheet.create({
   label: {
     fontSize: 11,
     color: earth,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     width: 80,
   },
   track: {
@@ -114,7 +114,7 @@ const s = StyleSheet.create({
   },
   pct: {
     fontSize: 11,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: earth,
     width: 32,
     textAlign: "right",

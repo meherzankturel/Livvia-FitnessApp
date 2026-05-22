@@ -13,6 +13,7 @@ import { openMapsUrl, openMaps } from "../../src/lib/deeplink";
 import { LinearGradient } from "expo-linear-gradient";
 import * as Clipboard from "expo-clipboard";
 import LottieView from "lottie-react-native";
+import { BackButton } from "../../src/components/BackButton";
 
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -124,14 +125,14 @@ function HeroCard({
           <View style={{ flex: 1 }}>
             <View style={{ flexDirection: "row", alignItems: "flex-end" }}>
               <Text style={s.heroAmount}>{itemsCount}</Text>
-              <Text style={{ fontSize: 14, color: "#8E8E7A", fontWeight: "500", marginBottom: 8, marginLeft: 4 }}>items</Text>
+              <Text style={{ fontSize: 14, color: "#8E8E7A", fontFamily: "Quicksand_500Medium", fontWeight: "500", marginBottom: 8, marginLeft: 4 }}>items</Text>
             </View>
             <Text style={s.heroEstLabel}>for this week</Text>
             {weeklyMacros.protein > 0 && (
               <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 6 }}>
                 <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
                   <Text style={{ fontSize: 15, fontWeight: "700", color: "#EF4444" }}>{weeklyMacros.protein}g</Text>
-                  <Text style={{ fontSize: 10, fontWeight: "600", color: "#EF4444", opacity: 0.7 }}>P</Text>
+                  <Text style={{ fontSize: 10, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#EF4444", opacity: 0.7 }}>P</Text>
                 </View>
                 <Text style={{ fontSize: 10, color: "#C8C3B9" }}>·</Text>
                 <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
@@ -140,7 +141,7 @@ function HeroCard({
                 </View>
                 <Text style={{ fontSize: 10, color: "#C8C3B9" }}>·</Text>
                 <View style={{ flexDirection: "row", alignItems: "baseline", gap: 2 }}>
-                  <Text style={{ fontSize: 15, fontWeight: "700", color: "#6366F1" }}>{weeklyMacros.fat}g</Text>
+                  <Text style={{ fontSize: 15, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#6366F1" }}>{weeklyMacros.fat}g</Text>
                   <Text style={{ fontSize: 10, fontWeight: "600", color: "#6366F1", opacity: 0.7 }}>F</Text>
                 </View>
               </View>
@@ -224,7 +225,7 @@ function StoreCard({
           <View style={{ width: 3, height: 3, borderRadius: 1.5, backgroundColor: "#8E8E7A", opacity: 0.3 }} />
           <Text style={s.gcWalk}>{getWalkTime(store.distance)}</Text>
           <View style={[s.gcBadge, { backgroundColor: store.isOpen ? "rgba(52,211,153,0.1)" : "rgba(239,68,68,0.06)" }]}>
-            <Text style={{ fontSize: 11, fontWeight: "700", color: store.isOpen ? "#34D399" : "#EF4444" }}>
+            <Text style={{ fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: store.isOpen ? "#34D399" : "#EF4444" }}>
               {store.isOpen ? "Open" : "Closed"}
             </Text>
           </View>
@@ -392,9 +393,7 @@ export default function GroceryListScreen() {
 
         {/* ——— TOP BAR ——— */}
         <View style={s.topBar}>
-          <Pressable onPress={() => router.navigate("/(app)/meals")} style={s.backBtn}>
-            <Text style={s.backBtnText}>‹</Text>
-          </Pressable>
+          <BackButton onPress={() => router.navigate("/(app)/meals")} style={s.backBtn} />
           <Text style={s.topTitle}>Grocery List</Text>
         </View>
 
@@ -414,7 +413,7 @@ export default function GroceryListScreen() {
                 onPress={copyFullList}
                 style={{ paddingHorizontal: 10, paddingVertical: 4, backgroundColor: "rgba(99,102,241,0.1)", borderRadius: 8 }}
               >
-                <Text style={{ fontSize: 11, color: "#6366F1", fontWeight: "600" }}>Copy All</Text>
+                <Text style={{ fontSize: 11, color: "#6366F1", fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Copy All</Text>
               </Pressable>
               <Text style={s.routeHeaderMeta}>{totalChecked}/{items.length}</Text>
             </View>
@@ -530,7 +529,7 @@ export default function GroceryListScreen() {
               onPress={() => openMaps("grocery stores", location?.lat, location?.lng)}
               style={s.findStoresBtn}
             >
-              <Text style={{ color: "#F6F5F0", fontSize: 14, fontWeight: "600" }}>Find Stores Near You</Text>
+              <Text style={{ color: "#F6F5F0", fontSize: 14, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Find Stores Near You</Text>
             </Pressable>
           )}
 
@@ -558,15 +557,10 @@ const s = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
   },
-  backBtn: {
-    width: 34, height: 34, borderRadius: 17,
-    backgroundColor: "#EDEBE5",
-    alignItems: "center", justifyContent: "center",
-  },
-  backBtnText: { color: "#2D2A24", fontSize: 18, fontWeight: "600", marginTop: -1 },
+  backBtn: {},
   topTitle: {
     flex: 1, marginLeft: 12,
-    fontSize: 24, fontWeight: "700", color: "#2D2A24",
+    fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
   },
 
   // Hero Flip Card
@@ -602,7 +596,7 @@ const s = StyleSheet.create({
     marginBottom: 2,
   },
   heroLabel: {
-    fontSize: 9, fontWeight: "700", letterSpacing: 2,
+    fontSize: 9, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 2,
     color: "#8E8E7A",
     textTransform: "uppercase",
   },
@@ -646,7 +640,7 @@ const s = StyleSheet.create({
     elevation: 4,
   },
   saveTipsBtnText: {
-    fontSize: 9, fontWeight: "700", color: "#2D2A24", letterSpacing: 0.3,
+    fontSize: 9, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24", letterSpacing: 0.3,
   },
 
   // Back face — Smart Tips card
@@ -660,7 +654,7 @@ const s = StyleSheet.create({
     borderBottomColor: "rgba(0,0,0,0.06)",
   },
   backTitle: {
-    fontSize: 11, fontWeight: "700" as const, letterSpacing: 1.2,
+    fontSize: 11, fontFamily: "Quicksand_700Bold", fontWeight: "700" as const, letterSpacing: 1.2,
     color: "#2D2A24",
     textTransform: "uppercase" as const,
   },
@@ -671,7 +665,7 @@ const s = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.05)",
   },
   backCloseBtnText: {
-    fontSize: 10, fontWeight: "600" as const, color: "#5A5847",
+    fontSize: 10, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" as const, color: "#5A5847",
   },
   tipsContainer: {
     marginTop: 2,
@@ -692,7 +686,7 @@ const s = StyleSheet.create({
     marginTop: 1,
   },
   tipText: {
-    fontSize: 12, fontWeight: "600" as const,
+    fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" as const,
     color: "#2D2A24", lineHeight: 16,
   },
   tipDetail: {
@@ -712,7 +706,7 @@ const s = StyleSheet.create({
     marginBottom: 14,
   },
   routeHeaderLabel: {
-    fontSize: 14, fontWeight: "700",
+    fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#2D2A24", letterSpacing: -0.2,
   },
   routeAccentLine: {
@@ -720,7 +714,7 @@ const s = StyleSheet.create({
     borderRadius: 1, opacity: 0.4, marginTop: 4,
   },
   routeHeaderMeta: {
-    fontSize: 10, fontWeight: "500", color: "#8E8E7A",
+    fontSize: 10, fontFamily: "Quicksand_500Medium", fontWeight: "500", color: "#8E8E7A",
   },
 
   trailLineContainer: {
@@ -762,7 +756,7 @@ const s = StyleSheet.create({
     flex: 1,
   },
   aisleName: {
-    fontSize: 10, fontWeight: "700", letterSpacing: 2,
+    fontSize: 10, fontFamily: "Quicksand_700Bold", fontWeight: "700", letterSpacing: 2,
     color: "#8E8E7A",
     textTransform: "uppercase",
   },
@@ -789,7 +783,7 @@ const s = StyleSheet.create({
     borderColor: "#34D399",
     backgroundColor: "rgba(52,211,153,0.12)",
   },
-  itemCheckmark: { fontSize: 10, color: "#34D399", fontWeight: "700" },
+  itemCheckmark: { fontSize: 10, color: "#34D399", fontFamily: "Quicksand_700Bold", fontWeight: "700" },
   itemName: {
     fontSize: 14, fontWeight: "500", color: "#2D2A24",
   },
@@ -801,7 +795,7 @@ const s = StyleSheet.create({
     fontSize: 10, color: "#8E8E7A", marginTop: 1,
   },
   itemQtyRight: {
-    fontSize: 11, fontWeight: "500", color: "#8E8E7A",
+    fontSize: 11, fontFamily: "Quicksand_500Medium", fontWeight: "500", color: "#8E8E7A",
     marginLeft: 8,
   },
 
@@ -821,7 +815,7 @@ const s = StyleSheet.create({
     zIndex: 2,
   },
   finishText: {
-    fontSize: 14, fontWeight: "700", color: "#2D2A24",
+    fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
   },
 
   // Nearby Stores
@@ -837,7 +831,7 @@ const s = StyleSheet.create({
     marginBottom: 14,
   },
   storesSectionTitle: {
-    fontSize: 16, fontWeight: "700", color: "#2D2A24",
+    fontSize: 16, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
     letterSpacing: -0.2,
   },
   storesAccent: {
@@ -845,7 +839,7 @@ const s = StyleSheet.create({
     borderRadius: 1, opacity: 0.4, marginTop: 4,
   },
   storesCount: {
-    fontSize: 12, fontWeight: "500", color: "#8E8E7A",
+    fontSize: 12, fontFamily: "Quicksand_500Medium", fontWeight: "500", color: "#8E8E7A",
   },
 
   // Glass store cards
@@ -873,14 +867,14 @@ const s = StyleSheet.create({
     marginBottom: 10,
   },
   gcName: {
-    fontSize: 17, fontWeight: "700", color: "#2D2A24",
+    fontSize: 17, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
     letterSpacing: -0.2,
   },
   gcAddress: {
     fontSize: 12, color: "#8E8E7A", marginTop: 2,
   },
   gcRating: {
-    fontSize: 13, fontWeight: "700", color: "#2D2A24",
+    fontSize: 13, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
   },
   gcBottomRow: {
     flexDirection: "row",
@@ -888,7 +882,7 @@ const s = StyleSheet.create({
     gap: 6,
   },
   gcDist: {
-    fontSize: 14, fontWeight: "700", color: "#2D2A24",
+    fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#2D2A24",
   },
   gcWalk: {
     fontSize: 13, fontWeight: "500", color: "#8E8E7A",
@@ -931,7 +925,7 @@ const s = StyleSheet.create({
     elevation: 1,
   },
   gcActionText: {
-    fontSize: 12, fontWeight: "600", color: "#2D2A24",
+    fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#2D2A24",
   },
 
   // Find stores fallback
@@ -957,6 +951,6 @@ const s = StyleSheet.create({
     elevation: 10,
   },
   toastText: {
-    fontSize: 13, fontWeight: "600", color: "#F6F5F0",
+    fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: "#F6F5F0",
   },
 });

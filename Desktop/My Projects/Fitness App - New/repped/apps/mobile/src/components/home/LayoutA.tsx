@@ -50,7 +50,7 @@ export default function LayoutA({
       {/* Greeting */}
       <View style={tw`items-center mb-6`}>
         <Text style={{ color: "#8E8E93", fontSize: 13 }}>{date}</Text>
-        <Text style={{ color: "#1C1C1E", fontSize: 24, fontWeight: "700", marginTop: 4 }}>{greeting}</Text>
+        <Text style={{ color: "#1C1C1E", fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", marginTop: 4 }}>{greeting}</Text>
       </View>
 
       {/* Hero Progress Ring */}
@@ -73,7 +73,7 @@ export default function LayoutA({
             transform: [{ rotate: "-45deg" }],
           }} />
           {/* Center text */}
-          <Text style={{ color: "#6366F1", fontSize: 36, fontWeight: "800" }}>{Math.round(completionPct)}%</Text>
+          <Text style={{ color: "#6366F1", fontSize: 36, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>{Math.round(completionPct)}%</Text>
           <Text style={{ color: "#8E8E93", fontSize: 12, marginTop: -2 }}>complete</Text>
         </View>
       </View>
@@ -81,7 +81,7 @@ export default function LayoutA({
       {/* Stats Row */}
       <Animated.View style={[tw`flex-row gap-3 mb-6`, { transform: [{ translateY: slideAnim }] }]}>
         <View style={[tw`flex-1 rounded-2xl p-4 items-center`, { backgroundColor: "#F2F2F7" }]}>
-          <Text style={{ color: "#6366F1", fontSize: 24, fontWeight: "800" }}>{exerciseCount}</Text>
+          <Text style={{ color: "#6366F1", fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>{exerciseCount}</Text>
           <Text style={{ color: "#8E8E93", fontSize: 11 }}>exercises</Text>
         </View>
         <View style={[tw`flex-1 rounded-2xl p-4 items-center`, { backgroundColor: "#F2F2F7" }]}>
@@ -89,7 +89,7 @@ export default function LayoutA({
           <Text style={{ color: "#8E8E93", fontSize: 11 }}>streak</Text>
         </View>
         <View style={[tw`flex-1 rounded-2xl p-4 items-center`, { backgroundColor: "#F2F2F7" }]}>
-          <Text style={{ color: "#22C55E", fontSize: 24, fontWeight: "800" }}>Day {dayOfWeek}</Text>
+          <Text style={{ color: "#22C55E", fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "800" }}>Day {dayOfWeek}</Text>
           <Text style={{ color: "#8E8E93", fontSize: 11 }}>this week</Text>
         </View>
       </Animated.View>
@@ -99,7 +99,7 @@ export default function LayoutA({
         tw`rounded-3xl p-6 mb-4`,
         { backgroundColor: "#F2F2F7", transform: [{ translateY: slideAnim }] },
       ]}>
-        <Text style={{ color: "#8E8E93", fontSize: 11, fontWeight: "600", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Today's Workout</Text>
+        <Text style={{ color: "#8E8E93", fontSize: 11, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>Today's Workout</Text>
         <Text style={{ color: "#1C1C1E", fontSize: 28, fontWeight: "800", marginBottom: 4 }}>{focus}</Text>
         <Text style={{ color: "#8E8E93", fontSize: 14, marginBottom: 16 }}>{exerciseCount} exercises</Text>
         <Pressable onPress={onStartWorkout} style={[tw`rounded-2xl py-4 items-center`, { backgroundColor: "#6366F1" }]}>
@@ -110,7 +110,7 @@ export default function LayoutA({
       {/* Wellness check */}
       {!hasWellnessLog && (
         <Pressable onPress={onWellnessCheck} style={[tw`rounded-2xl py-4 items-center mb-4`, { backgroundColor: "#F2F2F7" }]}>
-          <Text style={{ color: "#6366F1", fontSize: 15, fontWeight: "600" }}>Log Wellness Check</Text>
+          <Text style={{ color: "#6366F1", fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>Log Wellness Check</Text>
         </Pressable>
       )}
 

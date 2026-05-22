@@ -126,7 +126,7 @@ export default function AccountGoal() {
               alignItems: "flex-start",
             }}
           >
-            <Text style={{ fontSize: 14, fontWeight: "700", color: validation.severity === "error" ? "#EF4444" : "#F59E0B" }}>!</Text>
+            <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: validation.severity === "error" ? "#EF4444" : "#F59E0B" }}>!</Text>
             <Text style={{ flex: 1, fontSize: 12, color: "#1A1A1A", lineHeight: 17 }}>
               {validation.message}
             </Text>

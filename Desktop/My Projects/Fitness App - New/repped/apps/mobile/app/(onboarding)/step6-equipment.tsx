@@ -32,7 +32,7 @@ export default function StepEquipment() {
       ctaDisabled={!canContinue}
       onCta={() => router.push("/(onboarding)/step7-schedule")}
     >
-      <Text style={{ color: C.rock, fontSize: 14, fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
+      <Text style={{ color: C.rock, fontSize: 14, fontFamily: "Quicksand_500Medium", fontWeight: "500", marginTop: 16, marginBottom: 6 }}>
         Step 6 of 9
       </Text>
       <Text style={{ fontSize: 26, fontWeight: "700", color: C.earth, marginBottom: 6 }}>
@@ -60,7 +60,7 @@ export default function StepEquipment() {
               <Text
                 style={{
                   fontSize: 16,
-                  fontWeight: "600",
+                  fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
                   marginBottom: 3,
                   color: isSelected ? C.bg : C.earth,
                 }}

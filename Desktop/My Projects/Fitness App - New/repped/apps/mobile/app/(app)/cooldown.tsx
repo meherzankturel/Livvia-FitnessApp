@@ -339,7 +339,7 @@ function TimerActiveView({
               }}
             />
             {/* Timer number */}
-            <Text style={{ fontSize: 48, fontWeight: "800", color: C.earth, letterSpacing: -2 }}>
+            <Text style={{ fontSize: 48, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, letterSpacing: -2 }}>
               {timeLeft}
             </Text>
             <Text style={{ fontSize: 9, fontWeight: "600", color: C.rock, textTransform: "uppercase", letterSpacing: 0.5 }}>
@@ -348,7 +348,7 @@ function TimerActiveView({
           </View>
         </Animated.View>
 
-        <Text style={{ fontSize: 22, fontWeight: "700", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 10 }}>
+        <Text style={{ fontSize: 22, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, textAlign: "center", letterSpacing: -0.5, marginBottom: 10 }}>
           {exercise.name}
         </Text>
         <Text style={{ fontSize: 13, color: C.rock, textAlign: "center", lineHeight: 20, paddingHorizontal: 16, marginBottom: 12 }}>
@@ -369,7 +369,7 @@ function TimerActiveView({
             paddingHorizontal: 16,
           }}
         >
-          <Text style={{ color: "#EF4444", fontSize: 12, fontWeight: "600" }}>▶ Watch Demo</Text>
+          <Text style={{ color: "#EF4444", fontSize: 12, fontFamily: "Quicksand_600SemiBold", fontWeight: "600" }}>▶ Watch Demo</Text>
         </Pressable>
       </View>
 
@@ -564,7 +564,7 @@ function CompletionView({ exercises }: { exercises: any[] }) {
             marginBottom: 4,
           }}
         >
-          <Text style={{ fontSize: 76, fontWeight: "800", color: C.earth, letterSpacing: -4, lineHeight: 80 }}>
+          <Text style={{ fontSize: 76, fontFamily: "Quicksand_700Bold", fontWeight: "800", color: C.earth, letterSpacing: -4, lineHeight: 80 }}>
             3
           </Text>
         </Animated.View>
@@ -576,7 +576,7 @@ function CompletionView({ exercises }: { exercises: any[] }) {
         </Animated.View>
 
         <Animated.View style={{ opacity: elements[1].opacity, transform: [{ translateY: elements[1].translateY }], alignItems: "center" }}>
-          <Text style={{ fontSize: 24, fontWeight: "700", color: C.earth, letterSpacing: -0.7, marginBottom: 4 }}>
+          <Text style={{ fontSize: 24, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth, letterSpacing: -0.7, marginBottom: 4 }}>
             Session Complete
           </Text>
           <Text style={{ fontSize: 13, color: C.rock, textAlign: "center", marginBottom: 24 }}>
@@ -645,7 +645,7 @@ function CompletionView({ exercises }: { exercises: any[] }) {
                 <Text
                   style={{
                     fontSize: 9,
-                    fontWeight: "700",
+                    fontFamily: "Quicksand_700Bold", fontWeight: "700",
                     color:
                       state === "done" ? C.sand :
                       state === "today" ? C.earth :
@@ -795,7 +795,7 @@ const s = StyleSheet.create({
   },
   headerLabel: {
     fontSize: 10,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.rock,
     textTransform: "uppercase",
     letterSpacing: 1.5,
@@ -845,7 +845,7 @@ const s = StyleSheet.create({
   },
   heroTitle: {
     fontSize: 22,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.sand,
     letterSpacing: -0.5,
   },
@@ -856,7 +856,7 @@ const s = StyleSheet.create({
   },
   heroDuration: {
     fontSize: 34,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.sand,
     letterSpacing: -1,
     lineHeight: 36,
@@ -895,7 +895,7 @@ const s = StyleSheet.create({
   },
   timelineTitle: {
     fontSize: 14,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.earth,
   },
   timelineCount: {
@@ -965,14 +965,14 @@ const s = StyleSheet.create({
   },
   timelineExName: {
     fontSize: 14,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.earth,
     flex: 1,
   },
   timelineExTime: {
     fontSize: 12,
     color: C.rock,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     marginLeft: 8,
   },
   timelineExDesc: {
@@ -994,7 +994,7 @@ const s = StyleSheet.create({
   },
   typePillText: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
   },
   demoLink: {
     fontSize: 10,
@@ -1018,7 +1018,7 @@ const s = StyleSheet.create({
   },
   summitText: {
     fontSize: 11,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.trail,
   },
 
@@ -1037,7 +1037,7 @@ const s = StyleSheet.create({
   },
   primaryBtnText: {
     fontSize: 16,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.sand,
   },
   secondaryBtn: {
@@ -1061,7 +1061,7 @@ const s = StyleSheet.create({
   },
   bentoLabel: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: C.rock,
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -1069,7 +1069,7 @@ const s = StyleSheet.create({
   },
   bentoVal: {
     fontSize: 22,
-    fontWeight: "800",
+    fontFamily: "Quicksand_700Bold", fontWeight: "800",
     color: C.earth,
     letterSpacing: -0.5,
   },
@@ -1081,7 +1081,7 @@ const s = StyleSheet.create({
   },
   bentoDarkLabel: {
     fontSize: 9,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "rgba(246,245,240,0.25)",
     textTransform: "uppercase",
     letterSpacing: 0.8,
@@ -1089,7 +1089,7 @@ const s = StyleSheet.create({
   },
   bentoDarkVal: {
     fontSize: 15,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: C.sand,
   },
 });

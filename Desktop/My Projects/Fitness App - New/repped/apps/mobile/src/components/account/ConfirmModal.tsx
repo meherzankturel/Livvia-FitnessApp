@@ -47,7 +47,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
           <Text
             style={{
               fontSize: 17,
-              fontWeight: "800",
+              fontFamily: "Quicksand_700Bold", fontWeight: "800",
               color: C.earth,
               letterSpacing: -0.2,
               marginBottom: 16,
@@ -67,7 +67,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
               <Text
                 style={{
                   fontSize: 10,
-                  fontWeight: "700",
+                  fontFamily: "Quicksand_700Bold", fontWeight: "700",
                   color: C.rock,
                   letterSpacing: 1.4,
                   marginBottom: 8,
@@ -77,7 +77,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
               </Text>
               {diffs.map((d, i) => (
                 <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4 }}>
-                  <Text style={{ color: C.rock, marginRight: 8, fontWeight: "700" }}>•</Text>
+                  <Text style={{ color: C.rock, marginRight: 8, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>•</Text>
                   <Text style={{ flex: 1, fontSize: 13, color: C.earth, lineHeight: 19 }}>
                     {d.label}: <Text style={{ fontWeight: "700" }}>{d.from}</Text> → <Text style={{ fontWeight: "700" }}>{d.to}</Text>
                   </Text>
@@ -91,7 +91,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
               <Text
                 style={{
                   fontSize: 10,
-                  fontWeight: "700",
+                  fontFamily: "Quicksand_700Bold", fontWeight: "700",
                   color: C.rock,
                   letterSpacing: 1.4,
                   marginBottom: 8,
@@ -101,7 +101,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
               </Text>
               {effects.map((e, i) => (
                 <View key={i} style={{ flexDirection: "row", alignItems: "flex-start", marginBottom: 4 }}>
-                  <Text style={{ color: C.rock, marginRight: 8, fontWeight: "700" }}>•</Text>
+                  <Text style={{ color: C.rock, marginRight: 8, fontFamily: "Quicksand_700Bold", fontWeight: "700" }}>•</Text>
                   <Text style={{ flex: 1, fontSize: 13, color: C.earth, lineHeight: 19 }}>{e}</Text>
                 </View>
               ))}
@@ -119,7 +119,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
                 alignItems: "center",
               })}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: C.earth }}>{cancelLabel}</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: C.earth }}>{cancelLabel}</Text>
             </Pressable>
             <Pressable
               onPress={onApply}
@@ -132,7 +132,7 @@ export function ConfirmModal(props: ConfirmModalProps) {
                 alignItems: "center",
               })}
             >
-              <Text style={{ fontSize: 14, fontWeight: "700", color: "#FFFFFF" }}>{applyLabel}</Text>
+              <Text style={{ fontSize: 14, fontFamily: "Quicksand_700Bold", fontWeight: "700", color: "#FFFFFF" }}>{applyLabel}</Text>
             </Pressable>
           </View>
         </View>

@@ -55,7 +55,7 @@ export function OnboardingLayout({
       <View style={{ paddingHorizontal: 24, paddingBottom: 40, paddingTop: 12, backgroundColor: C.bg }}>
         {onSkip && skipLabel && (
           <Pressable onPress={onSkip} style={{ alignItems: "center", marginBottom: 10 }}>
-            <Text style={{ fontSize: 13, fontWeight: "600", color: C.rock }}>{skipLabel}</Text>
+            <Text style={{ fontSize: 13, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.rock }}>{skipLabel}</Text>
           </Pressable>
         )}
         <Pressable
@@ -66,7 +66,7 @@ export function OnboardingLayout({
             alignItems: "center", opacity: ctaDisabled ? 0.3 : 1,
           }}
         >
-          <Text style={{ fontSize: 15, fontWeight: "600", color: C.bg }}>{ctaLabel}</Text>
+          <Text style={{ fontSize: 15, fontFamily: "Quicksand_600SemiBold", fontWeight: "600", color: C.bg }}>{ctaLabel}</Text>
         </Pressable>
       </View>
     </KeyboardAvoidingView>

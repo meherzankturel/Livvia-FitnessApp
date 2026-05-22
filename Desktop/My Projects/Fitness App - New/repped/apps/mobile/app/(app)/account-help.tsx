@@ -63,7 +63,7 @@ function ContactRow() {
         borderRadius: 8,
       })}
     >
-      <Text style={{ flex: 1, fontSize: 13, fontWeight: "500", color: "#1A1A1A" }}>
+      <Text style={{ flex: 1, fontSize: 13, fontFamily: "Quicksand_500Medium", fontWeight: "500", color: "#1A1A1A" }}>
         Contact us
       </Text>
       <Text style={{ fontSize: 13, color: "#9A9A92" }}>{SUPPORT_EMAIL}</Text>

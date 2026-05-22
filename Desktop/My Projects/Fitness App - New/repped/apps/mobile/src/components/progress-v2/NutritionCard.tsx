@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 15,
-    fontWeight: "600",
+    fontFamily: "Quicksand_600SemiBold", fontWeight: "600",
     color: "#1a1a1a",
   },
   viewDetails: {
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   },
   calNumber: {
     fontSize: 20,
-    fontWeight: "700",
+    fontFamily: "Quicksand_700Bold", fontWeight: "700",
     color: "#1a1a1a",
     letterSpacing: -0.5,
   },
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   },
   macroLabel: {
     fontSize: 13,
-    fontWeight: "500",
+    fontFamily: "Quicksand_500Medium", fontWeight: "500",
     color: "#1a1a1a",
   },
   macroValue: {
@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
   },
   macroGoal: {
     fontSize: 11,
-    fontWeight: "400",
+    fontFamily: "Quicksand_400Regular", fontWeight: "400",
     color: "#bbb",
   },
   barTrack: {

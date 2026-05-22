@@ -1,56 +1,77 @@
-import { useEffect, useRef, useCallback } from "react";
-import { Animated } from "react-native";
+import { useEffect, useState, useCallback } from "react";
+import { View } from "react-native";
 import { Stack, router, useSegments, useRootNavigationState } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SplashScreen from "expo-splash-screen";
+import {
+  useFonts,
+  Quicksand_400Regular,
+  Quicksand_500Medium,
+  Quicksand_600SemiBold,
+  Quicksand_700Bold,
+} from "@expo-google-fonts/quicksand";
 import { useAuthStore } from "@repped/shared";
 import { supabase } from "../src/lib/supabase";
+import { SplashAnimation } from "../src/components/SplashAnimation";
 
-// Keep splash visible while we resolve auth
+// Hold the native splash open until JS has mounted and our animated splash overlay is in place.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const [fontsLoaded] = useFonts({
+    Quicksand_400Regular,
+    Quicksand_500Medium,
+    Quicksand_600SemiBold,
+    Quicksand_700Bold,
+  });
+
   const setSession = useAuthStore((s) => s.setSession);
   const session = useAuthStore((s) => s.session);
   const loading = useAuthStore((s) => s.loading);
   const segments = useSegments();
   const navigationState = useRootNavigationState();
-  const splashHidden = useRef(false);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
 
-  const hideSplash = useCallback(() => {
-    if (splashHidden.current) return;
-    splashHidden.current = true;
-    SplashScreen.hideAsync();
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+  // Bootstrap = "all the things we wait on before showing the real app"
+  const [bootstrapDone, setBootstrapDone] = useState(false);
+  // Splash overlay unmounts once its exit fade completes
+  const [splashUnmounted, setSplashUnmounted] = useState(false);
 
+  // As soon as fonts are loaded, hide the native splash — our JS SplashAnimation
+  // (identical cream background) takes over without flicker.
   useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded]);
+
+  // Auth state — hydrate from AsyncStorage on mount, then only react to explicit
+  // SIGNED_IN/SIGNED_OUT/TOKEN_REFRESHED events. We deliberately ignore null
+  // sessions from INITIAL_SESSION events because they can fire before the
+  // persisted session has finished loading and would falsely log the user out.
+  useEffect(() => {
+    let mounted = true;
     supabase.auth.getSession().then(({ data: { session: s } }) => {
-      if (s) {
-        setSession({ user: { id: s.user.id, email: s.user.email ?? "" } });
-      } else {
+      if (!mounted) return;
+      if (s) setSession({ user: { id: s.user.id, email: s.user.email ?? "" } });
+      else setSession(null);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, s) => {
+      if (!mounted) return;
+      if (event === "SIGNED_OUT") {
         setSession(null);
+      } else if (s && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "USER_UPDATED")) {
+        setSession({ user: { id: s.user.id, email: s.user.email ?? "" } });
       }
     });
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, s) => {
-      if (s) {
-        setSession({ user: { id: s.user.id, email: s.user.email ?? "" } });
-      } else {
-        setSession(null);
-      }
-    });
-
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
+  // Routing + bootstrap completion
   useEffect(() => {
-    // Wait for both auth check AND router to be ready
+    if (!fontsLoaded) return;
     if (loading) return;
     if (!navigationState?.key) return;
 
@@ -58,9 +79,8 @@ export default function RootLayout() {
 
     if (!session && !inAuthGroup) {
       router.replace("/(auth)/sign-in");
-      hideSplash();
+      setBootstrapDone(true);
     } else if (session && inAuthGroup) {
-      // Check onboarding status
       (async () => {
         try {
           const { data } = await supabase
@@ -76,16 +96,19 @@ export default function RootLayout() {
         } catch {
           router.replace("/(onboarding)/step1-welcome");
         }
-        hideSplash();
+        setBootstrapDone(true);
       })();
     } else {
-      // Already on the right screen
-      hideSplash();
+      setBootstrapDone(true);
     }
-  }, [session, loading, segments, navigationState?.key]);
+  }, [session, loading, segments, navigationState?.key, fontsLoaded]);
+
+  const handleSplashComplete = useCallback(() => {
+    setSplashUnmounted(true);
+  }, []);
 
   return (
-    <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
+    <View style={{ flex: 1, backgroundColor: "#F5EFE3" }}>
       <StatusBar style="dark" />
       <Stack
         screenOptions={{
@@ -94,6 +117,9 @@ export default function RootLayout() {
           animation: "fade",
         }}
       />
-    </Animated.View>
+      {!splashUnmounted && (
+        <SplashAnimation ready={bootstrapDone} onComplete={handleSplashComplete} />
+      )}
+    </View>
   );
 }
